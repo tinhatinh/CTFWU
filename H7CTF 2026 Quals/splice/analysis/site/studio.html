@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Studio — Tapedeck</title>
+  <link rel="stylesheet" href="/public/css/site.css">
+  <link rel="icon" href="data:,">
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark"></span>
+        <span class="brand-word">Tapedeck</span>
+      </a>
+      <nav class="nav-links">
+        <a href="/features" class="">Features</a>
+        <a href="/pricing"  class="">Pricing</a>
+        <a href="/about"    class="">About</a>
+      </nav>
+      <div class="nav-cta">
+        <a class="btn btn-ghost" href="/studio">Sign in</a>
+        <a class="btn btn-solid" href="/studio">Open Studio</a>
+      </div>
+    </div>
+  </header>
+  <main>
+
+
+<section class="studio">
+  <div class="wrap">
+    <div class="studio-head">
+      <div>
+        <span class="eyebrow">Clip Studio</span>
+        <h1>Turn a clip into an audiogram</h1>
+        <p>Upload a short piece of audio and Tapedeck renders a shareable waveform poster. Name your export, pick a look, and download it for social.</p>
+      </div>
+      <div class="studio-ws">Workspace <span class="mono">4e2301</span></div>
+    </div>
+
+    
+
+    <div class="studio-grid">
+      <div class="panel">
+        <h2>1. Upload a clip</h2>
+        <p class="sub">MP3, WAV, or M4A. Up to 12 MB, we use the first 20 seconds.</p>
+        <form method="post" action="/studio/upload" enctype="multipart/form-data" class="uploader">
+          <input type="file" name="clip" accept="audio/*" required>
+          <button class="btn btn-solid" type="submit">Upload clip</button>
+        </form>
+        
+      </div>
+
+      <div class="panel">
+        <h2>2. Render the audiogram</h2>
+        <p class="sub">The export name is used as the poster filename.</p>
+        <form id="renderForm" class="renderer">
+          <label class="field"><span>Export name</span>
+            <input id="slugInput" name="slug" value="audiogram" autocomplete="off" spellcheck="false">
+          </label>
+          <label class="field"><span>Look</span>
+            <select id="themeSelect" name="theme">
+              <option value="midnight">Midnight</option>
+              <option value="ink">Ink</option>
+              <option value="slate">Slate</option>
+              <option value="moss">Moss</option>
+            </select>
+          </label>
+          <button id="renderBtn" class="btn btn-solid" type="submit" disabled>Render audiogram</button>
+          <span id="renderStatus" class="render-status"></span>
+        </form>
+      </div>
+    </div>
+
+    <div class="panel posters">
+      <h2>Your audiograms</h2>
+      <p id="postersEmpty" class="sub empty" >Rendered audiograms show up here, ready to download.</p>
+      <div id="posterGrid" class="poster-grid" hidden>
+        
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var form = document.getElementById('renderForm');
+    if (!form) return;
+    var btn = document.getElementById('renderBtn');
+    var status = document.getElementById('renderStatus');
+    var grid = document.getElementById('posterGrid');
+    var empty = document.getElementById('postersEmpty');
+
+    function addPoster(o) {
+      if (grid.querySelector('[data-file="' + (window.CSS && CSS.escape ? CSS.escape(o.file) : o.file) + '"]')) return;
+      var a = document.createElement('a');
+      a.className = 'poster';
+      a.setAttribute('data-file', o.file);
+      a.href = o.url; a.target = '_blank'; a.rel = 'noopener';
+      var img = document.createElement('img');
+      img.src = o.url; img.alt = 'Audiogram ' + o.file;
+      var name = document.createElement('span');
+      name.className = 'poster-name mono'; name.textContent = o.file;
+      a.appendChild(img); a.appendChild(name);
+      grid.insertBefore(a, grid.firstChild);
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      btn.disabled = true;
+      status.textContent = 'Rendering...';
+      fetch('/api/render', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slug: document.getElementById('slugInput').value,
+          theme: document.getElementById('themeSelect').value
+        })
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          // Note: the API also returns an `errors` field on failure. The Studio
+          // does not surface it here.
+          var outs = (data && data.outputs) || [];
+          if (outs.length) {
+            empty.hidden = true; grid.hidden = false;
+            outs.forEach(addPoster);
+            status.textContent = 'Rendered.';
+          } else {
+            status.textContent = 'Nothing to render.';
+          }
+        })
+        .catch(function () { status.textContent = 'Nothing to render.'; })
+        .then(function () { btn.disabled = false; });
+    });
+  })();
+</script>
+
+  </main>
+  <footer class="foot">
+    <div class="wrap foot-inner">
+      <div class="foot-brand">
+        <span class="brand-mark"></span>
+        <span>Tapedeck</span>
+        <p class="foot-tag">Podcast hosting, analytics, and shareable audiograms. Independent since 2016.</p>
+      </div>
+      <div class="foot-col"><h4>Product</h4><a href="/features">Features</a><a href="/pricing">Pricing</a><a href="/studio">Studio</a></div>
+      <div class="foot-col"><h4>Company</h4><a href="/about">About</a><a href="/about">Careers</a><a href="/about">Contact</a></div>
+      <div class="foot-col"><h4>Creators</h4><a href="/studio">Open Studio</a><a href="/features">Audiograms</a><a href="/pricing">Plans</a></div>
+    </div>
+    <div class="foot-rule"><div class="wrap">&copy; 2016&ndash;2026 Tapedeck Media. Hosting for people who take the show seriously.</div></div>
+  </footer>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a40fce691b7545c8',t:'MTc5MDM5OTg4OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

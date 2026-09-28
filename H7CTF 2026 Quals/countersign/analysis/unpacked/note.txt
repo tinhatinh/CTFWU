@@ -1,0 +1,15 @@
+Countersign attestation core
+
+The shipped binary is the attestation core exactly as it runs on the box.
+Your instance runs the same core behind a plain TCP line protocol.
+
+Commands (one per line):
+  GET            stream this instance's program image as hex
+  NONCE          this instance's nonce
+  MINT <hex>     debug stamp for up to 16 bytes
+  RUN <hex>      drive the core with a 24 byte input, print what it emits
+
+The program image and the signing material are generated fresh for every
+instance, so nothing about one box carries over to another.
+
+Recover the 24 byte input that makes the core emit your flag.

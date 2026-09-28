@@ -1,0 +1,12 @@
+== select                   0.18s
+b'PROFILE SELECTED: region 0x0e\nCAL ECHO: 80057ec14f560000d0427ec14f560000\n----\n'
+== set 40B (vua het g_cal)  1.18s
+b'CAL VECTOR WRITTEN: count=20\n----\n'
+== select alive?            0.18s
+b'PROFILE SELECTED: region 0x0e\nCAL ECHO: 00000000000000000000000000000000\n----\n'
+== set 42B size-preserved   1.23s
+b'CAL VECTOR WRITTEN: count=21\n----\n'
+== select alive2?           0.18s
+b'PROFILE SELECTED: region 0x0e\nCAL ECHO: 00000000000000000000000000000000\n----\n'
+== set 50B desc.fn->26a0    1.43s
+b'CAL VECTOR WRITTEN: count=25\n'

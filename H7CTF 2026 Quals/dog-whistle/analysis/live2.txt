@@ -1,0 +1,19 @@
+banner: b''
+== direct ping        frame=a55a02100012  0.15s ==
+PONG
+----
+
+== whistle ping       frame=a55a02100012  0.15s ==
+PONG
+----
+
+== direct select 0E   frame=a55a0301010e0d  0.18s ==
+SAFETY LOCKOUT: engineering tone signature present in control band
+capture quarantined
+----
+== whistle select 0E  frame=a55a0301010e0d  0.18s ==
+
+PROFILE SELECTED: region 0x0e
+CAL ECHO: 80d580bc3a560000d01281bc3a560000
+----
+

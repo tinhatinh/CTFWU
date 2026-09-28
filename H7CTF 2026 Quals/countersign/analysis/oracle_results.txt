@@ -1,0 +1,44 @@
+oracle.py run 2026-09-27 08:22:59 mode=FULL
+
+==============================================================================
+### PHASE 11 - nonce<->tag pairs over fresh sessions + RUN reply vocabulary sweep
+==============================================================================
+#    NONCE              MINT(empty)    MINT(414243)   RUN(random24)
+[conn] phase11-pair1
+[conn] banner=0.618s repr=b'Countersign attestation core v2 ready.\ncommands: GET | NONCE | MINT <hex<=16> | RUN <hex 24>\n'
+1    3de7f49a8c121d8f   95fa4ccf0560   50bb4256b3c7   'denied'
+[conn] phase11-pair2
+[conn] banner=0.617s repr=b'Countersign attestation core v2 ready.\ncommands: GET | NONCE | MINT <hex<=16> | RUN <hex 24>\n'
+2    e7446cf7960523d4   26156c20ef0f   b645cbc0cb47   'denied'
+[conn] phase11-pair3
+[conn] banner=0.645s repr=b'Countersign attestation core v2 ready.\ncommands: GET | NONCE | MINT <hex<=16> | RUN <hex 24>\n'
+3    94cf8ac6e4f9e858   4a9b88fd255b   bfe3c1da9263   'denied'
+[conn] phase11-pair4
+[conn] banner=0.640s repr=b'Countersign attestation core v2 ready.\ncommands: GET | NONCE | MINT <hex<=16> | RUN <hex 24>\n'
+4    b3a7d99f252c0cd2   ccd204135790   69fad75472d3   'denied'
+[conn] phase11-pair5
+[conn] banner=0.606s repr=b'Countersign attestation core v2 ready.\ncommands: GET | NONCE | MINT <hex<=16> | RUN <hex 24>\n'
+5    3a45627b47643c0f   84aa5df25662   fb04ad67b5cd   'denied'
+[conn] phase11-pair6
+[conn] banner=0.668s repr=b'Countersign attestation core v2 ready.\ncommands: GET | NONCE | MINT <hex<=16> | RUN <hex 24>\n'
+6    6f66e90074ed52f0   e49b49137410   a31696941dd0   'denied'
+[conn] phase11-pair7
+[conn] banner=0.630s repr=b'Countersign attestation core v2 ready.\ncommands: GET | NONCE | MINT <hex<=16> | RUN <hex 24>\n'
+7    30f75b824110f391   20f1a10e2a46   2d07021f49a4   'denied'
+[conn] phase11-pair8
+[conn] banner=0.621s repr=b'Countersign attestation core v2 ready.\ncommands: GET | NONCE | MINT <hex<=16> | RUN <hex 24>\n'
+8    204950b7e5d9dbfc   8ceff5f66409   af9e0eea1953   'denied'
+[p11] distinct empty-tags=8 over 8 sessions; distinct 414243-tags=8
+
+[p11] RUN reply vocabulary: 24 random well-formed 24-byte inputs in one session
+[conn] phase11-sweep
+[conn] banner=0.642s repr=b'Countersign attestation core v2 ready.\ncommands: GET | NONCE | MINT <hex<=16> | RUN <hex 24>\n'
+[p11] session nonce=e3af8adce8aa4265 reply histogram={'denied': 24}
+[p11] non-'denied' replies: []
+
+[p11] MINT reply histogram over the same kind of sweep (24 random 16-byte inputs, one session)
+[conn] phase11-mint-sweep
+[conn] banner=0.641s repr=b'Countersign attestation core v2 ready.\ncommands: GET | NONCE | MINT <hex<=16> | RUN <hex 24>\n'
+[p11] session nonce=b7880cd3e5cca3ac (len_in, out_bytes_or_text) histogram={(11, 6): 2, (1, 6): 3, (8, 6): 6, (4, 6): 2, (3, 6): 3, (6, 6): 2, (2, 6): 3, (16, 6): 3}
+
+=== END ===

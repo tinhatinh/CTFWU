@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Planetary Directory &middot; Bureau of Planetary Telemetry</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body class="is-null">
+
+  <div class="rays" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <main class="console">
+    <div class="console__plate" aria-hidden="true"></div>
+
+    <header class="masthead">
+      <p class="masthead__eyebrow">Galactic Federation &middot; Bureau of Planetary Telemetry</p>
+      <h1 class="masthead__title">Planetary Directory</h1>
+      <div class="speedlines" aria-hidden="true"><span></span><span></span><span></span></div>
+      <p class="masthead__sub">Interplanetary Signal Receiver &nbsp;&middot;&nbsp; Model IX</p>
+    </header>
+
+    <section class="meter">
+      <div class="meter__bezel">
+        <svg class="meter__dial" viewBox="0 0 420 236" role="img"
+             aria-label="Center-zero null detector showing carrier state">
+          <defs>
+            <linearGradient id="faceGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#F8EFDA"/>
+              <stop offset="1" stop-color="#D9C29A"/>
+            </linearGradient>
+            <linearGradient id="glassGrad" x1="0" y1="0" x2="0.6" y2="1">
+              <stop offset="0" stop-color="#ffffff" stop-opacity=".26"/>
+              <stop offset=".55" stop-color="#ffffff" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+
+          <rect class="dial-face" x="16" y="14" width="388" height="214" rx="9" fill="url(#faceGrad)"/>
+
+          <!-- deflection zones: left of zero reads null, right reads carrier -->
+          <path class="zone zone--null"
+                d="M 66.2 113 A 166 166 0 0 1 175.5 33.6 L 182.1 64.9 A 134 134 0 0 0 94.0 129 Z"/>
+          <path class="zone zone--carrier"
+                d="M 244.5 33.6 A 166 166 0 0 1 353.8 113 L 326.0 129 A 134 134 0 0 0 237.9 64.9 Z"/>
+
+          <g class="ticks">
+            <line x1="210" y1="26" x2="210" y2="44" class="tick--major" transform="rotate(-60 210 196)"/>
+            <line x1="210" y1="26" x2="210" y2="38" transform="rotate(-52.5 210 196)"/>
+            <line x1="210" y1="26" x2="210" y2="38" transform="rotate(-45 210 196)"/>
+            <line x1="210" y1="26" x2="210" y2="38" transform="rotate(-37.5 210 196)"/>
+            <line x1="210" y1="26" x2="210" y2="44" class="tick--major" transform="rotate(-30 210 196)"/>
+            <line x1="210" y1="26" x2="210" y2="38" transform="rotate(-22.5 210 196)"/>
+            <line x1="210" y1="26" x2="210" y2="38" transform="rotate(-15 210 196)"/>
+            <line x1="210" y1="26" x2="210" y2="38" transform="rotate(-7.5 210 196)"/>
+            <line x1="210" y1="26" x2="210" y2="48" class="tick--zero" transform="rotate(0 210 196)"/>
+            <line x1="210" y1="26" x2="210" y2="38" transform="rotate(7.5 210 196)"/>
+            <line x1="210" y1="26" x2="210" y2="38" transform="rotate(15 210 196)"/>
+            <line x1="210" y1="26" x2="210" y2="38" transform="rotate(22.5 210 196)"/>
+            <line x1="210" y1="26" x2="210" y2="44" class="tick--major" transform="rotate(30 210 196)"/>
+            <line x1="210" y1="26" x2="210" y2="38" transform="rotate(37.5 210 196)"/>
+            <line x1="210" y1="26" x2="210" y2="38" transform="rotate(45 210 196)"/>
+            <line x1="210" y1="26" x2="210" y2="38" transform="rotate(52.5 210 196)"/>
+            <line x1="210" y1="26" x2="210" y2="44" class="tick--major" transform="rotate(60 210 196)"/>
+          </g>
+
+          <text class="dial-label" x="110" y="170">NULL</text>
+          <text class="dial-label" x="310" y="170">CARRIER</text>
+          <text class="dial-maker" x="210" y="222">GALACTIC FEDERATION &#183; NULL DETECTOR &#183; &#181;A</text>
+
+          <g class="needle">
+            <polygon points="210,198 205.8,187 210,44 214.2,187"/>
+          </g>
+          <circle class="needle-hub" cx="210" cy="198" r="13"/>
+          <circle class="needle-hub-in" cx="210" cy="198" r="5"/>
+
+          <rect class="glass" x="16" y="14" width="388" height="214" rx="9" fill="url(#glassGrad)"/>
+        </svg>
+      </div>
+
+      <div class="lamps">
+        <span class="lamp lamp--null"><i aria-hidden="true"></i>Null</span>
+        <span class="lamp lamp--carrier"><i aria-hidden="true"></i>Carrier</span>
+      </div>
+    </section>
+
+    <div class="engrave" aria-hidden="true"></div>
+
+    <form class="tuner" action="/probe" method="get">
+      <label class="tuner__label" for="planet">Planet designation</label>
+      <div class="tuner__row">
+        <input id="planet" name="planet" type="text" placeholder="MARS"
+               autocomplete="off" spellcheck="false"/>
+        <button class="key" type="submit">Transmit</button>
+      </div>
+      <p class="tuner__note">The receiver reports one bit: carrier, or none. It will not say what it heard.</p>
+    </form>
+
+    
+<section class="readout readout--null" role="status">
+  <p class="readout__stamp">No signal</p>
+  <p class="readout__body">Null. No planetary signature within range of this aerial. Re-dial and transmit again.</p>
+  <p class="readout__strip">NEEDLE&nbsp;LEFT&nbsp;OF&nbsp;ZERO &nbsp;&middot;&nbsp; NO&nbsp;CARRIER</p>
+</section>
+
+  </main>
+
+  <footer class="colophon">
+    <span class="colophon__rule" aria-hidden="true"></span>
+    &copy; Galactic Federation &nbsp;&middot;&nbsp; World of Tomorrow
+    <span class="colophon__rule" aria-hidden="true"></span>
+  </footer>
+
+</body>
+</html>

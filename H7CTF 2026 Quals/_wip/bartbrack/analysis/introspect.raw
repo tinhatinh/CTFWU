@@ -1,0 +1,1 @@
+{"data":{"__schema":{"queryType":{"fields":[{"name":"status","args":[]}]},"mutationType":{"fields":[{"name":"verifyOtp","args":[{"type":{"name":null},"name":"code"}],"type":{"name":"OtpResult"}}]}}}}

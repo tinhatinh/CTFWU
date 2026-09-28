@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Perpetual Forecast Console &middot; Punxsutawney Orbital Weather Authority</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+  <div class="sky" aria-hidden="true">
+    <span class="starburst starburst--a"></span>
+    <span class="starburst starburst--b"></span>
+  </div>
+
+  <div class="shell">
+
+    <header class="rail">
+      <span class="rail__mark" aria-hidden="true"></span>
+      <p class="rail__name">Punxsutawney Orbital Weather Authority</p>
+      <p class="rail__sub">Perpetual Forecast Console &middot; Bureau of Recurrent Meteorology</p>
+    </header>
+
+    <main class="deck">
+
+      <!-- The date card. It has read FEB 2 since the station went up. -->
+      <section class="pod pod--date">
+        <div class="orbit" aria-hidden="true"><span></span></div>
+        <p class="pod__kicker">Forecast for</p>
+        <p class="datecard">
+          <span class="datecard__mon">Feb</span>
+          <span class="datecard__day">2</span>
+        </p>
+        <p class="pod__iter">
+          Iteration
+          <strong>&numero;&thinsp;----</strong>
+        </p>
+      </section>
+
+      <section class="pod pod--verdict">
+        
+          <p class="pod__kicker">Shadow report</p>
+          <p class="verdict verdict--dim">Unavailable</p>
+          <p class="verdict__note">The station is not reporting an observation.</p>
+        
+      </section>
+
+      
+
+      <section class="diag">
+        <div class="diag__head">
+          <h2 class="diag__title">Station feed</h2>
+          <p class="diag__state">
+            <span class="lamp lamp--fault" aria-hidden="true"></span>
+            Fault
+          </p>
+        </div>
+
+        <dl class="diag__meta">
+          <dt>Station</dt>
+          <dd>PUNX-1</dd>
+        </dl>
+
+        
+          <p class="fault">unsupported transport for station feed</p>
+        
+
+        <p class="diag__label">Raw telemetry</p>
+        <pre class="tape">(no data returned)</pre>
+      </section>
+
+    </main>
+
+    <footer class="colophon">
+      <span class="colophon__rule" aria-hidden="true"></span>
+      <p>Punxsutawney Orbital Weather Authority &middot; Est. 1962 &middot; Tomorrow, Today</p>
+      <span class="colophon__rule" aria-hidden="true"></span>
+    </footer>
+
+  </div>
+
+  <!-- ops: console pulls station JSON at boot from http://127.0.0.1:8000/feed.
+       override it with feed=<url> when PUNX-1 is down and you need to point at
+       a spare station. manual override panel below, re-enable it next outage.
+       remove before public launch.
+
+  <form class="override" action="/" method="post">
+    <label for="feed">Station feed URL</label>
+    <input id="feed" name="feed" type="text" size="60" value="http://127.0.0.1:8000/feed">
+    <button type="submit">Load station</button>
+  </form>
+  -->
+  <!-- feed-debug: source=https://station-canary-07pc48c63iy.qoder.website/station.json bytes=0 -->
+</body>
+</html>

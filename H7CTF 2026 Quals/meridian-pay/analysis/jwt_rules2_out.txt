@@ -1,0 +1,4 @@
+pass A: rockyou x full rule set (incl. leet)
+  hit: None
+pass B: two-word combos 3521 x 3521
+  hit: None

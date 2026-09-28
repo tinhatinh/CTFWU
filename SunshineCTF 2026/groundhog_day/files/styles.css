@@ -1,0 +1,420 @@
+/* ============================================================
+   Perpetual Forecast Console
+   Googie / Populuxe -- 1962 Space Age optimism. Boomerang pods,
+   atomic starbursts, chrome rails, Formica turquoise.
+   No external assets, no network requests.
+   ============================================================ */
+
+:root {
+  /* --- palette: Formica turquoise, coral, mustard, cream --- */
+  --sky:       #7FD4D0;
+  --sky-2:     #BFE9E4;
+  --sky-3:     #F7D9C4;
+  --turquoise: #1D9B98;
+  --deep:      #0E3D42;
+  --coral:     #F0654A;
+  --mustard:   #F2B33D;
+  --cream:     #FBF6E9;
+  --chrome-1:  #FFFFFF;
+  --chrome-2:  #C3CDD1;
+  --chrome-3:  #8A9AA0;
+
+  /* --- type: three roles --- */
+  --googie: "Arial Rounded MT Bold", "Helvetica Rounded", "Trebuchet MS",
+            Verdana, sans-serif;                       /* rounded signage  */
+  --body:   "Helvetica Neue", Helvetica, Arial, sans-serif;  /* modernist  */
+  --mono:   ui-monospace, "SF Mono", Menlo, Consolas,
+            "Courier New", monospace;                  /* telemetry tape   */
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-family: var(--body);
+  color: var(--deep);
+  background: linear-gradient(178deg, var(--sky) 0%, var(--sky-2) 46%, var(--sky-3) 100%);
+  background-attachment: fixed;
+}
+
+/* ---------- atmosphere: atomic starbursts ---------- */
+
+.sky { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+
+.starburst {
+  position: absolute;
+  border-radius: 50%;
+  background:
+    repeating-conic-gradient(from 0deg,
+      rgba(255,255,255,.5) 0deg 1.6deg, transparent 1.6deg 9deg);
+  -webkit-mask-image: radial-gradient(closest-side, #000 6%, transparent 70%);
+          mask-image: radial-gradient(closest-side, #000 6%, transparent 70%);
+}
+.starburst--a { width: 44vmax; height: 44vmax; top: -14vmax; right: -10vmax; opacity: .55; }
+.starburst--b { width: 26vmax; height: 26vmax; bottom: -8vmax; left: -8vmax; opacity: .32; }
+
+/* ---------- shell ---------- */
+
+.shell {
+  position: relative;
+  z-index: 1;
+  max-width: 940px;
+  margin: 0 auto;
+  padding: 34px 22px 46px;
+}
+
+/* ---------- chrome rail masthead ---------- */
+
+.rail {
+  position: relative;
+  padding: 20px 26px 20px 76px;
+  border-radius: 44px 12px 12px 44px;
+  background: linear-gradient(176deg, var(--chrome-1) 0%, #E9EFF1 38%, var(--chrome-2) 100%);
+  box-shadow:
+    inset 0 2px 0 #fff,
+    inset 0 -3px 8px rgba(15,60,66,.22),
+    0 12px 26px -12px rgba(14,61,66,.5);
+}
+
+/* the atomic dot on the rail's rounded end */
+.rail__mark {
+  position: absolute;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, var(--mustard), var(--coral) 72%);
+  box-shadow: 0 0 0 4px rgba(255,255,255,.85), 0 3px 8px rgba(14,61,66,.4);
+}
+
+.rail__name {
+  margin: 0;
+  font-family: var(--googie);
+  font-size: clamp(1.05rem, 3.5vw, 1.6rem);
+  letter-spacing: .015em;
+  color: var(--deep);
+}
+
+.rail__sub {
+  margin: 4px 0 0;
+  font-size: .75rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--turquoise);
+}
+
+/* ---------- deck ---------- */
+
+.deck {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 24px;
+}
+
+/* Googie pod: one corner swept, kidney-table style */
+.pod {
+  position: relative;
+  overflow: hidden;
+  padding: 24px 26px 26px;
+  background: var(--cream);
+  border-radius: 8px 8px 8px 78px;
+  box-shadow: 0 14px 30px -14px rgba(14,61,66,.5), inset 0 2px 0 #fff;
+}
+
+.pod--verdict { border-radius: 8px 78px 8px 8px; }
+
+.pod__kicker {
+  margin: 0 0 10px;
+  font-size: .6875rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--turquoise);
+}
+
+/* ---------- signature: the perpetual date card ---------- */
+
+.orbit {
+  position: absolute;
+  top: -46px;
+  right: -46px;
+  width: 190px;
+  height: 190px;
+  border: 2px solid rgba(29,155,152,.28);
+  border-radius: 50%;
+  animation: orbit-spin 34s linear infinite;
+}
+/* The satellite starts on the ring's inboard side so it is visible at rest,
+   then orbits out behind the pod edge and back. */
+.orbit span {
+  position: absolute;
+  top: 50%;
+  left: -6px;
+  width: 12px;
+  height: 12px;
+  margin-top: -6px;
+  border-radius: 50%;
+  background: var(--coral);
+  box-shadow: 0 0 0 4px rgba(240,101,74,.2);
+}
+@keyframes orbit-spin { to { transform: rotate(360deg); } }
+
+.datecard {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0;
+  font-family: var(--googie);
+  line-height: .84;
+  color: var(--deep);
+}
+.datecard__mon {
+  font-size: clamp(1.5rem, 5vw, 2.1rem);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--coral);
+}
+.datecard__day { font-size: clamp(4rem, 15vw, 6.4rem); }
+
+.pod__iter {
+  margin: 16px 0 0;
+  font-family: var(--mono);
+  font-size: .75rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--chrome-3);
+}
+.pod__iter strong { color: var(--deep); }
+
+/* ---------- verdict ---------- */
+
+.verdict {
+  margin: 0;
+  font-family: var(--googie);
+  font-size: clamp(1.5rem, 5vw, 2.1rem);
+  line-height: 1.02;
+  color: var(--deep);
+}
+.verdict--dim { color: var(--chrome-3); }
+
+.verdict__note {
+  margin: 10px 0 0;
+  font-size: 1rem;
+  color: var(--turquoise);
+}
+
+.advisory {
+  margin: 18px 0 0;
+  padding-top: 14px;
+  border-top: 2px dotted rgba(29,155,152,.35);
+  font-size: .875rem;
+  line-height: 1.5;
+  color: #4A6A6D;
+}
+
+/* ---------- readings ---------- */
+
+.readings {
+  grid-column: 1 / -1;
+  padding: 24px 26px 28px;
+  background: var(--cream);
+  border-radius: 8px;
+  box-shadow: 0 14px 30px -14px rgba(14,61,66,.5), inset 0 2px 0 #fff;
+}
+
+.readings__title,
+.diag__title {
+  margin: 0;
+  font-family: var(--googie);
+  font-size: 1.0625rem;
+  letter-spacing: .01em;
+  color: var(--deep);
+}
+
+.readings__title { margin-bottom: 18px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  gap: 14px;
+}
+
+.stat {
+  padding: 14px 16px 15px;
+  background: #fff;
+  border-radius: 6px 6px 6px 26px;
+  border-bottom: 4px solid var(--turquoise);
+  box-shadow: 0 4px 10px -6px rgba(14,61,66,.4);
+}
+.stat--wide { grid-column: span 2; border-bottom-color: var(--mustard); }
+
+.stat__label {
+  margin: 0 0 6px;
+  font-size: .625rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--chrome-3);
+}
+
+.stat__value {
+  margin: 0;
+  font-family: var(--googie);
+  font-size: 1.75rem;
+  line-height: 1;
+  color: var(--deep);
+}
+.stat__value--text { font-size: 1.05rem; letter-spacing: .02em; }
+
+.stat__unit {
+  margin-left: 4px;
+  font-family: var(--body);
+  font-size: .8125rem;
+  font-weight: 400;
+  color: var(--turquoise);
+}
+
+/* ---------- diagnostics / raw telemetry ---------- */
+
+.diag {
+  grid-column: 1 / -1;
+  padding: 24px 26px 26px;
+  background: var(--cream);
+  border-radius: 8px;
+  box-shadow: 0 14px 30px -14px rgba(14,61,66,.5), inset 0 2px 0 #fff;
+}
+
+.diag__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.diag__state {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  font-size: .6875rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--deep);
+}
+
+.lamp {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  box-shadow: inset 0 1px 2px rgba(255,255,255,.7);
+}
+.lamp--ok    { background: #4FC08A; box-shadow: 0 0 9px 2px rgba(79,192,138,.5); }
+.lamp--fault { background: var(--coral); box-shadow: 0 0 9px 2px rgba(240,101,74,.5); }
+
+.diag__meta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 7px 18px;
+  margin: 0 0 16px;
+  font-size: .8125rem;
+}
+.diag__meta dt {
+  font-size: .625rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--chrome-3);
+  align-self: center;
+}
+.diag__meta dd { margin: 0; color: var(--deep); overflow-wrap: anywhere; }
+.mono { font-family: var(--mono); font-size: .8125rem; }
+
+.fault {
+  margin: 0 0 16px;
+  padding: 11px 14px;
+  border-left: 4px solid var(--coral);
+  background: rgba(240,101,74,.1);
+  font-size: .875rem;
+  color: #8C2E1C;
+  overflow-wrap: anywhere;
+}
+
+.diag__label {
+  margin: 0 0 8px;
+  font-size: .625rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--chrome-3);
+}
+
+/* the tape: punch-card green, the one dark surface on the page */
+.tape {
+  margin: 0;
+  padding: 16px 18px;
+  max-height: 400px;
+  overflow: auto;
+  background: #0C2E31;
+  border-radius: 4px;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,.5);
+  font-family: var(--mono);
+  font-size: .78125rem;
+  line-height: 1.55;
+  color: #9FE8C4;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  tab-size: 2;
+}
+
+/* ---------- colophon ---------- */
+
+.colophon {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 30px;
+  color: var(--turquoise);
+}
+.colophon p {
+  margin: 0;
+  font-size: .625rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.colophon__rule { flex: 1; height: 2px; background: currentColor; opacity: .45; }
+
+/* ---------- focus ---------- */
+
+:focus-visible { outline: 3px solid var(--coral); outline-offset: 3px; }
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 720px) {
+  .shell { padding: 22px 15px 34px; }
+
+  .rail { padding: 16px 20px 16px 64px; border-radius: 36px 10px 10px 36px; }
+  .rail__mark { left: 18px; width: 26px; height: 26px; }
+  .rail__sub { letter-spacing: .12em; }
+
+  .deck { grid-template-columns: 1fr; gap: 16px; }
+
+  .pod { border-radius: 8px 8px 8px 56px; }
+  .pod--verdict { border-radius: 8px 56px 8px 8px; }
+
+  .orbit { width: 140px; height: 140px; top: -34px; right: -34px; }
+
+  .stat--wide { grid-column: span 1; }
+
+  .colophon p { white-space: normal; }
+}
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .orbit { animation: none; }
+}

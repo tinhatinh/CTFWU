@@ -1,0 +1,16 @@
+$ python solve_live.py          # 2026-09-27, ket noi that pwn.h7tex.com:43708
+[*] banner: ['Countersign attestation core v2 ready.', 'commands: GET | NONCE | MINT <hex<=16> | RUN <hex 24>']
+[*] nonce: a02b52f22ef6817d
+[*] image 3076 byte entry=43250
+[*] 129 link, 51 hop le (13.5s)
+[?] fold 24915 seed={'0x0': '0xe53bf802', '0x1': '0x90d8a496', '0x2': '0x258e9f7e', '0x3': '0x53498b63', '0x4': '0x5c12c54a', '0x5': '0xf1551421'} -> emit idx=3 (can 3)
+[+] duoi dai 26
+[*] solve 0.0s -> a8a5d7f6053e442d785c81c2e7f137825c6181553d2a6d52
+[*] duong di: 34750 -> 12629 -> 57471 -> 6924 -> 9686 -> 52970 -> 16462 -> 62763
+   -> 63841 -> 35167 -> 58362 -> 14903 -> 33203 -> 13496 -> 28295 -> 3361 -> 37704
+   -> 60480 -> 35359 -> 35924 -> 63088 -> 44087 -> 65500 -> 23117 -> 52312 -> 24915
+[*] model forward: ('win', 52312, 26)
+[!] RUN a8a5d7f6053e442d785c81c2e7f137825c6181553d2a6d52 -> H7CTF{011c87d4-b5c8-405d-923a-33dbed3e5bf7}
+[*] thu them 2 lan nua:
+       H7CTF{011c87d4-b5c8-405d-923a-33dbed3e5bf7}
+       H7CTF{011c87d4-b5c8-405d-923a-33dbed3e5bf7}

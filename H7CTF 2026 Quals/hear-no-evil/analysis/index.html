@@ -1,0 +1,11 @@
+<!doctype html><meta charset=utf-8><title>ble sniff</title>
+<h1>NoiseGate Buds :: BLE sniff</h1>
+<p>We sniffed a pair of NoiseGate wireless earbuds coming up and talking to their
+companion app over Bluetooth Low Energy. The capture is a standard BLE link-layer
+recording.</p>
+<ul>
+<li>file: <a href="capture.pcap">capture.pcap</a> (open in Wireshark: it dissects
+btle / btatt natively)</li>
+</ul>
+<p>There is more than one device in the air. Two secrets are in here: one the earbuds
+leak in a config read, and one they only hand over after the app authenticates.</p>

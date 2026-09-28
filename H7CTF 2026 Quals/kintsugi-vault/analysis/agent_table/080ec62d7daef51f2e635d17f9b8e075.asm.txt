@@ -1,0 +1,193 @@
+; Kintsugi Vault shard 080ec62d7daef51f2e635d17f9b8e075 program, disassembled under the reconstructed decode table
+; program @0x232, 649 bytes, 177 instructions, walk covers 0..648 and stops at HALT
+; opcode bytes: 0a=CMP 27=MOV 63=HALT 8f=KEY 95=XORI ad=XOR d2=LUT e4=ANDI
+
+   0:  8f 00 00  KEY  r0, r0
+   3:  8f 01 01  KEY  r1, r1
+   6:  8f 02 02  KEY  r2, r2
+   9:  8f 03 03  KEY  r3, r3
+  12:  8f 04 04  KEY  r4, r4
+  15:  8f 05 05  KEY  r5, r5
+  18:  8f 06 06  KEY  r6, r6
+  21:  8f 07 07  KEY  r7, r7
+  24:  95 01 c3 00 00 00  XORI r1, 0xc3
+  30:  e4 01 fd 00 00 00  ANDI r1, 0xfd
+  36:  95 02 62 00 00 00  XORI r2, 0x62
+  42:  e4 02 f7 00 00 00  ANDI r2, 0xf7
+  48:  95 03 0e 00 00 00  XORI r3, 0x0e
+  54:  e4 03 f7 00 00 00  ANDI r3, 0xf7
+  60:  95 07 57 00 00 00  XORI r7, 0x57
+  66:  e4 07 3f 00 00 00  ANDI r7, 0x3f
+  72:  d2 00 00  LUT  r0, r0
+  75:  d2 01 01  LUT  r1, r1
+  78:  d2 02 02  LUT  r2, r2
+  81:  d2 03 03  LUT  r3, r3
+  84:  d2 04 04  LUT  r4, r4
+  87:  d2 05 05  LUT  r5, r5
+  90:  d2 06 06  LUT  r6, r6
+  93:  d2 07 07  LUT  r7, r7
+  96:  ad 00 01  XOR  r0, r1
+  99:  ad 01 02  XOR  r1, r2
+ 102:  ad 02 03  XOR  r2, r3
+ 105:  ad 03 04  XOR  r3, r4
+ 108:  ad 04 05  XOR  r4, r5
+ 111:  ad 05 06  XOR  r5, r6
+ 114:  ad 06 07  XOR  r6, r7
+ 117:  ad 07 00  XOR  r7, r0
+ 120:  ad 00 03  XOR  r0, r3
+ 123:  ad 01 04  XOR  r1, r4
+ 126:  ad 02 05  XOR  r2, r5
+ 129:  ad 03 06  XOR  r3, r6
+ 132:  ad 04 07  XOR  r4, r7
+ 135:  ad 05 00  XOR  r5, r0
+ 138:  ad 06 01  XOR  r6, r1
+ 141:  ad 07 02  XOR  r7, r2
+ 144:  95 00 87 00 00 00  XORI r0, 0x87
+ 150:  95 01 51 00 00 00  XORI r1, 0x51
+ 156:  95 02 74 00 00 00  XORI r2, 0x74
+ 162:  95 03 a9 00 00 00  XORI r3, 0xa9
+ 168:  95 04 0f 00 00 00  XORI r4, 0x0f
+ 174:  95 05 01 00 00 00  XORI r5, 0x01
+ 180:  95 06 2e 00 00 00  XORI r6, 0x2e
+ 186:  95 07 25 00 00 00  XORI r7, 0x25
+ 192:  d2 00 00  LUT  r0, r0
+ 195:  d2 01 01  LUT  r1, r1
+ 198:  d2 02 02  LUT  r2, r2
+ 201:  d2 03 03  LUT  r3, r3
+ 204:  d2 04 04  LUT  r4, r4
+ 207:  d2 05 05  LUT  r5, r5
+ 210:  d2 06 06  LUT  r6, r6
+ 213:  d2 07 07  LUT  r7, r7
+ 216:  ad 00 01  XOR  r0, r1
+ 219:  ad 01 02  XOR  r1, r2
+ 222:  ad 02 03  XOR  r2, r3
+ 225:  ad 03 04  XOR  r3, r4
+ 228:  ad 04 05  XOR  r4, r5
+ 231:  ad 05 06  XOR  r5, r6
+ 234:  ad 06 07  XOR  r6, r7
+ 237:  ad 07 00  XOR  r7, r0
+ 240:  ad 00 03  XOR  r0, r3
+ 243:  ad 01 04  XOR  r1, r4
+ 246:  ad 02 05  XOR  r2, r5
+ 249:  ad 03 06  XOR  r3, r6
+ 252:  ad 04 07  XOR  r4, r7
+ 255:  ad 05 00  XOR  r5, r0
+ 258:  ad 06 01  XOR  r6, r1
+ 261:  ad 07 02  XOR  r7, r2
+ 264:  95 00 a4 00 00 00  XORI r0, 0xa4
+ 270:  95 01 12 00 00 00  XORI r1, 0x12
+ 276:  95 02 b6 00 00 00  XORI r2, 0xb6
+ 282:  95 03 9d 00 00 00  XORI r3, 0x9d
+ 288:  95 04 7e 00 00 00  XORI r4, 0x7e
+ 294:  95 05 d4 00 00 00  XORI r5, 0xd4
+ 300:  95 06 77 00 00 00  XORI r6, 0x77
+ 306:  95 07 9d 00 00 00  XORI r7, 0x9d
+ 312:  d2 00 00  LUT  r0, r0
+ 315:  d2 01 01  LUT  r1, r1
+ 318:  d2 02 02  LUT  r2, r2
+ 321:  d2 03 03  LUT  r3, r3
+ 324:  d2 04 04  LUT  r4, r4
+ 327:  d2 05 05  LUT  r5, r5
+ 330:  d2 06 06  LUT  r6, r6
+ 333:  d2 07 07  LUT  r7, r7
+ 336:  ad 00 01  XOR  r0, r1
+ 339:  ad 01 02  XOR  r1, r2
+ 342:  ad 02 03  XOR  r2, r3
+ 345:  ad 03 04  XOR  r3, r4
+ 348:  ad 04 05  XOR  r4, r5
+ 351:  ad 05 06  XOR  r5, r6
+ 354:  ad 06 07  XOR  r6, r7
+ 357:  ad 07 00  XOR  r7, r0
+ 360:  ad 00 03  XOR  r0, r3
+ 363:  ad 01 04  XOR  r1, r4
+ 366:  ad 02 05  XOR  r2, r5
+ 369:  ad 03 06  XOR  r3, r6
+ 372:  ad 04 07  XOR  r4, r7
+ 375:  ad 05 00  XOR  r5, r0
+ 378:  ad 06 01  XOR  r6, r1
+ 381:  ad 07 02  XOR  r7, r2
+ 384:  95 00 f0 00 00 00  XORI r0, 0xf0
+ 390:  95 01 e2 00 00 00  XORI r1, 0xe2
+ 396:  95 02 8c 00 00 00  XORI r2, 0x8c
+ 402:  95 03 be 00 00 00  XORI r3, 0xbe
+ 408:  95 04 a8 00 00 00  XORI r4, 0xa8
+ 414:  95 05 8b 00 00 00  XORI r5, 0x8b
+ 420:  95 06 71 00 00 00  XORI r6, 0x71
+ 426:  95 07 2a 00 00 00  XORI r7, 0x2a
+ 432:  27 00 00  MOV  r0, r0
+ 435:  27 00 00  MOV  r0, r0
+ 438:  27 00 00  MOV  r0, r0
+ 441:  27 00 00  MOV  r0, r0
+ 444:  27 00 00  MOV  r0, r0
+ 447:  27 00 00  MOV  r0, r0
+ 450:  27 00 00  MOV  r0, r0
+ 453:  27 00 00  MOV  r0, r0
+ 456:  27 00 00  MOV  r0, r0
+ 459:  27 00 00  MOV  r0, r0
+ 462:  27 00 00  MOV  r0, r0
+ 465:  27 00 00  MOV  r0, r0
+ 468:  27 00 00  MOV  r0, r0
+ 471:  27 00 00  MOV  r0, r0
+ 474:  27 00 00  MOV  r0, r0
+ 477:  27 00 00  MOV  r0, r0
+ 480:  27 00 00  MOV  r0, r0
+ 483:  27 00 00  MOV  r0, r0
+ 486:  27 00 00  MOV  r0, r0
+ 489:  27 00 00  MOV  r0, r0
+ 492:  27 00 00  MOV  r0, r0
+ 495:  27 00 00  MOV  r0, r0
+ 498:  27 00 00  MOV  r0, r0
+ 501:  27 00 00  MOV  r0, r0
+ 504:  27 00 00  MOV  r0, r0
+ 507:  27 00 00  MOV  r0, r0
+ 510:  27 00 00  MOV  r0, r0
+ 513:  27 00 00  MOV  r0, r0
+ 516:  27 00 00  MOV  r0, r0
+ 519:  27 00 00  MOV  r0, r0
+ 522:  27 00 00  MOV  r0, r0
+ 525:  27 00 00  MOV  r0, r0
+ 528:  27 00 00  MOV  r0, r0
+ 531:  27 00 00  MOV  r0, r0
+ 534:  27 00 00  MOV  r0, r0
+ 537:  27 00 00  MOV  r0, r0
+ 540:  27 00 00  MOV  r0, r0
+ 543:  27 00 00  MOV  r0, r0
+ 546:  27 00 00  MOV  r0, r0
+ 549:  27 00 00  MOV  r0, r0
+ 552:  27 00 00  MOV  r0, r0
+ 555:  27 00 00  MOV  r0, r0
+ 558:  27 00 00  MOV  r0, r0
+ 561:  27 00 00  MOV  r0, r0
+ 564:  27 00 00  MOV  r0, r0
+ 567:  27 00 00  MOV  r0, r0
+ 570:  27 00 00  MOV  r0, r0
+ 573:  27 00 00  MOV  r0, r0
+ 576:  27 00 00  MOV  r0, r0
+ 579:  27 00 00  MOV  r0, r0
+ 582:  27 00 00  MOV  r0, r0
+ 585:  27 00 00  MOV  r0, r0
+ 588:  27 00 00  MOV  r0, r0
+ 591:  27 00 00  MOV  r0, r0
+ 594:  27 00 00  MOV  r0, r0
+ 597:  27 00 00  MOV  r0, r0
+ 600:  0a 00 71 00 00 00  CMP  r0, 0x71
+ 606:  0a 01 ac 00 00 00  CMP  r1, 0xac
+ 612:  0a 02 02 00 00 00  CMP  r2, 0x02
+ 618:  0a 03 50 00 00 00  CMP  r3, 0x50
+ 624:  0a 04 b5 00 00 00  CMP  r4, 0xb5
+ 630:  0a 05 1d 00 00 00  CMP  r5, 0x1d
+ 636:  0a 06 46 00 00 00  CMP  r6, 0x46
+ 642:  0a 07 89 00 00 00  CMP  r7, 0x89
+ 648:  63        HALT
+
+; 8 CMP target check (the shard-defined 8-byte target): 71ac0250b51d4689
+;   pc=600  CMP r0, 0x71
+;   pc=606  CMP r1, 0xac
+;   pc=612  CMP r2, 0x02
+;   pc=618  CMP r3, 0x50
+;   pc=624  CMP r4, 0xb5
+;   pc=630  CMP r5, 0x1d
+;   pc=636  CMP r6, 0x46
+;   pc=642  CMP r7, 0x89
+; opcode bytes decoded by the walk: 8; ops never used (MOVI,ADD,MUL,AND,OR,ROL) are parked in the
+; table at raw bytes never decoded by this program, so the table is a permutation.

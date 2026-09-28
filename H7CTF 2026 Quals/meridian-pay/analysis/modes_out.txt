@@ -1,0 +1,17 @@
+token ok
+paths 10037
+... 0
+HIT /api/v1/accounts/executive/flag [('bearer', None, "URLError(TimeoutError('timed out'))")]
+HIT /api/v1/accounts/keychain/1001 [('attested', None, "URLError(TimeoutError('timed out'))")]
+HIT /api/v1/accounts/me [('anon', 401, '{"error":"missing/invalid bearer"}\n'), ('bearer', 200, '{"account":{"balance_cents":418233,"memo":"personal checking","number":"MP-0041-8827","owner":1001,"type":"checking"},"onboarding_memo":"session verified from device - H7CTF{2e58be'), ('attested', 401, '{"error":"missing/invalid bearer"}\n')]
+HIT /api/v1/accounts/secrets/me [('bearer', None, "URLError(TimeoutError('timed out'))")]
+HIT /api/v1/accounts/tax_id/me [('attested', None, "URLError(TimeoutError('timed out'))")]
+... 3000
+HIT /api/v1/admin/ledger [('anon', 401, '{"error":"missing/invalid bearer"}\n'), ('bearer', 200, '{"corporate_master_key_rotation":"H7CTF{fc3b3bd4-7fc2-4679-8150-9d0ce062c50b}","generated":"2026-09-24","note":"admin-only consolidated ledger export"}\n'), ('attested', 401, '{"error":"missing/invalid bearer"}\n')]
+HIT /api/v1/auth/device [('anon', 405, '<!doctype html>\n<html lang=en>\n<title>405 Method Not Allowed</title>\n<h1>Method Not Allowed</h1>\n<p>The method is not allowed for the requested URL.</p>\n'), ('bearer', 405, '<!doctype html>\n<html lang=en>\n<title>405 Method Not Allowed</title>\n<h1>Method Not Allowed</h1>\n<p>The method is not allowed for the requested URL.</p>\n'), ('attested', 405, '<!doctype html>\n<html lang=en>\n<title>405 Method Not Allowed</title>\n<h1>Method Not Allowed</h1>\n<p>The method is not allowed for the requested URL.</p>\n')]
+... 6000
+HIT /api/v1/internal/promo [('anon', 401, '{"error":"missing/invalid bearer"}\n'), ('bearer', 403, '{"error":"endpoint restricted to the Meridian Pay app client"}\n'), ('attested', 401, '{"error":"missing/invalid bearer"}\n')]
+HIT /api/v1/profile [('anon', 405, '<!doctype html>\n<html lang=en>\n<title>405 Method Not Allowed</title>\n<h1>Method Not Allowed</h1>\n<p>The method is not allowed for the requested URL.</p>\n'), ('bearer', 405, '<!doctype html>\n<html lang=en>\n<title>405 Method Not Allowed</title>\n<h1>Method Not Allowed</h1>\n<p>The method is not allowed for the requested URL.</p>\n'), ('attested', 405, '<!doctype html>\n<html lang=en>\n<title>405 Method Not Allowed</title>\n<h1>Method Not Allowed</h1>\n<p>The method is not allowed for the requested URL.</p>\n')]
+HIT /api/v1/promo/public [('anon', 200, '<html><body><h3>Meridian Pay - Seasonal Offers</h3><p>Refer a friend and earn 500 points. Terms apply.</p><p>Enrolled members can finish loyalty sign-up in the app: <a href="/api/v'), ('bearer', 200, '<html><body><h3>Meridian Pay - Seasonal Offers</h3><p>Refer a friend and earn 500 points. Terms apply.</p><p>Enrolled members can finish loyalty sign-up in the app: <a href="/api/v'), ('attested', 200, '<html><body><h3>Meridian Pay - Seasonal Offers</h3><p>Refer a friend and earn 500 points. Terms apply.</p><p>Enrolled members can finish loyalty sign-up in the app: <a href="/api/v')]
+... 9000
+DONE-MODES

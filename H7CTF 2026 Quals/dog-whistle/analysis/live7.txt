@@ -1,0 +1,19 @@
+[1] ===
+[*] leak show_flag = 0x5565f729f580
+[!] error: pack_into requires a buffer of at least 56 bytes for packing 8 bytes at offset 48 (actual buffer size is 50)
+[2] ===
+[*] leak show_flag = 0x5606fbdb5580
+[!] error: pack_into requires a buffer of at least 56 bytes for packing 8 bytes at offset 48 (actual buffer size is 50)
+[3] ===
+[*] leak show_flag = 0x55ae14776580
+[!] error: pack_into requires a buffer of at least 56 bytes for packing 8 bytes at offset 48 (actual buffer size is 50)
+[4] ===
+[*] leak show_flag = 0x5612b4f9e580
+[!] error: pack_into requires a buffer of at least 56 bytes for packing 8 bytes at offset 48 (actual buffer size is 50)
+[5] ===
+[*] leak show_flag = 0x55ee893af580
+[!] error: pack_into requires a buffer of at least 56 bytes for packing 8 bytes at offset 48 (actual buffer size is 50)
+[6] ===
+[*] leak show_flag = 0x5556d8885580
+[!] error: pack_into requires a buffer of at least 56 bytes for packing 8 bytes at offset 48 (actual buffer size is 50)
+[-] chua co co

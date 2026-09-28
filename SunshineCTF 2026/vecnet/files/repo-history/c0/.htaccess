@@ -1,0 +1,15 @@
+Options -Indexes
+DirectoryIndex index.html index.php
+
+# TODO: restrict files/ to internal ranges only
+# <RequireAll>
+#   Require ip 10.0.0.0/8
+# </RequireAll>
+
+AddType application/x-httpd-php .php
+
+# deny direct access to specs.7z
+<FilesMatch "^specs\.7z$">
+    Require local
+    Require ip 127.0.0.1
+</FilesMatch>

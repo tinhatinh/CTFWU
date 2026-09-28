@@ -1,0 +1,31 @@
+PUNXSUTAWNEY ORBITAL WEATHER AUTHORITY -- BUREAU ARCHIVE (internal)
+====================================================================
+Staff endpoints. Do not expose to the public console.
+
+  GET  /feed
+       Current randomised observation for station PUNX-1, as JSON.
+
+  GET  /health
+       Liveness probe.
+
+  POST /report
+       Render an archival PDF from a report body.
+       Content-Type: application/x-www-form-urlencoded
+       Fields:
+         content  report contents
+         title    optional document title
+
+       Example:
+         POST /report HTTP/1.1
+         Host: 127.0.0.1:8000
+         Content-Type: application/x-www-form-urlencoded
+         Content-Length: 40
+
+         content=%3Ch1%3EFeb+2+Summary%3C%2Fh1%3E
+
+       Returns JSON. The microfilm scanner cannot take binary over the
+       wire, so the document comes back base64 in the `data` field.
+
+NOTE(ops): This application is NOT to be published. It has been restricted to
+localhost for maintenance and testing purposes; mainly updating from wkhtmltopdf 0.12.5
+

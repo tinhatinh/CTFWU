@@ -1,0 +1,539 @@
+=== CLASS Lcom/fleetlink/ApiClient$Resp;
+  -- public constructor <init> 
+      invoke-direct v0, Ljava/lang/Object;-><init>()V
+      return-void 
+=== CLASS Lcom/fleetlink/ApiClient;
+  -- public constructor <init> 
+      invoke-direct v0, Ljava/lang/Object;-><init>()V
+      return-void 
+  -- public static get 
+      new-instance v0, Ljava/net/URL;
+      invoke-direct v0, v5, Ljava/net/URL;-><init>(Ljava/lang/String;)V
+      invoke-virtual v0, Ljava/net/URL;->openConnection()Ljava/net/URLConnection;
+      move-result-object v5
+      check-cast v5, Ljava/net/HttpURLConnection;
+      const-string v0, "GET"
+      invoke-virtual v5, v0, Ljava/net/HttpURLConnection;->setRequestMethod(Ljava/lang/String;)V
+      const/16 v0, 8000
+      invoke-virtual v5, v0, Ljava/net/HttpURLConnection;->setConnectTimeout(I)V
+      invoke-virtual v5, v0, Ljava/net/HttpURLConnection;->setReadTimeout(I)V
+      if-eqz v6, +026h
+      invoke-interface v6, Ljava/util/Map;->entrySet()Ljava/util/Set;
+      move-result-object v6
+      invoke-interface v6, Ljava/util/Set;->iterator()Ljava/util/Iterator;
+      move-result-object v6
+      invoke-interface v6, Ljava/util/Iterator;->hasNext()Z
+      move-result v0
+      if-eqz v0, +018h
+      invoke-interface v6, Ljava/util/Iterator;->next()Ljava/lang/Object;
+      move-result-object v0
+      check-cast v0, Ljava/util/Map$Entry;
+      invoke-interface v0, Ljava/util/Map$Entry;->getKey()Ljava/lang/Object;
+      move-result-object v1
+      check-cast v1, Ljava/lang/String;
+      invoke-interface v0, Ljava/util/Map$Entry;->getValue()Ljava/lang/Object;
+      move-result-object v0
+      check-cast v0, Ljava/lang/String;
+      invoke-virtual v5, v1, v0, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String; Ljava/lang/String;)V
+      goto -1bh
+      new-instance v6, Lcom/fleetlink/ApiClient$Resp;
+      invoke-direct v6, Lcom/fleetlink/ApiClient$Resp;-><init>()V
+      invoke-virtual v5, Ljava/net/HttpURLConnection;->getResponseCode()I
+      move-result v0
+      iput v0, v6, Lcom/fleetlink/ApiClient$Resp;->code I
+      iget v0, v6, Lcom/fleetlink/ApiClient$Resp;->code I
+      const/16 v1, 400
+      if-lt v0, v1, +007h
+      invoke-virtual v5, Ljava/net/HttpURLConnection;->getErrorStream()Ljava/io/InputStream;
+      move-result-object v0
+      goto +5h
+      invoke-virtual v5, Ljava/net/HttpURLConnection;->getInputStream()Ljava/io/InputStream;
+      move-result-object v0
+      new-instance v1, Ljava/io/ByteArrayOutputStream;
+      invoke-direct v1, Ljava/io/ByteArrayOutputStream;-><init>()V
+      if-eqz v0, +011h
+      const/16 v2, 4096
+      new-array v2, v2, [B
+      invoke-virtual v0, v2, Ljava/io/InputStream;->read([B)I
+      move-result v3
+      if-lez v3, +007h
+      const/4 v4, 0
+      invoke-virtual v1, v2, v4, v3, Ljava/io/ByteArrayOutputStream;->write([B I I)V
+      goto -ah
+      const-string v0, "UTF-8"
+      invoke-virtual v1, v0, Ljava/io/ByteArrayOutputStream;->toString(Ljava/lang/String;)Ljava/lang/String;
+      move-result-object v0
+      iput-object v0, v6, Lcom/fleetlink/ApiClient$Resp;->body Ljava/lang/String;
+      invoke-virtual v5, Ljava/net/HttpURLConnection;->disconnect()V
+      return-object v6
+=== CLASS Lcom/fleetlink/MainActivity$1;
+  -- constructor <init> 
+      iput-object v1, v0, Lcom/fleetlink/MainActivity$1;->this$0 Lcom/fleetlink/MainActivity;
+      invoke-direct v0, Ljava/lang/Object;-><init>()V
+      return-void 
+  -- public onClick 
+      iget-object v2, v1, Lcom/fleetlink/MainActivity$1;->this$0 Lcom/fleetlink/MainActivity;
+      invoke-static v2, Lcom/fleetlink/MainActivity;->-$$Nest$fgetsession(Lcom/fleetlink/MainActivity;)Lcom/fleetlink/Session;
+      move-result-object v2
+      iget-object v0, v1, Lcom/fleetlink/MainActivity$1;->this$0 Lcom/fleetlink/MainActivity;
+      invoke-static v0, Lcom/fleetlink/MainActivity;->-$$Nest$fgetserverField(Lcom/fleetlink/MainActivity;)Landroid/widget/EditText;
+      move-result-object v0
+      invoke-virtual v0, Landroid/widget/EditText;->getText()Landroid/text/Editable;
+      move-result-object v0
+      invoke-virtual v0, Ljava/lang/Object;->toString()Ljava/lang/String;
+      move-result-object v0
+      invoke-virtual v0, Ljava/lang/String;->trim()Ljava/lang/String;
+      move-result-object v0
+      invoke-virtual v2, v0, Lcom/fleetlink/Session;->setBaseUrl(Ljava/lang/String;)V
+      iget-object v2, v1, Lcom/fleetlink/MainActivity$1;->this$0 Lcom/fleetlink/MainActivity;
+      invoke-static v2, Lcom/fleetlink/MainActivity;->-$$Nest$mload(Lcom/fleetlink/MainActivity;)V
+      return-void 
+=== CLASS Lcom/fleetlink/MainActivity$2;
+  -- constructor <init> 
+      iput-object v1, v0, Lcom/fleetlink/MainActivity$2;->this$0 Lcom/fleetlink/MainActivity;
+      iput-object v2, v0, Lcom/fleetlink/MainActivity$2;->val$base Ljava/lang/String;
+      invoke-direct v0, Ljava/lang/Object;-><init>()V
+      return-void 
+  -- public run 
+      const-string v0, ""
+      const-string v1, "/api/v1/trips"
+      new-instance v2, Ljava/util/TreeMap;
+      invoke-direct v2, Ljava/util/TreeMap;-><init>()V
+      const-string v3, "scope"
+      const-string v4, "mine"
+      invoke-virtual v2, v3, v4, Ljava/util/TreeMap;->put(Ljava/lang/Object; Ljava/lang/Object;)Ljava/lang/Object;
+      const-string v3, "GET"
+      iget-object v4, v7, Lcom/fleetlink/MainActivity$2;->this$0 Lcom/fleetlink/MainActivity;
+      invoke-static v4, Lcom/fleetlink/MainActivity;->-$$Nest$fgetsession(Lcom/fleetlink/MainActivity;)Lcom/fleetlink/Session;
+      move-result-object v4
+      invoke-virtual v4, Lcom/fleetlink/Session;->deviceId()Ljava/lang/String;
+      move-result-object v4
+      invoke-static v3, v1, v2, v4, Lcom/fleetlink/Signer;->sign(Ljava/lang/String; Ljava/lang/String; Ljava/util/TreeMap; Ljava/lang/String;)Lcom/fleetlink/Signer$Signed;
+      move-result-object v2
+      new-instance v3, Ljava/util/HashMap;
+      invoke-direct v3, Ljava/util/HashMap;-><init>()V
+      const-string v4, "X-Device-Id"
+      iget-object v5, v2, Lcom/fleetlink/Signer$Signed;->deviceId Ljava/lang/String;
+      invoke-virtual v3, v4, v5, Ljava/util/HashMap;->put(Ljava/lang/Object; Ljava/lang/Object;)Ljava/lang/Object;
+      const-string v4, "X-Ts"
+      iget-object v5, v2, Lcom/fleetlink/Signer$Signed;->ts Ljava/lang/String;
+      invoke-virtual v3, v4, v5, Ljava/util/HashMap;->put(Ljava/lang/Object; Ljava/lang/Object;)Ljava/lang/Object;
+      const-string v4, "X-Sig"
+      iget-object v5, v2, Lcom/fleetlink/Signer$Signed;->sig Ljava/lang/String;
+      invoke-virtual v3, v4, v5, Ljava/util/HashMap;->put(Ljava/lang/Object; Ljava/lang/Object;)Ljava/lang/Object;
+      iget-object v4, v7, Lcom/fleetlink/MainActivity$2;->val$base Ljava/lang/String;
+      iget-object v2, v2, Lcom/fleetlink/Signer$Signed;->query Ljava/lang/String;
+      new-instance v5, Ljava/lang/StringBuilder;
+      invoke-direct v5, Ljava/lang/StringBuilder;-><init>()V
+      invoke-virtual v5, v4, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v4
+      invoke-virtual v4, v1, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v1
+      const-string v4, "?"
+      invoke-virtual v1, v4, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v1
+      invoke-virtual v1, v2, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v1
+      invoke-virtual v1, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+      move-result-object v1
+      invoke-static v1, v3, Lcom/fleetlink/ApiClient;->get(Ljava/lang/String; Ljava/util/Map;)Lcom/fleetlink/ApiClient$Resp;
+      move-result-object v1
+      iget v2, v1, Lcom/fleetlink/ApiClient$Resp;->code I
+      const/16 v3, 200
+      if-eq v2, v3, +023h
+      iget-object v2, v7, Lcom/fleetlink/MainActivity$2;->this$0 Lcom/fleetlink/MainActivity;
+      iget v1, v1, Lcom/fleetlink/ApiClient$Resp;->code I
+      new-instance v3, Ljava/lang/StringBuilder;
+      invoke-direct v3, Ljava/lang/StringBuilder;-><init>()V
+      const-string v4, "Request failed ("
+      invoke-virtual v3, v4, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v3
+      invoke-virtual v3, v1, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+      move-result-object v1
+      const-string v3, ")"
+      invoke-virtual v1, v3, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v1
+      invoke-virtual v1, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+      move-result-object v1
+      invoke-static v2, v1, v0, Lcom/fleetlink/MainActivity;->-$$Nest$mpost(Lcom/fleetlink/MainActivity; Ljava/lang/String; Ljava/lang/String;)V
+      return-void 
+      new-instance v2, Lorg/json/JSONObject;
+      iget-object v1, v1, Lcom/fleetlink/ApiClient$Resp;->body Ljava/lang/String;
+      invoke-direct v2, v1, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
+      const-string v1, "trips"
+      invoke-virtual v2, v1, Lorg/json/JSONObject;->getJSONArray(Ljava/lang/String;)Lorg/json/JSONArray;
+      move-result-object v1
+      new-instance v2, Ljava/lang/StringBuilder;
+      invoke-direct v2, Ljava/lang/StringBuilder;-><init>()V
+      const/4 v3, 0
+      invoke-virtual v1, Lorg/json/JSONArray;->length()I
+      move-result v4
+      if-ge v3, v4, +048h
+      invoke-virtual v1, v3, Lorg/json/JSONArray;->getJSONObject(I)Lorg/json/JSONObject;
+      move-result-object v4
+      const-string v5, "id"
+      invoke-virtual v4, v5, Lorg/json/JSONObject;->getString(Ljava/lang/String;)Ljava/lang/String;
+      move-result-object v5
+      invoke-virtual v2, v5, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v5
+      const-string v6, "  "
+      invoke-virtual v5, v6, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v5
+      const-string v6, "from"
+      invoke-virtual v4, v6, Lorg/json/JSONObject;->getString(Ljava/lang/String;)Ljava/lang/String;
+      move-result-object v6
+      invoke-virtual v5, v6, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v5
+      const-string v6, " -> "
+      invoke-virtual v5, v6, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v5
+      const-string v6, "to"
+      invoke-virtual v4, v6, Lorg/json/JSONObject;->getString(Ljava/lang/String;)Ljava/lang/String;
+      move-result-object v6
+      invoke-virtual v5, v6, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v5
+      const-string v6, "
+    "
+      invoke-virtual v5, v6, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v5
+      const-string v6, "status"
+      invoke-virtual v4, v6, Lorg/json/JSONObject;->getString(Ljava/lang/String;)Ljava/lang/String;
+      move-result-object v4
+      invoke-virtual v5, v4, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v4
+      const-string v5, "
+
+"
+      invoke-virtual v4, v5, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      add-int/lit8 v3, v3, 1
+      goto -4bh
+      invoke-virtual v2, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+      move-result-object v0
+      invoke-virtual v1, Lorg/json/JSONArray;->length()I
+      move-result v1
+      new-instance v2, Ljava/lang/StringBuilder;
+      invoke-direct v2, Ljava/lang/StringBuilder;-><init>()V
+      const-string v3, "Loaded "
+      invoke-virtual v2, v3, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v2
+      invoke-virtual v2, v1, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+      move-result-object v1
+      const-string v2, " trips"
+      invoke-virtual v1, v2, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v1
+      invoke-virtual v1, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+      move-result-object v1
+      goto +19h
+      move-exception v1
+      invoke-virtual v1, Ljava/lang/Exception;->getMessage()Ljava/lang/String;
+      move-result-object v1
+      new-instance v2, Ljava/lang/StringBuilder;
+      invoke-direct v2, Ljava/lang/StringBuilder;-><init>()V
+      const-string v3, "Error: "
+      invoke-virtual v2, v3, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v2
+      invoke-virtual v2, v1, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v1
+      invoke-virtual v1, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+      move-result-object v1
+      iget-object v2, v7, Lcom/fleetlink/MainActivity$2;->this$0 Lcom/fleetlink/MainActivity;
+      invoke-static v2, v1, v0, Lcom/fleetlink/MainActivity;->-$$Nest$mpost(Lcom/fleetlink/MainActivity; Ljava/lang/String; Ljava/lang/String;)V
+      return-void 
+=== CLASS Lcom/fleetlink/MainActivity$3;
+  -- constructor <init> 
+      iput-object v1, v0, Lcom/fleetlink/MainActivity$3;->this$0 Lcom/fleetlink/MainActivity;
+      iput-object v2, v0, Lcom/fleetlink/MainActivity$3;->val$msg Ljava/lang/String;
+      iput-object v3, v0, Lcom/fleetlink/MainActivity$3;->val$display Ljava/lang/String;
+      invoke-direct v0, Ljava/lang/Object;-><init>()V
+      return-void 
+  -- public run 
+      iget-object v0, v2, Lcom/fleetlink/MainActivity$3;->this$0 Lcom/fleetlink/MainActivity;
+      invoke-static v0, Lcom/fleetlink/MainActivity;->-$$Nest$fgetstatus(Lcom/fleetlink/MainActivity;)Landroid/widget/TextView;
+      move-result-object v0
+      iget-object v1, v2, Lcom/fleetlink/MainActivity$3;->val$msg Ljava/lang/String;
+      invoke-virtual v0, v1, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+      iget-object v0, v2, Lcom/fleetlink/MainActivity$3;->this$0 Lcom/fleetlink/MainActivity;
+      invoke-static v0, Lcom/fleetlink/MainActivity;->-$$Nest$fgettrips(Lcom/fleetlink/MainActivity;)Landroid/widget/TextView;
+      move-result-object v0
+      iget-object v1, v2, Lcom/fleetlink/MainActivity$3;->val$display Ljava/lang/String;
+      invoke-virtual v0, v1, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+      return-void 
+=== CLASS Lcom/fleetlink/MainActivity;
+  -- static bridge synthetic -$$Nest$fgetserverField 
+      iget-object v0, v0, Lcom/fleetlink/MainActivity;->serverField Landroid/widget/EditText;
+      return-object v0
+  -- static bridge synthetic -$$Nest$fgetsession 
+      iget-object v0, v0, Lcom/fleetlink/MainActivity;->session Lcom/fleetlink/Session;
+      return-object v0
+  -- static bridge synthetic -$$Nest$fgetstatus 
+      iget-object v0, v0, Lcom/fleetlink/MainActivity;->status Landroid/widget/TextView;
+      return-object v0
+  -- static bridge synthetic -$$Nest$fgettrips 
+      iget-object v0, v0, Lcom/fleetlink/MainActivity;->trips Landroid/widget/TextView;
+      return-object v0
+  -- static bridge synthetic -$$Nest$mload 
+      invoke-direct v0, Lcom/fleetlink/MainActivity;->load()V
+      return-void 
+  -- static bridge synthetic -$$Nest$mpost 
+      invoke-direct v0, v1, v2, Lcom/fleetlink/MainActivity;->post(Ljava/lang/String; Ljava/lang/String;)V
+      return-void 
+  -- public constructor <init> 
+      invoke-direct v0, Landroid/app/Activity;-><init>()V
+      return-void 
+  -- private load 
+      iget-object v0, v3, Lcom/fleetlink/MainActivity;->status Landroid/widget/TextView;
+      const-string v1, "Loading trips..."
+      invoke-virtual v0, v1, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+      iget-object v0, v3, Lcom/fleetlink/MainActivity;->session Lcom/fleetlink/Session;
+      invoke-virtual v0, Lcom/fleetlink/Session;->baseUrl()Ljava/lang/String;
+      move-result-object v0
+      new-instance v1, Ljava/lang/Thread;
+      new-instance v2, Lcom/fleetlink/MainActivity$2;
+      invoke-direct v2, v3, v0, Lcom/fleetlink/MainActivity$2;-><init>(Lcom/fleetlink/MainActivity; Ljava/lang/String;)V
+      invoke-direct v1, v2, Ljava/lang/Thread;-><init>(Ljava/lang/Runnable;)V
+      invoke-virtual v1, Ljava/lang/Thread;->start()V
+      return-void 
+  -- private post 
+      new-instance v0, Lcom/fleetlink/MainActivity$3;
+      invoke-direct v0, v1, v2, v3, Lcom/fleetlink/MainActivity$3;-><init>(Lcom/fleetlink/MainActivity; Ljava/lang/String; Ljava/lang/String;)V
+      invoke-virtual v1, v0, Lcom/fleetlink/MainActivity;->runOnUiThread(Ljava/lang/Runnable;)V
+      return-void 
+  -- protected onCreate 
+      invoke-super v1, v2, Landroid/app/Activity;->onCreate(Landroid/os/Bundle;)V
+      new-instance v2, Lcom/fleetlink/Session;
+      invoke-direct v2, v1, Lcom/fleetlink/Session;-><init>(Landroid/content/Context;)V
+      iput-object v2, v1, Lcom/fleetlink/MainActivity;->session Lcom/fleetlink/Session;
+      const/high16 v2, 2130837504
+      invoke-virtual v1, v2, Lcom/fleetlink/MainActivity;->setContentView(I)V
+      const v2, 2130771969
+      invoke-virtual v1, v2, Lcom/fleetlink/MainActivity;->findViewById(I)Landroid/view/View;
+      move-result-object v2
+      check-cast v2, Landroid/widget/EditText;
+      iput-object v2, v1, Lcom/fleetlink/MainActivity;->serverField Landroid/widget/EditText;
+      const v2, 2130771970
+      invoke-virtual v1, v2, Lcom/fleetlink/MainActivity;->findViewById(I)Landroid/view/View;
+      move-result-object v2
+      check-cast v2, Landroid/widget/TextView;
+      iput-object v2, v1, Lcom/fleetlink/MainActivity;->status Landroid/widget/TextView;
+      const v2, 2130771971
+      invoke-virtual v1, v2, Lcom/fleetlink/MainActivity;->findViewById(I)Landroid/view/View;
+      move-result-object v2
+      check-cast v2, Landroid/widget/TextView;
+      iput-object v2, v1, Lcom/fleetlink/MainActivity;->trips Landroid/widget/TextView;
+      iget-object v2, v1, Lcom/fleetlink/MainActivity;->serverField Landroid/widget/EditText;
+      iget-object v0, v1, Lcom/fleetlink/MainActivity;->session Lcom/fleetlink/Session;
+      invoke-virtual v0, Lcom/fleetlink/Session;->baseUrl()Ljava/lang/String;
+      move-result-object v0
+      invoke-virtual v2, v0, Landroid/widget/EditText;->setText(Ljava/lang/CharSequence;)V
+      const/high16 v2, 2130771968
+      invoke-virtual v1, v2, Lcom/fleetlink/MainActivity;->findViewById(I)Landroid/view/View;
+      move-result-object v2
+      new-instance v0, Lcom/fleetlink/MainActivity$1;
+      invoke-direct v0, v1, Lcom/fleetlink/MainActivity$1;-><init>(Lcom/fleetlink/MainActivity;)V
+      invoke-virtual v2, v0, Landroid/view/View;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+      return-void 
+=== CLASS Lcom/fleetlink/R$id;
+  -- public constructor <init> 
+      invoke-direct v0, Ljava/lang/Object;-><init>()V
+      return-void 
+=== CLASS Lcom/fleetlink/R$layout;
+  -- public constructor <init> 
+      invoke-direct v0, Ljava/lang/Object;-><init>()V
+      return-void 
+=== CLASS Lcom/fleetlink/R$string;
+  -- public constructor <init> 
+      invoke-direct v0, Ljava/lang/Object;-><init>()V
+      return-void 
+=== CLASS Lcom/fleetlink/R;
+  -- public constructor <init> 
+      invoke-direct v0, Ljava/lang/Object;-><init>()V
+      return-void 
+=== CLASS Lcom/fleetlink/Session;
+  -- public constructor <init> 
+      invoke-direct v2, Ljava/lang/Object;-><init>()V
+      const-string v0, "fleetlink"
+      const/4 v1, 0
+      invoke-virtual v3, v0, v1, Landroid/content/Context;->getSharedPreferences(Ljava/lang/String; I)Landroid/content/SharedPreferences;
+      move-result-object v3
+      iput-object v3, v2, Lcom/fleetlink/Session;->sp Landroid/content/SharedPreferences;
+      return-void 
+  -- public baseUrl 
+      iget-object v0, v3, Lcom/fleetlink/Session;->sp Landroid/content/SharedPreferences;
+      const-string v1, "base_url"
+      const-string v2, "http://10.0.2.2:8080"
+      invoke-interface v0, v1, v2, Landroid/content/SharedPreferences;->getString(Ljava/lang/String; Ljava/lang/String;)Ljava/lang/String;
+      move-result-object v0
+      return-object v0
+  -- public deviceId 
+      iget-object v0, v4, Lcom/fleetlink/Session;->sp Landroid/content/SharedPreferences;
+      const/4 v1, 0
+      const-string v2, "device_id"
+      invoke-interface v0, v2, v1, Landroid/content/SharedPreferences;->getString(Ljava/lang/String; Ljava/lang/String;)Ljava/lang/String;
+      move-result-object v0
+      if-nez v0, +02ah
+      invoke-static Ljava/util/UUID;->randomUUID()Ljava/util/UUID;
+      move-result-object v0
+      invoke-virtual v0, Ljava/util/UUID;->toString()Ljava/lang/String;
+      move-result-object v0
+      new-instance v1, Ljava/lang/StringBuilder;
+      invoke-direct v1, Ljava/lang/StringBuilder;-><init>()V
+      const-string v3, "flt-"
+      invoke-virtual v1, v3, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v1
+      invoke-virtual v1, v0, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v0
+      invoke-virtual v0, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+      move-result-object v0
+      iget-object v1, v4, Lcom/fleetlink/Session;->sp Landroid/content/SharedPreferences;
+      invoke-interface v1, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
+      move-result-object v1
+      invoke-interface v1, v2, v0, Landroid/content/SharedPreferences$Editor;->putString(Ljava/lang/String; Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+      move-result-object v1
+      invoke-interface v1, Landroid/content/SharedPreferences$Editor;->apply()V
+      return-object v0
+  -- public setBaseUrl 
+      nop 
+      const-string v0, "/"
+      invoke-virtual v3, v0, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+      move-result v0
+      if-eqz v0, +00eh
+      invoke-virtual v3, Ljava/lang/String;->length()I
+      move-result v0
+      add-int/lit8 v0, v0, -1
+      const/4 v1, 0
+      invoke-virtual v3, v1, v0, Ljava/lang/String;->substring(I I)Ljava/lang/String;
+      move-result-object v3
+      goto -13h
+      iget-object v0, v2, Lcom/fleetlink/Session;->sp Landroid/content/SharedPreferences;
+      invoke-interface v0, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
+      move-result-object v0
+      const-string v1, "base_url"
+      invoke-interface v0, v1, v3, Landroid/content/SharedPreferences$Editor;->putString(Ljava/lang/String; Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+      move-result-object v3
+      invoke-interface v3, Landroid/content/SharedPreferences$Editor;->apply()V
+      return-void 
+=== CLASS Lcom/fleetlink/Signer$Signed;
+  -- public constructor <init> 
+      invoke-direct v0, Ljava/lang/Object;-><init>()V
+      return-void 
+=== CLASS Lcom/fleetlink/Signer;
+  -- public constructor <init> 
+      invoke-direct v0, Ljava/lang/Object;-><init>()V
+      return-void 
+  -- private static hex 
+      new-instance v0, Ljava/lang/StringBuilder;
+      invoke-direct v0, Ljava/lang/StringBuilder;-><init>()V
+      array-length v1, v5
+      const/4 v2, 0
+      if-ge v2, v1, +018h
+      aget-byte v3, v5, v2
+      invoke-static v3, Ljava/lang/Byte;->valueOf(B)Ljava/lang/Byte;
+      move-result-object v3
+      filled-new-array v3, [Ljava/lang/Object;
+      move-result-object v3
+      const-string v4, "%02x"
+      invoke-static v4, v3, Ljava/lang/String;->format(Ljava/lang/String; [Ljava/lang/Object;)Ljava/lang/String;
+      move-result-object v3
+      invoke-virtual v0, v3, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      add-int/lit8 v2, v2, 1
+      goto -17h
+      invoke-virtual v0, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+      move-result-object v5
+      return-object v5
+  -- public static sign 
+      new-instance v0, Ljava/lang/StringBuilder;
+      invoke-direct v0, Ljava/lang/StringBuilder;-><init>()V
+      invoke-virtual v7, Ljava/util/TreeMap;->entrySet()Ljava/util/Set;
+      move-result-object v7
+      invoke-interface v7, Ljava/util/Set;->iterator()Ljava/util/Iterator;
+      move-result-object v7
+      invoke-interface v7, Ljava/util/Iterator;->hasNext()Z
+      move-result v1
+      if-eqz v1, +02dh
+      invoke-interface v7, Ljava/util/Iterator;->next()Ljava/lang/Object;
+      move-result-object v1
+      check-cast v1, Ljava/util/Map$Entry;
+      invoke-virtual v0, Ljava/lang/StringBuilder;->length()I
+      move-result v2
+      if-lez v2, +007h
+      const-string v2, "&"
+      invoke-virtual v0, v2, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      invoke-interface v1, Ljava/util/Map$Entry;->getKey()Ljava/lang/Object;
+      move-result-object v2
+      check-cast v2, Ljava/lang/String;
+      invoke-virtual v0, v2, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v2
+      const-string v3, "="
+      invoke-virtual v2, v3, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v2
+      invoke-interface v1, Ljava/util/Map$Entry;->getValue()Ljava/lang/Object;
+      move-result-object v1
+      check-cast v1, Ljava/lang/String;
+      invoke-virtual v2, v1, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      goto -30h
+      invoke-static Ljava/lang/System;->currentTimeMillis()J
+      move-result-wide v1
+      const-wide/16 v3, 1000
+      div-long/2addr v1, v3
+      invoke-static v1, v2, Ljava/lang/String;->valueOf(J)Ljava/lang/String;
+      move-result-object v7
+      invoke-static v0, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
+      move-result-object v1
+      new-instance v2, Ljava/lang/StringBuilder;
+      invoke-direct v2, Ljava/lang/StringBuilder;-><init>()V
+      invoke-virtual v2, v5, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v5
+      const-string v2, "
+"
+      invoke-virtual v5, v2, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v5
+      invoke-virtual v5, v6, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v5
+      invoke-virtual v5, v2, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v5
+      invoke-virtual v5, v1, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v5
+      invoke-virtual v5, v2, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v5
+      invoke-virtual v5, v7, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v5
+      invoke-virtual v5, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+      move-result-object v5
+      const-string v6, "SHA-256"
+      invoke-static v6, Ljava/security/MessageDigest;->getInstance(Ljava/lang/String;)Ljava/security/MessageDigest;
+      move-result-object v6
+      new-instance v1, Ljava/lang/StringBuilder;
+      invoke-direct v1, Ljava/lang/StringBuilder;-><init>()V
+      const-string v2, "fleetlink_signing_pepper_v3:"
+      invoke-virtual v1, v2, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v1
+      invoke-virtual v1, v8, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      move-result-object v1
+      invoke-virtual v1, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+      move-result-object v1
+      const-string v2, "UTF-8"
+      invoke-virtual v1, v2, Ljava/lang/String;->getBytes(Ljava/lang/String;)[B
+      move-result-object v1
+      invoke-virtual v6, v1, Ljava/security/MessageDigest;->digest([B)[B
+      move-result-object v6
+      const-string v1, "HmacSHA256"
+      invoke-static v1, Ljavax/crypto/Mac;->getInstance(Ljava/lang/String;)Ljavax/crypto/Mac;
+      move-result-object v3
+      new-instance v4, Ljavax/crypto/spec/SecretKeySpec;
+      invoke-direct v4, v6, v1, Ljavax/crypto/spec/SecretKeySpec;-><init>([B Ljava/lang/String;)V
+      invoke-virtual v3, v4, Ljavax/crypto/Mac;->init(Ljava/security/Key;)V
+      invoke-virtual v5, v2, Ljava/lang/String;->getBytes(Ljava/lang/String;)[B
+      move-result-object v5
+      invoke-virtual v3, v5, Ljavax/crypto/Mac;->doFinal([B)[B
+      move-result-object v5
+      new-instance v6, Lcom/fleetlink/Signer$Signed;
+      invoke-direct v6, Lcom/fleetlink/Signer$Signed;-><init>()V
+      invoke-virtual v0, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+      move-result-object v0
+      iput-object v0, v6, Lcom/fleetlink/Signer$Signed;->query Ljava/lang/String;
+      iput-object v7, v6, Lcom/fleetlink/Signer$Signed;->ts Ljava/lang/String;
+      invoke-static v5, Lcom/fleetlink/Signer;->hex([B)Ljava/lang/String;
+      move-result-object v5
+      iput-object v5, v6, Lcom/fleetlink/Signer$Signed;->sig Ljava/lang/String;
+      iput-object v8, v6, Lcom/fleetlink/Signer$Signed;->deviceId Ljava/lang/String;
+      return-object v6

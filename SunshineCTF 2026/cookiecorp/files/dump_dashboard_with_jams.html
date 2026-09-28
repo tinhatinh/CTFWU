@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CookieCorp | My Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Orbitron:wght@500;700&family=Jost:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/retro.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="/" class="brand"><span class="rocket">&#9733;</span> CookieCorp</a>
+      <div>
+        
+          <a href="/dashboard">Console</a>
+          <a href="/builder">Fabricator</a>
+          <a href="#" onclick="fetch('/logout',{method:'POST'}).then(()=>location.href='/');return false;">Log out (pl5392)</a>
+        
+      </div>
+    </div>
+
+
+<div class="panel">
+  <span class="tag">Baker Console</span>
+  <h1>Welcome back, pl5392</h1>
+  <p class="small-note">Inspector queue depth: 0 batch(es) awaiting review.</p>
+  <a class="btn primary" href="/builder">+ New Batch</a>
+</div>
+
+<div class="panel">
+  <h2>My Batches</h2>
+  
+    <table>
+      <tr><th>Batch</th><th>Ingredients</th><th>Status</th><th>Seal</th><th></th></tr>
+      
+        <tr>
+          <td>heartbeat bait</td>
+          <td>1</td>
+          <td><span class="pill reviewed">reviewed</span></td>
+          <td>
+            standard
+            
+          </td>
+          <td>
+            <a class="btn small" href="/recipe/e6224fe503ef4051fed1f0ff">View</a>
+            <a class="btn small" href="/review/e6224fe503ef4051fed1f0ff">Inspect</a>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>legendary-title-unsealed</td>
+          <td>145</td>
+          <td><span class="pill reviewed">reviewed</span></td>
+          <td>
+            &mdash;
+          </td>
+          <td>
+            <a class="btn small" href="/recipe/e9d2fd6ac7e8f6ddad9fcaed">View</a>
+            <a class="btn small" href="/review/e9d2fd6ac7e8f6ddad9fcaed">Inspect</a>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>plain control</td>
+          <td>1</td>
+          <td><span class="pill reviewed">reviewed</span></td>
+          <td>
+            standard
+            
+          </td>
+          <td>
+            <a class="btn small" href="/recipe/d77a7f6d4ff00e41bb323ea1">View</a>
+            <a class="btn small" href="/review/d77a7f6d4ff00e41bb323ea1">Inspect</a>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>jam300-34.5KB</td>
+          <td>300</td>
+          <td><span class="pill reviewed">reviewed</span></td>
+          <td>
+            &mdash;
+          </td>
+          <td>
+            <a class="btn small" href="/recipe/d423c62600b1fd889ab0bc75">View</a>
+            <a class="btn small" href="/review/d423c62600b1fd889ab0bc75">Inspect</a>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>jam175-20.1KB</td>
+          <td>175</td>
+          <td><span class="pill reviewed">reviewed</span></td>
+          <td>
+            &mdash;
+          </td>
+          <td>
+            <a class="btn small" href="/recipe/eb5ff81a7ad5fbf017725b97">View</a>
+            <a class="btn small" href="/review/eb5ff81a7ad5fbf017725b97">Inspect</a>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>jam143-16.4KB</td>
+          <td>143</td>
+          <td><span class="pill reviewed">reviewed</span></td>
+          <td>
+            &mdash;
+          </td>
+          <td>
+            <a class="btn small" href="/recipe/15cf4934860762fcd40cdd1e">View</a>
+            <a class="btn small" href="/review/15cf4934860762fcd40cdd1e">Inspect</a>
+          </td>
+        </tr>
+      
+    </table>
+  
+</div>
+
+    <div class="footer">
+      &#9733; CookieCorp Confectionery Systems &mdash; "A Better Cookie for a Brighter Tomorrow!" &#9733;<br />
+      Est. 1962 &middot; Orbital City, Sector 7
+    </div>
+  </div>
+</body>
+</html>
+

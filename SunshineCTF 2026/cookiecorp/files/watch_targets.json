@@ -1,0 +1,120 @@
+{
+ "of1726": {
+  "rows": {
+   "b808a70c207d877ac3af78f2": {
+    "title": "D control again",
+    "status": "reviewed",
+    "seal": "standard"
+   },
+   "da3f962a6dfd78a89f34f90e": {
+    "title": "C max 300",
+    "status": "reviewed",
+    "seal": "NONE"
+   },
+   "45f99051b81c575ccb31f0b8": {
+    "title": "B just-over 80",
+    "status": "reviewed",
+    "seal": "standard"
+   },
+   "78962590335575a198c668f6": {
+    "title": "A control 2",
+    "status": "reviewed",
+    "seal": "standard"
+   }
+  }
+ },
+ "sz3576": {
+  "rows": {
+   "ec1fadf491059ff188b6c243": {
+    "title": "resubmit me",
+    "status": "reviewed",
+    "seal": "standard"
+   },
+   "1dfbd5079738cc934a19c97c": {
+    "title": "n175",
+    "status": "reviewed",
+    "seal": "NONE"
+   },
+   "a3c7fb57548b71ca291d22f7": {
+    "title": "n145",
+    "status": "reviewed",
+    "seal": "NONE"
+   },
+   "bd729d9d8fb25954e74f204f": {
+    "title": "n135",
+    "status": "reviewed",
+    "seal": "standard"
+   },
+   "dc47d74dbddd7dabfbb67cf0": {
+    "title": "n120",
+    "status": "reviewed",
+    "seal": "standard"
+   },
+   "dd9c73d331b4aa93bece955c": {
+    "title": "n100",
+    "status": "reviewed",
+    "seal": "standard"
+   }
+  }
+ },
+ "pl5392": {
+  "password": "Passw0rd!",
+  "batches": {
+   "15cf4934860762fcd40cdd1e": "jam143-16.4KB",
+   "eb5ff81a7ad5fbf017725b97": "jam175-20.1KB",
+   "d423c62600b1fd889ab0bc75": "jam300-34.5KB",
+   "d77a7f6d4ff00e41bb323ea1": "standard-control",
+   "e9d2fd6ac7e8f6ddad9fcaed": "legendary-title-unsealed"
+  }
+ },
+ "lg9985": {
+  "password": "Passw0rd!",
+  "batches": {}
+ },
+ "lg6362": {
+  "password": "Passw0rd!",
+  "batches": {}
+ },
+ "sh8079": {
+  "password": "Passw0rd!",
+  "batches": {}
+ },
+ "sh2062": {
+  "password": "Passw0rd!",
+  "batches": {}
+ },
+ "th8177": {
+  "password": "Passw0rd!",
+  "batches": {}
+ },
+ "th8293": {
+  "password": "Passw0rd!",
+  "batches": {}
+ },
+ "bq8595": {
+  "password": "Passw0rd!",
+  "batches": {}
+ },
+ "pl5620": {
+  "password": "Passw0rd!",
+  "batches": {
+   "e5fcd669d7e8a13675932e68": "jam143-16.4KB",
+   "4e1ba1cd396459f656bab0f9": "jam175-20.1KB",
+   "7ba412cc456ef2c2b3e60897": "jam300-34.5KB",
+   "45cb3120b8f63b163ac9a5f6": "standard-control",
+   "a02941cd68ee11c1542ee2f7": "legendary-title-unsealed"
+  }
+ },
+ "bnd4698": {
+  "password": "Passw0rd!",
+  "batches": {
+   "4c2d76733d6652a17d51f5ed": "band n=136 Chief: legendary bat",
+   "4fa036fbbae5b697c10553b4": "band n=138 Chief: legendary bat",
+   "630d6f608f3d6f75d98ff8b7": "band n=139 plain band 139",
+   "b99c4291cb51c89bedb956d8": "band n=140 Chief: legendary bat",
+   "60741ef07d6ae99fd92af228": "band n=141 plain band 141",
+   "92008054a2890bf73f7a5948": "band n=143 plain band 143",
+   "db2ab5e46f90b1e66a219bae": "band n=144 Chief: legendary bat"
+  }
+ }
+}

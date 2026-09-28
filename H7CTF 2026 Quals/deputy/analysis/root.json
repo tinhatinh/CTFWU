@@ -1,0 +1,1 @@
+<ErrorResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/"><Error><Type>Sender</Type><Code>InvalidAction</Code><Message>unsupported action None</Message></Error><RequestId>3aee82aecfa67fa6</RequestId></ErrorResponse>

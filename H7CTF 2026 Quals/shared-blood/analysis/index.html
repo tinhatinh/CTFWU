@@ -1,0 +1,9 @@
+<!doctype html><meta charset=utf-8><title>VoltEye Camera Cloud</title>
+<h2>VoltEye Camera Cloud</h2>
+<p>Device fleet console. Admin bootstrap required.</p>
+<p>API: <code>GET /fleet</code> (device certs) &middot; <code>GET /captured</code>
+(one intercepted provisioning payload) &middot; <code>POST /admin {"token":"..."}</code></p>
+<form onsubmit="event.preventDefault();fetch('/admin',{method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({token:document.getElementById('t').value})}).then(r=>r.json()).then(j=>document.getElementById('o').textContent=JSON.stringify(j))">
+<input id=t placeholder="admin bootstrap token" size=48><button>unlock</button></form>
+<pre id=o></pre>

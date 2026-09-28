@@ -1,0 +1,14 @@
+============================================
+   $$$ CACHE MONEY Crypto Wallet Manager $$$
+       "Your coins, our heap."
+============================================
+
+--- MAIN MENU ---
+1) Open Wallet
+2) Deposit (write to ledger)
+3) Withdraw (read from ledger)
+4) Transfer
+5) Close Wallet
+6) List Wallets
+0) Exit
+>>> 

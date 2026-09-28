@@ -1,0 +1,23 @@
+names: 35661
+paths: 71321
+... 0
+HIT ('/?:', 200, '{"service":"Meridian Pay API","version":"3.2.1"}\n')
+... 4000
+... 8000
+... 12000
+... 16000
+... 20000
+... 24000
+... 28000
+... 32000
+HIT ('/api/v1/profile', 405, '<!doctype html>\n<html lang=en>\n<title>405 Method Not Allowed</title>\n<h1>Method Not Allowed</h1>\n<p>The method is not allowed for the requested URL.</p>\n')
+... 36000
+... 40000
+... 44000
+... 48000
+... 52000
+... 56000
+... 60000
+... 64000
+... 68000
+API-SWEEP2 DONE

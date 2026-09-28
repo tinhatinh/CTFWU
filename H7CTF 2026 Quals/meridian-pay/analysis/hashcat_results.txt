@@ -1,0 +1,10 @@
+hashcat 6.2.6, -m 16500 (JWT HS256), backend OpenCL, RTX 3050 Laptop (35W)
+measured speed: 11.6 MH/s aggregate
+
+rockyou.txt plain                14,344,384 cand   Exhausted  Recovered 0/1
+rockyou.txt + best64.rule     1,104,517,568 cand   Exhausted  Recovered 0/1
+rockyou.txt + leetspeak.rule    243,854,528 cand   Exhausted  Recovered 0/1
+rockyou.txt + Incisive-leetspeak  ABORTED at 900s by my own timeout (not covered)
+mask ?a len 1..5 (exhaustive) 8,240,319,040 cand   Exhausted  Recovered 0/1   no outfile
+
+total on GPU: 9,602,000,000 candidates

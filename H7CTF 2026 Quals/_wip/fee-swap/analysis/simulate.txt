@@ -1,0 +1,13 @@
+=== CONTROL CUA SIMULATOR
+C1 honest            -> err=None  vb 100000000->99999010  OK
+C2 thieu du          -> err='in:insufficient-funds'  OK
+C3 sai mint          -> err='in:mint-mismatch:Da5gLQpZP5joZLB5zkwVdNGfX1VGA6MLxBZnzGSB7XWV'  OK
+C4 vault khop pool   -> err='vault-mismatch'  OK
+C5 source khong cua user -> err='in:authority-not-account-owner'  OK
+
+=== KE HOACH DRAIN (reserve 1e8, amount = exact_amount)
+honest  user_a du du  -> vault_b 100000000 ->         0  err=None  DRAINED
+honest  user_a thieu  -> vault_b 100000000 -> 100000000  err='in:insufficient-funds'  
+rich    nguon gia     -> vault_b 100000000 ->         0  err=None  DRAINED
+rogue   tu cho self   -> vault_b 100000000 ->         0  err=None  DRAINED  user_a=500000000 (giu nguyen=True)
+rogue   bac self      -> vault_b 100000000 -> 100000000  err='in:self-transfer-rejected'    user_a=500000000 (giu nguyen=True)

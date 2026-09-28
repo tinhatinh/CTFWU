@@ -1,0 +1,17 @@
+{
+ "planets": {
+  "columns": [
+   "id",
+   "name",
+   "diameter_km",
+   "description"
+  ],
+  "rows": 8
+ },
+ "zleak": {
+  "columns": [
+   "v"
+  ],
+  "rows": 1
+ }
+}

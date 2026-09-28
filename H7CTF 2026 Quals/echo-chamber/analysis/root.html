@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f8fbff">
+    <title>Echo Chamber — Incident Research Archive</title>
+    <link rel="stylesheet" href="https://web-3285347d50d467ba.web.h7tex.com/static/css/tokens.css">
+    <link rel="stylesheet" href="https://web-3285347d50d467ba.web.h7tex.com/static/css/layout.css">
+    <link rel="stylesheet" href="https://web-3285347d50d467ba.web.h7tex.com/static/css/components.css">
+    <script type="module" src="https://web-3285347d50d467ba.web.h7tex.com/static/js/workspace.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to the case record</a>
+    <div class="archive-shell">
+      <header class="folio-masthead">
+        <a class="archive-brand" href="#incident" aria-label="Echo Chamber research desk">
+          <span class="archive-mark" aria-hidden="true">EC</span>
+          <span class="archive-name">Echo Chamber<span>Incident research</span></span>
+        </a>
+        <form id="search-form" class="archive-search" role="search">
+          <label class="visually-hidden" for="search-query">Search the knowledge archive</label>
+          <input id="search-query" name="query" type="search" maxlength="1000"
+                 placeholder="Search technical records" autocomplete="off" required>
+          <button class="text-button search-button" type="submit">Search archive</button>
+        </form>
+        <p class="collection-note"><span>Research collection</span>H7CTF / Incident records</p>
+      </header>
+
+      <aside class="case-index" aria-label="Research archive index">
+        <section class="index-case" aria-labelledby="index-case-title">
+          <p class="index-label" id="index-case-title">Open case</p>
+          <strong>INC-7421</strong>
+          <span>StreamForge · 4.8.x</span>
+        </section>
+
+        <nav class="case-navigation" aria-label="Case archive">
+          <button class="index-link" type="button" data-view="incident" aria-current="page">
+            <span>Case file</span><span class="index-code">INC-7421</span>
+          </button>
+          <button class="index-link" type="button" data-view="knowledge">
+            <span>Knowledge archive</span><span class="index-code">Browse</span>
+          </button>
+          <button class="index-link" type="button" data-view="research">
+            <span>Research intake</span><span class="index-code">Contribute</span>
+          </button>
+          <button class="index-link" type="button" data-view="evidence">
+            <span>Evidence record</span><span class="index-code">Open by ID</span>
+          </button>
+          <button class="index-link" type="button" data-view="reports">
+            <span>Reports</span><span class="index-code">Filed</span>
+          </button>
+        </nav>
+
+        <p class="index-foot">Technical records<br>Atlas research collection</p>
+      </aside>
+
+      <div class="research-desk">
+        <main class="workarea" id="main-content">
+          
+  <section id="view-incident" class="view" aria-labelledby="incident-title">
+    <header class="dossier-heading">
+  <div class="dossier-line">
+    <p class="record-kicker">Active incident / <span id="incident-id">INC-7421</span></p>
+    <p class="case-state"><span class="state-mark" aria-hidden="true"></span><span id="incident-state-label">Under investigation</span></p>
+  </div>
+  <h1 id="incident-title">Loading incident record…</h1>
+  <p id="incident-summary" class="dossier-summary">Loading case details…</p>
+  <p class="dossier-summary"><strong>Working hypothesis:</strong> <span id="incident-hypothesis">Loading analyst context…</span></p>
+</header>
+    <div class="incident-layout">
+      <section class="reading-column" aria-labelledby="analysis-heading">
+        <div class="section-heading">
+          <div>
+            <h2 id="analysis-heading">Analysis notes</h2>
+            <p>Evidence synthesis recorded for this case.</p>
+          </div>
+          <button id="analyze" class="primary-button" type="button">Run analysis</button>
+        </div>
+        <p id="analysis-message" class="feedback" role="status" aria-live="polite"></p>
+        <div id="analysis-list" class="analysis-history">
+          <p class="empty-note">No analysis entries have been filed.</p>
+        </div>
+        <template id="analysis-entry-template">
+          <article class="analysis-entry">
+  <header class="analysis-entry-head">
+    <p class="entry-date" data-field="date"></p>
+    <p class="entry-state" data-field="status"></p>
+  </header>
+  <h3 data-field="hypothesis"></h3>
+  <p class="entry-measure" data-field="measure"></p>
+  <div class="entry-citations" data-field="citations"></div>
+</article>
+        </template>
+      </section>
+
+      <aside class="case-margin" aria-label="Case particulars and latest report">
+        <section class="margin-section">
+          <h2>Case particulars</h2>
+          <dl class="particulars">
+            <div><dt>Product</dt><dd id="incident-product">—</dd></div>
+            <div><dt>Version</dt><dd id="incident-version">—</dd></div>
+            <div><dt>Component</dt><dd id="incident-component">—</dd></div>
+            <div><dt>Case state</dt><dd id="incident-state">Loading…</dd></div>
+            <div><dt>Assessment</dt><dd id="incident-corroboration">—</dd></div>
+            <div><dt>Report depth</dt><dd id="incident-depth">—</dd></div>
+            <div><dt>Root cause</dt><dd id="incident-root">Not established</dd></div>
+          </dl>
+        </section>
+        <section class="margin-section">
+          <h2>Latest report</h2>
+          <div id="latest-report" class="latest-report">
+            <p class="empty-note">No reports have been generated.</p>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </section>
+
+  <section id="view-knowledge" class="view" aria-labelledby="knowledge-title" hidden>
+    <header class="page-heading">
+      <p class="record-kicker">Technical collection</p>
+      <h1 id="knowledge-title">Knowledge archive</h1>
+      <p>Browse vendor notes, incident records, and technical references.</p>
+    </header>
+    <div class="archive-tools">
+      <p id="knowledge-status" class="feedback" role="status" aria-live="polite">Browse the collection or search from the field above.</p>
+      <button id="browse-archive" class="text-button" type="button">Browse all records</button>
+    </div>
+    <div class="records-layout">
+      <section class="record-list" aria-label="Knowledge records">
+        <div id="search-results" class="archive-results">
+          <p class="empty-note">Enter a topic above to search the archive.</p>
+        </div>
+      </section>
+      <aside class="record-inspector" aria-label="Selected evidence record">
+        <p class="inspector-label">Record inspector</p>
+        <p id="evidence-prompt" class="empty-note">Select a record to read its content and metadata.</p>
+        <div id="knowledge-evidence-detail"></div>
+      </aside>
+    </div>
+  </section>
+
+  <section id="view-research" class="view" aria-labelledby="research-title" hidden>
+    <header class="page-heading">
+      <p class="record-kicker">Source desk</p>
+      <h1 id="research-title">Research intake</h1>
+      <p>File a technical note, customer account, or compatibility finding.</p>
+    </header>
+    <div class="research-layout">
+      <section class="research-form-section" aria-labelledby="research-form-heading">
+  <h2 id="research-form-heading">Add a source to the collection</h2>
+  <p class="form-intro">Record the product context and the technical observations available to you.</p>
+  <form id="research-form" class="research-form">
+    <div class="field-pair">
+      <div class="form-field">
+        <label for="research-product">Product</label>
+        <input id="research-product" name="product" type="text" maxlength="120" value="StreamForge" required>
+      </div>
+      <div class="form-field">
+        <label for="research-version">Version</label>
+        <input id="research-version" name="version" type="text" maxlength="80" value="4.8" required>
+      </div>
+    </div>
+    <div class="form-field">
+      <label for="research-document-title">Document title</label>
+      <input id="research-document-title" name="title" type="text" minlength="3" maxlength="180" required>
+    </div>
+    <div class="form-field">
+      <label for="research-content">Document text</label>
+      <textarea id="research-content" name="content" minlength="80" maxlength="4000" rows="12" required></textarea>
+      <p class="field-hint">Include the source context, observed behavior, and relevant technical detail. Maximum 4,000 characters.</p>
+    </div>
+    <div class="form-actions">
+      <button class="primary-button" type="submit">File research</button>
+      <p id="research-message" class="feedback" role="status" aria-live="polite"></p>
+    </div>
+  </form>
+</section>
+      <aside class="submission-register" aria-labelledby="recent-submissions-heading">
+        <h2 id="recent-submissions-heading">Recent intake</h2>
+        <p class="register-intro">Submissions from this browser.</p>
+        <div id="recent-submission" class="submission-list">
+          <p class="empty-note">No recent submissions.</p>
+        </div>
+      </aside>
+    </div>
+    <section id="submission-detail" class="submission-detail" aria-live="polite" hidden></section>
+  </section>
+
+  <section id="view-evidence" class="view" aria-labelledby="evidence-title" hidden>
+    <header class="page-heading">
+      <p class="record-kicker">Evidence register</p>
+      <h1 id="evidence-title">Evidence record</h1>
+      <p>Open a record by its catalogue identifier.</p>
+    </header>
+    <form id="evidence-form" class="lookup-form">
+      <label for="evidence-id">Evidence ID</label>
+      <div class="lookup-row">
+        <input id="evidence-id" name="evidence_id" type="text" autocomplete="off" required>
+        <button class="primary-button" type="submit">Open record</button>
+      </div>
+    </form>
+    <p id="evidence-message" class="feedback" role="status" aria-live="polite"></p>
+    <div id="evidence-detail" class="single-record">
+      <p class="empty-note">Enter an evidence ID or open a record from the archive.</p>
+    </div>
+  </section>
+
+  <section id="view-reports" class="view" aria-labelledby="reports-title" hidden>
+    <header class="page-heading page-heading-row">
+      <div>
+        <p class="record-kicker">Filed documents</p>
+        <h1 id="reports-title">Forensic reports</h1>
+        <p>Diagnostic artifacts prepared during analysis of INC-7421.</p>
+      </div>
+      <button id="refresh-reports" class="text-button" type="button">Refresh register</button>
+    </header>
+    <div class="reports-layout">
+      <section aria-labelledby="report-register-heading">
+        <h2 id="report-register-heading">Report register</h2>
+        <div id="report-list" class="report-register">
+          <p class="empty-note">Loading report register…</p>
+        </div>
+      </section>
+      <section class="report-paper" aria-labelledby="report-paper-heading">
+        <h2 id="report-paper-heading">Document viewer</h2>
+        <div id="report-detail" class="report-content">
+  <p class="empty-note">Select a report to read its diagnostic artifacts.</p>
+</div>
+      </section>
+    </div>
+  </section>
+  <template id="evidence-record-template">
+    <article class="evidence-sheet">
+  <header class="evidence-heading">
+    <p class="record-kicker" data-field="representation"></p>
+    <h2 data-field="title"></h2>
+  </header>
+  <dl class="evidence-metadata">
+    <div><dt>Evidence ID</dt><dd data-field="evidence-id"></dd></div>
+    <div><dt>Processor</dt><dd data-field="processor"></dd></div>
+    <div><dt>Recorded</dt><dd data-field="created-at"></dd></div>
+  </dl>
+  <pre class="evidence-content" data-field="content"></pre>
+</article>
+  </template>
+
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

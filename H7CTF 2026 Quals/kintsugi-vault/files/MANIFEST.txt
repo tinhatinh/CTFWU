@@ -1,0 +1,6 @@
+Kintsugi Vault shard dump
+team: team-local
+chain start: f6f11ad133cab21c96e0185e3411ddc4
+shards are named by content id; order is not preserved on disk
+the start shard carries its decode table in the clear
+reassemble the 32 byte custody seed, then re-attest at the live endpoint

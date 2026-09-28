@@ -1,0 +1,32 @@
+[
+ [
+  "/api/v1/accounts/me",
+  200,
+  "{\"account\":{\"balance_cents\":418233,\"memo\":\"personal checking\",\"number\":\"MP-0041-8827\",\"owner\":1001,\"type\":\"checking\"},\"onboarding_memo\":\"session verified from device - H7CTF{2e58befc-e322-4563-83ae-2f1c00a0277f}\",\"user_i"
+ ],
+ [
+  "/api/v1/admin/ledger",
+  200,
+  "{\"corporate_master_key_rotation\":\"H7CTF{fc3b3bd4-7fc2-4679-8150-9d0ce062c50b}\",\"generated\":\"2026-09-24\",\"note\":\"admin-only consolidated ledger export\"}\n"
+ ],
+ [
+  "/api/v1/auth/device",
+  405,
+  "<!doctype html>\n<html lang=en>\n<title>405 Method Not Allowed</title>\n<h1>Method Not Allowed</h1>\n<p>The method is not allowed for the requested URL.</p>\n"
+ ],
+ [
+  "/api/v1/internal/promo",
+  200,
+  "<html><body><h3>Meridian Pay - Loyalty Enrollment</h3><p>Welcome back, member 1001. Enrollment confirmation:</p><pre>H7CTF{474de245-b63a-4fc0-b9f8-b7dec75e0f27}</pre></body></html>"
+ ],
+ [
+  "/api/v1/profile",
+  405,
+  "<!doctype html>\n<html lang=en>\n<title>405 Method Not Allowed</title>\n<h1>Method Not Allowed</h1>\n<p>The method is not allowed for the requested URL.</p>\n"
+ ],
+ [
+  "/api/v1/promo/public",
+  200,
+  "<html><body><h3>Meridian Pay - Seasonal Offers</h3><p>Refer a friend and earn 500 points. Terms apply.</p><p>Enrolled members can finish loyalty sign-up in the app: <a href=\"/api/v1/internal/promo\">complete enrollment</a"
+ ]
+]

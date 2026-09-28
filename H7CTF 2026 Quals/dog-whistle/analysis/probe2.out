@@ -1,0 +1,97 @@
+scipy 1.18.1 numpy 2.5.3
+nsamp 15168 peak 2097152.0
+top 30 spectral peaks:
+       799.80 Hz     +0.00 dB rel peak
+       860.96 Hz     -5.14 dB rel peak
+       921.02 Hz     -5.73 dB rel peak
+       981.08 Hz    -11.58 dB rel peak
+      1599.98 Hz    -11.99 dB rel peak
+      1196.41 Hz    -13.08 dB rel peak
+       739.75 Hz    -19.73 dB rel peak
+      1539.92 Hz    -20.91 dB rel peak
+      1256.47 Hz    -22.53 dB rel peak
+      1660.03 Hz    -22.99 dB rel peak
+      1052.49 Hz    -23.60 dB rel peak
+      1131.59 Hz    -24.24 dB rel peak
+      1468.14 Hz    -24.84 dB rel peak
+       671.63 Hz    -26.34 dB rel peak
+      1334.47 Hz    -26.37 dB rel peak
+      1408.08 Hz    -26.95 dB rel peak
+      1720.09 Hz    -28.28 dB rel peak
+       609.01 Hz    -31.04 dB rel peak
+      1790.41 Hz    -32.64 dB rel peak
+       528.81 Hz    -35.53 dB rel peak
+      1870.97 Hz    -36.50 dB rel peak
+       448.61 Hz    -39.21 dB rel peak
+      1951.17 Hz    -39.49 dB rel peak
+      2031.37 Hz    -41.96 dB rel peak
+       368.41 Hz    -42.53 dB rel peak
+      2111.21 Hz    -44.08 dB rel peak
+       288.21 Hz    -45.82 dB rel peak
+      2191.41 Hz    -45.96 dB rel peak
+      2271.24 Hz    -47.64 dB rel peak
+      2351.44 Hz    -49.17 dB rel peak
+
+Welch PSD band map (fs=96k):
+  bin width 23.4 Hz
+   cluster      0.0 -   3656.2 Hz  peak     0.0 dB rel max
+   cluster   3703.1 -   3820.3 Hz  peak   -60.5 dB rel max
+   cluster   3867.2 -   3890.6 Hz  peak   -62.0 dB rel max
+   cluster   3937.5 -   3984.4 Hz  peak   -61.9 dB rel max
+   cluster   4031.2 -   4054.7 Hz  peak   -63.0 dB rel max
+   cluster   4101.6 -   4218.8 Hz  peak   -63.1 dB rel max
+   cluster   4265.6 -   4289.1 Hz  peak   -64.3 dB rel max
+   cluster   4335.9 -   4382.8 Hz  peak   -64.3 dB rel max
+   cluster   4429.7 -   4453.1 Hz  peak   -65.5 dB rel max
+   cluster   4500.0 -   4546.9 Hz  peak   -65.2 dB rel max
+   cluster   4593.8 -   4617.2 Hz  peak   -65.9 dB rel max
+   cluster   4664.1 -   4687.5 Hz  peak   -66.2 dB rel max
+   cluster   4757.8 -   4781.2 Hz  peak   -66.4 dB rel max
+   cluster   4828.1 -   4851.6 Hz  peak   -67.4 dB rel max
+   cluster   4921.9 -   4921.9 Hz  peak   -67.1 dB rel max
+   cluster   4992.2 -   5015.6 Hz  peak   -67.9 dB rel max
+   cluster   5062.5 -   5085.9 Hz  peak   -67.9 dB rel max
+   cluster   5156.2 -   5156.2 Hz  peak   -68.2 dB rel max
+   cluster   5226.6 -   5250.0 Hz  peak   -68.8 dB rel max
+   cluster   5320.3 -   5320.3 Hz  peak   -68.7 dB rel max
+   cluster   5390.6 -   5414.1 Hz  peak   -69.6 dB rel max
+   cluster   5484.4 -   5484.4 Hz  peak   -69.3 dB rel max
+   cluster   5554.7 -   5554.7 Hz  peak   -69.8 dB rel max
+  total bins above -70dB: 207 of 2049
+  max PSD above 7 kHz: -73.7 dB rel overall max  (1750 bins)
+  max PSD above 8 kHz: -75.7 dB
+  band>7kHz rms 2.0213e+04  (-37.1 dB below full-signal rms 1.4449e+06)
+   energy below   2500 Hz: -0.0 dB of total
+   energy below   3400 Hz: -0.0 dB of total
+   energy below   7000 Hz: -0.0 dB of total
+   energy below  20000 Hz: -0.0 dB of total
+
+per-symbol (1200 samples at 96k = 12.5 ms) spectrum, bins 800..2000:
+  sym  0 samples    384-1584   win   1600 Hz (k=10) amp 1.0000 FS  2nd    800 Hz margin  332.1 dB
+  sym  1 samples   1584-2784   win   1200 Hz (k= 5) amp 1.0000 FS  2nd    800 Hz margin  325.8 dB
+  sym  2 samples   2784-3984   win   1200 Hz (k= 5) amp 1.0000 FS  2nd    800 Hz margin  325.8 dB
+  sym  3 samples   3984-5184   win   1600 Hz (k=10) amp 1.0000 FS  2nd    800 Hz margin  332.1 dB
+  sym  4 samples   5184-6384   win    800 Hz (k= 0) amp 1.0000 FS  2nd   1200 Hz margin  323.1 dB
+  sym  5 samples   6384-7584   win    960 Hz (k= 2) amp 1.0000 FS  2nd   1040 Hz margin  325.7 dB
+  sym  6 samples   7584-8784   win    880 Hz (k= 1) amp 1.0000 FS  2nd   2000 Hz margin  160.9 dB
+  sym  7 samples   8784-9984   win    800 Hz (k= 0) amp 1.0000 FS  2nd   1200 Hz margin  323.1 dB
+  sym  8 samples   9984-11184  win    800 Hz (k= 0) amp 1.0000 FS  2nd   1200 Hz margin  323.1 dB
+  sym  9 samples  11184-12384  win    800 Hz (k= 0) amp 1.0000 FS  2nd   1200 Hz margin  323.1 dB
+  sym 10 samples  12384-13584  win    880 Hz (k= 1) amp 1.0000 FS  2nd   2000 Hz margin  160.9 dB
+  sym 11 samples  13584-14784  win    960 Hz (k= 2) amp 1.0000 FS  2nd   1040 Hz margin  325.7 dB
+  nibbles: a55a02100012
+  bytes  : A5 5A 02 10 00 12
+
+per-symbol max bin above 7 kHz (of 1200-pt window):
+  sym  0: max above 7k at   40000 Hz mag 1.893e+02  vs tone mag 1.258e+09  = -136.5 dB
+  sym  1: max above 7k at   42000 Hz mag 1.154e+02  vs tone mag 1.258e+09  = -140.7 dB
+  sym  2: max above 7k at   42000 Hz mag 1.154e+02  vs tone mag 1.258e+09  = -140.7 dB
+  sym  3: max above 7k at   40000 Hz mag 1.893e+02  vs tone mag 1.258e+09  = -136.5 dB
+  sym  4: max above 7k at   20000 Hz mag 1.050e+02  vs tone mag 1.258e+09  = -141.6 dB
+  sym  5: max above 7k at   35520 Hz mag 1.276e+02  vs tone mag 1.258e+09  = -139.9 dB
+  sym  6: max above 7k at   30800 Hz mag 5.141e+01  vs tone mag 1.258e+09  = -147.8 dB
+  sym  7: max above 7k at   20000 Hz mag 1.050e+02  vs tone mag 1.258e+09  = -141.6 dB
+  sym  8: max above 7k at   20000 Hz mag 1.050e+02  vs tone mag 1.258e+09  = -141.6 dB
+  sym  9: max above 7k at   20000 Hz mag 1.050e+02  vs tone mag 1.258e+09  = -141.6 dB
+  sym 10: max above 7k at   30800 Hz mag 5.141e+01  vs tone mag 1.258e+09  = -147.8 dB
+  sym 11: max above 7k at   35520 Hz mag 1.276e+02  vs tone mag 1.258e+09  = -139.9 dB

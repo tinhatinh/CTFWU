@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CookieCorp | Fabricator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Orbitron:wght@500;700&family=Jost:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/retro.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="/" class="brand"><span class="rocket">&#9733;</span> CookieCorp</a>
+      <div>
+        
+          <a href="/dashboard">Console</a>
+          <a href="/builder">Fabricator</a>
+          <a href="#" onclick="fetch('/logout',{method:'POST'}).then(()=>location.href='/');return false;">Log out (auth_test)</a>
+        
+      </div>
+    </div>
+
+
+<div class="panel">
+  <span class="tag">Cookie Fabricator</span>
+  <h1>Design a Custom Batch</h1>
+  <p class="small-note">
+    Add any ingredients you can dream up. Each ingredient is dispensed into the fabrication
+    mixer's cookie tray as <code class="k">name=value</code>. Max
+    300 ingredients &middot; name &le; 48,
+    value &le; 64 chars.
+  </p>
+
+  <label>Batch title</label>
+  <input type="text" id="title" value="Untitled Batch" />
+
+  <h2 style="margin-top:18px">Ingredients</h2>
+  <div id="ings"></div>
+  <p>
+    <button class="btn small" onclick="addRow()">+ Ingredient</button>
+    <button class="btn small" onclick="addBulk()">+ Add 10</button>
+  </p>
+
+  <div id="msg"></div>
+  <p>
+    <button class="btn primary" onclick="saveRecipe()">Save Batch</button>
+    <button class="btn coral" id="submitBtn" onclick="submitRecipe()" disabled>Submit for Review</button>
+  </p>
+  <p class="small-note" id="saved"></p>
+</div>
+
+<script>
+let currentId = null;
+
+function addRow(name, value) {
+  const div = document.createElement('div');
+  div.className = 'ing-grid';
+  div.innerHTML =
+    '<input type="text" class="ing-name" placeholder="ingredient" value="' + (name || '') + '">' +
+    '<input type="text" class="ing-value" placeholder="amount / note" value="' + (value || '') + '">' +
+    '<button class="btn small" onclick="this.parentNode.remove()">x</button>';
+  document.getElementById('ings').appendChild(div);
+}
+function addBulk() { for (let i = 0; i < 10; i++) addRow(); }
+
+function collect() {
+  const names = document.querySelectorAll('.ing-name');
+  const values = document.querySelectorAll('.ing-value');
+  const ingredients = [];
+  for (let i = 0; i < names.length; i++) {
+    if (names[i].value.trim() === '') continue;
+    ingredients.push({ name: names[i].value, value: values[i].value });
+  }
+  return ingredients;
+}
+function show(ok, txt) {
+  document.getElementById('msg').innerHTML = '<div class="msg ' + (ok ? 'ok' : 'bad') + '">' + txt + '</div>';
+}
+
+async function saveRecipe() {
+  const body = { title: document.getElementById('title').value, ingredients: collect() };
+  const r = await fetch('/api/recipe', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+  const data = await r.json().catch(() => ({}));
+  if (r.status === 200) {
+    currentId = data.id;
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('saved').innerHTML = 'Saved batch <code class="k">' + data.id + '</code> (' + data.ingredients + ' ingredients). <a href="/recipe/' + data.id + '">View</a>';
+    show(true, 'Batch saved.');
+  } else {
+    show(false, data.error || 'save failed');
+  }
+}
+
+async function submitRecipe() {
+  if (!currentId) return;
+  const r = await fetch('/api/recipe/' + currentId + '/submit', { method: 'POST' });
+  const data = await r.json().catch(() => ({}));
+  if (r.status === 200) { show(true, 'Submitted! The inspector will review batch ' + currentId + ' shortly. Watch it on the batch page.'); }
+  else { show(false, data.error || 'submit failed'); }
+}
+
+addRow('flour', '2 cups');
+addRow('atomic_sprinkles', 'a dash');
+</script>
+
+    <div class="footer">
+      &#9733; CookieCorp Confectionery Systems &mdash; "A Better Cookie for a Brighter Tomorrow!" &#9733;<br />
+      Est. 1962 &middot; Orbital City, Sector 7
+    </div>
+  </div>
+</body>
+</html>
+

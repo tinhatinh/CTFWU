@@ -1,0 +1,8 @@
+v1 oracle decrypt max|err| = 1.952e-07  (server-side, no flooding visible)
+   local decrypt with recovered s = ['1.500000', '-2.250000', '0.500000', '3.000000']
+   max|local - asked| = 1.952e-07 -> recovered key IS the service key
+   noise poly b+a*s-m (centred) = [2, -3, -3, 0, -3, 2, 1, -2]  -> within small(3)
+v2 oracle decrypt max|err| = 2.941e-07  (server-side, no flooding visible)
+   local decrypt with recovered s = ['1.500000', '-2.250000', '0.500000', '3.000000']
+   max|local - asked| = 1.836e-07 -> recovered key IS the service key
+   noise poly b+a*s-m (centred) = [0, 3, 2, -2, 3, -2, 1, -2]  -> within small(3)

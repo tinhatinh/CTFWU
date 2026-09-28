@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+*.whl
+
+# Node
+node_modules/
+package-lock.json
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Internal raw data (not part of published writeups)
+_de_raw/
+de-cards.tsv
+de-index.json
+
+# Misc
+*.log
+.env

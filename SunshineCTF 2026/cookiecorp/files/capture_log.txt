@@ -1,0 +1,131 @@
+user mx5997 cookies=['role', 'session']
+recipe fbe4d95a5a0d3e20630328fe -> {'ok': True, 'id': 'fbe4d95a5a0d3e20630328fe', 'ingredients': 2}
+builder page: 200
+/recipe/fbe4d95a5a0d3e20630328fe -> 200 len=2458
+(200, {'ok': True, 'status': 'queued'})
+  poll 0 status=['queued']
+  poll 1 status=['queued']
+  poll 2 status=['queued']
+  poll 3 status=['queued']
+  poll 4 status=['queued']
+  poll 5 status=['queued']
+  poll 6 status=['queued']
+  poll 7 status=['queued']
+  poll 8 status=['queued']
+  poll 9 status=['queued']
+  poll 10 status=['queued']
+  poll 11 status=['queued']
+  poll 12 status=['queued']
+  poll 13 status=['queued']
+  poll 14 status=['queued']
+  poll 15 status=['queued']
+  poll 16 status=['queued']
+  poll 17 status=['queued']
+=== review page (1666 bytes) ===
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CookieCorp | Quality Inspection</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Orbitron:wght@500;700&family=Jost:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/retro.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="/" class="brand"><span class="rocket">&#9733;</span> CookieCorp</a>
+      <div>
+        
+          <a href="/dashboard">Console</a>
+          <a href="/builder">Fabricator</a>
+          <a href="#" onclick="fetch('/logout',{method:'POST'}).then(()=>location.href='/');return false;">Log out (mx5997)</a>
+        
+      </div>
+    </div>
+
+
+
+<div class="panel">
+  <span class="tag">Quality Inspector Console</span>
+  <h1>Inspecting: Untitled Batch</h1>
+  <p class="small-note">Batch fbe4d95a5a0d3e20630328fe &middot; 2 ingredient(s) queued into the mixer.</p>
+  <div class="console" id="mixer-log"></div>
+</div>
+
+<script>
+  window.__recipe = {"id":"fbe4d95a5a0d3e20630328fe","ingredients":[{"name":"flour","value":"1cup"},{"name":"butter","value":"cold"}]};
+</script>
+<script src="/static/js/mixer.js"></script>
+
+
+    <div class="footer">
+      &#9733; CookieCorp Confectionery Systems &mdash; "A Better Cookie for a Brighter Tomorrow!" &#9733;<br />
+      Est. 1962 &middot; Orbital City, Sector 7
+    </div>
+  </div>
+</body>
+</html>
+
+
+scripts referenced: ['/static/js/mixer.js']
+---- /static/js/mixer.js (200, 1741 bytes) ----
+(function () {
+  'use strict';
+
+  var recipe = window.__recipe || { id: null, ingredients: [] };
+  var logEl = document.getElementById('mixer-log');
+
+  function log(line, cls) {
+    if (!logEl) return;
+    var div = document.createElement('div');
+    div.className = 'mix-line' + (cls ? ' ' + cls : '');
+    div.textContent = line;
+    logEl.appendChild(div);
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  function dispense(ing) {
+    document.cookie = ing.name + '=' + (ing.value || '') + '; path=/';
+  }
+
+  async function run() {
+    log('> spinning up fabrication drum...', 'ok');
+    log('> dispensing ' + recipe.ingredients.length + ' ingredient(s)', 'ok');
+
+    for (var i = 0; i < recipe.ingredients.length; i++) {
+      dispense(recipe.ingredients[i]);
+    }
+    log('> ingredients loaded. cookie tray settled.', 'ok');
+
+    log('> stamping inspector verdict...', 'ok');
+    var result;
+    try {
+      var resp = await fetch('/api/seal', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ recipeId: recipe.id }),
+      });
+      result = await resp.json().catch(function () { return { ok: false }; });
+      result.httpStatus = resp.status;
+    } catch (e) {
+      result = { ok: false, error: String(e) };
+    }
+
+    if (result && result.seal === 'chief') {
+      log('> GOLDEN SEAL APPLIED. batch certified by the Chief.', 'gold');
+    } else if (result && result.seal === 'reviewed') {
+      log('> standard seal applied. batch reviewed.', 'ok');
+    } else {
+      log('> verdict rejected: ' + (result && (result.error || result.httpStatus)), 'bad');
+    }
+
+    window.__cc_done = result || { ok: false };
+  }
+
+  run();
+})();
+

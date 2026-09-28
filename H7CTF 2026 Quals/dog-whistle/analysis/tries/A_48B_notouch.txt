@@ -1,0 +1,9 @@
+aria smart-speaker diagnostic bridge
+firmware r7.2 acoustic control port
+submit one base64 wav capture per line (mono 24-bit 96000 hz, max 2 s)
+capture budget: 12
+----
+PROFILE SELECTED: region 0x0e
+CAL ECHO: 80f56311ba550000d0326411ba550000
+CAL VECTOR WRITTEN: count=24
+----

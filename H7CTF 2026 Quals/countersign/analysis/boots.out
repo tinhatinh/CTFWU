@@ -1,0 +1,16 @@
+[  0] 0s  {'denied': 1}
+[ 10] 5s  {'denied': 11}
+[ 20] 9s  {'denied': 21}
+[ 30] 14s  {'denied': 31}
+[ 40] 19s  {'denied': 41}
+[ 50] 23s  {'denied': 51}
+[ 60] 28s  {'denied': 61}
+[ 70] 32s  {'denied': 71}
+[ 80] 37s  {'denied': 81}
+[ 90] 41s  {'denied': 91}
+[100] 46s  {'denied': 101}
+[110] 50s  {'denied': 111}
+[120] 55s  {'denied': 121}
+[130] 59s  {'denied': 131}
+[140] 64s  {'denied': 141}
+[*] 150 boot trong 68s -> {'denied': 150}

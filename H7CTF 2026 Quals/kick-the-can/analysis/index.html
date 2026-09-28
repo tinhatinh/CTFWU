@@ -1,0 +1,12 @@
+<!doctype html><meta charset=utf-8><title>can capture</title>
+<h1>Zero-Day Highway :: CAN bus capture</h1>
+<p>We tapped the CAN bus of a connected vehicle through its OBD-II port during a
+service session. Most of the traffic is routine powertrain chatter, but a diagnostic
+tool was talking to an ECU at the same time, and the ECU handed back something it
+should not have.</p>
+<ul>
+<li>file: <a href="capture.log">capture.log</a> (SocketCAN candump log:
+<code>(timestamp) can0 ID#DATA</code>)</li>
+</ul>
+<p>Read it with candump/can-utils, Wireshark (SocketCAN), or python-can. Recover what
+the ECU leaked.</p>

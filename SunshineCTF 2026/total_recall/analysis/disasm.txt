@@ -1,0 +1,31 @@
+
+files/total_recall:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000401000 <.text>:
+  401000:	e8 11 00 00 00       	call   0x401016
+  401005:	e8 45 00 00 00       	call   0x40104f
+  40100a:	48 c7 c0 3c 00 00 00 	mov    rax,0x3c
+  401011:	48 31 ff             	xor    rdi,rdi
+  401014:	0f 05                	syscall
+  401016:	54                   	push   rsp
+  401017:	48 89 e6             	mov    rsi,rsp
+  40101a:	48 c7 c7 01 00 00 00 	mov    rdi,0x1
+  401021:	48 c7 c2 08 00 00 00 	mov    rdx,0x8
+  401028:	48 c7 c0 01 00 00 00 	mov    rax,0x1
+  40102f:	0f 05                	syscall
+  401031:	58                   	pop    rax
+  401032:	48 8d 74 24 c0       	lea    rsi,[rsp-0x40]
+  401037:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+  40103e:	48 c7 c2 18 00 00 00 	mov    rdx,0x18
+  401045:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+  40104c:	0f 05                	syscall
+  40104e:	c3                   	ret
+  40104f:	48 8d 74 24 80       	lea    rsi,[rsp-0x80]
+  401054:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+  40105b:	48 c7 c2 00 04 00 00 	mov    rdx,0x400
+  401062:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+  401069:	0f 05                	syscall
+  40106b:	c3                   	ret

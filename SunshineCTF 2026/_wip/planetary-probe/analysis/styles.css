@@ -1,0 +1,503 @@
+/* ============================================================
+   Planetary Probe Directory
+   Retro-futurism / Raygun Gothic — a 1939 brass-and-bakelite
+   instrument panel. Streamline Moderne rules, Art Deco rays,
+   Futura titling. No external assets, no network requests.
+   ============================================================ */
+
+:root {
+  color-scheme: dark;
+
+  /* --- palette: bakelite, brass, celluloid --- */
+  --ink:        #24100D;  /* walnut vignette          */
+  --panel:      #3A1A15;  /* oxblood panel ground     */
+  --panel-lit:  #4E241C;  /* panel, catching light    */
+  --brass:      #C9A24B;  /* bezels, engraved rules   */
+  --brass-hi:   #F2D89A;  /* brass highlight          */
+  --brass-lo:   #7E6026;  /* brass in shadow          */
+  --celluloid:  #F6EBD2;  /* dial face                */
+  --ivory:      #F4E7CC;  /* body text                */
+  --vermilion:  #C2402C;  /* needle, null lamp        */
+  --radium:     #9CC46B;  /* carrier lamp             */
+
+  /* --- type: three roles --- */
+  --display: Futura, "Century Gothic", "URW Gothic", "Avant Garde",
+             "Trebuchet MS", sans-serif;              /* deco titling caps */
+  --body:    "Bookman Old Style", "Palatino Linotype", Palatino,
+             "Iowan Old Style", Georgia, serif;        /* prose            */
+  --data:    "Courier New", Courier, monospace;        /* teleprinter      */
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 40px 20px 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  font-family: var(--body);
+  color: var(--ivory);
+  background:
+    radial-gradient(115% 78% at 50% 8%, var(--panel-lit) 0%, var(--panel) 42%, var(--ink) 100%),
+    var(--ink);
+  background-attachment: fixed;
+}
+
+/* ---------- atmosphere: deco sunburst + film grain ---------- */
+
+.rays {
+  position: fixed;
+  inset: -25vmax;
+  z-index: 0;
+  pointer-events: none;
+  background: repeating-conic-gradient(from 0deg at 50% 20%,
+    rgba(201, 162, 75, .085) 0deg 3deg, transparent 3deg 11deg);
+  -webkit-mask-image: radial-gradient(closest-side at 50% 20%, #000 8%, transparent 68%);
+          mask-image: radial-gradient(closest-side at 50% 20%, #000 8%, transparent 68%);
+}
+
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .5;
+  background:
+    repeating-linear-gradient(45deg,  rgba(0,0,0,.05) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(-45deg, rgba(255,235,200,.035) 0 1px, transparent 1px 4px);
+}
+
+/* ---------- the console: a chamfered brass-framed plate ---------- */
+
+.console {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 660px;
+  padding: 34px 38px 38px;
+}
+
+.console__plate {
+  position: absolute;
+  inset: 0;
+  /* -1 keeps the plate behind the panel's in-flow content. Without it an
+     absolutely-positioned element paints above its static siblings. */
+  z-index: -1;
+  background: var(--brass);
+  box-shadow: 0 26px 60px -20px rgba(0,0,0,.75);
+  clip-path: polygon(20px 0, calc(100% - 20px) 0, 100% 20px, 100% calc(100% - 20px),
+                     calc(100% - 20px) 100%, 20px 100%, 0 calc(100% - 20px), 0 20px);
+}
+
+/* inner fill, inset by 2px, leaves a chamfered brass frame */
+.console__plate::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  background:
+    linear-gradient(168deg, rgba(255, 226, 175, .10) 0%, transparent 34%),
+    linear-gradient(180deg, var(--panel-lit) 0%, var(--panel) 58%, #331611 100%);
+  clip-path: polygon(19px 0, calc(100% - 19px) 0, 100% 19px, 100% calc(100% - 19px),
+                     calc(100% - 19px) 100%, 19px 100%, 0 calc(100% - 19px), 0 19px);
+}
+
+/* ---------- masthead ---------- */
+
+.masthead { text-align: center; }
+
+.masthead__eyebrow {
+  margin: 0 0 18px;
+  font-family: var(--display);
+  font-size: .625rem;
+  font-weight: 700;
+  letter-spacing: .34em;
+  text-transform: uppercase;
+  color: var(--brass);
+  opacity: .82;
+}
+
+.masthead__title {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(1.6rem, 6.4vw, 2.9rem);
+  font-weight: 700;
+  line-height: .96;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  text-indent: .16em;          /* optical: recentre the trailing letterspace */
+  color: var(--celluloid);
+  text-shadow: 0 1px 0 var(--brass-lo), 0 2px 14px rgba(0,0,0,.5);
+}
+
+.masthead__sub {
+  margin: 14px 0 0;
+  font-family: var(--display);
+  font-size: .6875rem;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  color: var(--brass);
+  opacity: .74;
+}
+
+/* Streamline Moderne speed lines — three rules, tapering */
+.speedlines {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: 20px;
+}
+.speedlines span {
+  display: block;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--brass) 12%, var(--brass-hi) 50%, var(--brass) 88%, transparent);
+}
+.speedlines span:nth-child(1) { width: 72%; }
+.speedlines span:nth-child(2) { width: 46%; }
+.speedlines span:nth-child(3) { width: 20%; }
+
+/* ---------- the signature: center-zero null detector ---------- */
+
+.meter { margin: 34px 0 0; }
+
+.meter__bezel {
+  position: relative;
+  padding: 16px 16px 12px;
+  border-radius: 16px 16px 26px 26px;
+  background: linear-gradient(178deg, var(--brass-hi) 0%, var(--brass) 22%, var(--brass-lo) 78%, #5C441A 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,248,225,.55),
+    inset 0 -2px 6px rgba(0,0,0,.4),
+    0 10px 26px -10px rgba(0,0,0,.7);
+}
+
+.meter__dial {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,.45));
+}
+
+.dial-face { stroke: #8A6F45; stroke-width: 1.5; }
+
+.zone--null    { fill: var(--vermilion); opacity: .22; }
+.zone--carrier { fill: #4F7A2E;          opacity: .22; }
+
+.ticks line {
+  stroke: #3F2A16;
+  stroke-width: 1.6;
+  opacity: .75;
+}
+.ticks .tick--major { stroke-width: 2.6; opacity: .95; }
+.ticks .tick--zero  { stroke-width: 3.4; stroke: var(--vermilion); opacity: 1; }
+
+.dial-label {
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .2em;
+  fill: #4A331B;
+  text-anchor: middle;
+}
+
+.dial-maker {
+  font-family: var(--display);
+  font-size: 8.5px;
+  letter-spacing: .26em;
+  fill: #7B6238;
+  text-anchor: middle;
+}
+
+.needle {
+  fill: var(--vermilion);
+  transform-box: view-box;
+  transform-origin: 210px 198px;
+  transform: rotate(0deg);
+}
+.needle polygon { stroke: #8E2A1B; stroke-width: .6; }
+
+.needle-hub    { fill: #7E6026; stroke: #4A3616; stroke-width: 1.4; }
+.needle-hub-in { fill: var(--brass-hi); opacity: .9; }
+
+.glass { pointer-events: none; }
+
+/* ---------- annunciator lamps ---------- */
+
+.lamps {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+.lamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--display);
+  font-size: .6875rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: rgba(244, 231, 204, .34);
+  transition: color .35s ease;
+}
+
+.lamp i {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #3B2117;
+  border: 2px solid var(--brass-lo);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.7);
+  transition: background .35s ease, box-shadow .35s ease;
+}
+
+/* lit states, driven by the body class the child template sets */
+.is-null .lamp--null,
+.is-carrier .lamp--carrier { color: var(--ivory); }
+
+.is-null .lamp--null i {
+  background: var(--vermilion);
+  border-color: #E06A50;
+  box-shadow: 0 0 12px 2px rgba(194,64,44,.75), inset 0 1px 2px rgba(255,255,255,.4);
+}
+
+.is-carrier .lamp--carrier i {
+  background: var(--radium);
+  border-color: #C4E39A;
+  box-shadow: 0 0 12px 2px rgba(156,196,107,.7), inset 0 1px 2px rgba(255,255,255,.45);
+}
+
+/* ---------- needle deflection ---------- */
+
+/* galvanometer settle: overshoot, then damped oscillation to rest */
+@keyframes deflect-right {
+  0%   { transform: rotate(0deg); }
+  42%  { transform: rotate(62deg); }
+  60%  { transform: rotate(45deg); }
+  75%  { transform: rotate(56deg); }
+  88%  { transform: rotate(49.5deg); }
+  100% { transform: rotate(52deg); }
+}
+@keyframes deflect-left {
+  0%   { transform: rotate(0deg); }
+  42%  { transform: rotate(-62deg); }
+  60%  { transform: rotate(-45deg); }
+  75%  { transform: rotate(-56deg); }
+  88%  { transform: rotate(-49.5deg); }
+  100% { transform: rotate(-52deg); }
+}
+/* at rest the coil still breathes a little */
+@keyframes idle-drift {
+  0%, 100% { transform: rotate(-1.1deg); }
+  50%      { transform: rotate(1.1deg); }
+}
+
+.is-carrier .needle {
+  animation: deflect-right 1.15s cubic-bezier(.33, .1, .28, 1) both;
+}
+.is-null .needle {
+  animation: deflect-left 1.15s cubic-bezier(.33, .1, .28, 1) both;
+}
+.is-standby .needle {
+  animation: idle-drift 6.5s ease-in-out infinite;
+}
+
+/* ---------- engraved divider ---------- */
+
+.engrave {
+  height: 1px;
+  margin: 32px 0 30px;
+  background: linear-gradient(90deg, transparent, rgba(201,162,75,.5) 12%, rgba(201,162,75,.5) 88%, transparent);
+  box-shadow: 0 1px 0 rgba(0,0,0,.45);
+}
+
+/* ---------- tuner (the form) ---------- */
+
+.tuner__label {
+  display: block;
+  margin-bottom: 12px;
+  font-family: var(--display);
+  font-size: .6875rem;
+  font-weight: 700;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+
+.tuner__row {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.tuner input[type=text] {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 15px 18px;
+  border: 2px solid var(--brass-lo);
+  border-radius: 4px;
+  background: linear-gradient(180deg, #1F0D0A, #2C130F);
+  color: var(--celluloid);
+  font-family: var(--data);
+  font-size: 1.0625rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  box-shadow: inset 0 2px 7px rgba(0,0,0,.65);
+  transition: border-color .25s ease, box-shadow .25s ease;
+}
+
+.tuner input[type=text]::placeholder {
+  color: rgba(246,235,210,.3);
+  letter-spacing: .14em;
+}
+
+.tuner input[type=text]:focus {
+  outline: none;
+  border-color: var(--brass);
+  box-shadow: inset 0 2px 7px rgba(0,0,0,.65), 0 0 0 3px rgba(201,162,75,.28);
+}
+
+/* the transmit key: a chunky brass lever cap */
+.key {
+  flex: 0 0 auto;
+  padding: 0 26px;
+  border: 2px solid #5C441A;
+  border-radius: 4px;
+  background: linear-gradient(180deg, var(--brass-hi) 0%, var(--brass) 42%, var(--brass-lo) 100%);
+  color: #2B1A06;
+  font-family: var(--display);
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255,250,232,.75), 0 3px 0 #4E3A16, 0 6px 12px -4px rgba(0,0,0,.6);
+  transition: transform .12s ease, box-shadow .12s ease, filter .2s ease;
+}
+
+.key:hover { filter: brightness(1.07); }
+
+.key:active {
+  transform: translateY(3px);
+  box-shadow: inset 0 1px 0 rgba(255,250,232,.6), 0 0 0 #4E3A16, 0 2px 6px -2px rgba(0,0,0,.6);
+}
+
+.tuner__note {
+  margin: 16px 0 0;
+  font-size: .875rem;
+  line-height: 1.55;
+  color: rgba(244,231,204,.62);
+}
+
+/* ---------- readout (result panels) ---------- */
+
+.readout {
+  margin-top: 30px;
+  padding: 22px 24px;
+  border-left: 4px solid var(--brass);
+  background: linear-gradient(180deg, rgba(0,0,0,.28), rgba(0,0,0,.14));
+}
+
+.readout--carrier { border-left-color: var(--radium); }
+.readout--null    { border-left-color: var(--vermilion); }
+
+.readout__stamp {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+.readout--carrier .readout__stamp { color: var(--radium); }
+.readout--null    .readout__stamp { color: #E37460; }
+
+.readout__body {
+  margin: 10px 0 0;
+  font-size: .9375rem;
+  line-height: 1.6;
+  color: rgba(244,231,204,.86);
+}
+
+.readout__strip {
+  margin: 16px 0 0;
+  font-family: var(--data);
+  font-size: .6875rem;
+  letter-spacing: .1em;
+  color: var(--brass);
+  opacity: .72;
+}
+
+/* ---------- colophon ---------- */
+
+.colophon {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 30px 0 40px;
+  font-family: var(--display);
+  font-size: .625rem;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  color: var(--brass);
+  opacity: .55;
+}
+
+.colophon__rule {
+  width: 46px;
+  height: 1px;
+  background: currentColor;
+}
+
+/* ---------- focus visibility ---------- */
+
+:focus-visible {
+  outline: 2px solid var(--brass-hi);
+  outline-offset: 3px;
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 640px) {
+  body { padding-top: 24px; }
+
+  .console { padding: 26px 22px 30px; }
+
+  .masthead__eyebrow { font-size: .5625rem; letter-spacing: .24em; }
+  .masthead__title   { letter-spacing: .1em; text-indent: .1em; }
+
+  .meter { margin-top: 26px; }
+  .meter__bezel { padding: 11px 11px 8px; }
+
+  .lamps { gap: 18px; }
+
+  .tuner__row { flex-direction: column; }
+
+  .key { padding: 15px 26px; }
+
+  /* keep iOS from zooming the field on focus */
+  .tuner input[type=text] { font-size: 16px; }
+
+  .engrave { margin: 26px 0 24px; }
+}
+
+@media (max-width: 400px) {
+  .lamp { font-size: .625rem; letter-spacing: .14em; }
+}
+
+/* ---------- reduced motion: land the needle, hold it still ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .is-carrier .needle { animation: none; transform: rotate(52deg); }
+  .is-null .needle    { animation: none; transform: rotate(-52deg); }
+  .is-standby .needle { animation: none; transform: rotate(0deg); }
+
+  .lamp, .lamp i, .key { transition: none; }
+}

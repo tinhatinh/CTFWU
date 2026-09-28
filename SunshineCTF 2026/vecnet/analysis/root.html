@@ -1,0 +1,312 @@
+HTTP/1.1 200 OK
+Server: nginx
+Date: Sun, 27 Sep 2026 05:13:55 GMT
+Content-Type: text/html
+Content-Length: 8775
+Connection: keep-alive
+Last-Modified: Sat, 26 Sep 2026 19:32:12 GMT
+ETag: "2247-65c67e3bedc4f"
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Cache-Control: no-store
+X-Content-Type-Options: nosniff
+Referrer-Policy: no-referrer
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VecNet — Semantic Mail Defense</title>
+<style>
+  :root{
+    --bg:#0a0d12;
+    --panel:#10141c;
+    --line:#1e2530;
+    --text:#c9d1e0;
+    --muted:#6b7688;
+    --accent:#5eead4;
+    --accent2:#a78bfa;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans', 'Inter', system-ui, sans-serif;
+    line-height:1.6;
+  }
+  code, .mono{
+    font-family:'IBM Plex Mono', 'JetBrains Mono', monospace;
+  }
+  header{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:24px 48px;
+    border-bottom:1px solid var(--line);
+  }
+  .logo{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:600;
+    font-size:1.1rem;
+    letter-spacing:0.02em;
+    color:#fff;
+  }
+  .logo span{color:var(--accent);}
+  nav a{
+    color:var(--muted);
+    text-decoration:none;
+    margin-left:32px;
+    font-size:0.85rem;
+    font-family:'IBM Plex Mono', monospace;
+    transition:color 0.2s;
+  }
+  nav a:hover{color:var(--accent);}
+  .hero{
+    padding:96px 48px 64px;
+    max-width:920px;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--accent2);
+    font-size:0.8rem;
+    letter-spacing:0.15em;
+    text-transform:uppercase;
+    margin-bottom:20px;
+  }
+  h1{
+    font-size:3rem;
+    font-weight:600;
+    color:#fff;
+    line-height:1.15;
+    margin-bottom:24px;
+    letter-spacing:-0.01em;
+  }
+  h1 em{
+    font-style:normal;
+    color:var(--accent);
+  }
+  .lede{
+    color:var(--muted);
+    font-size:1.05rem;
+    max-width:640px;
+    margin-bottom:40px;
+  }
+  .cta-row{display:flex; gap:16px; align-items:center;}
+  .btn{
+    display:inline-block;
+    padding:12px 24px;
+    border-radius:4px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.85rem;
+    text-decoration:none;
+    border:1px solid var(--line);
+  }
+  .btn-primary{
+    background:var(--accent);
+    color:#06120f;
+    font-weight:600;
+    border:none;
+  }
+  .btn-ghost{
+    color:var(--text);
+  }
+  .btn-ghost:hover{border-color:var(--accent2); color:var(--accent2);}
+
+  .vec-diagram{
+    padding:0 48px 64px;
+  }
+  svg{width:100%; max-width:920px; display:block;}
+
+  section.split{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:1px;
+    background:var(--line);
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+  }
+  .card{
+    background:var(--panel);
+    padding:36px;
+  }
+  .card .tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.7rem;
+    color:var(--accent);
+    letter-spacing:0.1em;
+    margin-bottom:12px;
+  }
+  .card h3{
+    color:#fff;
+    font-size:1.15rem;
+    margin-bottom:12px;
+    font-weight:600;
+  }
+  .card p{
+    color:var(--muted);
+    font-size:0.9rem;
+  }
+
+  .stats{
+    display:flex;
+    padding:64px 48px;
+    gap:64px;
+    flex-wrap:wrap;
+  }
+  .stat .num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:2.2rem;
+    color:var(--accent);
+    font-weight:600;
+  }
+  .stat .label{
+    color:var(--muted);
+    font-size:0.8rem;
+    margin-top:4px;
+  }
+
+  .access{
+    padding:64px 48px 96px;
+    border-top:1px solid var(--line);
+    max-width:640px;
+  }
+  .access .eyebrow{color:var(--accent);}
+  .access p{color:var(--muted); margin-bottom:28px; font-size:0.95rem;}
+  .access-panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:28px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.85rem;
+  }
+  .access-panel .row{
+    display:flex; justify-content:space-between;
+    padding:8px 0;
+    border-bottom:1px solid var(--line);
+    color:var(--muted);
+  }
+  .access-panel .row:last-child{border-bottom:none;}
+  .access-panel .row span:last-child{color:var(--text);}
+
+  footer{
+    padding:32px 48px;
+    border-top:1px solid var(--line);
+    display:flex; justify-content:space-between;
+    color:var(--muted);
+    font-size:0.75rem;
+    font-family:'IBM Plex Mono', monospace;
+  }
+
+  @media (max-width:800px){
+    section.split{grid-template-columns:1fr;}
+    h1{font-size:2.1rem;}
+    header, .hero, .vec-diagram, .stats, .access, footer{padding-left:24px; padding-right:24px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">VEC<span>NET</span></div>
+  <nav>
+    <a href="#platform">Platform</a>
+    <a href="#architecture">Architecture</a>
+    <a href="https://vec.web.2026.sunshinectf.games:8025">Webmail Access</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="eyebrow">Semantic Threat Intelligence</div>
+  <h1>Mail security that thinks in <em>embedding space.</em></h1>
+  <p class="lede">
+    VecNet replaces brittle signature-based filtering with a learned semantic
+    boundary. Every inbound message is projected into a 768-dimensional latent
+    space and scored against a proprietary threat manifold before it ever
+    reaches a mailbox.
+  </p>
+  <div class="cta-row">
+    <a href="#access" class="btn btn-primary">Open Webmail</a>
+    <a href="#architecture" class="btn btn-ghost">Read the whitepaper →</a>
+  </div>
+</section>
+
+<div class="vec-diagram">
+  <svg viewBox="0 0 920 220" xmlns="http://www.w3.org/2000/svg">
+    <line x1="0" y1="110" x2="920" y2="110" stroke="#1e2530" stroke-width="1"/>
+    <line x1="460" y1="0" x2="460" y2="220" stroke="#1e2530" stroke-width="1"/>
+    <circle cx="220" cy="70" r="4" fill="#5eead4"/>
+    <circle cx="260" cy="90" r="4" fill="#5eead4"/>
+    <circle cx="300" cy="60" r="4" fill="#5eead4"/>
+    <circle cx="240" cy="130" r="4" fill="#5eead4"/>
+    <circle cx="330" cy="110" r="4" fill="#5eead4"/>
+    <circle cx="620" cy="150" r="4" fill="#a78bfa"/>
+    <circle cx="670" cy="170" r="4" fill="#a78bfa"/>
+    <circle cx="700" cy="130" r="4" fill="#a78bfa"/>
+    <circle cx="640" cy="190" r="4" fill="#a78bfa"/>
+    <circle cx="730" cy="160" r="4" fill="#a78bfa"/>
+    <path d="M 420 20 Q 480 110 420 200" stroke="#3a4354" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/>
+    <text x="20" y="24" fill="#6b7688" font-family="IBM Plex Mono, monospace" font-size="11">benign_cluster.centroid</text>
+    <text x="770" y="24" fill="#6b7688" font-family="IBM Plex Mono, monospace" font-size="11" text-anchor="end">threat_cluster.centroid</text>
+    <text x="430" y="15" fill="#3a4354" font-family="IBM Plex Mono, monospace" font-size="10">decision boundary</text>
+  </svg>
+</div>
+
+<section class="split" id="platform">
+  <div class="card">
+    <div class="tag">// EMBEDDING GATEWAY</div>
+    <h3>Inline vector encoder</h3>
+    <p>
+      Every message body, header, and attachment fingerprint is passed
+      through VecNet's proprietary sentence encoder before the SMTP
+      transaction is allowed to complete. Nothing touches disk unencoded.
+    </p>
+  </div>
+  <div class="card">
+    <div class="tag">// THREAT MANIFOLD</div>
+    <h3>Continuously retrained</h3>
+    <p>
+      The manifold is refit nightly against telemetry from every tenant on
+      the network, so the boundary between benign and malicious semantics
+      shifts as attacker language evolves.
+    </p>
+  </div>
+  <div class="card">
+    <div class="tag">// NEAREST-NEIGHBOR AUDIT</div>
+    <h3>Explainable scoring</h3>
+    <p>
+      Flagged mail ships with its k-nearest neighbors in latent space, so
+      analysts can see exactly which historical vectors informed the
+      decision — full provenance, zero black box.
+    </p>
+  </div>
+</section>
+
+<section class="stats" id="architecture">
+  <div class="stat"><div class="num">768d</div><div class="label">latent representation</div></div>
+  <div class="stat"><div class="num">14M</div><div class="label">indexed embeddings</div></div>
+  <div class="stat"><div class="num">99.2%</div><div class="label">manifold coverage</div></div>
+  <div class="stat"><div class="num">&lt;40ms</div><div class="label">inline scoring latency</div></div>
+</section>
+
+<section class="access" id="access">
+  <div class="eyebrow">Restricted Endpoint</div>
+  <p>
+    Tenant webmail is gated behind credentialed access to the mail server.
+    Provisioned accounts authenticate directly against the mailstore —
+    there is no separate identity layer in front of it.
+  </p>
+  <div class="access-panel">
+    <div class="row"><span>service</span><span>vecnet-mailstore</span></div>
+    <div class="row"><span>protocol</span><span>IMAP / SMTP (AUTH required)</span></div>
+    <div class="row"><span>status</span><span>ONLINE</span></div>
+    <div class="row"><span>note</span><span>credentials are not self-service</span></div>
+  </div>
+</section>
+
+<footer>
+  <span>© VecNet Labs — Semantic Security Division</span>
+  <span>latent space is not a safe space</span>
+</footer>
+
+</body>
+</html>

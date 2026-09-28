@@ -1,0 +1,5 @@
+pass: digits 1..8 jobs 71
+  result: None
+pass: lowercase 1..6 jobs 131
+  result: None
+pass: alnum 1..5 jobs 11534

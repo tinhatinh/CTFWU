@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CookieCorp | Batch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Orbitron:wght@500;700&family=Jost:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/retro.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="/" class="brand"><span class="rocket">&#9733;</span> CookieCorp</a>
+      <div>
+        
+          <a href="/dashboard">Console</a>
+          <a href="/builder">Fabricator</a>
+          <a href="#" onclick="fetch('/logout',{method:'POST'}).then(()=>location.href='/');return false;">Log out (sz3576)</a>
+        
+      </div>
+    </div>
+
+
+
+<div class="panel">
+  <span class="tag">Batch ec1fadf491059ff188b6c243</span>
+  <h1>resubmit me</h1>
+  <p>Status: <span class="pill reviewed">reviewed</span>
+     &nbsp; Ingredients: 1</p>
+
+  <p>
+    <a class="btn small" href="/review/ec1fadf491059ff188b6c243">Inspector's-eye view &raquo;</a>
+    <span class="small-note">See exactly how the Quality Inspector loads this batch into the mixer.</span>
+  </p>
+
+  
+    <div class="seal">
+      <div style="font-family:'Audiowide';color:var(--teal-deep)">STANDARD SEAL</div>
+      <div class="small-note">Batch reviewed by an inspector. No golden seal awarded.</div>
+    </div>
+  
+
+  
+    <p><a class="btn small" href="#" onclick="location.reload();return false;">Refresh</a></p>
+  
+
+  <h2>Ingredient Sheet</h2>
+  <table>
+    <tr><th>#</th><th>Ingredient (cookie name)</th><th>Amount (value)</th></tr>
+    
+      <tr><td>1</td><td>flour</td><td>1</td></tr>
+    
+  </table>
+</div>
+
+<script>
+async function submitRecipe() {
+  const r = await fetch('/api/recipe/ec1fadf491059ff188b6c243/submit', { method: 'POST' });
+  const data = await r.json().catch(() => ({}));
+  const el = document.getElementById('msg');
+  if (r.status === 200) { el.innerHTML = '<div class="msg ok">Submitted for review. Refresh in a moment.</div>'; setTimeout(() => location.reload(), 2500); }
+  else { el.innerHTML = '<div class="msg bad">' + (data.error || 'error') + '</div>'; }
+}
+</script>
+
+
+    <div class="footer">
+      &#9733; CookieCorp Confectionery Systems &mdash; "A Better Cookie for a Brighter Tomorrow!" &#9733;<br />
+      Est. 1962 &middot; Orbital City, Sector 7
+    </div>
+  </div>
+</body>
+</html>
+

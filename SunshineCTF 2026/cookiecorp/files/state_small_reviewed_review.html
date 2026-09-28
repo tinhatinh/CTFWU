@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CookieCorp | Quality Inspection</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Orbitron:wght@500;700&family=Jost:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/retro.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="/" class="brand"><span class="rocket">&#9733;</span> CookieCorp</a>
+      <div>
+        
+          <a href="/dashboard">Console</a>
+          <a href="/builder">Fabricator</a>
+          <a href="#" onclick="fetch('/logout',{method:'POST'}).then(()=>location.href='/');return false;">Log out (cs9334)</a>
+        
+      </div>
+    </div>
+
+
+
+<div class="panel">
+  <span class="tag">Quality Inspector Console</span>
+  <h1>Inspecting: capture small</h1>
+  <p class="small-note">Batch 99695d930f796144aa3fbd22 &middot; 1 ingredient(s) queued into the mixer.</p>
+  <div class="console" id="mixer-log"></div>
+</div>
+
+<script>
+  window.__recipe = {"id":"99695d930f796144aa3fbd22","ingredients":[{"name":"flour","value":"1"}]};
+</script>
+<script src="/static/js/mixer.js"></script>
+
+
+    <div class="footer">
+      &#9733; CookieCorp Confectionery Systems &mdash; "A Better Cookie for a Brighter Tomorrow!" &#9733;<br />
+      Est. 1962 &middot; Orbital City, Sector 7
+    </div>
+  </div>
+</body>
+</html>
+

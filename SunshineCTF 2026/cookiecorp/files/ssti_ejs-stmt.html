@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CookieCorp | Batch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Orbitron:wght@500;700&family=Jost:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/retro.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="/" class="brand"><span class="rocket">&#9733;</span> CookieCorp</a>
+      <div>
+        
+          <a href="/dashboard">Console</a>
+          <a href="/builder">Fabricator</a>
+          <a href="#" onclick="fetch('/logout',{method:'POST'}).then(()=>location.href='/');return false;">Log out (ss3768)</a>
+        
+      </div>
+    </div>
+
+
+
+<div class="panel">
+  <span class="tag">Batch 3ada7cb76bc1c5f2e95dcb15</span>
+  <h1>&lt;% var a=7 %&gt;&lt;%= a %&gt; | title</h1>
+  <p>Status: <span class="pill draft">draft</span>
+     &nbsp; Ingredients: 2</p>
+
+  <p>
+    <a class="btn small" href="/review/3ada7cb76bc1c5f2e95dcb15">Inspector's-eye view &raquo;</a>
+    <span class="small-note">See exactly how the Quality Inspector loads this batch into the mixer.</span>
+  </p>
+
+  
+
+  
+    <p><button class="btn coral" onclick="submitRecipe()">Submit for Review</button></p>
+    <div id="msg"></div>
+  
+
+  <h2>Ingredient Sheet</h2>
+  <table>
+    <tr><th>#</th><th>Ingredient (cookie name)</th><th>Amount (value)</th></tr>
+    
+      <tr><td>1</td><td>flour</td><td>&lt;%vara=7%&gt;&lt;%=a%&gt;</td></tr>
+    
+      <tr><td>2</td><td>&lt;%vara7%&gt;&lt;%a%&gt;</td><td>1</td></tr>
+    
+  </table>
+</div>
+
+<script>
+async function submitRecipe() {
+  const r = await fetch('/api/recipe/3ada7cb76bc1c5f2e95dcb15/submit', { method: 'POST' });
+  const data = await r.json().catch(() => ({}));
+  const el = document.getElementById('msg');
+  if (r.status === 200) { el.innerHTML = '<div class="msg ok">Submitted for review. Refresh in a moment.</div>'; setTimeout(() => location.reload(), 2500); }
+  else { el.innerHTML = '<div class="msg bad">' + (data.error || 'error') + '</div>'; }
+}
+</script>
+
+
+    <div class="footer">
+      &#9733; CookieCorp Confectionery Systems &mdash; "A Better Cookie for a Brighter Tomorrow!" &#9733;<br />
+      Est. 1962 &middot; Orbital City, Sector 7
+    </div>
+  </div>
+</body>
+</html>
+
+
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CookieCorp | Quality Inspection</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Orbitron:wght@500;700&family=Jost:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/retro.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="/" class="brand"><span class="rocket">&#9733;</span> CookieCorp</a>
+      <div>
+        
+          <a href="/dashboard">Console</a>
+          <a href="/builder">Fabricator</a>
+          <a href="#" onclick="fetch('/logout',{method:'POST'}).then(()=>location.href='/');return false;">Log out (ss3768)</a>
+        
+      </div>
+    </div>
+
+
+
+<div class="panel">
+  <span class="tag">Quality Inspector Console</span>
+  <h1>Inspecting: &lt;% var a=7 %&gt;&lt;%= a %&gt; | title</h1>
+  <p class="small-note">Batch 3ada7cb76bc1c5f2e95dcb15 &middot; 2 ingredient(s) queued into the mixer.</p>
+  <div class="console" id="mixer-log"></div>
+</div>
+
+<script>
+  window.__recipe = {"id":"3ada7cb76bc1c5f2e95dcb15","ingredients":[{"name":"flour","value":"\u003c%vara=7%>\u003c%=a%>"},{"name":"\u003c%vara7%>\u003c%a%>","value":"1"}]};
+</script>
+<script src="/static/js/mixer.js"></script>
+
+
+    <div class="footer">
+      &#9733; CookieCorp Confectionery Systems &mdash; "A Better Cookie for a Brighter Tomorrow!" &#9733;<br />
+      Est. 1962 &middot; Orbital City, Sector 7
+    </div>
+  </div>
+</body>
+</html>
+

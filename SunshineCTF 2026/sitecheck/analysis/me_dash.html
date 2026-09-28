@@ -1,0 +1,23 @@
+== GET https://spaceship.web.2026.sunshinectf.games/dashboard -> 200 (1993 bytes) text/html; charset=utf-8
+<main class="shell">
+<section class="panel">
+  <div class="panel-glow"></div>
+  <div class="row-split">
+    <div>
+      <h1 class="display">Diagnostics Console</h1>
+      <p class="lede">Submit any http(s) address. Our autonomous inspection drone will fly out, time the load, tally the resources, and beam back a snapshot.</p>
+    </div>
+    <div class="badge-omega">DRONE<br>ONLINE</div>
+  </div>
+  <form action="/scan" method="post" class="scanbar">
+    <input name="url" placeholder="https://example.com" required>
+    <button class="btn primary" type="submit">Run SiteCheck ▸</button>
+  </form>
+  <ul class="hints">
+    <li>◇ Load time &amp; resource tally</li>
+    <li>◇ Live viewport snapshot</li>
+    <li>◇ Internal &amp; local addresses are off-limits for safety</li>
+  </ul>
+</section>
+</main>
+

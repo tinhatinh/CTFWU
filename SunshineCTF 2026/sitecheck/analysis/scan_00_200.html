@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SiteCheck // Orbital Diagnostics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="starfield"></div>
+<header class="topbar">
+  <a class="brand" href="/dashboard">
+    <span class="brand-mark">◉</span> SiteCheck
+    <span class="brand-sub">ORBITAL DIAGNOSTICS · EST. 2062</span>
+  </a>
+  <nav class="topnav">
+    
+      <a href="/dashboard">Console</a>
+      <a href="/profile">Personnel File</a>
+      <span class="chip">◈ h7tex_probe01</span>
+      <form action="/logout" method="post" class="inline"><button class="linkbtn" type="submit">Disembark</button></form>
+    
+  </nav>
+</header>
+<main class="shell">
+
+<section class="panel">
+  <div class="panel-glow"></div>
+  <h1 class="display">Diagnostic Report</h1>
+  <p class="target">TARGET ▸ <span>https://example.com/</span></p>
+  <div class="stats">
+    <div class="stat"><span class="k">Status</span><span class="v">200</span></div>
+    <div class="stat"><span class="k">Load time</span><span class="v">316 ms</span></div>
+    <div class="stat"><span class="k">Files fetched</span><span class="v">1</span></div>
+    <div class="stat"><span class="k">Result</span><span class="v">OK</span></div>
+  </div>
+  
+  <div class="snapshot">
+    <div class="snapshot-label">◉ VIEWPORT SNAPSHOT · 1280×800</div>
+    
+      <img src="/screenshots/7fa741b7-44c0-4ade-9ed7-c9e2b4a05d96.png" alt="site snapshot">
+    
+  </div>
+  <a class="btn" href="/dashboard">◂ Run another check</a>
+</section>
+</main>
+<footer class="footer">
+  <span>SiteCheck Fleet Services</span>
+  <span class="tick">▲ ALL SYSTEMS NOMINAL ▲</span>
+  <span>© 2062 Spacely Web Sprockets, Inc.</span>
+</footer>
+</body>
+</html>
+

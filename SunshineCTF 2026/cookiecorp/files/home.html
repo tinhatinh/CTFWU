@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CookieCorp | Fabrication Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Orbitron:wght@500;700&family=Jost:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/retro.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="/" class="brand"><span class="rocket">&#9733;</span> CookieCorp</a>
+      <div>
+        
+          <a href="/">Home</a>
+        
+      </div>
+    </div>
+
+
+<div class="panel hero">
+  <span class="tag">Space-Age Confectionery</span>
+  <div class="brand">CookieCorp&trade;</div>
+  <div class="subtitle">Design tomorrow's cookie today. Any ingredient imaginable &mdash; from moon-sugar to atomic sprinkles.</div>
+  
+    <a class="btn primary" href="#join">Get a Baker Badge</a>
+  
+</div>
+
+
+<div class="row">
+  <div class="panel" id="join">
+    <h2>New Baker Registration</h2>
+    <div id="reg-msg"></div>
+    <label>Badge name</label>
+    <input type="text" id="reg-user" placeholder="astro_baker" />
+    <label>Passphrase</label>
+    <input type="password" id="reg-pass" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;" />
+    <p><button class="btn primary" onclick="reg()">Issue Badge</button></p>
+  </div>
+  <div class="panel">
+    <h2>Returning Baker</h2>
+    <div id="log-msg"></div>
+    <label>Badge name</label>
+    <input type="text" id="log-user" />
+    <label>Passphrase</label>
+    <input type="password" id="log-pass" />
+    <p><button class="btn" onclick="login()">Clock In</button></p>
+  </div>
+</div>
+
+<div class="panel">
+  <span class="tag">Bulletin</span>
+  <h2>How it works</h2>
+  <p>Bakers fabricate custom cookie recipes in the <b>Fabricator</b>. When a batch is ready,
+  submit it for review &mdash; our automated <b>Quality Inspector</b> loads your recipe into the
+  fabrication mixer and stamps a verdict. Approved batches receive an official seal.</p>
+  <p class="small-note">Note: only the CookieCorp <b>Chief</b> can award the coveted <b>Golden Seal</b>.
+  Ordinary inspectors may only apply the standard seal.</p>
+</div>
+
+<script>
+async function post(url, body) {
+  const r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+  return { status: r.status, data: await r.json().catch(() => ({})) };
+}
+function show(id, ok, txt) {
+  document.getElementById(id).innerHTML = '<div class="msg ' + (ok ? 'ok' : 'bad') + '">' + txt + '</div>';
+}
+async function reg() {
+  const { status, data } = await post('/register', { username: document.getElementById('reg-user').value, password: document.getElementById('reg-pass').value });
+  if (status === 200) { location.href = '/dashboard'; } else { show('reg-msg', false, data.error || 'error'); }
+}
+async function login() {
+  const { status, data } = await post('/login', { username: document.getElementById('log-user').value, password: document.getElementById('log-pass').value });
+  if (status === 200) { location.href = '/dashboard'; } else { show('log-msg', false, data.error || 'error'); }
+}
+</script>
+
+
+    <div class="footer">
+      &#9733; CookieCorp Confectionery Systems &mdash; "A Better Cookie for a Brighter Tomorrow!" &#9733;<br />
+      Est. 1962 &middot; Orbital City, Sector 7
+    </div>
+  </div>
+</body>
+</html>
+

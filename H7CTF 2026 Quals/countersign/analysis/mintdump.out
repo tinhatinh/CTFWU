@@ -1,0 +1,6 @@
+[*] banner: Countersign attestation core v2 ready.
+[*] nonce: commands: GET | NONCE | MINT <hex<=16> | RUN <hex 24>
+[*] len1: 256 vec, 26s
+[*] pos: 4352 vec, 438s
+[*] lens: 4386 vec, 441s
+[+] 4386 vector / 441s -> C:\Users\Administrator\Documents\Qoder\2026-09-26\45656d97\CTF-Writeups\countersign\analysis\mint_vectors.txt

@@ -1,0 +1,290 @@
+[
+ {
+  "evidence_id": "KB-1001",
+  "origin_id": "SRC-1001",
+  "representation_type": "source",
+  "title": "StreamForge 4.5 TLS advisory",
+  "content": "StreamForge 4.5 deployments should rotate the bundled TLS trust store before the next maintenance window. The issue affects encrypted control-plane connections, not worker process stability.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1002",
+  "origin_id": "SRC-1002",
+  "representation_type": "source",
+  "title": "StreamForge 4.6 worker tuning guide",
+  "content": "Worker concurrency and graceful shutdown intervals can be adjusted for high-throughput installations. Track queue depth and shutdown duration when changing worker counts.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1003",
+  "origin_id": "SRC-1003",
+  "representation_type": "source",
+  "title": "StreamForge 4.7 heap behavior change",
+  "content": "StreamForge 4.7 changed memory reuse behavior for long-lived workers. The release note recommends monitoring resident memory during rolling upgrades; it does not identify a known crash condition.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1004",
+  "origin_id": "SRC-1004",
+  "representation_type": "source",
+  "title": "StreamForge 4.8 compatibility bulletin",
+  "content": "StreamForge 4.8 supports the current Linux LTS releases and the documented container runtimes. Validate extension compatibility before upgrading production workers.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1005",
+  "origin_id": "SRC-1005",
+  "representation_type": "source",
+  "title": "StreamForge 4.8 runtime migration notes",
+  "content": "The 4.8 branch updates worker-runtime components and adds additional allocator telemetry. Review the compatibility matrix for native extensions and collect worker diagnostics when a process exits unexpectedly.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1006",
+  "origin_id": "SRC-1006",
+  "representation_type": "source",
+  "title": "Connection-pool exhaustion incident",
+  "content": "A customer API tier experienced elevated latency after exhausting its database connection pool. Worker processes remained healthy; queue delay tracked active connection count.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1007",
+  "origin_id": "SRC-1007",
+  "representation_type": "source",
+  "title": "Worker timeout postmortem",
+  "content": "A worker timeout was traced to a downstream service exceeding its request deadline. Raising the timeout alone hid the symptom, while correcting the dependency latency resolved it.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1008",
+  "origin_id": "SRC-1008",
+  "representation_type": "source",
+  "title": "Linux allocator troubleshooting",
+  "content": "For intermittent native process exits, preserve a core file and compare allocator diagnostics with application logs. Memory pressure and invalid native extension access can produce superficially similar symptoms.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1009",
+  "origin_id": "SRC-1009",
+  "representation_type": "source",
+  "title": "Object storage replication advisory",
+  "content": "Delayed replication in one storage region can increase recovery point age. No worker runtime or application process changes are required.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1010",
+  "origin_id": "SRC-1010",
+  "representation_type": "source",
+  "title": "Network route maintenance notice",
+  "content": "A route update may briefly interrupt connections to the analytics subnet. Applications should reconnect using the standard retry policy.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1011",
+  "origin_id": "SRC-1011",
+  "representation_type": "source",
+  "title": "StreamForge 4.4 logging reference",
+  "content": "Worker logs include lifecycle events, task identifiers, and graceful-stop reasons. Log rotation should retain at least one complete deployment window.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1012",
+  "origin_id": "SRC-1012",
+  "representation_type": "source",
+  "title": "StreamForge 4.6 queue backpressure note",
+  "content": "Backpressure limits protect worker pools when producers outpace consumers. A saturated queue generally causes delayed work rather than abrupt process termination.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1013",
+  "origin_id": "SRC-1013",
+  "representation_type": "source",
+  "title": "Container memory limit checklist",
+  "content": "Compare container memory limits with observed resident set size and restart history. An enforced memory limit can terminate a process without an application-level exception.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1014",
+  "origin_id": "SRC-1014",
+  "representation_type": "source",
+  "title": "Customer report: delayed jobs after patching",
+  "content": "After a routine patch, one customer saw jobs remain queued for several minutes. Increasing worker count restored throughput; no process exits appeared in the host journal.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1015",
+  "origin_id": "SRC-1015",
+  "representation_type": "source",
+  "title": "StreamForge extension compatibility matrix",
+  "content": "Native extensions should be rebuilt against the runtime ABI documented for each supported StreamForge minor release. Unsupported extensions can fail during load or task execution.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1016",
+  "origin_id": "SRC-1016",
+  "representation_type": "source",
+  "title": "Regional DNS resolution incident",
+  "content": "Intermittent DNS resolution failures delayed outbound requests in one region. The incident was mitigated by restoring the resolver pool; worker processes stayed online.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1017",
+  "origin_id": "SRC-1017",
+  "representation_type": "source",
+  "title": "Metrics collector upgrade guide",
+  "content": "Collector upgrades can rename histogram labels. Dashboards should be checked for missing series after rollout; the collector runs separately from StreamForge workers.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1018",
+  "origin_id": "SRC-1018",
+  "representation_type": "source",
+  "title": "StreamForge 4.3 worker shutdown advisory",
+  "content": "A shutdown race in an older 4.3 build could delay termination while active jobs drained. The issue was addressed in a maintenance release and differs from unexpected exits during normal processing.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1019",
+  "origin_id": "SRC-1019",
+  "representation_type": "source",
+  "title": "Filesystem inode pressure runbook",
+  "content": "Low inode availability can prevent temporary files from being created. Check filesystem utilization and kernel logs when jobs fail to stage local data.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1020",
+  "origin_id": "SRC-1020",
+  "representation_type": "source",
+  "title": "Customer report: intermittent worker restarts",
+  "content": "A customer observed worker restarts during a deployment window but found no common task pattern. Host memory pressure and orchestrator eviction events were still under investigation.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1021",
+  "origin_id": "SRC-1021",
+  "representation_type": "source",
+  "title": "StreamForge 4.8 plugin migration checklist",
+  "content": "Before enabling a plugin on 4.8, verify its supported runtime ABI and test it with representative workloads. Capture the plugin inventory alongside worker logs if a rollout needs investigation.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1022",
+  "origin_id": "SRC-1022",
+  "representation_type": "source",
+  "title": "Message broker certificate rotation",
+  "content": "Broker certificate rotation caused several clients to reconnect. The event affected connection availability and did not change local worker memory behavior.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1023",
+  "origin_id": "SRC-1023",
+  "representation_type": "source",
+  "title": "CPU throttling operations note",
+  "content": "Sustained CPU throttling can increase task duration and trigger external deadlines. Compare container throttled time with application latency before changing worker concurrency.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1024",
+  "origin_id": "SRC-1024",
+  "representation_type": "source",
+  "title": "StreamForge 4.5 configuration migration",
+  "content": "The 4.5 configuration parser accepts the legacy worker-count key for compatibility. New installations should use the current worker pool setting.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1025",
+  "origin_id": "SRC-1025",
+  "representation_type": "source",
+  "title": "Backup catalog indexing delay",
+  "content": "A catalog index rebuild delayed search results for backup operators. Restore operations and the StreamForge execution tier were unaffected.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1026",
+  "origin_id": "SRC-1026",
+  "representation_type": "source",
+  "title": "Kernel OOM event guide",
+  "content": "The kernel OOM log records processes selected after a memory limit is exceeded. Correlate timestamps with container restarts before attributing termination to application code.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1027",
+  "origin_id": "SRC-1027",
+  "representation_type": "source",
+  "title": "StreamForge worker health endpoint",
+  "content": "The health endpoint reports readiness and active task count. It does not retain the reason for a process that has already exited.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1028",
+  "origin_id": "SRC-1028",
+  "representation_type": "source",
+  "title": "Customer report: native module load failure",
+  "content": "A native module built for an earlier runtime ABI failed during startup after an upgrade. Rebuilding the module against the installed headers restored service.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1029",
+  "origin_id": "SRC-1029",
+  "representation_type": "source",
+  "title": "Time synchronization troubleshooting",
+  "content": "Clock drift can complicate correlation across hosts. Compare NTP status and normalize timestamps before joining application and infrastructure logs.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1030",
+  "origin_id": "SRC-1030",
+  "representation_type": "source",
+  "title": "StreamForge 4.8 rollout checklist",
+  "content": "Roll out 4.8 gradually, verify extension compatibility, and compare worker restart rates against the previous build. Keep application logs and runtime metrics for each canary interval.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1031",
+  "origin_id": "SRC-1031",
+  "representation_type": "source",
+  "title": "Queue visibility timeout explanation",
+  "content": "A visibility timeout can cause a task to be delivered again when processing takes longer than expected. It affects task duplication, not the worker process lifecycle.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ },
+ {
+  "evidence_id": "KB-1032",
+  "origin_id": "SRC-1032",
+  "representation_type": "source",
+  "title": "Storage volume latency report",
+  "content": "An overloaded volume caused slow checkpoint writes and elevated job durations. No worker exits were recorded, and replacing the volume resolved the issue.",
+  "processor": "seed-import-v1",
+  "created_at": "2026-01-15T00:00:00Z"
+ }
+]

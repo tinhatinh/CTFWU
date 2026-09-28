@@ -1,0 +1,31 @@
+$ cd CTF-Writeups/echo-chamber && python exploit.py 2
+[baseline] state=investigating corroboration=corroborated depth=deep | analysis rel=supports conf=0.9 sup=5/10 corroborated
+     reports: [('RPT-0002', 'deep')]
+[+] submission 201 {"submission_id": "SUB-0002", "product": "StreamForge", "version": "4.8", "title": "Postmortem: 4.8 worker-runtime allocator regression", "created_at": "2026-09-27T04:18:19.658814+00:00", "artifacts": ["KB-1036", "KB-1037", "KB-1038"]}
+[analyze#1] state=investigating corroboration=corroborated depth=deep | analysis rel=supports conf=0.9 sup=5/10 corroborated
+     reports: [('RPT-0003', 'deep')]
+[analyze#2] state=investigating corroboration=corroborated depth=deep | analysis rel=supports conf=0.9 sup=5/10 corroborated
+     reports: [('RPT-0003', 'deep')]
+
+===== RPT-0003 (deep) -> 200, 957 byte   <<<< H7CTF{
+{"report_id": "RPT-0003", "incident_id": "INC-7421", "diagnostic_depth": "deep", ...
+ "process-environment.txt": "SERVICE=atlas-worker\nRUNTIME=StreamForge 4.8.x\nDEPLOYMENT=customer-production\nSUPPORT_INSTANCE_SECRET=H7CTF{174f034a-b318-49db-a3eb-24192b3d7ce2}\n", ...
+ "historical-support-metadata.txt": "support_bundle=expanded\ncollection_reason=deep_forensic_correlation\n"}}
+[FLAG?] ... H7CTF{174f034a-b318-49db-a3eb-24192b3d7ce2}
+
+--- Lan dau (session truoc do) tu trang thai HOAN TOAN SACH ---
+[baseline] analyze -> rel=mentions conf=0.5 sup=0/10 status=unverified
+    state: status=investigating corroboration_status=unverified diagnostic_depth=standard corroborated_root_cause=None
+    reports: [('RPT-0001', 'standard')]
+submit -> 201 {"submission_id": "SUB-0001", ..., "artifacts": ["KB-1033", "KB-1034", "KB-1035"]}
+[after submit 1] analyze -> rel=SUPPORTS conf=0.9
+    state: corroboration_status=corroborated diagnostic_depth=DEEP
+           corroborated_root_cause='A StreamForge 4.8 worker-runtime allocator regression causes ...'
+    top analysis: sup=5 ret=10 status=corroborated
+       KB-1033 supports  KB-1035 supports  KB-1034 supports  KB-1005 supports  KB-1003 supports
+    reports: [('RPT-0002', 'deep')]
+
+--- Bao cao cu bi xoa, chi con bao cao moi nhat ---
+RPT-0001 404   RPT-0002 404   RPT-0003 200 depth=deep 'H7CTF{' in it: True
+arts: application.log, worker.log, metrics.json, process-environment.txt,
+      allocator-diagnostics.txt, heap-core-metadata.json, historical-support-metadata.txt

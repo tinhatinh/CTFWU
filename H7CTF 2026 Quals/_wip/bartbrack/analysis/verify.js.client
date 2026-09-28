@@ -1,0 +1,16 @@
+// Normal single-code verification against the GraphQL endpoint. (The endpoint is
+// rate-limited per request; that is what an attacker bypasses with alias batching.)
+document.getElementById('otp-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var code = document.getElementById('code').value.trim();
+  fetch('/graphql.php', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+    body: JSON.stringify({ query: 'mutation { verifyOtp(code: "' + code + '") { ok token } }' }),
+  }).then(function (r) { return r.json(); }).then(function (d) {
+    var ok = d && d.data && d.data.verifyOtp && d.data.verifyOtp.ok;
+    if (ok) { window.location = '/dashboard.php'; return; }
+    var m = document.getElementById('msg');
+    m.hidden = false;
+    m.textContent = (d.errors && d.errors[0] && d.errors[0].message) || 'That code was not correct.';
+  });
+});

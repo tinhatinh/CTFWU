@@ -1,0 +1,49 @@
+Cookies: [('session', 'b3044887a6608cc505245ec3076810e33b763db77c20fbbd4d76706a00b3a798'), ('role', 'baker')]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CookieCorp | My Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Orbitron:wght@500;700&family=Jost:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/retro.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="/" class="brand"><span class="rocket">&#9733;</span> CookieCorp</a>
+      <div>
+        
+          <a href="/dashboard">Console</a>
+          <a href="/builder">Fabricator</a>
+          <a href="#" onclick="fetch('/logout',{method:'POST'}).then(()=>location.href='/');return false;">Log out (auth_test)</a>
+        
+      </div>
+    </div>
+
+
+<div class="panel">
+  <span class="tag">Baker Console</span>
+  <h1>Welcome back, auth_test</h1>
+  <p class="small-note">Inspector queue depth: 0 batch(es) awaiting review.</p>
+  <a class="btn primary" href="/builder">+ New Batch</a>
+</div>
+
+<div class="panel">
+  <h2>My Batches</h2>
+  
+    <p class="small-note">No batches yet. Head to the Fabricator to design your first cookie.</p>
+  
+</div>
+
+    <div class="footer">
+      &#9733; CookieCorp Confectionery Systems &mdash; "A Better Cookie for a Brighter Tomorrow!" &#9733;<br />
+      Est. 1962 &middot; Orbital City, Sector 7
+    </div>
+  </div>
+</body>
+</html>
+
+

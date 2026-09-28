@@ -1,0 +1,4 @@
+  File "<stdin>", line 7
+    c=s.recv(65536);if not c:break;banner+=c;t=banner.decode('utf-8','replace');lines=[l.strip() for l in t.splitlines() if l]
+                    ^^
+SyntaxError: invalid syntax

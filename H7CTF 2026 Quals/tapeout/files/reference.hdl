@@ -1,0 +1,9 @@
+# golden reference: 32-bit datapath transform T(a)
+input a
+k1 = const 0x9E3779B9
+k2 = const 0x1337C0DE
+t1 = xor a k1
+hi = shr a 16
+t2 = add t1 hi
+y  = xor t2 k2
+output y

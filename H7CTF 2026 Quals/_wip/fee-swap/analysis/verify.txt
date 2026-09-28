@@ -1,0 +1,41 @@
+$ python -c "brute-force verify exact_amount"        # kiem chung dia phuong
+reserve khong co nghiem: [] (cua so tim kiem dung: a = 100*(R//99) + R%99)
+examples: [(100000000, 101010101, 100000000), (1, 1, 1), (100, 101, 100),
+           (99, 100, 99), (999999999999, 1010101010100, 999999999999)]
+max a/R = 1.0101010101010102
+mau: []  tong so kiem tra: 35000 -> loi: 0        # 5000 lien tiep + 30000 random <= 2^63
+
+$ python -c "selftest layout"
+selftest ok: base58 round-trip + SPL 165B AccountLayout field offsets verified
+system         len=32 0000...0000
+token2022      len=32 06ddf6e1ee758fde18425dbce46ccddab61afc4d83b90d27febdf928d8a18bfc
+token-classic  len=32 06ddf6e1d765a193d9cbe146ceeb79ac1cb485ed5f5b37913a8cf5857eff00a9
+
+## MEO DO GIAI THICH TAI SAO LAN DAU TIEN KIEM TRA BI SAI
+Lan 1 toi tim `a` trong cua so [R, R+300] -> ket luan "1e8 khong the rut het trong
+1 swap" -> SAI.  a thuc = 1.01*R, nam ngoai cua so.  Ham dung, cua so sai.
+Lan 2 dung closed form 100*(R//99)+R%99 -> 0 loi tren 35000 truong hop.
+
+=============================================================================
+## TINH TRANG KET NOI (pwn/web3.h7tex.com:42600)
+
+Lan cuoi con song: sau probe grammar.  Ke tu do, 6 lan thu cach nhau ~2/4/7/10 phut:
+  connect OK, 0 byte, dongs tro ve FIN trong 0.1s (truoc khi gui bat ky gi).
+Gui moi thu (`\n`, `0\n`, `help\n`) -> FIN hoac ConnectionResetError.
+Day la bieu hien upstream chet (proxy chap TCP roi dong), khong phai:
+  * stdout lang cua dich (neu con song thi no giu ket noi de cho input);
+  * loi doc cua toi ( Cung code do tra banner day du 25 lan truoc do).
+
+=> Flag CHUA lay duoc.  Toan bo chuoi tan cong o `exploit.py` (rogue / rich),
+   san sang chay bang 1 lenh khi instance duoc khoi dong lai.
+
+## CAC SU CO LY LUAN CON SOT (khong the thuyet minh offline)
+1. `transfer_checked` co cho phep source == dest (self-transfer) khong?
+   Ly luan: runtime khau trung AccountInfo cung key, spl-token tru roi cong
+   cung mot so du, khong co check source != dest -> nghi la DUOC. Neu KHONG,
+   chuyen sang phuong an `rich` (token account gia so du 1e15) — cung mot lenh.
+2. `InitPool` co giu duoc data cua account khai bao qua nuoc ke tiep trong cung
+   ket noi khong? (dich co lap lai 'num accounts:' sau moi nuoc, da thay bang
+   chung truc tiep, nen kha nang cao la co.)
+3. Harness co that su dung `data-hex` khi khai bao account khong? Day la mat
+   xích cuoi cung chua duoc_mo bang tool output.

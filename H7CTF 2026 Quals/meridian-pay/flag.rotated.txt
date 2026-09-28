@@ -1,0 +1,4 @@
+# Cờ lấy được từ cùng instance web-3f25599ac74e8a91 ở lần chạy ngày 2026-09-26 (flag xoay theo container, nên khác bộ trong flag.txt).
+H7CTF{e4261242-274c-4457-a359-866529b9b41d}
+H7CTF{9404f65a-0502-4ae1-99a6-023d53ad24d3}
+H7CTF{e12c358f-82be-431d-9524-e17f73499dd6}

@@ -1,0 +1,1202 @@
+====================================================================================================
+1. INPUT
+====================================================================================================
+source file          : C:\Users\Administrator\Documents\Qoder\2026-09-26\45656d97\CTF-Writeups\countersign\analysis\image.txt
+raw file chars       : 6075
+non-hex context lines: (none - file is pure hex)
+longest hex run      : 6074 chars -> 3037 bytes
+assert len == 3037     : True
+grab.out witness     : 400 chars, matches image.txt prefix: True
+====================================================================================================
+2. LAYOUT DERIVED FROM THE SERIALIZER (cs.asm 0x1240..0x13d8)
+====================================================================================================
+stream = header(0x12) then records;  record = 8B head + L payload + k byte + k * 13B edges
+
+  image field          off      width  serializer vma        in-memory slot
+  ------------------   ------   -----  -------------------   --------------
+  magic 'CSGN'         0x0000   4      0x126e                -
+  version              0x0004   2      0x127f (r12w)         -
+  record_count         0x0006   2      0x1261/0x1287         u16@0x462d8
+  start_tag            0x0008   2      0x128e                u16@0x462d4
+  seed                 0x000a   8      0x129c                u64 @0x76ee0
+  rec.tag              rec+0x00 2      0x12d0 ([r13-0x8])    slot+0x00
+  rec.pred_reg         rec+0x02 1      0x12e5 ([r13-0x6])    slot+0x02  (0xff=uncond)
+  rec.pred_bit         rec+0x03 1      0x12f5 ([r13-0x5])    slot+0x03
+  rec.dflt_next        rec+0x04 2      0x12fd ([r13-0x4])    slot+0x04
+  rec.pay_len (L)      rec+0x06 2      0x12d5/0x12ea ([r13-0x2]) slot+0x06 = memcpy len
+  rec.payload          rec+0x08 L      0x1306 memcpy          slot+0x08
+  rec.edge_cnt (k)     rec+0x8+L 1     0x130b/0x1317          slot+0x208
+  edge.type            e+0x00   1      0x1340/0x134c          slot+0x20c+16j+0x00
+  edge.target          e+0x01   2      0x134f/0x1353          slot+0x20c+16j+0x02
+  edge.tweak           e+0x03   4      0x1359/0x135e          slot+0x20c+16j+0x04
+  edge.sig_lo          e+0x07   4      0x136d/0x1374          slot+0x20c+16j+0x08
+  edge.sig_hi          e+0x11   2      0x1377/0x137b          slot+0x20c+16j+0x0c
+
+  record size = 9 + L + 13k   (@0x1384 lea rdi,[rdi+r9+0xd], r9=13*(k-1))
+
+--- hexdump of the first 0x40 bytes, named ---------------------------------------------------------
+  0000  43 53 47 4e 02 00 28 00 0b 48 a9 8a 5c 7a 95 ad  CSGN..(..H..\z..   ; magic=4353474e  version=0200  record_count=2800  start_tag=0b48  seed(nonce rev)=a98a5c7a95adc781
+  0010  c7 81 0b 48 ff 00 66 0d fc 00 01 00 00 00 00 00  ...H..f.........   ; rec0.tag=0b48  rec0.pred_reg=ff  rec0.pred_bit=00  rec0.dflt_next=660d  rec0.pay_len=fc00  rec0.payload[0]=01
+  0020  0c 06 00 07 06 00 06 00 06 0c 06 01 07 06 08 06  ................
+  0030  00 06 0c 06 02 07 06 10 06 00 06 0c 06 03 07 06  ................
+====================================================================================================
+3. HEADER
+====================================================================================================
+  magic        : 'CSGN'  (4353474e)
+  version      : 2
+  record_count : 40   (u16@0x462d8; also the loop bound dword@0x462d8)
+  start_tag    : 0x480b  (u16@0x462d4 -> RUN looks for the record whose tag == this)
+  seed         : 0x81c7ad957a5c8aa9  bytes a98a5c7a95adc781  (= nonce 81c7ad957a5c8aa9 byte-reversed)
+  NOTE: the MAC key is at 0x76ef0..0x76eff (see 0x1b38) - a DIFFERENT 8 bytes than the
+        leaked seed at 0x76ee0, so the signatures cannot be recomputed from the image.
+====================================================================================================
+4. TYPED TREE / FULL BYTE ACCOUNTING
+====================================================================================================
+declared record_count = 40, records parsed = 40, bytes consumed = 3037 of 3037
+leftover after the last record: 0 bytes 
+UNEXPLAINED BYTES: NONE - every one of the 3037 bytes is claimed by exactly one field
+
+byte census by class:
+   HDR   header                            18 bytes  ( 0.59%)
+   REC   record header                    360 bytes  (11.85%)
+   CODE  bytecode op/operand              781 bytes  (25.72%)
+   IMM   imm32 operand (per-instance)     240 bytes  ( 7.90%)
+   EDGE  edge type+target                 378 bytes  (12.45%)
+   TWE   edge tweak u32                   504 bytes  (16.60%)
+   SIG   edge countersignature 6B         756 bytes  (24.89%)
+   ----- entropy-carrying material (IMM+TWE+SIG) = 1500 bytes;  deterministic structure = 1537 bytes
+
+--- record table (offset / tag / predicate / default-next / L / k / size) --------------------------
+  idx off      size  tag    pred_reg pred_bit dflt_next  L    k   edges@  closure
+    0 0x0012   300  0x480b   0xff      0x00       0x0d66    252   3  0x0117  ok
+    1 0x013e   104  0xa77f   0x00      0x11       0x0d66     30   5  0x0165  ok
+    2 0x01a6    60  0x859a   0xff      0x00       0x0d66     12   3  0x01bb  ok
+    3 0x01e2    47  0x4115   0xff      0x00       0x0d66     12   2  0x01f7  ok
+    4 0x0211   104  0x52e4   0x01      0x12       0x0d66     30   5  0x0238  ok
+    5 0x0279    60  0x6d40   0xff      0x00       0x0d66     12   3  0x028e  ok
+    6 0x02b5    60  0xd53a   0xff      0x00       0x0d66     12   3  0x02ca  ok
+    7 0x02f1   104  0x6427   0x01      0x0b       0x0d66     30   5  0x0318  ok
+    8 0x0359    47  0xa360   0xff      0x00       0x0d66     12   2  0x036e  ok
+    9 0x0388    47  0xcacc   0xff      0x00       0x0d66     12   2  0x039d  ok
+   10 0x03b7    91  0x2457   0x01      0x00       0x0d66     30   4  0x03de  ok
+   11 0x0412    47  0xe301   0xff      0x00       0x0d66     12   2  0x0427  ok
+   12 0x0441    47  0x90b4   0xff      0x00       0x0d66     12   2  0x0456  ok
+   13 0x0470   104  0x9345   0x03      0x00       0x0d66     30   5  0x0497  ok
+   14 0x04d8    60  0x73d7   0xff      0x00       0x0d66     12   3  0x04ed  ok
+   15 0x0514    47  0x3871   0xff      0x00       0x0d66     12   2  0x0529  ok
+   16 0x0543   104  0xf99f   0x02      0x19       0x0d66     30   5  0x056a  ok
+   17 0x05ab    47  0x31fe   0xff      0x00       0x0d66     12   2  0x05c0  ok
+   18 0x05da    60  0x2c31   0xff      0x00       0x0d66     12   3  0x05ef  ok
+   19 0x0616   104  0xad61   0x02      0x1c       0x0d66     30   5  0x063d  ok
+   20 0x067e    60  0x9918   0xff      0x00       0x0d66     12   3  0x0693  ok
+   21 0x06ba    60  0xb137   0xff      0x00       0x0d66     12   3  0x06cf  ok
+   22 0x06f6    91  0xb515   0x02      0x13       0x0d66     30   4  0x071d  ok
+   23 0x0751    47  0xa3f5   0xff      0x00       0x0d66     12   2  0x0766  ok
+   24 0x0780    47  0x4ab1   0xff      0x00       0x0d66     12   2  0x0795  ok
+   25 0x07af   104  0x8eab   0x02      0x15       0x0d66     30   5  0x07d6  ok
+   26 0x0817    60  0xe62c   0xff      0x00       0x0d66     12   3  0x082c  ok
+   27 0x0853    47  0xf501   0xff      0x00       0x0d66     12   2  0x0868  ok
+   28 0x0882   104  0x2abb   0x03      0x0d       0x0d66     30   5  0x08a9  ok
+   29 0x08ea    47  0xe81d   0xff      0x00       0x0d66     12   2  0x08ff  ok
+   30 0x0919    60  0x8d8b   0xff      0x00       0x0d66     12   3  0x092e  ok
+   31 0x0955   104  0xd755   0x00      0x04       0x0d66     30   5  0x097c  ok
+   32 0x09bd    47  0x821c   0xff      0x00       0x0d66     12   2  0x09d2  ok
+   33 0x09ec    60  0x26bf   0xff      0x00       0x0d66     12   3  0x0a01  ok
+   34 0x0a28   104  0x000b   0x00      0x02       0x0d66     30   5  0x0a4f  ok
+   35 0x0a90    60  0xb30f   0xff      0x00       0x0d66     12   3  0x0aa5  ok
+   36 0x0acc    47  0x39f0   0xff      0x00       0x0d66     12   2  0x0ae1  ok
+   37 0x0afb    12  0x04a3   0xff      0x00       0x0d66      3   0  0x0b07  ok
+   38 0x0b07    10  0x0d66   0xff      0x00       0x0d66      1   0  0x0b11  ok
+   39 0x0b11   204  0x1853   0x06      0x00       0x0d66    117   6  0x0b8f  ok
+
+  sum of record sizes = 3019 ; body = 0xbdd-0x12 = 3019  ->  exact
+  distinct tags: 40 of 40 records (tags are the record identity; no numbering field exists)
+
+  record shape (L,k) histogram:
+     L= 12 k= 2  x13   size=47
+     L= 12 k= 3  x11   size=60
+     L= 30 k= 5  x10   size=104
+     L= 30 k= 4  x 2   size=91
+     L=  1 k= 0  x 1   size=10
+     L=  3 k= 0  x 1   size=12
+     L=117 k= 6  x 1   size=204
+     L=252 k= 3  x 1   size=300
+====================================================================================================
+5. BLOCK GRAMMAR
+====================================================================================================
+
+--- 5a. record blocks (leading byte = tag low half, block = 9+L+13k bytes) -------------------------
+  off      len   lead tag    type-class
+  0x0012   300   0x0b  0x480b  packer (input->regs)
+  0x013e   104   0x7f  0xa77f  mixing node (5 insns)
+  0x01a6    60   0x9a  0x859a  leaf arithmetic (2 insns)
+  0x01e2    47   0x15  0x4115  leaf arithmetic (2 insns)
+  0x0211   104   0xe4  0x52e4  mixing node (5 insns)
+  0x0279    60   0x40  0x6d40  leaf arithmetic (2 insns)
+  0x02b5    60   0x3a  0xd53a  leaf arithmetic (2 insns)
+  0x02f1   104   0x27  0x6427  mixing node (5 insns)
+  0x0359    47   0x60  0xa360  leaf arithmetic (2 insns)
+  0x0388    47   0xcc  0xcacc  leaf arithmetic (2 insns)
+  0x03b7    91   0x57  0x2457  mixing node (5 insns)
+  0x0412    47   0x01  0xe301  leaf arithmetic (2 insns)
+  0x0441    47   0xb4  0x90b4  leaf arithmetic (2 insns)
+  0x0470   104   0x45  0x9345  mixing node (5 insns)
+  0x04d8    60   0xd7  0x73d7  leaf arithmetic (2 insns)
+  0x0514    47   0x71  0x3871  leaf arithmetic (2 insns)
+  0x0543   104   0x9f  0xf99f  mixing node (5 insns)
+  0x05ab    47   0xfe  0x31fe  leaf arithmetic (2 insns)
+  0x05da    60   0x31  0x2c31  leaf arithmetic (2 insns)
+  0x0616   104   0x61  0xad61  mixing node (5 insns)
+  0x067e    60   0x18  0x9918  leaf arithmetic (2 insns)
+  0x06ba    60   0x37  0xb137  leaf arithmetic (2 insns)
+  0x06f6    91   0x15  0xb515  mixing node (5 insns)
+  0x0751    47   0xf5  0xa3f5  leaf arithmetic (2 insns)
+  0x0780    47   0xb1  0x4ab1  leaf arithmetic (2 insns)
+  0x07af   104   0xab  0x8eab  mixing node (5 insns)
+  0x0817    60   0x2c  0xe62c  leaf arithmetic (2 insns)
+  0x0853    47   0x01  0xf501  leaf arithmetic (2 insns)
+  0x0882   104   0xbb  0x2abb  mixing node (5 insns)
+  0x08ea    47   0x1d  0xe81d  leaf arithmetic (2 insns)
+  0x0919    60   0x8b  0x8d8b  leaf arithmetic (2 insns)
+  0x0955   104   0x55  0xd755  mixing node (5 insns)
+  0x09bd    47   0x1c  0x821c  leaf arithmetic (2 insns)
+  0x09ec    60   0xbf  0x26bf  leaf arithmetic (2 insns)
+  0x0a28   104   0x0b  0x000b  mixing node (5 insns)
+  0x0a90    60   0x0f  0xb30f  leaf arithmetic (2 insns)
+  0x0acc    47   0xf0  0x39f0  leaf arithmetic (2 insns)
+  0x0afb    12   0xa3  0x04a3  goal (GETENV/EMIT/HALT)
+  0x0b07    10   0x66  0x0d66  sink (HALT only)
+  0x0b11   204   0x53  0x1853  wide node (28 insns)
+
+  record-block size histogram: 10B x1, 12B x1, 47B x13, 60B x11, 91B x2, 104B x10, 204B x1, 300B x1
+
+--- 5b. payload instruction blocks (opcode stream, sizes 1/3/6) ------------------------------------
+  opcode  name      insn-len  count   operand bytes
+  01     MOV.imm     6         6   op+reg+imm32 (imm32 = per-instance random)
+  02     MOV.reg     3        12   op+2 operands
+  03     ADD.reg     3        48   op+2 operands
+  04     XOR.reg     3        24   op+2 operands
+  06     OR.reg      3        34   op+2 operands
+  07     ROL.imm     3        72   op+2 operands
+  08     SHR.imm     3         5   op+2 operands
+  09     ADD.imm     6        12   op+reg+imm32 (imm32 = per-instance random)
+  0a     XOR.imm     6        42   op+reg+imm32 (imm32 = per-instance random)
+  0c     LDIN        3        24   op+2 operands
+  0d     GETENV      1         1   op only
+  0e     EMIT        1         1   op only
+  0f     HALT        1         2   op only
+  total instructions 283 over 1021 payload bytes
+  instruction length histogram: 1B x4, 3B x219, 6B x60
+  => the payload is NOT a fixed-size record array; it is a variable-length opcode stream
+
+--- 5c. edge blocks (13B each, leading byte = selector type) ---------------------------------------
+  rec  idx off      len lead target  tweak      sig(6B)                             selector
+    0    0 0x0117  13  0xff  0x480b  0xf0ef38ae  63f467af c2f2  uncond
+    0    1 0x0124  13  0xff  0x2457  0x447edd50  4d60625a 65c2  uncond
+    0    2 0x0131  13  0xff  0xa77f  0x08f40cf0  166429a6 9705  uncond
+    1    0 0x0165  13  0x01  0x4115  0x21659134  10e1a716 fd9e  bit 17 of r0
+    1    1 0x0172  13  0x00  0x9918  0xd8bade10  efbb9023 6dbd  bit 17 of r0
+    1    2 0x017f  13  0x00  0x2c31  0xc210b6c2  fe3adfb2 7643  bit 17 of r0
+    1    3 0x018c  13  0x00  0x859a  0x7b34980a  7d4aed89 5632  bit 17 of r0
+    1    4 0x0199  13  0x01  0xb515  0xadfffa5e  dd9068d4 cd4d  bit 17 of r0
+    2    0 0x01bb  13  0xff  0x2c31  0xda48fa6b  a180bdba 82a0  uncond
+    2    1 0x01c8  13  0xff  0x52e4  0x7b8eaeff  5458e518 da83  uncond
+    2    2 0x01d5  13  0xff  0xe81d  0x935edf37  839bf959 7f7b  uncond
+    3    0 0x01f7  13  0xff  0x52e4  0xbbdf4b81  9df01bf4 0139  uncond
+    3    1 0x0204  13  0xff  0x4ab1  0x405d818b  2a1551c7 40e0  uncond
+    4    0 0x0238  13  0x01  0xd53a  0x20def66c  162009fa 6901  bit 18 of r1
+    4    1 0x0245  13  0x00  0xb515  0x1b4cb099  b7410af1 75e0  bit 18 of r1
+    4    2 0x0252  13  0x00  0x6d40  0x801fed1b  97d15714 65d0  bit 18 of r1
+    4    3 0x025f  13  0x01  0x52e4  0xfc649248  b0800814 1ac0  bit 18 of r1
+    4    4 0x026c  13  0x01  0x4ab1  0x7147be57  d694333e 555d  bit 18 of r1
+    5    0 0x028e  13  0xff  0x0d66  0x3a54aee3  9ce45641 5b04  uncond
+    5    1 0x029b  13  0xff  0x39f0  0x8bd77e3f  a930aff1 d316  uncond
+    5    2 0x02a8  13  0xff  0x6427  0x4bb8c4bc  f9e648b2 a130  uncond
+    6    0 0x02ca  13  0xff  0x6427  0x755e0b85  aa90d0c2 ca49  uncond
+    6    1 0x02d7  13  0xff  0x2457  0x584c413c  5fef24b4 d6fa  uncond
+    6    2 0x02e4  13  0xff  0x04a3  0xaab2db79  e740e9d1 a1ab  uncond
+    7    0 0x0318  13  0x01  0xcacc  0xa5c1eaba  a49b7e08 ae52  bit 11 of r1
+    7    1 0x0325  13  0x00  0xa360  0xe47dae00  8cd8b335 3e6b  bit 11 of r1
+    7    2 0x0332  13  0x01  0x31fe  0x63b60240  efd1ea7b b337  bit 11 of r1
+    7    3 0x033f  13  0x00  0x39f0  0xb08158f4  647adc09 1c72  bit 11 of r1
+    7    4 0x034c  13  0x00  0x859a  0x9e456490  974f56b6 85f7  bit 11 of r1
+    8    0 0x036e  13  0xff  0x2457  0x440d336f  6ea8c0e6 2db3  uncond
+    8    1 0x037b  13  0xff  0x4ab1  0x2a1f065d  5eedb66c 17a8  uncond
+    9    0 0x039d  13  0xff  0x4ab1  0xadbe6eb8  c97c213d 9307  uncond
+    9    1 0x03aa  13  0xff  0x2457  0x11fd35a2  cad5f38e 4d5b  uncond
+   10    0 0x03de  13  0x00  0xe301  0x74691711  4c469ec9 5873  bit 0 of r1
+   10    1 0x03eb  13  0x01  0xe81d  0xcb4ba535  d58a72fb dfd7  bit 0 of r1
+   10    2 0x03f8  13  0x01  0x90b4  0xbb3d22b2  cc87a4a9 04a7  bit 0 of r1
+   10    3 0x0405  13  0x00  0x52e4  0x9a879015  adfc9a35 fdc8  bit 0 of r1
+   11    0 0x0427  13  0xff  0x9345  0xfe6cfd8c  d978bb89 27d6  uncond
+   11    1 0x0434  13  0xff  0x4ab1  0x4a530a4d  b1cc0829 f87e  uncond
+   12    0 0x0456  13  0xff  0x4ab1  0x7c369992  6d4481a5 303a  uncond
+   12    1 0x0463  13  0xff  0x9345  0x08484dcb  2a0216b2 ab1d  uncond
+   13    0 0x0497  13  0x00  0x73d7  0xb1a5cc5f  e36b8114 b3b8  bit 0 of r3
+   13    1 0x04a4  13  0x01  0x4ab1  0x186c12ef  1c8be7cf b082  bit 0 of r3
+   13    2 0x04b1  13  0x01  0x31fe  0xf9e12dfc  268855c2 4f1d  bit 0 of r3
+   13    3 0x04be  13  0x01  0x3871  0xaf250db1  1a8e8052 3e68  bit 0 of r3
+   13    4 0x04cb  13  0x00  0x859a  0xf557a67a  9658fd16 6327  bit 0 of r3
+   14    0 0x04ed  13  0xff  0xf99f  0x853c4831  57e75215 01c3  uncond
+   14    1 0x04fa  13  0xff  0x859a  0xa2c533c8  65f3bfbf 7ea2  uncond
+   14    2 0x0507  13  0xff  0x3871  0x66bb8582  7b0ac97e 4c83  uncond
+   15    0 0x0529  13  0xff  0x31fe  0xf81e4a0b  e55339d8 759a  uncond
+   15    1 0x0536  13  0xff  0xf99f  0x32e78099  3de41a1f a232  uncond
+   16    0 0x056a  13  0x00  0x31fe  0xd41d1890  d7082653 2048  bit 25 of r2
+   16    1 0x0577  13  0x00  0x480b  0xd54455c4  046a55f7 1c88  bit 25 of r2
+   16    2 0x0584  13  0x01  0x2c31  0x66a3c025  bb7657ab 7d45  bit 25 of r2
+   16    3 0x0591  13  0x00  0xb515  0xcad115a1  9bf1869a 9759  bit 25 of r2
+   16    4 0x059e  13  0x01  0x8eab  0x780722a1  50691a7a 5e23  bit 25 of r2
+   17    0 0x05c0  13  0xff  0xf99f  0xd4dc36aa  5b2e97ba 8553  uncond
+   17    1 0x05cd  13  0xff  0xad61  0x60e14949  6f64d94f 271b  uncond
+   18    0 0x05ef  13  0xff  0x8eab  0xb4c5d526  0397defa eaf0  uncond
+   18    1 0x05fc  13  0xff  0xad61  0x607b8a2e  57b7fb3d b21e  uncond
+   18    2 0x0609  13  0xff  0x859a  0x2d10bafa  ba63206c ac73  uncond
+   19    0 0x063d  13  0x01  0x0d66  0x356e3ec4  241d79d7 6156  bit 28 of r2
+   19    1 0x064a  13  0x00  0x9918  0x0672366b  ae6c7c45 b701  bit 28 of r2
+   19    2 0x0657  13  0x01  0x480b  0x96a47d5e  e918d24f 1cfb  bit 28 of r2
+   19    3 0x0664  13  0x00  0x6427  0x83f3f135  a5966e7d 3af4  bit 28 of r2
+   19    4 0x0671  13  0x01  0xb137  0x9c78d76b  ac08925f c826  bit 28 of r2
+   20    0 0x0693  13  0xff  0xb515  0x901a3865  242d697a bdb3  uncond
+   20    1 0x06a0  13  0xff  0x1853  0x2bfb95ce  9bd7aeeb 01a8  uncond
+   20    2 0x06ad  13  0xff  0x9918  0xa9d0eba6  26bc96dd 2b29  uncond
+   21    0 0x06cf  13  0xff  0xb515  0xfedc1342  7279de1d f7b2  uncond
+   21    1 0x06dc  13  0xff  0xcacc  0xb618c2ad  bf8c6c25 396e  uncond
+   21    2 0x06e9  13  0xff  0x39f0  0xe6796619  14533cfa e249  uncond
+   22    0 0x071d  13  0x00  0xa3f5  0x8e838f87  9c0e4be6 4558  bit 19 of r2
+   22    1 0x072a  13  0x01  0x4ab1  0x62e0f965  849384bb 3040  bit 19 of r2
+   22    2 0x0737  13  0x01  0x1853  0x96606da3  5120585e 339f  bit 19 of r2
+   22    3 0x0744  13  0x00  0xb30f  0x2154e9d3  e165db1f bfda  bit 19 of r2
+   23    0 0x0766  13  0xff  0x8eab  0xa3060617  5c7f2528 68ad  uncond
+   23    1 0x0773  13  0xff  0x90b4  0x437614bf  937a03cf 33b5  uncond
+   24    0 0x0795  13  0xff  0xad61  0x0d745a8d  0c6b9c74 9b6b  uncond
+   24    1 0x07a2  13  0xff  0x8eab  0x19492cb6  81f9b245 93fe  uncond
+   25    0 0x07d6  13  0x00  0xe62c  0x1b1bf34a  d7b19f0f 9843  bit 21 of r2
+   25    1 0x07e3  13  0x01  0xf501  0x68fb7d61  f80ff020 7665  bit 21 of r2
+   25    2 0x07f0  13  0x00  0x2c31  0x786014b2  00b67fa8 23b5  bit 21 of r2
+   25    3 0x07fd  13  0x00  0xb30f  0x9879353f  f2dcfc37 6bd0  bit 21 of r2
+   25    4 0x080a  13  0x01  0x4115  0xacb4232a  0cabd9b5 992e  bit 21 of r2
+   26    0 0x082c  13  0xff  0xd53a  0x6f961be2  357dc317 62c3  uncond
+   26    1 0x0839  13  0xff  0x2abb  0x08dd7d82  496e625f 348b  uncond
+   26    2 0x0846  13  0xff  0xb137  0x80883e0c  2d52afa0 3b50  uncond
+   27    0 0x0868  13  0xff  0x4115  0x8c4caf6a  39c14b82 6376  uncond
+   27    1 0x0875  13  0xff  0x2abb  0x535f77d5  837be11e ecf0  uncond
+   28    0 0x08a9  13  0x00  0xe81d  0x92708a32  643eac42 f555  bit 13 of r3
+   28    1 0x08b6  13  0x01  0xf501  0xd004f0b4  01b502da 114e  bit 13 of r3
+   28    2 0x08c3  13  0x00  0x2abb  0x8181cf78  35741c34 e232  bit 13 of r3
+   28    3 0x08d0  13  0x00  0xf99f  0xda2cd7f8  212b413f 24d6  bit 13 of r3
+   28    4 0x08dd  13  0x01  0x8d8b  0xd8f4b89a  4f257846 4460  bit 13 of r3
+   29    0 0x08ff  13  0xff  0x8eab  0x7d25a58e  bb3a62e5 57c5  uncond
+   29    1 0x090c  13  0xff  0xd755  0x78661a6f  bc246fb5 dda5  uncond
+   30    0 0x092e  13  0xff  0xad61  0x68bc4ea8  11d9c471 83af  uncond
+   30    1 0x093b  13  0xff  0x6d40  0x4ce0db89  c662efd0 0905  uncond
+   30    2 0x0948  13  0xff  0xd755  0xdeb0a866  9ccfb429 0b10  uncond
+   31    0 0x097c  13  0x01  0xb515  0x1c8707db  48badbe1 171b  bit 4 of r0
+   31    1 0x0989  13  0x00  0xf501  0xa18d0bdd  a5120104 0d17  bit 4 of r0
+   31    2 0x0996  13  0x01  0x26bf  0x2e8b0e7c  efac6aa5 5d29  bit 4 of r0
+   31    3 0x09a3  13  0x00  0x821c  0x76e9c059  8fcafec8 6052  bit 4 of r0
+   31    4 0x09b0  13  0x01  0x2457  0xbc4d1033  3bb3940d bb28  bit 4 of r0
+   32    0 0x09d2  13  0xff  0x4ab1  0x56242aec  378dde92 466e  uncond
+   32    1 0x09df  13  0xff  0x000b  0x1738fee8  3f1d8907 b49d  uncond
+   33    0 0x0a01  13  0xff  0x000b  0x08f28d98  4717f9e5 38dd  uncond
+   33    1 0x0a0e  13  0xff  0x6d40  0xcc96b9e3  c57d637d 07ea  uncond
+   33    2 0x0a1b  13  0xff  0x31fe  0xd063bedf  4260c687 e737  uncond
+   34    0 0x0a4f  13  0x01  0x39f0  0x432c61b7  7f338e78 e594  bit 2 of r0
+   34    1 0x0a5c  13  0x01  0x31fe  0x930ec1c4  b9cff220 6db4  bit 2 of r0
+   34    2 0x0a69  13  0x00  0x480b  0x90257744  5417eb77 c3d2  bit 2 of r0
+   34    3 0x0a76  13  0x00  0xb30f  0x13c2888e  df07e494 e9ab  bit 2 of r0
+   34    4 0x0a83  13  0x01  0x821c  0xc78a2981  2d3a1d39 c525  bit 2 of r0
+   35    0 0x0aa5  13  0xff  0x1853  0xc73c5114  ae7b63c9 8278  uncond
+   35    1 0x0ab2  13  0xff  0xcacc  0xd68fc3cc  3ef4a8d4 5624  uncond
+   35    2 0x0abf  13  0xff  0xb30f  0x4e7e95cf  4d94bec1 9506  uncond
+   36    0 0x0ae1  13  0xff  0x1853  0x5b0a758c  904c9b90 56a8  uncond
+   36    1 0x0aee  13  0xff  0xad61  0x7be7ff50  5effcfcd f975  uncond
+   39    0 0x0b8f  13  0x00  0xe62c  0xc3a18516  f3d949cd cba6  bit 0 of r6
+   39    1 0x0b9c  13  0x01  0x0d66  0xcd03ab3e  7e29c5ab b654  bit 0 of r6
+   39    2 0x0ba9  13  0x00  0xb515  0xf2a928b6  f31c4c36 ed96  bit 0 of r6
+   39    3 0x0bb6  13  0x01  0x2457  0xd58e4883  1e655de1 4f78  bit 0 of r6
+   39    4 0x0bc3  13  0x01  0x4ab1  0x58efa851  50cf4e7e beec  bit 0 of r6
+   39    5 0x0bd0  13  0x00  0x04a3  0x3b548acc  b2e48851 951b  bit 0 of r6
+  total edges 126  (1638 bytes = 53.9% of the image)
+  edge type histogram: 0x00 x32, 0x01 x32, 0xff x62
+====================================================================================================
+6. TAG FREQUENCY (the 2-byte values)
+====================================================================================================
+
+--- 6a. structured u16 fields (authoritative positions, little-endian value) -----------------------
+  tag    as rec.tag  as edge.target  as rec.dflt_next  in header  total  raw byte-pair 'lo hi'
+  0x0d66          1             3               40               0      44   66 0d
+  0x4ab1          1            10                0               0      11   b1 4a
+  0xb515          1             7                0               0       8   15 b5
+  0x2457          1             6                0               0       7   57 24
+  0x31fe          1             6                0               0       7   fe 31
+  0x480b          1             4                0               1       6   0b 48
+  0x859a          1             5                0               0       6   9a 85
+  0xad61          1             5                0               0       6   61 ad
+  0x8eab          1             5                0               0       6   ab 8e
+  0x52e4          1             4                0               0       5   e4 52
+  0xf99f          1             4                0               0       5   9f f9
+  0x2c31          1             4                0               0       5   31 2c
+  0xb30f          1             4                0               0       5   0f b3
+  0x39f0          1             4                0               0       5   f0 39
+  0x1853          1             4                0               0       5   53 18
+  0x4115          1             3                0               0       4   15 41
+  0x6d40          1             3                0               0       4   40 6d
+  0x6427          1             3                0               0       4   27 64
+  0xcacc          1             3                0               0       4   cc ca
+  0x9918          1             3                0               0       4   18 99
+  0xf501          1             3                0               0       4   01 f5
+  0x2abb          1             3                0               0       4   bb 2a
+  0xe81d          1             3                0               0       4   1d e8
+  0xd53a          1             2                0               0       3   3a d5
+  0x90b4          1             2                0               0       3   b4 90
+  0x9345          1             2                0               0       3   45 93
+  0x3871          1             2                0               0       3   71 38
+  0xb137          1             2                0               0       3   37 b1
+  0xe62c          1             2                0               0       3   2c e6
+  0xd755          1             2                0               0       3   55 d7
+  0x821c          1             2                0               0       3   1c 82
+  0x000b          1             2                0               0       3   0b 00
+  0x04a3          1             2                0               0       3   a3 04
+  0xa77f          1             1                0               0       2   7f a7
+  0xa360          1             1                0               0       2   60 a3
+  0xe301          1             1                0               0       2   01 e3
+  0x73d7          1             1                0               0       2   d7 73
+  0xa3f5          1             1                0               0       2   f5 a3
+  0x8d8b          1             1                0               0       2   8b 8d
+  0x26bf          1             1                0               0       2   bf 26
+
+  every edge.target resolves to a declared record tag: YES - all 126 edges
+
+--- 6b. raw 2-byte-pair census (all 3036 overlapping pairs, to answer 'where does 66 0d occur?') ---
+  pair  occurrences  first positions (class of the low byte's field)
+  66 0d    44   0x16(REC), 0x142(REC), 0x1aa(REC), 0x1e6(REC), 0x215(REC), 0x27d(REC), 0x28f(EDGE), 0x2b9(REC), 0x2f5(REC), 0x35d(REC), 0x38c(REC), 0x3bb(REC), 0x416(REC), 0x445(REC)
+  0b 48     6   0x8(HDR), 0x12(REC), 0x118(EDGE), 0x578(EDGE), 0x658(EDGE), 0xa6a(EDGE)
+  57 24     7   0x125(EDGE), 0x2d8(EDGE), 0x36f(EDGE), 0x3ab(EDGE), 0x3b7(REC), 0x9b1(EDGE), 0xbb7(EDGE)
+  b1 4a    11   0x205(EDGE), 0x26d(EDGE), 0x37c(EDGE), 0x39e(EDGE), 0x435(EDGE), 0x457(EDGE), 0x4a5(EDGE), 0x72b(EDGE), 0x780(REC), 0x9d3(EDGE), 0xbc4(EDGE)
+  e4 52     5   0x1c9(EDGE), 0x1f8(EDGE), 0x211(REC), 0x260(EDGE), 0x406(EDGE)
+  27 64     4   0x2a9(EDGE), 0x2cb(EDGE), 0x2f1(REC), 0x665(EDGE)
+  1d e8     4   0x1d6(EDGE), 0x3ec(EDGE), 0x8aa(EDGE), 0x8ea(REC)
+  9a 85     6   0x18d(EDGE), 0x1a6(REC), 0x34d(EDGE), 0x4cc(EDGE), 0x4fb(EDGE), 0x60a(EDGE)
+  ae 38     1   0x11a(TWE)
+  31 2c     5   0x180(EDGE), 0x1bc(EDGE), 0x585(EDGE), 0x5da(REC), 0x7f1(EDGE)
+  15 41     4   0x166(EDGE), 0x1e2(REC), 0x80b(EDGE), 0x869(EDGE)
+  41 15     0   
+
+  most frequent raw pairs overall: 660d=44, 0066=31, 0706=30, ff00=27, 0504=26, 0407=25, 000a=25, 0705=25, 0c06=24, 0207=24, 0003=24, 0d0c=24
+  distinct pair values 1965 ; pairs occurring exactly once 1771 (random filler) 
+
+--- 6c. the 6-byte countersignatures: unique per edge (signed) vs tags (derived) -------------------
+  edges 126 ; distinct 6B signatures 126 ; repeats none
+  edges 126 ; distinct 4B tweaks  126 ; repeats none
+  imm32 operands 60 ; distinct 55 ; repeats ['00000000 x6']
+  => the 40 tag values recur (up to 44 times) and are enumerable => DERIVED identifiers/labels;
+     the 6-byte sig (edge+7, sig_lo u32 + sig_hi u16) never repeats => the SIGNED material.
+     verification site: 0x1de1 builds msg 'E' || tag(2) || target(2) || type(1) || tweak(4) = 9 bytes,
+     0x1af0 = SipHash-2-4 (constants 0x736f6d6570736575 / 0x646f72616e646f6d / 0x6c7967656e657261 /
+     0x7465646279746573, 2+4 rounds) keyed from 0x76ef0, truncated to 6 bytes (0x1d00..0x1d19);
+     0x1e3b/0x1e47 compare it against sig_lo/sig_hi.  MINT uses the same hash with domain byte 'M'.
+====================================================================================================
+7. ENTROPY PROFILE (window = 32 bytes)
+====================================================================================================
+  off      dist/32  entropy  chi2     rand-class  verdict
+  0x0000     22    3.983     832.0     12.5%      mixed
+  0x0020      9    2.471    2032.0      0.0%      structure
+  0x0040      9    2.624    1712.0     12.5%      mixed
+  0x0060     10    2.785    1600.0     12.5%      mixed
+  0x0080     12    2.960    1520.0     12.5%      mixed
+  0x00a0     11    2.686    1920.0      0.0%      structure
+  0x00c0     11    2.940    1424.0     12.5%      mixed
+  0x00e0     11    2.871    1568.0     12.5%      mixed
+  0x0100     19    3.688    1024.0     18.8%      mixed
+  0x0120     27    4.688     304.0     75.0%      RANDOM
+  0x0140     18    3.816     720.0     12.5%      mixed
+  0x0160     29    4.812     272.0     75.0%      RANDOM
+  0x0180     31    4.938     240.0     75.0%      RANDOM
+  0x01a0     27    4.688     304.0     37.5%      mixed
+  0x01c0     28    4.726     304.0     81.2%      RANDOM
+  0x01e0     27    4.688     304.0     37.5%      mixed
+  0x0200     27    4.640     336.0     43.8%      mixed
+  0x0220     24    4.414     416.0     40.6%      mixed
+  0x0240     29    4.812     272.0     78.1%      RANDOM
+  0x0260     32    5.000     224.0     62.5%      mostly-rand
+  0x0280     26    4.601     336.0     50.0%      mostly-rand
+  0x02a0     29    4.812     272.0     59.4%      mostly-rand
+  0x02c0     26    4.601     336.0     59.4%      mostly-rand
+  0x02e0     28    4.726     304.0     43.8%      mixed
+  0x0300     24    4.390     432.0     40.6%      mixed
+  0x0320     28    4.726     304.0     78.1%      RANDOM
+  0x0340     29    4.812     272.0     62.5%      mostly-rand
+  0x0360     28    4.750     288.0     50.0%      mostly-rand
+  0x0380     27    4.688     304.0     37.5%      mixed
+  0x03a0     29    4.812     272.0     62.5%      mostly-rand
+  0x03c0     18    3.879     640.0     25.0%      mixed
+  0x03e0     31    4.938     240.0     78.1%      RANDOM
+  0x0400     27    4.664     320.0     59.4%      mostly-rand
+  0x0420     28    4.750     288.0     59.4%      mostly-rand
+  0x0440     27    4.664     320.0     37.5%      mixed
+  0x0460     25    4.500     384.0     40.6%      mixed
+  0x0480     26    4.539     384.0     43.8%      mixed
+  0x04a0     30    4.851     272.0     75.0%      RANDOM
+  0x04c0     29    4.789     288.0     62.5%      mostly-rand
+  0x04e0     27    4.688     304.0     53.1%      mostly-rand
+  0x0500     23    4.438     368.0     59.4%      mostly-rand
+  0x0520     30    4.875     256.0     59.4%      mostly-rand
+  0x0540     19    3.938     640.0     12.5%      mixed
+  0x0560     29    4.812     272.0     71.9%      mostly-rand
+  0x0580     29    4.812     272.0     75.0%      RANDOM
+  0x05a0     28    4.750     288.0     43.8%      mixed
+  0x05c0     29    4.789     288.0     62.5%      mostly-rand
+  0x05e0     26    4.601     336.0     46.9%      mixed
+  0x0600     29    4.812     272.0     59.4%      mostly-rand
+  0x0620     19    4.031     544.0     25.0%      mixed
+  0x0640     31    4.938     240.0     81.2%      RANDOM
+  0x0660     31    4.938     240.0     75.0%      RANDOM
+  0x0680     27    4.688     304.0     43.8%      mixed
+  0x06a0     27    4.664     320.0     62.5%      mostly-rand
+  0x06c0     28    4.750     288.0     46.9%      mixed
+  0x06e0     29    4.812     272.0     59.4%      mostly-rand
+  0x0700     19    3.965     608.0     25.0%      mixed
+  0x0720     29    4.812     272.0     81.2%      RANDOM
+  0x0740     29    4.789     288.0     56.2%      mostly-rand
+  0x0760     28    4.750     288.0     62.5%      mostly-rand
+  0x0780     24    4.476     368.0     37.5%      mixed
+  0x07a0     26    4.562     368.0     37.5%      mixed
+  0x07c0     24    4.438     400.0     46.9%      mixed
+  0x07e0     28    4.726     304.0     71.9%      mostly-rand
+  0x0800     30    4.875     256.0     62.5%      mostly-rand
+  0x0820     25    4.562     336.0     56.2%      mostly-rand
+  0x0840     29    4.812     272.0     59.4%      mostly-rand
+  0x0860     30    4.875     256.0     59.4%      mostly-rand
+  0x0880     17    3.754     736.0     12.5%      mixed
+  0x08a0     29    4.812     272.0     71.9%      mostly-rand
+  0x08c0     29    4.812     272.0     71.9%      mostly-rand
+  0x08e0     27    4.688     304.0     43.8%      mixed
+  0x0900     27    4.688     304.0     62.5%      mostly-rand
+  0x0920     28    4.750     288.0     50.0%      mostly-rand
+  0x0940     27    4.664     320.0     56.2%      mostly-rand
+  0x0960     20    4.078     544.0     28.1%      mixed
+  0x0980     28    4.726     304.0     81.2%      RANDOM
+  0x09a0     30    4.875     256.0     71.9%      mostly-rand
+  0x09c0     27    4.688     304.0     43.8%      mixed
+  0x09e0     26    4.578     352.0     43.8%      mixed
+  0x0a00     29    4.789     288.0     68.8%      mostly-rand
+  0x0a20     19    3.906     672.0     25.0%      mixed
+  0x0a40     28    4.726     304.0     59.4%      mostly-rand
+  0x0a60     30    4.875     256.0     81.2%      RANDOM
+  0x0a80     29    4.812     272.0     53.1%      mostly-rand
+  0x0aa0     28    4.726     304.0     62.5%      mostly-rand
+  0x0ac0     27    4.664     320.0     43.8%      mixed
+  0x0ae0     26    4.512     416.0     62.5%      mostly-rand
+  0x0b00     17    3.614     912.0      6.2%      mixed
+  0x0b20     16    3.462    1008.0     31.2%      mixed
+  0x0b40     17    3.604     896.0     37.5%      mixed
+  0x0b60      6    2.160    2080.0      0.0%      structure
+  0x0b80     21    4.028     656.0     34.4%      mixed
+  0x0ba0     30    4.875     256.0     81.2%      RANDOM
+
+  chi2 is against a uniform 256-symbol alphabet with n=32 (E=0.125 per bin).  Its FLOOR is 224.0,
+  reached exactly when all 32 bytes in the window are distinct (i.e. maximal randomness); every
+  repeated byte pushes it up (a window of 32 identical bytes would give 8196).  So:
+     chi2 ~ 224 and dist=32   -> random material      chi2 > 1000 and dist < 16 -> structure
+  min/max chi2 over the image: 224.0 / 2080.0 ; windows at the floor: 1 of 94
+
+
+--- where structure ends and randomness begins (field-level, exact) --------------------------------
+  first byte inside a per-instance field : 0x001c  (00000000) field rec0.ins@1c
+  first byte of REAL entropy             : 0x011a  (ae38eff0af67f463f2c2) field rec0.edge0.tweak of rec0
+  fully deterministic prefix             : 0x0000 .. 0x0119  (282 bytes = 9.3% of the image)
+
+  offset map, per region (live = bytes that actually carry per-instance entropy; a 6-byte
+     instruction's imm32 counts as live only when it is not 0x00000000):
+     range                 rec  role                        size  live  where the determinism stops
+     0x0012..0x013d    0  packer (input->regs)        300     30   header+program up to 0x0115, then 39 edge B (30 per-instance: 4B tweak + 6B sig each)
+     0x013e..0x01a5    1  mixing node (5 insns)       104     58   header+program up to 0x0163, then 65 edge B (58 per-instance: 4B tweak + 6B sig each)
+     0x01a6..0x01e1    2  leaf arithmetic (2 insns)    60     34   header+program up to 0x01b9, then 39 edge B (34 per-instance: 4B tweak + 6B sig each)
+     0x01e2..0x0210    3  leaf arithmetic (2 insns)    47     24   header+program up to 0x01f5, then 26 edge B (24 per-instance: 4B tweak + 6B sig each)
+     0x0211..0x0278    4  mixing node (5 insns)       104     58   header+program up to 0x0236, then 65 edge B (58 per-instance: 4B tweak + 6B sig each)
+     0x0279..0x02b4    5  leaf arithmetic (2 insns)    60     34   header+program up to 0x028c, then 39 edge B (34 per-instance: 4B tweak + 6B sig each)
+     0x02b5..0x02f0    6  leaf arithmetic (2 insns)    60     34   header+program up to 0x02c8, then 39 edge B (34 per-instance: 4B tweak + 6B sig each)
+     0x02f1..0x0358    7  mixing node (5 insns)       104     58   header+program up to 0x0316, then 65 edge B (58 per-instance: 4B tweak + 6B sig each)
+     0x0359..0x0387    8  leaf arithmetic (2 insns)    47     24   header+program up to 0x036c, then 26 edge B (24 per-instance: 4B tweak + 6B sig each)
+     0x0388..0x03b6    9  leaf arithmetic (2 insns)    47     24   header+program up to 0x039b, then 26 edge B (24 per-instance: 4B tweak + 6B sig each)
+     0x03b7..0x0411   10  mixing node (5 insns)        91     48   header+program up to 0x03dc, then 52 edge B (48 per-instance: 4B tweak + 6B sig each)
+     0x0412..0x0440   11  leaf arithmetic (2 insns)    47     24   header+program up to 0x0425, then 26 edge B (24 per-instance: 4B tweak + 6B sig each)
+     0x0441..0x046f   12  leaf arithmetic (2 insns)    47     24   header+program up to 0x0454, then 26 edge B (24 per-instance: 4B tweak + 6B sig each)
+     0x0470..0x04d7   13  mixing node (5 insns)       104     58   header+program up to 0x0495, then 65 edge B (58 per-instance: 4B tweak + 6B sig each)
+     0x04d8..0x0513   14  leaf arithmetic (2 insns)    60     34   header+program up to 0x04eb, then 39 edge B (34 per-instance: 4B tweak + 6B sig each)
+     0x0514..0x0542   15  leaf arithmetic (2 insns)    47     24   header+program up to 0x0527, then 26 edge B (24 per-instance: 4B tweak + 6B sig each)
+     0x0543..0x05aa   16  mixing node (5 insns)       104     58   header+program up to 0x0568, then 65 edge B (58 per-instance: 4B tweak + 6B sig each)
+     0x05ab..0x05d9   17  leaf arithmetic (2 insns)    47     24   header+program up to 0x05be, then 26 edge B (24 per-instance: 4B tweak + 6B sig each)
+     0x05da..0x0615   18  leaf arithmetic (2 insns)    60     34   header+program up to 0x05ed, then 39 edge B (34 per-instance: 4B tweak + 6B sig each)
+     0x0616..0x067d   19  mixing node (5 insns)       104     58   header+program up to 0x063b, then 65 edge B (58 per-instance: 4B tweak + 6B sig each)
+     0x067e..0x06b9   20  leaf arithmetic (2 insns)    60     34   header+program up to 0x0691, then 39 edge B (34 per-instance: 4B tweak + 6B sig each)
+     0x06ba..0x06f5   21  leaf arithmetic (2 insns)    60     34   header+program up to 0x06cd, then 39 edge B (34 per-instance: 4B tweak + 6B sig each)
+     0x06f6..0x0750   22  mixing node (5 insns)        91     48   header+program up to 0x071b, then 52 edge B (48 per-instance: 4B tweak + 6B sig each)
+     0x0751..0x077f   23  leaf arithmetic (2 insns)    47     24   header+program up to 0x0764, then 26 edge B (24 per-instance: 4B tweak + 6B sig each)
+     0x0780..0x07ae   24  leaf arithmetic (2 insns)    47     24   header+program up to 0x0793, then 26 edge B (24 per-instance: 4B tweak + 6B sig each)
+     0x07af..0x0816   25  mixing node (5 insns)       104     58   header+program up to 0x07d4, then 65 edge B (58 per-instance: 4B tweak + 6B sig each)
+     0x0817..0x0852   26  leaf arithmetic (2 insns)    60     34   header+program up to 0x082a, then 39 edge B (34 per-instance: 4B tweak + 6B sig each)
+     0x0853..0x0881   27  leaf arithmetic (2 insns)    47     24   header+program up to 0x0866, then 26 edge B (24 per-instance: 4B tweak + 6B sig each)
+     0x0882..0x08e9   28  mixing node (5 insns)       104     58   header+program up to 0x08a7, then 65 edge B (58 per-instance: 4B tweak + 6B sig each)
+     0x08ea..0x0918   29  leaf arithmetic (2 insns)    47     24   header+program up to 0x08fd, then 26 edge B (24 per-instance: 4B tweak + 6B sig each)
+     0x0919..0x0954   30  leaf arithmetic (2 insns)    60     34   header+program up to 0x092c, then 39 edge B (34 per-instance: 4B tweak + 6B sig each)
+     0x0955..0x09bc   31  mixing node (5 insns)       104     58   header+program up to 0x097a, then 65 edge B (58 per-instance: 4B tweak + 6B sig each)
+     0x09bd..0x09eb   32  leaf arithmetic (2 insns)    47     24   header+program up to 0x09d0, then 26 edge B (24 per-instance: 4B tweak + 6B sig each)
+     0x09ec..0x0a27   33  leaf arithmetic (2 insns)    60     34   header+program up to 0x09ff, then 39 edge B (34 per-instance: 4B tweak + 6B sig each)
+     0x0a28..0x0a8f   34  mixing node (5 insns)       104     58   header+program up to 0x0a4d, then 65 edge B (58 per-instance: 4B tweak + 6B sig each)
+     0x0a90..0x0acb   35  leaf arithmetic (2 insns)    60     34   header+program up to 0x0aa3, then 39 edge B (34 per-instance: 4B tweak + 6B sig each)
+     0x0acc..0x0afa   36  leaf arithmetic (2 insns)    47     24   header+program up to 0x0adf, then 26 edge B (24 per-instance: 4B tweak + 6B sig each)
+     0x0afb..0x0b06   37  goal (GETENV/EMIT/HALT)      12      0   whole record deterministic (no edges, no live immediate)
+     0x0b07..0x0b10   38  sink (HALT only)             10      0   whole record deterministic (no edges, no live immediate)
+     0x0b11..0x0bdc   39  wide node (28 insns)        204     84   header+program up to 0x0b8d, then 78 edge B (84 per-instance: 4B tweak + 6B sig each)
+  maximal deterministic stretches >= 8 bytes (74 total, first 30 shown):
+     0x0000 .. 0x001b  (  28 B)  next field: rec0.ins@1c
+     0x0020 .. 0x0045  (  38 B)  next field: rec0.ins@46
+     0x004a .. 0x006f  (  38 B)  next field: rec0.ins@70
+     0x0074 .. 0x0099  (  38 B)  next field: rec0.ins@9a
+     0x009e .. 0x00c3  (  38 B)  next field: rec0.ins@c4
+     0x00c8 .. 0x00ed  (  38 B)  next field: rec0.ins@ee
+     0x00f2 .. 0x0119  (  40 B)  next field: rec0.edge0.tweak
+     0x013e .. 0x0159  (  28 B)  next field: rec1.ins@15a
+     0x01a6 .. 0x01af  (  10 B)  next field: rec2.ins@1b0
+     0x01b4 .. 0x01bd  (  10 B)  next field: rec2.edge0.tweak
+     0x01e2 .. 0x01eb  (  10 B)  next field: rec3.ins@1ec
+     0x01f0 .. 0x01f9  (  10 B)  next field: rec3.edge0.tweak
+     0x0211 .. 0x022c  (  28 B)  next field: rec4.ins@22d
+     0x0279 .. 0x0282  (  10 B)  next field: rec5.ins@283
+     0x0287 .. 0x0290  (  10 B)  next field: rec5.edge0.tweak
+     0x02b5 .. 0x02be  (  10 B)  next field: rec6.ins@2bf
+     0x02c3 .. 0x02cc  (  10 B)  next field: rec6.edge0.tweak
+     0x02f1 .. 0x030c  (  28 B)  next field: rec7.ins@30d
+     0x0359 .. 0x0362  (  10 B)  next field: rec8.ins@363
+     0x0367 .. 0x0370  (  10 B)  next field: rec8.edge0.tweak
+     0x0388 .. 0x0391  (  10 B)  next field: rec9.ins@392
+     0x0396 .. 0x039f  (  10 B)  next field: rec9.edge0.tweak
+     0x03b7 .. 0x03d2  (  28 B)  next field: rec10.ins@3d3
+     0x0412 .. 0x041b  (  10 B)  next field: rec11.ins@41c
+     0x0420 .. 0x0429  (  10 B)  next field: rec11.edge0.tweak
+     0x0441 .. 0x044a  (  10 B)  next field: rec12.ins@44b
+     0x044f .. 0x0458  (  10 B)  next field: rec12.edge0.tweak
+     0x0470 .. 0x048b  (  28 B)  next field: rec13.ins@48c
+     0x04d8 .. 0x04e1  (  10 B)  next field: rec14.ins@4e2
+     0x04e6 .. 0x04ef  (  10 B)  next field: rec14.edge0.tweak
+
+  random-run summary (start / end / len / classes), first 12 of 186 runs:
+     0x001c   0x001f      4   IMM
+     0x0046   0x0049      4   IMM
+     0x0070   0x0073      4   IMM
+     0x009a   0x009d      4   IMM
+     0x00c4   0x00c7      4   IMM
+     0x00ee   0x00f1      4   IMM
+     0x011a   0x0123     10   SIG+TWE
+     0x0127   0x0130     10   SIG+TWE
+     0x0134   0x013d     10   SIG+TWE
+     0x015a   0x015d      4   IMM
+     0x0160   0x0163      4   IMM
+     0x0168   0x0171     10   SIG+TWE
+
+  random-run length histogram: 4B x60, 10B x126
+  => random material NEVER aligns to a fixed block size: it is 4-byte imm32/tweak fields at
+     +2 mod 6 inside instructions and 4+6 bytes at +3/+7 mod 13 inside edges, so the runs above
+     are 4B and 6B pieces interleaved by the grammar.
+====================================================================================================
+8. SELF-SIMILARITY
+====================================================================================================
+
+--- 8a. identical records? -------------------------------------------------------------------------
+  byte-identical records: NONE
+
+--- 8b. identical records modulo per-instance constants? -------------------------------------------
+  opcode-skeleton classes: 15 ; identical-modulo-constants groups (>1 member): 5
+     x13  XOR.imm ADD.reg ROL.imm  edgesffff
+     x11  XOR.imm ADD.reg ROL.imm  edgesffffff
+     x2   ADD.reg ROL.imm XOR.reg ADD.reg ROL.imm XOR.reg ADD.imm XOR.imm  edges00010100
+     x2   ADD.reg ROL.imm XOR.reg ADD.reg ROL.imm XOR.reg ADD.imm XOR.imm  edges0100010001
+     x2   ADD.reg ROL.imm XOR.reg ADD.reg ROL.imm XOR.reg ADD.imm XOR.imm  edges0001000001
+     x1   MOV.imm LDIN ROL.imm OR.reg LDIN ROL.imm OR.reg LDIN ROL.imm OR.reg LDIN ROL.imm OR.reg MOV.imm LDIN ROL.imm OR.reg LDIN ROL.imm OR.reg LDIN ROL.imm OR.reg LDIN ROL.imm OR.reg MOV.imm LDIN ROL.imm OR.reg LDIN ROL.imm OR.reg LDIN ROL.imm OR.reg LDIN ROL.imm OR.reg MOV.imm LDIN ROL.imm OR.reg LDIN ROL.imm OR.reg LDIN ROL.imm OR.reg LDIN ROL.imm OR.reg MOV.imm LDIN ROL.imm OR.reg LDIN ROL.imm OR.reg LDIN ROL.imm OR.reg LDIN ROL.imm OR.reg MOV.imm LDIN ROL.imm OR.reg LDIN ROL.imm OR.reg LDIN ROL.imm OR.reg LDIN ROL.imm OR.reg  edgesffffff
+     x1   ADD.reg ROL.imm XOR.reg ADD.reg ROL.imm XOR.reg ADD.imm XOR.imm  edges0100000001
+     x1   ADD.reg ROL.imm XOR.reg ADD.reg ROL.imm XOR.reg ADD.imm XOR.imm  edges0100000101
+     x1   ADD.reg ROL.imm XOR.reg ADD.reg ROL.imm XOR.reg ADD.imm XOR.imm  edges0100010000
+     x1   ADD.reg ROL.imm XOR.reg ADD.reg ROL.imm XOR.reg ADD.imm XOR.imm  edges0001010100
+     x1   ADD.reg ROL.imm XOR.reg ADD.reg ROL.imm XOR.reg ADD.imm XOR.imm  edges0000010001
+     x1   ADD.reg ROL.imm XOR.reg ADD.reg ROL.imm XOR.reg ADD.imm XOR.imm  edges0101000001
+     x1   GETENV EMIT HALT  edges
+     x1   HALT  edges
+     x1   MOV.reg XOR.imm MOV.reg MOV.reg XOR.imm OR.reg MOV.reg XOR.imm OR.reg MOV.reg XOR.imm OR.reg MOV.reg XOR.imm OR.reg MOV.reg XOR.imm OR.reg MOV.reg SHR.imm OR.reg MOV.reg SHR.imm OR.reg MOV.reg SHR.imm OR.reg MOV.reg SHR.imm OR.reg MOV.reg SHR.imm OR.reg  edges000100010100
+  => the 24 leaf nodes (L=12) split into two families: 'XOR.imm r,imm ; ADD.reg ; ROL.imm' with
+     k=3 and the same program with k=2, i.e. identical *code shape*, differing only in their
+     4-byte immediate, their target set and their 6-byte per-edge signatures.
+
+--- 8c. identical edges / repeated tweaks / repeated signatures ------------------------------------
+  full 13B edge : 126 distinct / 126, repeats: none
+  target+tweak  : 126 distinct / 126, repeats: none
+  signature     : 126 distinct / 126, repeats: none
+
+--- 8d. graph self-similarity (in/out degree, reachability from start_tag) -------------------------
+  tag     rec  L    k  indeg  indeg(deny-sink)  role
+  0x4ab1   24   12   2    10        3      
+  0xb515   22   30   4     7        3      
+  0x2457   10   30   4     6        3      
+  0x31fe   17   12   2     6        3      
+  0x859a    2   12   3     5        3      
+  0xad61   19   30   5     5        3      
+  0x8eab   25   30   5     5        3      
+  0x480b    0  252   3     4        3      START
+  0x52e4    4   30   5     4        3      
+  0xf99f   16   30   5     4        3      
+  0x2c31   18   12   3     4        3      
+  0xb30f   35   12   3     4        3      
+  0x39f0   36   12   2     4        3      
+  0x1853   39  117   6     4        3      
+  0x4115    3   12   2     3        3      
+  0x6d40    5   12   3     3        3      
+  0x6427    7   30   5     3        3      
+  0xcacc    9   12   2     3        3      
+  0x9918   20   12   3     3        3      
+  0xf501   27   12   2     3        3      
+  0x2abb   28   30   5     3        3      
+  0xe81d   29   12   2     3        3      
+  0x0d66   38    1   0     3        3      SINK(HALT,k=0)
+  0xd53a    6   12   3     2        3      
+  0x90b4   12   12   2     2        3      
+  0x9345   13   30   5     2        3      
+  0x3871   15   12   2     2        3      
+  0xb137   21   12   3     2        3      
+  0xe62c   26   12   3     2        3      
+  0xd755   31   30   5     2        3      
+  0x821c   32   12   2     2        3      
+  0x000b   34   30   5     2        3      
+  0x04a3   37    3   0     2        3      GOAL(GETENV/EMIT)
+  0xa77f    1   30   5     1        3      
+  0xa360    8   12   2     1        3      
+  0xe301   11   12   2     1        3      
+  0x73d7   14   12   3     1        3      
+  0xa3f5   23   12   2     1        3      
+  0x8d8b   30   12   3     1        3      
+  0x26bf   33   12   3     1        3      
+  nodes with no incoming edge (unreachable): none
+  self loops: ['rec0', 'rec4', 'rec20', 'rec28', 'rec35']
+  default-next is 0x0d66 in 40 of 40 records -> one shared deny sink node
+====================================================================================================
+9. PER-RECORD DISASSEMBLY (typed tree, deepest level)
+====================================================================================================
+
+rec0  @0x0012  tag=0x480b  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=252  k=3  size=300
+    +0x000 0x001a  MOV.imm  r0 , 0x00000000     010000000000
+    +0x006 0x0020  LDIN     r6 , 0x00           0c0600
+    +0x009 0x0023  ROL.imm  r6 , 0x00           070600
+    +0x00c 0x0026  OR.reg   r0 , r6             060006
+    +0x00f 0x0029  LDIN     r6 , 0x01           0c0601
+    +0x012 0x002c  ROL.imm  r6 , 0x08           070608
+    +0x015 0x002f  OR.reg   r0 , r6             060006
+    +0x018 0x0032  LDIN     r6 , 0x02           0c0602
+    +0x01b 0x0035  ROL.imm  r6 , 0x10           070610
+    +0x01e 0x0038  OR.reg   r0 , r6             060006
+    +0x021 0x003b  LDIN     r6 , 0x03           0c0603
+    +0x024 0x003e  ROL.imm  r6 , 0x18           070618
+    +0x027 0x0041  OR.reg   r0 , r6             060006
+    +0x02a 0x0044  MOV.imm  r1 , 0x00000000     010100000000
+    +0x030 0x004a  LDIN     r6 , 0x04           0c0604
+    +0x033 0x004d  ROL.imm  r6 , 0x00           070600
+    +0x036 0x0050  OR.reg   r1 , r6             060106
+    +0x039 0x0053  LDIN     r6 , 0x05           0c0605
+    +0x03c 0x0056  ROL.imm  r6 , 0x08           070608
+    +0x03f 0x0059  OR.reg   r1 , r6             060106
+    +0x042 0x005c  LDIN     r6 , 0x06           0c0606
+    +0x045 0x005f  ROL.imm  r6 , 0x10           070610
+    +0x048 0x0062  OR.reg   r1 , r6             060106
+    +0x04b 0x0065  LDIN     r6 , 0x07           0c0607
+    +0x04e 0x0068  ROL.imm  r6 , 0x18           070618
+    +0x051 0x006b  OR.reg   r1 , r6             060106
+    +0x054 0x006e  MOV.imm  r2 , 0x00000000     010200000000
+    +0x05a 0x0074  LDIN     r6 , 0x08           0c0608
+    +0x05d 0x0077  ROL.imm  r6 , 0x00           070600
+    +0x060 0x007a  OR.reg   r2 , r6             060206
+    +0x063 0x007d  LDIN     r6 , 0x09           0c0609
+    +0x066 0x0080  ROL.imm  r6 , 0x08           070608
+    +0x069 0x0083  OR.reg   r2 , r6             060206
+    +0x06c 0x0086  LDIN     r6 , 0x0a           0c060a
+    +0x06f 0x0089  ROL.imm  r6 , 0x10           070610
+    +0x072 0x008c  OR.reg   r2 , r6             060206
+    +0x075 0x008f  LDIN     r6 , 0x0b           0c060b
+    +0x078 0x0092  ROL.imm  r6 , 0x18           070618
+    +0x07b 0x0095  OR.reg   r2 , r6             060206
+    +0x07e 0x0098  MOV.imm  r3 , 0x00000000     010300000000
+    +0x084 0x009e  LDIN     r6 , 0x0c           0c060c
+    +0x087 0x00a1  ROL.imm  r6 , 0x00           070600
+    +0x08a 0x00a4  OR.reg   r3 , r6             060306
+    +0x08d 0x00a7  LDIN     r6 , 0x0d           0c060d
+    +0x090 0x00aa  ROL.imm  r6 , 0x08           070608
+    +0x093 0x00ad  OR.reg   r3 , r6             060306
+    +0x096 0x00b0  LDIN     r6 , 0x0e           0c060e
+    +0x099 0x00b3  ROL.imm  r6 , 0x10           070610
+    +0x09c 0x00b6  OR.reg   r3 , r6             060306
+    +0x09f 0x00b9  LDIN     r6 , 0x0f           0c060f
+    +0x0a2 0x00bc  ROL.imm  r6 , 0x18           070618
+    +0x0a5 0x00bf  OR.reg   r3 , r6             060306
+    +0x0a8 0x00c2  MOV.imm  r4 , 0x00000000     010400000000
+    +0x0ae 0x00c8  LDIN     r6 , 0x10           0c0610
+    +0x0b1 0x00cb  ROL.imm  r6 , 0x00           070600
+    +0x0b4 0x00ce  OR.reg   r4 , r6             060406
+    +0x0b7 0x00d1  LDIN     r6 , 0x11           0c0611
+    +0x0ba 0x00d4  ROL.imm  r6 , 0x08           070608
+    +0x0bd 0x00d7  OR.reg   r4 , r6             060406
+    +0x0c0 0x00da  LDIN     r6 , 0x12           0c0612
+    +0x0c3 0x00dd  ROL.imm  r6 , 0x10           070610
+    +0x0c6 0x00e0  OR.reg   r4 , r6             060406
+    +0x0c9 0x00e3  LDIN     r6 , 0x13           0c0613
+    +0x0cc 0x00e6  ROL.imm  r6 , 0x18           070618
+    +0x0cf 0x00e9  OR.reg   r4 , r6             060406
+    +0x0d2 0x00ec  MOV.imm  r5 , 0x00000000     010500000000
+    +0x0d8 0x00f2  LDIN     r6 , 0x14           0c0614
+    +0x0db 0x00f5  ROL.imm  r6 , 0x00           070600
+    +0x0de 0x00f8  OR.reg   r5 , r6             060506
+    +0x0e1 0x00fb  LDIN     r6 , 0x15           0c0615
+    +0x0e4 0x00fe  ROL.imm  r6 , 0x08           070608
+    +0x0e7 0x0101  OR.reg   r5 , r6             060506
+    +0x0ea 0x0104  LDIN     r6 , 0x16           0c0616
+    +0x0ed 0x0107  ROL.imm  r6 , 0x10           070610
+    +0x0f0 0x010a  OR.reg   r5 , r6             060506
+    +0x0f3 0x010d  LDIN     r6 , 0x17           0c0617
+    +0x0f6 0x0110  ROL.imm  r6 , 0x18           070618
+    +0x0f9 0x0113  OR.reg   r5 , r6             060506
+    edge  0 @0x0117  type=0xff target=0x480b tweak=0xf0ef38ae sig=c2f263f467af
+    edge  1 @0x0124  type=0xff target=0x2457 tweak=0x447edd50 sig=65c24d60625a
+    edge  2 @0x0131  type=0xff target=0xa77f tweak=0x08f40cf0 sig=9705166429a6
+
+rec1  @0x013e  tag=0xa77f  pred=take edge with type == bit 17 of r0  dflt_next=0x0d66  L=30  k=5  size=104
+    +0x000 0x0146  ADD.reg  r0 , r1             030001
+    +0x003 0x0149  ROL.imm  r0 , 0x10           070010
+    +0x006 0x014c  XOR.reg  r2 , r0             040200
+    +0x009 0x014f  ADD.reg  r3 , r2             030302
+    +0x00c 0x0152  ROL.imm  r3 , 0x1a           07031a
+    +0x00f 0x0155  XOR.reg  r1 , r3             040103
+    +0x012 0x0158  ADD.imm  r0 , 0x31eacee8     0900e8ceea31
+    +0x018 0x015e  XOR.imm  r2 , 0xb96540ab     0a02ab4065b9
+    edge  0 @0x0165  type=0x01 target=0x4115 tweak=0x21659134 sig=fd9e10e1a716
+    edge  1 @0x0172  type=0x00 target=0x9918 tweak=0xd8bade10 sig=6dbdefbb9023
+    edge  2 @0x017f  type=0x00 target=0x2c31 tweak=0xc210b6c2 sig=7643fe3adfb2
+    edge  3 @0x018c  type=0x00 target=0x859a tweak=0x7b34980a sig=56327d4aed89
+    edge  4 @0x0199  type=0x01 target=0xb515 tweak=0xadfffa5e sig=cd4ddd9068d4
+
+rec2  @0x01a6  tag=0x859a  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=3  size=60
+    +0x000 0x01ae  XOR.imm  r4 , 0x417af311     0a0411f37a41
+    +0x006 0x01b4  ADD.reg  r5 , r4             030504
+    +0x009 0x01b7  ROL.imm  r5 , 0x1b           07051b
+    edge  0 @0x01bb  type=0xff target=0x2c31 tweak=0xda48fa6b sig=82a0a180bdba
+    edge  1 @0x01c8  type=0xff target=0x52e4 tweak=0x7b8eaeff sig=da835458e518
+    edge  2 @0x01d5  type=0xff target=0xe81d tweak=0x935edf37 sig=7f7b839bf959
+
+rec3  @0x01e2  tag=0x4115  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=2  size=47
+    +0x000 0x01ea  XOR.imm  r4 , 0xe8541bec     0a04ec1b54e8
+    +0x006 0x01f0  ADD.reg  r5 , r4             030504
+    +0x009 0x01f3  ROL.imm  r5 , 0x1d           07051d
+    edge  0 @0x01f7  type=0xff target=0x52e4 tweak=0xbbdf4b81 sig=1399df01bf4
+    edge  1 @0x0204  type=0xff target=0x4ab1 tweak=0x405d818b sig=40e02a1551c7
+
+rec4  @0x0211  tag=0x52e4  pred=take edge with type == bit 18 of r1  dflt_next=0x0d66  L=30  k=5  size=104
+    +0x000 0x0219  ADD.reg  r0 , r1             030001
+    +0x003 0x021c  ROL.imm  r0 , 0x1b           07001b
+    +0x006 0x021f  XOR.reg  r2 , r0             040200
+    +0x009 0x0222  ADD.reg  r3 , r2             030302
+    +0x00c 0x0225  ROL.imm  r3 , 0x1e           07031e
+    +0x00f 0x0228  XOR.reg  r1 , r3             040103
+    +0x012 0x022b  ADD.imm  r0 , 0x235a7ac9     0900c97a5a23
+    +0x018 0x0231  XOR.imm  r2 , 0xc605e8ba     0a02bae805c6
+    edge  0 @0x0238  type=0x01 target=0xd53a tweak=0x20def66c sig=6901162009fa
+    edge  1 @0x0245  type=0x00 target=0xb515 tweak=0x1b4cb099 sig=75e0b7410af1
+    edge  2 @0x0252  type=0x00 target=0x6d40 tweak=0x801fed1b sig=65d097d15714
+    edge  3 @0x025f  type=0x01 target=0x52e4 tweak=0xfc649248 sig=1ac0b0800814
+    edge  4 @0x026c  type=0x01 target=0x4ab1 tweak=0x7147be57 sig=555dd694333e
+
+rec5  @0x0279  tag=0x6d40  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=3  size=60
+    +0x000 0x0281  XOR.imm  r4 , 0x971cfb74     0a0474fb1c97
+    +0x006 0x0287  ADD.reg  r5 , r4             030504
+    +0x009 0x028a  ROL.imm  r5 , 0x0a           07050a
+    edge  0 @0x028e  type=0xff target=0x0d66 tweak=0x3a54aee3 sig=5b049ce45641
+    edge  1 @0x029b  type=0xff target=0x39f0 tweak=0x8bd77e3f sig=d316a930aff1
+    edge  2 @0x02a8  type=0xff target=0x6427 tweak=0x4bb8c4bc sig=a130f9e648b2
+
+rec6  @0x02b5  tag=0xd53a  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=3  size=60
+    +0x000 0x02bd  XOR.imm  r4 , 0x3ae3c2e8     0a04e8c2e33a
+    +0x006 0x02c3  ADD.reg  r5 , r4             030504
+    +0x009 0x02c6  ROL.imm  r5 , 0x05           070505
+    edge  0 @0x02ca  type=0xff target=0x6427 tweak=0x755e0b85 sig=ca49aa90d0c2
+    edge  1 @0x02d7  type=0xff target=0x2457 tweak=0x584c413c sig=d6fa5fef24b4
+    edge  2 @0x02e4  type=0xff target=0x04a3 tweak=0xaab2db79 sig=a1abe740e9d1
+
+rec7  @0x02f1  tag=0x6427  pred=take edge with type == bit 11 of r1  dflt_next=0x0d66  L=30  k=5  size=104
+    +0x000 0x02f9  ADD.reg  r0 , r1             030001
+    +0x003 0x02fc  ROL.imm  r0 , 0x13           070013
+    +0x006 0x02ff  XOR.reg  r2 , r0             040200
+    +0x009 0x0302  ADD.reg  r3 , r2             030302
+    +0x00c 0x0305  ROL.imm  r3 , 0x15           070315
+    +0x00f 0x0308  XOR.reg  r1 , r3             040103
+    +0x012 0x030b  ADD.imm  r0 , 0x2251a65f     09005fa65122
+    +0x018 0x0311  XOR.imm  r2 , 0xd21d2f01     0a02012f1dd2
+    edge  0 @0x0318  type=0x01 target=0xcacc tweak=0xa5c1eaba sig=ae52a49b7e08
+    edge  1 @0x0325  type=0x00 target=0xa360 tweak=0xe47dae00 sig=3e6b8cd8b335
+    edge  2 @0x0332  type=0x01 target=0x31fe tweak=0x63b60240 sig=b337efd1ea7b
+    edge  3 @0x033f  type=0x00 target=0x39f0 tweak=0xb08158f4 sig=1c72647adc09
+    edge  4 @0x034c  type=0x00 target=0x859a tweak=0x9e456490 sig=85f7974f56b6
+
+rec8  @0x0359  tag=0xa360  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=2  size=47
+    +0x000 0x0361  XOR.imm  r4 , 0x6fcc40ad     0a04ad40cc6f
+    +0x006 0x0367  ADD.reg  r5 , r4             030504
+    +0x009 0x036a  ROL.imm  r5 , 0x1c           07051c
+    edge  0 @0x036e  type=0xff target=0x2457 tweak=0x440d336f sig=2db36ea8c0e6
+    edge  1 @0x037b  type=0xff target=0x4ab1 tweak=0x2a1f065d sig=17a85eedb66c
+
+rec9  @0x0388  tag=0xcacc  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=2  size=47
+    +0x000 0x0390  XOR.imm  r4 , 0x4f5c061d     0a041d065c4f
+    +0x006 0x0396  ADD.reg  r5 , r4             030504
+    +0x009 0x0399  ROL.imm  r5 , 0x1d           07051d
+    edge  0 @0x039d  type=0xff target=0x4ab1 tweak=0xadbe6eb8 sig=9307c97c213d
+    edge  1 @0x03aa  type=0xff target=0x2457 tweak=0x11fd35a2 sig=4d5bcad5f38e
+
+rec10 @0x03b7  tag=0x2457  pred=take edge with type == bit 0 of r1  dflt_next=0x0d66  L=30  k=4  size=91
+    +0x000 0x03bf  ADD.reg  r0 , r1             030001
+    +0x003 0x03c2  ROL.imm  r0 , 0x05           070005
+    +0x006 0x03c5  XOR.reg  r2 , r0             040200
+    +0x009 0x03c8  ADD.reg  r3 , r2             030302
+    +0x00c 0x03cb  ROL.imm  r3 , 0x17           070317
+    +0x00f 0x03ce  XOR.reg  r1 , r3             040103
+    +0x012 0x03d1  ADD.imm  r0 , 0x48975164     090064519748
+    +0x018 0x03d7  XOR.imm  r2 , 0x4f1299c1     0a02c199124f
+    edge  0 @0x03de  type=0x00 target=0xe301 tweak=0x74691711 sig=58734c469ec9
+    edge  1 @0x03eb  type=0x01 target=0xe81d tweak=0xcb4ba535 sig=dfd7d58a72fb
+    edge  2 @0x03f8  type=0x01 target=0x90b4 tweak=0xbb3d22b2 sig=4a7cc87a4a9
+    edge  3 @0x0405  type=0x00 target=0x52e4 tweak=0x9a879015 sig=fdc8adfc9a35
+
+rec11 @0x0412  tag=0xe301  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=2  size=47
+    +0x000 0x041a  XOR.imm  r4 , 0x84d30667     0a046706d384
+    +0x006 0x0420  ADD.reg  r5 , r4             030504
+    +0x009 0x0423  ROL.imm  r5 , 0x1a           07051a
+    edge  0 @0x0427  type=0xff target=0x9345 tweak=0xfe6cfd8c sig=27d6d978bb89
+    edge  1 @0x0434  type=0xff target=0x4ab1 tweak=0x4a530a4d sig=f87eb1cc0829
+
+rec12 @0x0441  tag=0x90b4  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=2  size=47
+    +0x000 0x0449  XOR.imm  r4 , 0xbce805dc     0a04dc05e8bc
+    +0x006 0x044f  ADD.reg  r5 , r4             030504
+    +0x009 0x0452  ROL.imm  r5 , 0x0f           07050f
+    edge  0 @0x0456  type=0xff target=0x4ab1 tweak=0x7c369992 sig=303a6d4481a5
+    edge  1 @0x0463  type=0xff target=0x9345 tweak=0x08484dcb sig=ab1d2a0216b2
+
+rec13 @0x0470  tag=0x9345  pred=take edge with type == bit 0 of r3  dflt_next=0x0d66  L=30  k=5  size=104
+    +0x000 0x0478  ADD.reg  r0 , r1             030001
+    +0x003 0x047b  ROL.imm  r0 , 0x06           070006
+    +0x006 0x047e  XOR.reg  r2 , r0             040200
+    +0x009 0x0481  ADD.reg  r3 , r2             030302
+    +0x00c 0x0484  ROL.imm  r3 , 0x0b           07030b
+    +0x00f 0x0487  XOR.reg  r1 , r3             040103
+    +0x012 0x048a  ADD.imm  r0 , 0xf5b24557     09005745b2f5
+    +0x018 0x0490  XOR.imm  r2 , 0xe6b49f16     0a02169fb4e6
+    edge  0 @0x0497  type=0x00 target=0x73d7 tweak=0xb1a5cc5f sig=b3b8e36b8114
+    edge  1 @0x04a4  type=0x01 target=0x4ab1 tweak=0x186c12ef sig=b0821c8be7cf
+    edge  2 @0x04b1  type=0x01 target=0x31fe tweak=0xf9e12dfc sig=4f1d268855c2
+    edge  3 @0x04be  type=0x01 target=0x3871 tweak=0xaf250db1 sig=3e681a8e8052
+    edge  4 @0x04cb  type=0x00 target=0x859a tweak=0xf557a67a sig=63279658fd16
+
+rec14 @0x04d8  tag=0x73d7  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=3  size=60
+    +0x000 0x04e0  XOR.imm  r4 , 0xa2195817     0a04175819a2
+    +0x006 0x04e6  ADD.reg  r5 , r4             030504
+    +0x009 0x04e9  ROL.imm  r5 , 0x10           070510
+    edge  0 @0x04ed  type=0xff target=0xf99f tweak=0x853c4831 sig=1c357e75215
+    edge  1 @0x04fa  type=0xff target=0x859a tweak=0xa2c533c8 sig=7ea265f3bfbf
+    edge  2 @0x0507  type=0xff target=0x3871 tweak=0x66bb8582 sig=4c837b0ac97e
+
+rec15 @0x0514  tag=0x3871  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=2  size=47
+    +0x000 0x051c  XOR.imm  r4 , 0xce721367     0a04671372ce
+    +0x006 0x0522  ADD.reg  r5 , r4             030504
+    +0x009 0x0525  ROL.imm  r5 , 0x14           070514
+    edge  0 @0x0529  type=0xff target=0x31fe tweak=0xf81e4a0b sig=759ae55339d8
+    edge  1 @0x0536  type=0xff target=0xf99f tweak=0x32e78099 sig=a2323de41a1f
+
+rec16 @0x0543  tag=0xf99f  pred=take edge with type == bit 25 of r2  dflt_next=0x0d66  L=30  k=5  size=104
+    +0x000 0x054b  ADD.reg  r0 , r1             030001
+    +0x003 0x054e  ROL.imm  r0 , 0x0e           07000e
+    +0x006 0x0551  XOR.reg  r2 , r0             040200
+    +0x009 0x0554  ADD.reg  r3 , r2             030302
+    +0x00c 0x0557  ROL.imm  r3 , 0x11           070311
+    +0x00f 0x055a  XOR.reg  r1 , r3             040103
+    +0x012 0x055d  ADD.imm  r0 , 0xbcb7f2de     0900def2b7bc
+    +0x018 0x0563  XOR.imm  r2 , 0xf5a0460d     0a020d46a0f5
+    edge  0 @0x056a  type=0x00 target=0x31fe tweak=0xd41d1890 sig=2048d7082653
+    edge  1 @0x0577  type=0x00 target=0x480b tweak=0xd54455c4 sig=1c88046a55f7
+    edge  2 @0x0584  type=0x01 target=0x2c31 tweak=0x66a3c025 sig=7d45bb7657ab
+    edge  3 @0x0591  type=0x00 target=0xb515 tweak=0xcad115a1 sig=97599bf1869a
+    edge  4 @0x059e  type=0x01 target=0x8eab tweak=0x780722a1 sig=5e2350691a7a
+
+rec17 @0x05ab  tag=0x31fe  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=2  size=47
+    +0x000 0x05b3  XOR.imm  r4 , 0x7d6416fc     0a04fc16647d
+    +0x006 0x05b9  ADD.reg  r5 , r4             030504
+    +0x009 0x05bc  ROL.imm  r5 , 0x0f           07050f
+    edge  0 @0x05c0  type=0xff target=0xf99f tweak=0xd4dc36aa sig=85535b2e97ba
+    edge  1 @0x05cd  type=0xff target=0xad61 tweak=0x60e14949 sig=271b6f64d94f
+
+rec18 @0x05da  tag=0x2c31  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=3  size=60
+    +0x000 0x05e2  XOR.imm  r4 , 0x59f1df98     0a0498dff159
+    +0x006 0x05e8  ADD.reg  r5 , r4             030504
+    +0x009 0x05eb  ROL.imm  r5 , 0x0c           07050c
+    edge  0 @0x05ef  type=0xff target=0x8eab tweak=0xb4c5d526 sig=eaf00397defa
+    edge  1 @0x05fc  type=0xff target=0xad61 tweak=0x607b8a2e sig=b21e57b7fb3d
+    edge  2 @0x0609  type=0xff target=0x859a tweak=0x2d10bafa sig=ac73ba63206c
+
+rec19 @0x0616  tag=0xad61  pred=take edge with type == bit 28 of r2  dflt_next=0x0d66  L=30  k=5  size=104
+    +0x000 0x061e  ADD.reg  r0 , r1             030001
+    +0x003 0x0621  ROL.imm  r0 , 0x07           070007
+    +0x006 0x0624  XOR.reg  r2 , r0             040200
+    +0x009 0x0627  ADD.reg  r3 , r2             030302
+    +0x00c 0x062a  ROL.imm  r3 , 0x1a           07031a
+    +0x00f 0x062d  XOR.reg  r1 , r3             040103
+    +0x012 0x0630  ADD.imm  r0 , 0x9f8ffd05     090005fd8f9f
+    +0x018 0x0636  XOR.imm  r2 , 0x8561efc3     0a02c3ef6185
+    edge  0 @0x063d  type=0x01 target=0x0d66 tweak=0x356e3ec4 sig=6156241d79d7
+    edge  1 @0x064a  type=0x00 target=0x9918 tweak=0x0672366b sig=b701ae6c7c45
+    edge  2 @0x0657  type=0x01 target=0x480b tweak=0x96a47d5e sig=1cfbe918d24f
+    edge  3 @0x0664  type=0x00 target=0x6427 tweak=0x83f3f135 sig=3af4a5966e7d
+    edge  4 @0x0671  type=0x01 target=0xb137 tweak=0x9c78d76b sig=c826ac08925f
+
+rec20 @0x067e  tag=0x9918  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=3  size=60
+    +0x000 0x0686  XOR.imm  r4 , 0x93ea5da2     0a04a25dea93
+    +0x006 0x068c  ADD.reg  r5 , r4             030504
+    +0x009 0x068f  ROL.imm  r5 , 0x1e           07051e
+    edge  0 @0x0693  type=0xff target=0xb515 tweak=0x901a3865 sig=bdb3242d697a
+    edge  1 @0x06a0  type=0xff target=0x1853 tweak=0x2bfb95ce sig=1a89bd7aeeb
+    edge  2 @0x06ad  type=0xff target=0x9918 tweak=0xa9d0eba6 sig=2b2926bc96dd
+
+rec21 @0x06ba  tag=0xb137  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=3  size=60
+    +0x000 0x06c2  XOR.imm  r4 , 0xee28a78d     0a048da728ee
+    +0x006 0x06c8  ADD.reg  r5 , r4             030504
+    +0x009 0x06cb  ROL.imm  r5 , 0x18           070518
+    edge  0 @0x06cf  type=0xff target=0xb515 tweak=0xfedc1342 sig=f7b27279de1d
+    edge  1 @0x06dc  type=0xff target=0xcacc tweak=0xb618c2ad sig=396ebf8c6c25
+    edge  2 @0x06e9  type=0xff target=0x39f0 tweak=0xe6796619 sig=e24914533cfa
+
+rec22 @0x06f6  tag=0xb515  pred=take edge with type == bit 19 of r2  dflt_next=0x0d66  L=30  k=4  size=91
+    +0x000 0x06fe  ADD.reg  r0 , r1             030001
+    +0x003 0x0701  ROL.imm  r0 , 0x1a           07001a
+    +0x006 0x0704  XOR.reg  r2 , r0             040200
+    +0x009 0x0707  ADD.reg  r3 , r2             030302
+    +0x00c 0x070a  ROL.imm  r3 , 0x03           070303
+    +0x00f 0x070d  XOR.reg  r1 , r3             040103
+    +0x012 0x0710  ADD.imm  r0 , 0x2f17c493     090093c4172f
+    +0x018 0x0716  XOR.imm  r2 , 0x28451cb6     0a02b61c4528
+    edge  0 @0x071d  type=0x00 target=0xa3f5 tweak=0x8e838f87 sig=45589c0e4be6
+    edge  1 @0x072a  type=0x01 target=0x4ab1 tweak=0x62e0f965 sig=3040849384bb
+    edge  2 @0x0737  type=0x01 target=0x1853 tweak=0x96606da3 sig=339f5120585e
+    edge  3 @0x0744  type=0x00 target=0xb30f tweak=0x2154e9d3 sig=bfdae165db1f
+
+rec23 @0x0751  tag=0xa3f5  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=2  size=47
+    +0x000 0x0759  XOR.imm  r4 , 0x5e3523d3     0a04d323355e
+    +0x006 0x075f  ADD.reg  r5 , r4             030504
+    +0x009 0x0762  ROL.imm  r5 , 0x02           070502
+    edge  0 @0x0766  type=0xff target=0x8eab tweak=0xa3060617 sig=68ad5c7f2528
+    edge  1 @0x0773  type=0xff target=0x90b4 tweak=0x437614bf sig=33b5937a03cf
+
+rec24 @0x0780  tag=0x4ab1  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=2  size=47
+    +0x000 0x0788  XOR.imm  r4 , 0xc058af89     0a0489af58c0
+    +0x006 0x078e  ADD.reg  r5 , r4             030504
+    +0x009 0x0791  ROL.imm  r5 , 0x04           070504
+    edge  0 @0x0795  type=0xff target=0xad61 tweak=0x0d745a8d sig=9b6b0c6b9c74
+    edge  1 @0x07a2  type=0xff target=0x8eab tweak=0x19492cb6 sig=93fe81f9b245
+
+rec25 @0x07af  tag=0x8eab  pred=take edge with type == bit 21 of r2  dflt_next=0x0d66  L=30  k=5  size=104
+    +0x000 0x07b7  ADD.reg  r0 , r1             030001
+    +0x003 0x07ba  ROL.imm  r0 , 0x1d           07001d
+    +0x006 0x07bd  XOR.reg  r2 , r0             040200
+    +0x009 0x07c0  ADD.reg  r3 , r2             030302
+    +0x00c 0x07c3  ROL.imm  r3 , 0x09           070309
+    +0x00f 0x07c6  XOR.reg  r1 , r3             040103
+    +0x012 0x07c9  ADD.imm  r0 , 0x7ab2ece6     0900e6ecb27a
+    +0x018 0x07cf  XOR.imm  r2 , 0xd78faca1     0a02a1ac8fd7
+    edge  0 @0x07d6  type=0x00 target=0xe62c tweak=0x1b1bf34a sig=9843d7b19f0f
+    edge  1 @0x07e3  type=0x01 target=0xf501 tweak=0x68fb7d61 sig=7665f80ff020
+    edge  2 @0x07f0  type=0x00 target=0x2c31 tweak=0x786014b2 sig=23b500b67fa8
+    edge  3 @0x07fd  type=0x00 target=0xb30f tweak=0x9879353f sig=6bd0f2dcfc37
+    edge  4 @0x080a  type=0x01 target=0x4115 tweak=0xacb4232a sig=992e0cabd9b5
+
+rec26 @0x0817  tag=0xe62c  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=3  size=60
+    +0x000 0x081f  XOR.imm  r4 , 0x77cc14f1     0a04f114cc77
+    +0x006 0x0825  ADD.reg  r5 , r4             030504
+    +0x009 0x0828  ROL.imm  r5 , 0x17           070517
+    edge  0 @0x082c  type=0xff target=0xd53a tweak=0x6f961be2 sig=62c3357dc317
+    edge  1 @0x0839  type=0xff target=0x2abb tweak=0x08dd7d82 sig=348b496e625f
+    edge  2 @0x0846  type=0xff target=0xb137 tweak=0x80883e0c sig=3b502d52afa0
+
+rec27 @0x0853  tag=0xf501  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=2  size=47
+    +0x000 0x085b  XOR.imm  r4 , 0xf7536524     0a04246553f7
+    +0x006 0x0861  ADD.reg  r5 , r4             030504
+    +0x009 0x0864  ROL.imm  r5 , 0x0a           07050a
+    edge  0 @0x0868  type=0xff target=0x4115 tweak=0x8c4caf6a sig=637639c14b82
+    edge  1 @0x0875  type=0xff target=0x2abb tweak=0x535f77d5 sig=ecf0837be11e
+
+rec28 @0x0882  tag=0x2abb  pred=take edge with type == bit 13 of r3  dflt_next=0x0d66  L=30  k=5  size=104
+    +0x000 0x088a  ADD.reg  r0 , r1             030001
+    +0x003 0x088d  ROL.imm  r0 , 0x0f           07000f
+    +0x006 0x0890  XOR.reg  r2 , r0             040200
+    +0x009 0x0893  ADD.reg  r3 , r2             030302
+    +0x00c 0x0896  ROL.imm  r3 , 0x07           070307
+    +0x00f 0x0899  XOR.reg  r1 , r3             040103
+    +0x012 0x089c  ADD.imm  r0 , 0xe5178954     0900548917e5
+    +0x018 0x08a2  XOR.imm  r2 , 0x5edf60f9     0a02f960df5e
+    edge  0 @0x08a9  type=0x00 target=0xe81d tweak=0x92708a32 sig=f555643eac42
+    edge  1 @0x08b6  type=0x01 target=0xf501 tweak=0xd004f0b4 sig=114e01b502da
+    edge  2 @0x08c3  type=0x00 target=0x2abb tweak=0x8181cf78 sig=e23235741c34
+    edge  3 @0x08d0  type=0x00 target=0xf99f tweak=0xda2cd7f8 sig=24d6212b413f
+    edge  4 @0x08dd  type=0x01 target=0x8d8b tweak=0xd8f4b89a sig=44604f257846
+
+rec29 @0x08ea  tag=0xe81d  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=2  size=47
+    +0x000 0x08f2  XOR.imm  r4 , 0x9c0ed638     0a0438d60e9c
+    +0x006 0x08f8  ADD.reg  r5 , r4             030504
+    +0x009 0x08fb  ROL.imm  r5 , 0x0a           07050a
+    edge  0 @0x08ff  type=0xff target=0x8eab tweak=0x7d25a58e sig=57c5bb3a62e5
+    edge  1 @0x090c  type=0xff target=0xd755 tweak=0x78661a6f sig=dda5bc246fb5
+
+rec30 @0x0919  tag=0x8d8b  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=3  size=60
+    +0x000 0x0921  XOR.imm  r4 , 0x5880ce64     0a0464ce8058
+    +0x006 0x0927  ADD.reg  r5 , r4             030504
+    +0x009 0x092a  ROL.imm  r5 , 0x08           070508
+    edge  0 @0x092e  type=0xff target=0xad61 tweak=0x68bc4ea8 sig=83af11d9c471
+    edge  1 @0x093b  type=0xff target=0x6d40 tweak=0x4ce0db89 sig=905c662efd0
+    edge  2 @0x0948  type=0xff target=0xd755 tweak=0xdeb0a866 sig=b109ccfb429
+
+rec31 @0x0955  tag=0xd755  pred=take edge with type == bit 4 of r0  dflt_next=0x0d66  L=30  k=5  size=104
+    +0x000 0x095d  ADD.reg  r0 , r1             030001
+    +0x003 0x0960  ROL.imm  r0 , 0x18           070018
+    +0x006 0x0963  XOR.reg  r2 , r0             040200
+    +0x009 0x0966  ADD.reg  r3 , r2             030302
+    +0x00c 0x0969  ROL.imm  r3 , 0x01           070301
+    +0x00f 0x096c  XOR.reg  r1 , r3             040103
+    +0x012 0x096f  ADD.imm  r0 , 0x0294395a     09005a399402
+    +0x018 0x0975  XOR.imm  r2 , 0xe6b8bf69     0a0269bfb8e6
+    edge  0 @0x097c  type=0x01 target=0xb515 tweak=0x1c8707db sig=171b48badbe1
+    edge  1 @0x0989  type=0x00 target=0xf501 tweak=0xa18d0bdd sig=d17a5120104
+    edge  2 @0x0996  type=0x01 target=0x26bf tweak=0x2e8b0e7c sig=5d29efac6aa5
+    edge  3 @0x09a3  type=0x00 target=0x821c tweak=0x76e9c059 sig=60528fcafec8
+    edge  4 @0x09b0  type=0x01 target=0x2457 tweak=0xbc4d1033 sig=bb283bb3940d
+
+rec32 @0x09bd  tag=0x821c  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=2  size=47
+    +0x000 0x09c5  XOR.imm  r4 , 0x6e5a74e3     0a04e3745a6e
+    +0x006 0x09cb  ADD.reg  r5 , r4             030504
+    +0x009 0x09ce  ROL.imm  r5 , 0x14           070514
+    edge  0 @0x09d2  type=0xff target=0x4ab1 tweak=0x56242aec sig=466e378dde92
+    edge  1 @0x09df  type=0xff target=0x000b tweak=0x1738fee8 sig=b49d3f1d8907
+
+rec33 @0x09ec  tag=0x26bf  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=3  size=60
+    +0x000 0x09f4  XOR.imm  r4 , 0x988c8baa     0a04aa8b8c98
+    +0x006 0x09fa  ADD.reg  r5 , r4             030504
+    +0x009 0x09fd  ROL.imm  r5 , 0x05           070505
+    edge  0 @0x0a01  type=0xff target=0x000b tweak=0x08f28d98 sig=38dd4717f9e5
+    edge  1 @0x0a0e  type=0xff target=0x6d40 tweak=0xcc96b9e3 sig=7eac57d637d
+    edge  2 @0x0a1b  type=0xff target=0x31fe tweak=0xd063bedf sig=e7374260c687
+
+rec34 @0x0a28  tag=0x000b  pred=take edge with type == bit 2 of r0  dflt_next=0x0d66  L=30  k=5  size=104
+    +0x000 0x0a30  ADD.reg  r0 , r1             030001
+    +0x003 0x0a33  ROL.imm  r0 , 0x07           070007
+    +0x006 0x0a36  XOR.reg  r2 , r0             040200
+    +0x009 0x0a39  ADD.reg  r3 , r2             030302
+    +0x00c 0x0a3c  ROL.imm  r3 , 0x10           070310
+    +0x00f 0x0a3f  XOR.reg  r1 , r3             040103
+    +0x012 0x0a42  ADD.imm  r0 , 0xddccc294     090094c2ccdd
+    +0x018 0x0a48  XOR.imm  r2 , 0x15c2ac49     0a0249acc215
+    edge  0 @0x0a4f  type=0x01 target=0x39f0 tweak=0x432c61b7 sig=e5947f338e78
+    edge  1 @0x0a5c  type=0x01 target=0x31fe tweak=0x930ec1c4 sig=6db4b9cff220
+    edge  2 @0x0a69  type=0x00 target=0x480b tweak=0x90257744 sig=c3d25417eb77
+    edge  3 @0x0a76  type=0x00 target=0xb30f tweak=0x13c2888e sig=e9abdf07e494
+    edge  4 @0x0a83  type=0x01 target=0x821c tweak=0xc78a2981 sig=c5252d3a1d39
+
+rec35 @0x0a90  tag=0xb30f  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=3  size=60
+    +0x000 0x0a98  XOR.imm  r4 , 0x39abfd6f     0a046ffdab39
+    +0x006 0x0a9e  ADD.reg  r5 , r4             030504
+    +0x009 0x0aa1  ROL.imm  r5 , 0x05           070505
+    edge  0 @0x0aa5  type=0xff target=0x1853 tweak=0xc73c5114 sig=8278ae7b63c9
+    edge  1 @0x0ab2  type=0xff target=0xcacc tweak=0xd68fc3cc sig=56243ef4a8d4
+    edge  2 @0x0abf  type=0xff target=0xb30f tweak=0x4e7e95cf sig=95064d94bec1
+
+rec36 @0x0acc  tag=0x39f0  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=12  k=2  size=47
+    +0x000 0x0ad4  XOR.imm  r4 , 0xe13ce4a4     0a04a4e43ce1
+    +0x006 0x0ada  ADD.reg  r5 , r4             030504
+    +0x009 0x0add  ROL.imm  r5 , 0x05           070505
+    edge  0 @0x0ae1  type=0xff target=0x1853 tweak=0x5b0a758c sig=56a8904c9b90
+    edge  1 @0x0aee  type=0xff target=0xad61 tweak=0x7be7ff50 sig=f9755effcfcd
+
+rec37 @0x0afb  tag=0x04a3  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=3  k=0  size=12
+    +0x000 0x0b03  GETENV                       0d
+    +0x001 0x0b04  EMIT                         0e
+    +0x002 0x0b05  HALT                         0f
+
+rec38 @0x0b07  tag=0x0d66  pred=unconditional (pred_reg=0xff)  dflt_next=0x0d66  L=1  k=0  size=10
+    +0x000 0x0b0f  HALT                         0f
+
+rec39 @0x0b11  tag=0x1853  pred=take edge with type == bit 0 of r6  dflt_next=0x0d66  L=117  k=6  size=204
+    +0x000 0x0b19  MOV.reg  r7 , r0             020700
+    +0x003 0x0b1c  XOR.imm  r7 , 0xc1d2b9dc     0a07dcb9d2c1
+    +0x009 0x0b22  MOV.reg  r6 , r7             020607
+    +0x00c 0x0b25  MOV.reg  r7 , r1             020701
+    +0x00f 0x0b28  XOR.imm  r7 , 0x543e98f2     0a07f2983e54
+    +0x015 0x0b2e  OR.reg   r6 , r7             060607
+    +0x018 0x0b31  MOV.reg  r7 , r2             020702
+    +0x01b 0x0b34  XOR.imm  r7 , 0xb8ccd95e     0a075ed9ccb8
+    +0x021 0x0b3a  OR.reg   r6 , r7             060607
+    +0x024 0x0b3d  MOV.reg  r7 , r3             020703
+    +0x027 0x0b40  XOR.imm  r7 , 0x6e7f74a7     0a07a7747f6e
+    +0x02d 0x0b46  OR.reg   r6 , r7             060607
+    +0x030 0x0b49  MOV.reg  r7 , r4             020704
+    +0x033 0x0b4c  XOR.imm  r7 , 0xcad90294     0a079402d9ca
+    +0x039 0x0b52  OR.reg   r6 , r7             060607
+    +0x03c 0x0b55  MOV.reg  r7 , r5             020705
+    +0x03f 0x0b58  XOR.imm  r7 , 0x8e9da4d6     0a07d6a49d8e
+    +0x045 0x0b5e  OR.reg   r6 , r7             060607
+    +0x048 0x0b61  MOV.reg  r7 , r6             020706
+    +0x04b 0x0b64  SHR.imm  r7 , 0x10           080710
+    +0x04e 0x0b67  OR.reg   r6 , r7             060607
+    +0x051 0x0b6a  MOV.reg  r7 , r6             020706
+    +0x054 0x0b6d  SHR.imm  r7 , 0x08           080708
+    +0x057 0x0b70  OR.reg   r6 , r7             060607
+    +0x05a 0x0b73  MOV.reg  r7 , r6             020706
+    +0x05d 0x0b76  SHR.imm  r7 , 0x04           080704
+    +0x060 0x0b79  OR.reg   r6 , r7             060607
+    +0x063 0x0b7c  MOV.reg  r7 , r6             020706
+    +0x066 0x0b7f  SHR.imm  r7 , 0x02           080702
+    +0x069 0x0b82  OR.reg   r6 , r7             060607
+    +0x06c 0x0b85  MOV.reg  r7 , r6             020706
+    +0x06f 0x0b88  SHR.imm  r7 , 0x01           080701
+    +0x072 0x0b8b  OR.reg   r6 , r7             060607
+    edge  0 @0x0b8f  type=0x00 target=0xe62c tweak=0xc3a18516 sig=cba6f3d949cd
+    edge  1 @0x0b9c  type=0x01 target=0x0d66 tweak=0xcd03ab3e sig=b6547e29c5ab
+    edge  2 @0x0ba9  type=0x00 target=0xb515 tweak=0xf2a928b6 sig=ed96f31c4c36
+    edge  3 @0x0bb6  type=0x01 target=0x2457 tweak=0xd58e4883 sig=4f781e655de1
+    edge  4 @0x0bc3  type=0x01 target=0x4ab1 tweak=0x58efa851 sig=beec50cf4e7e
+    edge  5 @0x0bd0  type=0x00 target=0x04a3 tweak=0x3b548acc sig=951bb2e48851
+
+--- 9b. rec0 payload = the input packer, decoded ---------------------------------------------------
+    MOV.imm r0, 0   (init accumulator, @0x001a)
+    MOV.imm r1, 0   (init accumulator, @0x0044)
+    MOV.imm r2, 0   (init accumulator, @0x006e)
+    MOV.imm r3, 0   (init accumulator, @0x0098)
+    MOV.imm r4, 0   (init accumulator, @0x00c2)
+    MOV.imm r5, 0   (init accumulator, @0x00ec)
+  rec0 loads 24 distinct input bytes (LDIN idx range 0x00..0x17) into r6, rotates by
+  0/8/16/24 and ORs them into r0..r5 => the 24 RUN bytes become 6 little-endian u32 registers.
+  That is exactly the 9-byte 'group' the question asked about:
+     0c 06 <idx> | 07 06 <shift> | 06 <reg> 06   = LDIN r6,[idx] ; ROL r6,shift ; OR r<reg>,r6
+  and the 6-byte 'separator' 01 <g> 00 00 00 00 = MOV.imm r<g>,0 (zero the accumulator).
+====================================================================================================
+10. WHAT THIS PARSER COULD NOT EXPLAIN
+====================================================================================================
+  (1) The seed at 0x76ee0 is NOT the SipHash key (key lives at 0x76ef0/0x76ef8, 0x1b38); no field in the image equals the key, so signatures are not recomputable offline.
+  (2) rec0's 6 imm32 fields are all 0x00000000 (register zeroing). The other 54 imm32 operands carry per-instance constants whose meaning (which predicate they feed) is only recoverable by simulating the opcode stream, not from the image alone.
+  (3) The image does not store record indices or the group numbering the question mentions: those are positional (array index) and derived (MOV.imm dst), respectively.
+  (4) No numbering/counter field exists anywhere in the header or records; nothing in the image correlates with the 24-byte RUN input besides the LDIN byte indices 0x00..0x17.
+====================================================================================================
+SUMMARY
+====================================================================================================
+  image = 'CSGN' v2 header(18B) + 40 records, all 3037 bytes accounted for.
+  nodes are keyed by a u16 tag (from the start_tag field, not by index); 40 distinct tags.
+  record = 8B head + L-byte opcode stream + 1B edge count + k*13B edges; size = 9+L+13k.
+  126 edges total; each edge = type(1) target(2) tweak(4) countersignature(6).
+  opcode sizes 1/3/6: 283 instructions, 60 of them carry a 4-byte immediate.
+  structure: 0x000..0x01b deterministic; per-instance fields start at 0x01c, real entropy at 0x11a.
+  goal/sink: start=0x480b(rec0), the only GETENV node is 0x04a3(rec37), the shared deny sink is 0x0d66(rec38, HALT, k=0).

@@ -1,0 +1,213 @@
+
+==============================================================================
+1. HEADER FACTS
+==============================================================================
+file            : 'C:\\Users\\Administrator\\Documents\\Qoder\\2026-09-26\\45656d97\\CTF-Writeups\\dog-whistle\\analysis\\unpacked\\reference_ping.wav'
+size on disk    : 45548 bytes
+RIFF size field : 45540 (file-8 = 45540) -> consistent
+chunk list      :
+    @12     b'fmt '  size=16       data@20     end@36
+    @36     b'data'  size=45504    data@44     end@45548
+non-standard chunks: NONE
+  (the 'WAVE1/AUE1/ATE1/dataH' seen by strings are x86 opcode byte sequences such
+   as 41 55 45 31 = 'push r12; sub ebp,imm' inside aria's RIFF chunk scanner,
+   not real RIFF chunk ids; verified against the chunk walk above.)
+data chunk      : declared 45504 bytes, 45504 available from its offset
+                : declared size covers all of the remainder (trailing bytes after chunk walk: 0)
+format tag      : 1 (1=PCM)   channels 1   bits 24
+sample rate     : 96000 Hz    byte rate 288000   block align 3
+nframes         : 15168       duration 0.158000 s
+SPEC transport  : mono/24-bit signed PCM/96000 Hz/<=2 s -> CONFIRMED
+
+==============================================================================
+2. SAMPLE STATISTICS
+==============================================================================
+min -2097152   max 2097152   peak 2097152   (0.250 FS, -12.04 dBFS)
+mean (DC offset) 0.0000 LSB = 0.000e+00 FS   -> no DC
+rms 1444880.5 LSB (-15.28 dBFS)   crest factor 3.24 dB
+exact-zero samples 1040 of 15168 (6.9 %)
+quantisation depth : gcd(|samples|) = 1 -> 24 effective bits (real 24-bit container; low byte takes 169 distinct values, so not 16-bit data in 24-bit clothing)
+first nonzero sample 384   last nonzero 14783
+region RMS: silence lead-in [0,384) rms 0.000 LSB | tone burst [384,14784) rms 1482910.2 LSB | tail [14784,15168) rms 0.000 LSB
+RMS envelope, 1200-sample (12.5 ms = one symbol at 96k) blocks:
+    0 mixed    samples      0-1200   rms  1225966.2   -16.70 dBFS
+    1 tone     samples   1200-2400   rms  1482076.4   -15.06 dBFS
+    2 tone     samples   2400-3600   rms  1482910.2   -15.05 dBFS
+    3 tone     samples   3600-4800   rms  1483743.5   -15.05 dBFS
+    4 tone     samples   4800-6000   rms  1476289.5   -15.09 dBFS
+    5 tone     samples   6000-7200   rms  1490915.1   -15.00 dBFS
+    6 tone     samples   7200-8400   rms  1477555.7   -15.08 dBFS
+    7 tone     samples   8400-9600   rms  1480226.1   -15.07 dBFS
+    8 tone     samples   9600-10800  rms  1482910.2   -15.05 dBFS
+    9 tone     samples  10800-12000  rms  1482910.2   -15.05 dBFS
+   10 tone     samples  12000-13200  rms  1485589.4   -15.04 dBFS
+   11 tone     samples  13200-14400  rms  1488245.5   -15.02 dBFS
+   tail     leftover 768 samples after 12 full blocks: rms 1039693.6 LSB, 392 of them exactly zero (the burst ends mid-block at sample 14784)
+silence lead-in = 384 samples at 96 kHz = 64 codec samples (spec: 64) -> MATCH
+active tone region = 14400 samples = 12 symbols of 1200 samples (12.5 ms each)
+
+==============================================================================
+3. SPECTRUM (full 48 kHz bandwidth)
+==============================================================================
+Welch PSD, clusters above -60 dB rel max (22 found):
+        0.0 -     11.7 Hz   peak   -40.4 dB rel (at 0.0 Hz)
+       46.9 -     58.6 Hz   peak   -59.1 dB rel (at 46.9 Hz)
+       93.8 -   2625.0 Hz   peak     0.0 dB rel (at 796.9 Hz)
+     2660.2 -   2707.0 Hz   peak   -47.5 dB rel (at 2671.9 Hz)
+     2730.5 -   2777.3 Hz   peak   -49.1 dB rel (at 2753.9 Hz)
+     2812.5 -   2859.4 Hz   peak   -50.1 dB rel (at 2847.7 Hz)
+     2894.5 -   2941.4 Hz   peak   -50.7 dB rel (at 2906.2 Hz)
+     2976.6 -   3023.4 Hz   peak   -51.3 dB rel (at 2988.3 Hz)
+     3058.6 -   3093.8 Hz   peak   -52.2 dB rel (at 3070.3 Hz)
+     3140.6 -   3175.8 Hz   peak   -53.4 dB rel (at 3152.3 Hz)
+     3222.7 -   3257.8 Hz   peak   -54.8 dB rel (at 3234.4 Hz)
+     3304.7 -   3339.8 Hz   peak   -55.2 dB rel (at 3328.1 Hz)
+     3386.7 -   3410.2 Hz   peak   -55.6 dB rel (at 3410.2 Hz)
+     3468.8 -   3492.2 Hz   peak   -56.1 dB rel (at 3468.8 Hz)
+     3550.8 -   3574.2 Hz   peak   -56.9 dB rel (at 3550.8 Hz)
+     3632.8 -   3656.2 Hz   peak   -58.0 dB rel (at 3632.8 Hz)
+     3703.1 -   3726.6 Hz   peak   -59.1 dB rel (at 3726.6 Hz)
+     3785.2 -   3785.2 Hz   peak   -59.6 dB rel (at 3785.2 Hz)
+     3808.6 -   3808.6 Hz   peak   -59.2 dB rel (at 3808.6 Hz)
+     3867.2 -   3867.2 Hz   peak   -59.6 dB rel (at 3867.2 Hz)
+     3890.6 -   3890.6 Hz   peak   -59.5 dB rel (at 3890.6 Hz)
+     3949.2 -   3949.2 Hz   peak   -60.0 dB rel (at 3949.2 Hz)
+highest cluster edge anywhere: 3949.2 Hz   (no cluster reaches the 7 kHz region)
+noise floor above 7 kHz (Welch): -75.0 dB rel max -> NO significant HF content
+Parseval band energy fractions:
+   sub-modem 0-700        0.191308 %  (  -27.18 dB rel total)
+   MODEM 700-2100        99.701262 %  (   -0.01 dB rel total)
+   2100-3400 (audible)    0.062506 %  (  -32.04 dB rel total)
+   3400-7000              0.025507 %  (  -35.93 dB rel total)
+   7-12 kHz               0.008665 %  (  -40.62 dB rel total)
+   12-24 kHz              0.006325 %  (  -41.99 dB rel total)
+   24k-Nyquist            0.004426 %  (  -43.54 dB rel total)
+   ALL > 7 kHz            0.019417 %  (  -37.12 dB rel total)
+strongest out-of-modem bin: 696.2 Hz, -36.2 dB rel total power
+bins carrying > -60 dB: 720 800 880 960 1040 1120 1200 1280 1360 1440 1520 1600 1680 1760 1840 1920 2000 2080
+CAVEAT: the percentages outside the comb are rectangular-gating sidelobes of the
+  abruptly switched tone bursts (a gated sine has 1/f sidelobes across the whole
+  band), not separate emitters. Decisive test below.
+IDEAL-RECONSTRUCTION RESIDUAL TEST (fit one sine per symbol, subtract):
+   max |capture - ideal tone comb| = 0.515 LSB   rms = 0.2798 LSB   (-149.5 dBFS)
+   -> the file IS the modem comb to within 24-bit rounding: no hidden carrier, dither, beacon or noise floor
+   residual peak above 7 kHz: 6.601e-09 FS = -163.6 dBFS  -> NOTHING above 7 kHz
+   residual peak 2.1-48 kHz   : -163.6 dBFS
+=> energy lives ONLY in the 800-2000 Hz modem comb; nothing above 7 kHz.
+
+==============================================================================
+4. CODEC-RATE DECODE
+==============================================================================
+decimation paths: A) spec 7 kHz anti-alias LP (12th-order Butterworth, zero-phase)
+                B) plain 6:1 subsampling with no filter
+   lengths lp=2528 naive=2528
+   max |A-B| over the whole file : 906384.2 LSB (0.1080 FS) at codec sample 64
+symbol count from the codec timeline: 12 (96 kHz region analysis said 12) -> agree
+independent lead-in estimate from the decimated envelope: codec sample 64 (spec 64)
+   top 5 |A-B| hits at codec samples [np.int64(64), np.int64(2464), np.int64(65), np.int64(2465), np.int64(2463)] -> phase inside the symbol grid: [0, 0, 1, 1, 199]
+   max |A-B| over symbol INTERIORS only (edges +-50 samples excluded): 0.51 LSB (0.00002 % of tone)
+   -> the A/B gap is concentrated at the hard tone edges (phase ~0 in the grid), i.e.
+      the anti-alias LP ringing on a 0 -> +0.25 FS step. It is NOT evidence of HF
+      energy: section 3 already proved the whole file matches an ideal tone comb to
+      0.51 LSB, so nothing else is present.
+
+symbol grid search: all 200 phase offsets, scored by MEDIAN best/2nd margin
+  (median, not mean: a heavy anti-alias filter rings on every symbol edge, and a
+   mean would let 300 dB single-symbol hits hide 15 dB ones)
+   anti-alias LP:
+      base  64 median margin   111.1 dB  min    48.4 dB  nibbles a55a02100012
+      base  65 median margin   100.9 dB  min    45.5 dB  nibbles a55a02100012
+      base  63 median margin    80.4 dB  min    37.7 dB  nibbles a55a02100012
+      129 of 129 offsets reproduce the winning nibble string; worst median 8.9 dB
+   naive 6:1:
+      base  64 median margin   290.3 dB  min   147.5 dB  nibbles a55a02100012
+      base  65 median margin   110.0 dB  min    39.9 dB  nibbles a55a02100012
+      base  63 median margin    82.2 dB  min    41.2 dB  nibbles a55a02100012
+      129 of 129 offsets reproduce the winning nibble string; worst median 8.9 dB
+   chosen grid base = 64 codec samples; spec lead-in = 64 -> MATCH
+
+per-symbol decode (Goertzel over 200-sample windows at 16 kHz):
+   sym  samples@16k    hz   nib  amp(naive,FS)  amp(LP,FS)  margin naive  margin LP  96k-fit agrees
+     0     64-264     1600   a    0.250000       0.249064       290.6 dB       48.4 dB   yes
+     1    264-464     1200   5    0.250000       0.250004       148.8 dB       96.1 dB   yes
+     2    464-664     1200   5    0.250000       0.250000       148.8 dB      122.0 dB   yes
+     3    664-864     1600   a    0.250000       0.249996       290.6 dB       95.5 dB   yes
+     4    864-1064     800   0    0.250000       0.250006       290.3 dB       91.4 dB   yes
+     5   1064-1264     960   2    0.250000       0.249999       293.7 dB      108.1 dB   yes
+     6   1264-1464     880   1    0.250000       0.250000       147.5 dB      114.1 dB   yes
+     7   1464-1664     800   0    0.250000       0.250000       290.3 dB      114.7 dB   yes
+     8   1664-1864     800   0    0.250000       0.250000       290.3 dB      293.3 dB   yes
+     9   1864-2064     800   0    0.250000       0.250000       290.3 dB      142.5 dB   yes
+    10   2064-2264     880   1    0.250000       0.250000       147.5 dB      115.1 dB   yes
+    11   2264-2464     960   2    0.250000       0.250124       293.7 dB       65.5 dB   yes
+nibble stream (high nibble first): a55a02100012
+byte stream : A5 5A 02 10 00 12
+   (the anti-alias-LP path yields the identical string: a55a02100012)
+if nibbles were low-first you would get 5A A5 20 01 00 21 (no A5 5A sync) -> high-first confirmed
+
+==============================================================================
+5. FRAME PARSE + CHECKSUM
+==============================================================================
+  sync A5 5A : ok
+  LEN        : 2 -> payload 10 00
+  CKSUM      : wire 12  computed(L^payload) 12  -> VALID
+    TLV type=0x10 DEBUG_PING     len=0 value=(none)
+      -> opcode 0x10 DEBUG_PING carries no value; firmware replies PONG
+frame VALIDATES
+bytes after the frame: none - capture is exactly one frame
+
+==============================================================================
+6. ROBUSTNESS / CONFIDENCE
+==============================================================================
+naive 6:1      tone amplitude: min 0.250000 max 0.250000 FS (spread 0.00 dB), 16-kHz codec full
+                 scale = 0.250000 FS = -12.04 dBFS; tone is at -12.04 dBFS (relative to FS)
+               best/2nd margin: min  147.5 dB  median  290.3 dB -> CONFIDENT
+anti-alias LP  tone amplitude: min 0.249064 max 0.250124 FS (spread 0.04 dB), 16-kHz codec full
+                 scale = 0.250000 FS = -12.04 dBFS; tone is at -12.04 dBFS (relative to FS)
+               best/2nd margin: min   48.4 dB  median  111.1 dB -> CONFIDENT
+symbol-amplitude dropouts (any symbol < 10 % of the loudest): 0
+every one of the 3 decoding routes (Goertzel@16k naive-decim, Goertzel@16k filtered,
+  coherent rFFT on the raw 96 kHz stream) returns the same 12 nibbles: True
+coherent-window check: all 16 tone freqs are multiples of 80 Hz and the symbol is
+   12.5 ms => exactly 10..25 whole cycles per symbol, so bins are leakage-free.
+why the anti-alias LP looks worse: each symbol starts its cosine at its own peak, so
+  every symbol boundary is a hard 0 -> +0.25 FS step (see samples at the onset below),
+  and a steep LP rings on it. First 6 raw samples of the burst, and of the LP path:
+   raw   : 2085663.0 2051324.0 1994510.0 1915843.0 1816187.0 1696631.0
+   LP@16k:   40224.5 -139714.0 1179278.8 1746626.7  355288.3 -821708.3 -1820500.4 -2094945.9
+   naive :       0.0       0.0 2085663.0 1558487.0  436022.0 -852988.0 -1816187.0 -2085663.0
+
+==============================================================================
+7. PRE- vs POST-FRONT-END VERDICT
+==============================================================================
+least-squares sine fit per symbol at native 96 kHz (global time axis):
+   sym   f(Hz)   amplitude(FS)   global phase(rad)   DC term   fit residual(LSB)
+     0    1600   0.249999953       -2.4086         -0.000     0.3142
+     1    1200   0.249999974       +1.3352         -0.000     0.2664
+     2    1200   0.249999974       +1.3352         +0.000     0.2664
+     3    1600   0.249999953       -2.4086         -0.000     0.3142
+     4     800   0.249999959       -1.2043         +0.000     0.2888
+     5     960   0.249999975       +1.0681         -0.000     0.2748
+     6     880   0.249999969       +3.0735         -0.000     0.2879
+     7     800   0.249999959       -1.2043         +0.000     0.2888
+     8     800   0.249999959       -1.2043         -0.000     0.2888
+     9     800   0.249999959       -1.2043         -0.000     0.2888
+    10     880   0.249999969       +3.0735         -0.000     0.2879
+    11     960   0.249999975       +1.0681         -0.000     0.2748
+amplitude spread across the tone frequencies actually used (800-2000 Hz): 0.00000 dB
+  -> FLAT: no EQ / analog-gain / transducer imprint
+first sample of each burst divided by that burst's fitted amplitude (cos peak = +1):
+   +0.995 +0.997 +0.997 +0.995 +0.999 +0.998 +0.998 +0.999 +0.999 +0.999 +0.998 +0.998
+  (every symbol starts at its own cosine peak, i.e. the oscillator phase RESETS at
+   each symbol boundary - a per-symbol modem encoder, not a continuous source, and
+   certainly not a room recording: it also means each boundary is a hard +A step)
+lead-in silence max |sample| = 0 LSB, tail max |sample| = 0 LSB -> hard gate, no
+  ringing tails that a 7 kHz LP / transducer resonance would leave behind
+out-of-comb energy (2.1 k-48 kHz): -29.69 dB relative to total signal power
+naive 6:1 vs anti-alias-filtered decimation agree to 0.51 LSB (0.00002 % of tone) inside
+  the symbols; the only large delta is the LP ringing on the hard symbol edges.
+CONCLUSION: this capture is the PRE-front-end synthetic encode. The documented 7 kHz
+  anti-alias LP and the 16 kHz decimation leave no imprint on it (no tilt, no ringing,
+  no images), and the modem comb 800-2000 Hz is the only thing present.
+  NOTE: that modem band sits INSIDE the 300-3400 Hz 'engineering tone' safety-scan
+  window - irrelevant for DEBUG_PING, which the firmware always services.

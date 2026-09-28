@@ -1,0 +1,31 @@
+"""Loi cho bai <tên bài>. Chạy: python exploit.py files/<artifact>
+
+Doc artifact tu argv, khong dung ngoai stdlib (+ scapy/PIL khi can), moi buoc in ra
+bang chung cua no, va chi exit 0 khi co chuoi co duoc extract that tu du lieu.
+"""
+
+import re
+import sys
+from pathlib import Path
+
+if len(sys.argv) < 2:
+    sys.exit("usage: python exploit.py files/<artifact>")
+
+ARTIFACT = Path(sys.argv[1])
+FLAG = re.compile(rb"[A-Za-z0-9_]{2,10}\{[^{}]{1,90}\}")
+
+
+def solve(data: bytes) -> bytes:
+    """Tra ve dung chuoi co lay duoc tu du lieu. Sys.exit neu chua giai duoc."""
+    m = FLAG.search(data)
+    if not m:
+        raise SystemExit("[-] chua giai duoc: dien thuat toan vao solve() trong file nay")
+    return m.group()
+
+
+raw = ARTIFACT.read_bytes()
+print(f"[*] {ARTIFACT.name}: {len(raw)} bytes")
+flag = solve(raw)
+print("[+] flag:", flag.decode())
+Path("flag.txt").write_bytes(flag + b"\n")
+print("[+] da luu flag.txt")

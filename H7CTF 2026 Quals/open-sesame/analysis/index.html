@@ -1,0 +1,13 @@
+<!doctype html><meta charset=utf-8><title>garage receiver</title>
+<h1>rolling-code garage remote :: capture</h1>
+<p>We recorded 8 button presses of a cheap "rolling code" garage remote
+(433 MHz, on-off keyed). The capture is raw complex baseband.</p>
+<ul>
+<li>file: <a href="capture.cf32">capture.cf32</a> (interleaved float32 I/Q,
+little-endian, fs = 1000000 Hz)</li>
+</ul>
+<h2>the receiver</h2>
+<p>The garage receiver ignores any code it has already seen. Work out what the remote
+would transmit on its next press, and send that code:</p>
+<pre>POST /unlock    body: {"code": "&lt;12 hex digits = the 48-bit frame&gt;"}</pre>
+<p>Get it right and the door opens.</p>

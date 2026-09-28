@@ -1,0 +1,10 @@
+=== banner ===
+
+=== reference_ping.wav (hang goc) ===
+PONG
+----
+
+=== ping tu che, frame = a55a02100012 ===
+PONG
+----
+

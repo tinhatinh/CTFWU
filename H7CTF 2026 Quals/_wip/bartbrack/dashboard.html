@@ -1,0 +1,31 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Dashboard - Flux</title><link rel="stylesheet" href="/static/css/fx.css"></head><body class="fx-app"><aside class="fx-side">
+  <div class="fx-side__brand"><span class="fx-mark">&#9679;</span> flux</div>
+  <nav>
+    <a href="/dashboard.php?directive=dashboard-pages/overview.php">Overview</a>
+    <a href="/dashboard.php?directive=dashboard-pages/transactions.php">Transactions</a>
+    <a href="/dashboard.php?directive=dashboard-pages/cards.php">Cards</a>
+    <a href="/dashboard.php?directive=dashboard-pages/statements.php">Statements</a>
+  </nav>
+  <a class="fx-signout" href="/logout.php">Sign out</a>
+</aside>
+<main class="fx-main">
+<h1 class="fx-h1">Overview</h1>
+<div class="fx-balrow">
+  <div class="fx-bal"><span>Available balance</span><strong>$1,284,502.19</strong></div>
+  <div class="fx-bal fx-bal--muted"><span>Pending</span><strong>$42,880.00</strong></div>
+  <div class="fx-bal fx-bal--muted"><span>Reserved</span><strong>$150,000.00</strong></div>
+</div>
+<div class="fx-cards2">
+  <div class="fx-panel"><h3>Cash flow, last 30 days</h3>
+    <svg viewBox="0 0 400 140" class="fx-chart"><polyline fill="none" stroke="#0052cc" stroke-width="3" points="0,110 50,90 100,96 150,60 200,72 250,40 300,52 350,26 400,34"/><line x1="0" y1="139" x2="400" y2="139" stroke="#e5e7eb"/></svg></div>
+  <div class="fx-panel"><h3>Spend by category</h3>
+    <div class="fx-bars"><div style="height:70%"></div><div style="height:48%"></div><div style="height:88%"></div><div style="height:32%"></div><div style="height:60%"></div></div></div>
+</div>
+<div class="fx-panel"><h3>Recent activity</h3>
+  <table class="fx-tbl"><tr><td>ACH credit &middot; Meridian Health</td><td class="fx-pos">+$18,400.00</td></tr>
+  <tr><td>Card &middot; AWS</td><td>-$3,204.55</td></tr>
+  <tr><td>Wire &middot; Payroll run</td><td>-$96,120.00</td></tr>
+  <tr><td>ACH credit &middot; Stripe payout</td><td class="fx-pos">+$52,910.12</td></tr></table>
+</div>
+</main>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a40ff5c29c43860d',t:'MTc5MDQwMTUwMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body></html>
