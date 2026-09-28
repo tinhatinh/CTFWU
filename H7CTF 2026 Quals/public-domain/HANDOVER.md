@@ -62,3 +62,25 @@ Host khác ngoài ctf: `newsleaks`(8), `paperchase`(6), `paste`(6), `info`(5), `
 Case này đã tải về nhiều: `files/www25/` (~242 MB giải nén từ tarball), `files/repos/*` (4 clone,
 trong đó `infra25` dùng `--filter=blob:none`), `files/h7-tex.github.io.tar.gz` (55 MB).
 Xoá được nếu không cần: `rm -rf files/www25 files/repos files/*.tar.gz`.
+
+## 7. Secret scanning trên GitHub (đã redact 2026-09-28)
+
+Bản chụp `files/www25/` chứa mô tả hai challenge Cloud của một CTF cũ, và chính mô tả đó công bố
+một cặp AWS key:
+
+| File | Giá trị gốc | Sau redact |
+| --- | --- | --- |
+| `files/www25/api/v1/challenges/31/index.json` | `AKIA4DBSBEHX7JWOZ5H2` + secret 40 ký tự | `AKIA-REDACTED-CTF-PROP-01` / `REDACTED-CTF-PROP-secret-31` |
+| `files/www25/api/v1/challenges/32/index.json` | `AKIAQOPT3DJVRPRTAFXP` + `/rP7fHH/...` | `AKIA-REDACTED-CTF-PROP-02` / `REDACTED-CTF-PROP-secret-32` |
+
+Mỗi giá trị xuất hiện hai lần (mô tả markdown + bản render HTML), nên cả bốn lần đều bị GitHub
+Secret Scanning bật alert "Public leak". Đây là key đạo cụ do tác giả challenge cũ đặt trong đề,
+không phải key thật của ai - kiểm chứng nhanh: cặp key của `deputy` trong cùng event là
+`AKIAANALYST000000000`, và toàn bộ cloud của H7TEX chạy mock AWS không kiểm SigV4.
+
+Đã redact trong working copy để default branch không còn chuỗi dạng `AKIA[0-9A-Z]{16}`. Hai lưu ý:
+
+- Alert cũ **không tự đóng** khi xoá chuỗi khỏi branch. Phải vào Security → Secret scanning alerts
+  → từng alert → Close alert → chọn "Not a valid secret" (hoặc "Used in tests").
+- Giá trị gốc vẫn nằm trong lịch sử commit. Muốn xoá hẳn thì cần `filter-repo` + force push, và
+  với key đạo cụ thì không đáng.
