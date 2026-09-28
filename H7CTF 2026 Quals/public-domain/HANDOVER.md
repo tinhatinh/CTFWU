@@ -70,12 +70,12 @@ một cặp AWS key:
 
 | File | Giá trị gốc | Sau redact |
 | --- | --- | --- |
-| `files/www25/api/v1/challenges/31/index.json` | `AKIA4DBSBEHX7JWOZ5H2` + secret 40 ký tự | `AKIA-REDACTED-CTF-PROP-01` / `REDACTED-CTF-PROP-secret-31` |
-| `files/www25/api/v1/challenges/32/index.json` | `AKIAQOPT3DJVRPRTAFXP` + `/rP7fHH/...` | `AKIA-REDACTED-CTF-PROP-02` / `REDACTED-CTF-PROP-secret-32` |
+| `files/www25/api/v1/challenges/31/index.json` | `AKIA4DBS…Z5H2` + secret 40 ký tự | `AKIA-REDACTED-CTF-PROP-01` / `REDACTED-CTF-PROP-secret-31` |
+| `files/www25/api/v1/challenges/32/index.json` | `AKIAQOPT…AFXP` + `/rP7…3VW` | `AKIA-REDACTED-CTF-PROP-02` / `REDACTED-CTF-PROP-secret-32` |
 
 Mỗi giá trị xuất hiện hai lần (mô tả markdown + bản render HTML), nên cả bốn lần đều bị GitHub
 Secret Scanning bật alert "Public leak". Đây là key đạo cụ do tác giả challenge cũ đặt trong đề,
-không phải key thật của ai - kiểm chứng nhanh: cặp key của `deputy` trong cùng event là
+không phải key thật của ai (giá trị gốc chỉ còn trong lịch sử commit, không ghi lại ở đây) - kiểm chứng nhanh: cặp key của `deputy` trong cùng event là
 `AKIAANALYST000000000`, và toàn bộ cloud của H7TEX chạy mock AWS không kiểm SigV4.
 
 Đã redact trong working copy để default branch không còn chuỗi dạng `AKIA[0-9A-Z]{16}`. Hai lưu ý:
