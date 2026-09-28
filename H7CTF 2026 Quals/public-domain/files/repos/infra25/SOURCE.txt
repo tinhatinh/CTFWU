@@ -1,0 +1,8 @@
+Source : https://github.com/H7-Tex/h7-tex.github.io.git
+Commit : 81014f861846c93e75b4680bf4ad1815fb703587
+Date   : 2025-10-22 "Create CNAME"
+
+Ban clone nay dung `--filter=blob:none` va working tree chua bao gio duoc materialize day du (checkout cua Git for Windows chet giua chung tren Windows). Toan bo noi dung nam trong `../h7-tex.github.io.tar.gz` (54.937.575 B), file do bi .gitignore vi vuot nguong do cua repo public. Muon tai tao:
+
+    git clone https://github.com/H7-Tex/h7-tex.github.io.git infra25
+    git -C infra25 checkout 81014f861846

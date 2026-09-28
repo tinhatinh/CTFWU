@@ -66,7 +66,7 @@ Nợ gấp 1.65 lần giá trị thế chấp, và phần chênh không thể b�
 
 ## Flag
 ```bash
-node exploit.mjs
+CTF_PK=<private key trong GET /> node exploit.mjs
 ```
 
 ```

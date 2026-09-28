@@ -1,0 +1,5 @@
+Source : https://github.com/H7-Tex/TX.git
+Commit : 9d768f02ccf7ac192f520062408b2b8330fca7db
+Date   : 2025-12-25 "Update v3.14"
+
+Ban sao luu da duoc luu nhu file thuong (khong phai submodule), giu nguyen noi dung tai commit duoi day.

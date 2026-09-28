@@ -2,7 +2,11 @@ import {JsonRpcProvider, Contract, computeAddress} from "ethers";
 
 const RPC = "https://web-1a41803b1badce11.web.h7tex.com";
 const SETUP = "0x152F449c1aCBf34E2337e33f10Cc3e0B8DCfb14c";
-const KEY = "0xd513d8ca9dc38fbe6e6ec87e002d6bb0c341b8fdd7c1696437578461b14150b3";
+const KEY = process.env.CTF_PK || "0x<private key that GET / of the instance prints>";
+if (!KEY.startsWith("0x") || KEY.length !== 66) {
+  console.error("set CTF_PK to the 64-hex private key printed by GET " + RPC);
+  process.exit(1);
+}
 
 const p = new JsonRpcProvider(RPC);
 const w = new (await import("ethers")).Wallet(KEY, p);

@@ -46,7 +46,7 @@ redeem 1 share ăn hết 300 gUSD.
 
 ```bash
 npm i ethers@6
-node solve.mjs
+CTF_PK=<private key trong GET /> node solve.mjs
 ```
 
 Kết quả: `H7CTF{346df380-9ca8-41a7-8853-5a6f23c601ad}` (đã lưu trong `flag.txt`).

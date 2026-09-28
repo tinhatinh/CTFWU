@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>H7CTF 2026</title>
+<link rel="icon" href="https://h7tex.com/favicon.ico" />
+<meta name="description" content="H7CTF 2026: India's most unserious CTF. A global capture the flag where the best hacker wins, not the biggest AI budget. Quals 26-27 Sep, onsite finals 24-25 Oct." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#17130f;        /* warm espresso, not slate-black */
+    --surface:#221c15;   /* lifted band tone */
+    --line:#332b1f;      /* warm hairline */
+    --fg:#f5f1e8;
+    --muted:#a89b84;
+    --faint:#6e6350;
+    --accent:#eab54c;
+    --font:"Bricolage Grotesque",system-ui,-apple-system,sans-serif;
+    --wrap:1080px;
+    --pad:clamp(1.25rem,5vw,3rem);
+    --sec:clamp(2.75rem,6vw,4.25rem);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{background:var(--bg);color:var(--fg);font-family:var(--font);font-weight:400;line-height:1.5;font-size:clamp(1.02rem,0.97rem + 0.3vw,1.18rem);-webkit-font-smoothing:antialiased;overflow-x:hidden;font-optical-sizing:auto}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--accent);color:#17130f}
+  .wrap{max-width:var(--wrap);margin-inline:auto;padding-inline:var(--pad)}
+  s{text-decoration-thickness:.08em;text-decoration-color:var(--accent)}
+  @keyframes blink{50%{opacity:0}}
+
+  .link{background-image:linear-gradient(var(--accent),var(--accent));background-size:0% 1.5px;background-repeat:no-repeat;background-position:0 100%;transition:background-size .3s ease;padding-bottom:2px}
+  .link:hover{background-size:100% 1.5px}
+
+  /* nav */
+  header{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid transparent}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:70px}
+  .brand{font-weight:800;font-size:1.15rem;letter-spacing:-.02em;display:inline-flex;align-items:center}
+  .brandlogo{height:32px;width:auto;display:block}
+  .brand b{color:var(--accent)}
+  .nav-links{display:flex;gap:2.1rem;align-items:center}
+  .nav-links a{color:var(--muted);font-size:1rem;transition:color .2s}
+  .nav-links a:hover{color:var(--fg)}
+  .pill{border:1.5px solid var(--accent);color:var(--accent);padding:.5rem 1.15rem;border-radius:999px;font-weight:700;cursor:pointer;transition:background .2s,color .2s,transform .15s}
+  .pill:hover{background:var(--accent);color:var(--bg)}
+  .pill.solid{background:var(--accent);color:var(--bg)}
+  .pill.solid:hover{transform:translateY(-2px)}
+  .nav-toggle{display:none}
+
+  /* section shell */
+  section{padding-block:var(--sec)}
+  .band{background:var(--surface)}
+  h2{font-weight:700;font-size:clamp(2rem,5.5vw,3rem);letter-spacing:-.03em;line-height:1;margin-bottom:1.5rem}
+  h2 .a{color:var(--accent)}
+  .prose{max-width:54ch;color:var(--muted);font-size:clamp(1.08rem,1rem + 0.4vw,1.28rem);line-height:1.5}
+  .prose + .prose{margin-top:.9rem}
+  .prose b{color:var(--fg);font-weight:600}
+
+  /* hero */
+  .hero{position:relative;padding-top:clamp(2.5rem,6vw,4.5rem);padding-bottom:clamp(2.25rem,5vw,3.5rem)}
+  .hero::before{content:"";position:absolute;top:-6%;left:-10%;width:52vw;height:52vw;max-width:640px;max-height:640px;background:radial-gradient(circle,rgba(234,181,76,.12),transparent 60%);pointer-events:none;z-index:-1}
+  h1{font-weight:800;font-size:clamp(4rem,17vw,12.5rem);line-height:.8;letter-spacing:-.045em}
+  h1 em{font-style:normal;color:var(--accent)}
+  .cur{color:var(--accent);font-weight:400;animation:blink 1.1s steps(1) infinite}
+  .tagline{font-size:clamp(1.5rem,5vw,2.6rem);font-weight:500;letter-spacing:-.025em;margin-top:1rem}
+  .lede{max-width:40ch;color:var(--muted);font-size:clamp(1.1rem,1rem + 0.5vw,1.32rem);margin-top:1.3rem;line-height:1.42}
+  .lede b{color:var(--fg);font-weight:600}
+  .actions{display:flex;flex-wrap:wrap;align-items:center;gap:1rem;margin-top:2rem}
+  .actions .pill{padding:.85rem 1.8rem;font-size:1.05rem}
+  .meta{color:var(--muted);margin-top:2rem;font-size:1.05rem}
+  .meta b{color:var(--fg);font-weight:600}
+  .cd{display:inline-flex;align-items:center;gap:.65rem;margin-top:1.1rem;padding:.5rem 1.1rem;border:1px solid var(--line);border-radius:999px;background:color-mix(in srgb,var(--surface) 70%,transparent);font-size:.98rem;color:var(--muted)}
+  .cd .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 9px var(--accent);animation:blink 1.5s infinite}
+  .cd b{color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums}
+
+  /* registration */
+  .reg{max-width:600px;margin-top:2rem}
+  .field{margin-bottom:1rem}
+  .field label{display:block;font-size:.9rem;color:var(--muted);margin-bottom:.4rem;font-weight:500}
+  .field label .opt{color:var(--faint);font-weight:400}
+  .field input,.field select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;color:var(--fg);font-family:var(--font);font-size:1.05rem;padding:.72rem .9rem;outline:none;transition:border-color .2s;color-scheme:dark}
+  .field input::placeholder{color:var(--faint)}
+  .field input:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(234,181,76,.16)}
+  .field select{cursor:pointer;appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 18px) 54%,calc(100% - 13px) 54%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:2rem}
+  .dc-btn{display:flex;align-items:center;justify-content:center;gap:.55rem;width:100%;background:#5865F2;color:#fff;border:0;border-radius:10px;font-family:var(--font);font-weight:600;font-size:1rem;padding:.75rem 1.1rem;cursor:pointer;transition:filter .2s,transform .15s}
+  .dc-btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+  .dc-btn[disabled]{opacity:.6;cursor:default}
+  .dc-btn svg{width:19px;height:19px;flex:none}
+  .dc-btn.connected{background:#43b581}
+  .dc-status{color:var(--faint);font-size:.88rem;margin-top:.45rem}
+  .dc-status.ok{color:#7bd88f}
+  .dc-status.err{color:#ff6b6b}
+  .ehint{margin-top:.4rem;font-size:.88rem;color:var(--muted)}
+  .ehint b{color:var(--accent);cursor:pointer;font-weight:600;text-decoration:underline;text-underline-offset:2px}
+  .frow{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+  .seg{display:flex;width:100%;border:1px solid var(--line);border-radius:11px;padding:4px;gap:4px;background:var(--bg)}
+  .seg button{flex:1;background:transparent;color:var(--muted);border:0;border-radius:8px;font-family:var(--font);font-weight:600;font-size:.95rem;padding:.55rem;cursor:pointer;transition:background .2s,color .2s}
+  .seg button.on{background:var(--accent);color:var(--bg)}
+  .regbtn{width:100%;margin-top:.6rem;border:0;cursor:pointer;font-family:var(--font);font-size:1.08rem;padding:.92rem;font-weight:700;justify-content:center}
+  .regbtn[disabled]{opacity:.6;cursor:default}
+  .spin{display:inline-block;width:1.05em;height:1.05em;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite;vertical-align:-2px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .regmsg{margin-top:.9rem;font-size:1rem;min-height:1.2em}
+  .regmsg.ok{color:#7bd88f}.regmsg.err{color:#ff6b6b}
+  .fine{color:var(--muted);font-size:.92rem;margin-top:.9rem}
+  @media(max-width:600px){.frow{grid-template-columns:1fr}}
+
+  /* register modal */
+  .modal[hidden]{display:none}
+  .modal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:1.2rem;animation:mfade .18s ease}
+  @keyframes mfade{from{opacity:0}to{opacity:1}}
+  @keyframes cardin{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:none}}
+  .modal-backdrop{position:absolute;inset:0;background:rgba(9,7,4,.78);backdrop-filter:blur(4px)}
+  .modal-card{position:relative;z-index:1;width:100%;max-width:480px;max-height:92vh;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:clamp(1.75rem,4.5vw,2.5rem);box-shadow:0 30px 80px rgba(0,0,0,.6);animation:cardin .3s cubic-bezier(.2,.8,.3,1)}
+  .modal-card h2{font-size:1.9rem;font-weight:700;letter-spacing:-.02em;margin-bottom:.35rem}
+  .modal-sub{color:var(--muted);font-size:1.02rem;line-height:1.45}
+  .modal-x{position:absolute;top:.8rem;right:1rem;background:none;border:0;color:var(--muted);font-size:1.2rem;cursor:pointer;line-height:1;transition:color .2s}
+  .modal-x:hover{color:var(--fg)}
+  .modal .reg{margin-top:1.4rem;max-width:none}
+  .done-check{width:58px;height:58px;border-radius:50%;background:rgba(234,181,76,.12);border:2px solid var(--accent);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:1.9rem;margin:0 auto;animation:pop .42s cubic-bezier(.2,.8,.3,1.4)}
+  @keyframes pop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+  .done-h{font-size:1.7rem;font-weight:700;letter-spacing:-.02em;margin:.9rem 0 .35rem}
+
+  /* format */
+  .stages{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,5vw,3.5rem)}
+  .stage .k{color:var(--accent);font-weight:600;margin-bottom:.7rem}
+  .stage h3{font-size:clamp(1.4rem,3.5vw,1.9rem);font-weight:700;letter-spacing:-.02em;margin-bottom:.5rem}
+  .stage p{color:var(--muted);line-height:1.45}
+  .stage .w{color:var(--faint);margin-top:.9rem}
+
+  /* prize section (asymmetric on band) */
+  .prize{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(1.5rem,5vw,4rem);align-items:center}
+  .prize .fig{font-weight:800;font-size:clamp(4.5rem,16vw,9.5rem);line-height:.78;letter-spacing:-.05em}
+  .prize .fig em{font-style:normal;color:var(--accent)}
+  .prize .card{background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:clamp(1.4rem,3vw,2rem)}
+  .prize .card p{color:var(--muted);font-size:1.12rem;line-height:1.45}
+  .prize .card b{color:var(--fg);font-weight:600}
+  .prize .card .t{color:var(--accent);font-weight:600;margin-bottom:.6rem}
+
+  /* categories */
+  .cats{display:flex;flex-wrap:wrap;gap:.7rem}
+  .cat{padding:.6rem 1.2rem;border:1px solid var(--line);border-radius:999px;font-weight:600;color:var(--muted);font-size:clamp(1rem,2.2vw,1.15rem);transition:border-color .2s,color .2s,background .2s}
+  .cat:hover{border-color:var(--accent);color:var(--fg)}
+
+  /* schedule */
+  .sched .row{display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:baseline;padding:1.3rem 0;border-top:1px solid var(--line)}
+  .sched .row:last-child{border-bottom:1px solid var(--line)}
+  .sched .what{font-size:clamp(1.25rem,3.2vw,1.6rem);font-weight:600;letter-spacing:-.02em}
+  .sched .sub{display:block;color:var(--muted);font-size:.98rem;font-weight:400;margin-top:.25rem}
+  .sched .date{color:var(--accent);font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+
+  /* stat bar */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr)}
+  .stat{padding:0 clamp(1rem,3.5vw,2.75rem)}
+  .stat:first-child{padding-left:0}
+  .stat + .stat{border-left:1px solid var(--line)}
+  .stat .n{font-weight:800;font-size:clamp(2.6rem,7.5vw,4rem);line-height:.85;letter-spacing:-.03em}
+  .stat .n em{font-style:normal;color:var(--accent)}
+  .stat .l{color:var(--muted);margin-top:.6rem;font-size:.98rem}
+
+  /* backers logo wall */
+  .tier{margin-bottom:1.8rem}
+  .tier:last-of-type{margin-bottom:0}
+  .tier .t{color:var(--faint);margin-bottom:.9rem}
+  .logos{display:flex;flex-wrap:wrap;gap:.75rem}
+  .logo{display:inline-flex;align-items:center;gap:.65rem;padding:.6rem 1.05rem;background:var(--bg);border:1px solid var(--line);border-radius:11px;transition:border-color .2s}
+  .logo:hover{border-color:var(--accent)}
+  .logo img{height:22px;width:auto;max-width:130px;object-fit:contain;border-radius:4px;flex:none}
+  .platinum .logo img{height:26px}
+  .logo span{font-weight:600;color:var(--fg)}
+  .platinum .logo{padding:.75rem 1.25rem}
+  .platinum .logo span{font-size:1.12rem}
+  .bnote{color:var(--faint);margin-top:1.5rem;font-size:.95rem}
+
+  /* partner */
+  .partner h2{max-width:15ch;margin-bottom:1rem}
+  .partner p{color:var(--muted);max-width:46ch;font-size:1.18rem;line-height:1.45;margin-bottom:1.8rem}
+
+  /* footer */
+  footer{padding-block:3rem;border-top:1px solid var(--line)}
+  .foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1.2rem;align-items:baseline}
+  .foot .links{display:flex;flex-wrap:wrap;gap:1.5rem}
+  .foot a{color:var(--muted);transition:color .2s}
+  .foot a:hover{color:var(--accent)}
+  .foot .c{color:var(--faint);font-size:.95rem}
+
+  @media(max-width:820px){.stages{grid-template-columns:1fr;gap:2rem}.prize{grid-template-columns:1fr;gap:1.6rem}}
+  @media(max-width:760px){
+    .nav-links{position:fixed;inset:70px 0 auto 0;flex-direction:column;gap:0;background:var(--bg);border-bottom:1px solid var(--line);padding:.5rem var(--pad) 1.4rem;transform:translateY(-135%);transition:transform .3s ease}
+    .nav-links.open{transform:none}
+    .nav-links a{padding:1rem 0;width:100%;border-bottom:1px solid var(--line);font-size:1.15rem}
+    .nav-links .pill{margin-top:1rem;text-align:center}
+    .nav-toggle{display:inline-block;background:none;border:0;color:var(--fg);font-family:var(--font);font-weight:700;font-size:1.05rem;cursor:pointer}
+    .stats{grid-template-columns:1fr;gap:1.6rem}
+    .stat{padding:0}.stat + .stat{border-left:0;border-top:1px solid var(--line);padding-top:1.6rem}
+    .sched .row{grid-template-columns:1fr;gap:.35rem}.sched .date{text-align:left}
+  }
+  @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}.cur,.cd .dot{animation:none}.pill.solid:hover{transform:none}}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <nav class="nav wrap">
+    <a href="#top" class="brand"><img src="assets/logo.png" alt="H7Tex" class="brandlogo"></a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu">menu</button>
+    <div class="nav-links" id="navLinks">
+      <a href="#about">about</a>
+      <a href="#format">format</a>
+      <a href="#schedule">schedule</a>
+      <a href="#backers">backers</a>
+      <button type="button" class="pill solid" data-reg>register</button>
+    </div>
+  </nav>
+</header>
+
+<main>
+
+  <section class="hero"><div class="wrap">
+    <h1>h7ctf <em>’26</em><span class="cur">_</span></h1>
+    <p class="tagline">india's most <s>un</s>serious ctf.</p>
+    <p class="lede">a global capture the flag where <b>the best hacker still wins</b>, not the biggest AI budget.</p>
+    <div class="actions">
+      <button type="button" class="pill solid" data-reg>register</button>
+      <a class="pill" href="#about">how it works</a>
+    </div>
+    <p class="meta"><b>quals</b> 26–27 sep, online &nbsp;·&nbsp; <b>finals</b> 24–25 oct, srmist chennai</p>
+    <div class="cd"><span class="dot"></span> quals begin in <b id="cdv">…</b></div>
+  </div></section>
+
+  <section id="about"><div class="wrap">
+    <h2>skill still wins</h2>
+    <p class="prose">somewhere along the way, jeopardy ctf became a contest of whose AI budget is bigger, not who can actually hack. <b>h7ctf ’26 puts the human back on top.</b></p>
+    <p class="prose">we don't ban AI; you can't, online. instead the quals run on a scoring economy where <b>judgment beats throughput</b>, so no stack of agents can buy the top of the board. the onsite finals are <b>human-only</b>. AI's welcome as a tool. it just doesn't get to win for you.</p>
+  </div></section>
+
+  <section id="format"><div class="wrap">
+    <h2>two stages</h2>
+    <div class="stages">
+      <div class="stage">
+        <div class="k">stage 01 · quals</div>
+        <h3>global online qualifier</h3>
+        <p>a 36-hour jeopardy ctf, open to any team on earth. beginner tracks up to a hard novel tier. the top teams that opt in go onsite.</p>
+        <p class="w">26–27 sep · online</p>
+      </div>
+      <div class="stage">
+        <div class="k">stage 02 · finals</div>
+        <h3>attack, defend, hold the hill</h3>
+        <p>a human-only, two-day live battle at srmist chennai. defend your own services, break into everyone else's, and fight to hold shared ground. attack-defense meets king-of-the-hill.</p>
+        <p class="w">24–25 oct · srmist</p>
+      </div>
+    </div>
+  </div></section>
+
+  <section id="prize" class="band"><div class="wrap">
+    <div class="prize">
+      <div class="fig">$2<em>K</em>+</div>
+      <div class="card">
+        <div class="t">the prize</div>
+        <p><b>the largest cash pool yet</b> for 2026, on top of a deep stack of training, tooling &amp; certification vouchers for winners right across the board.</p>
+      </div>
+    </div>
+  </div></section>
+
+  <section id="categories"><div class="wrap">
+    <h2>twelve categories</h2>
+    <div class="cats">
+      <span class="cat">web</span><span class="cat">pwn</span><span class="cat">crypto</span><span class="cat">reverse</span>
+      <span class="cat">osint</span><span class="cat">dfir</span><span class="cat">blockchain</span><span class="cat">hardware</span>
+      <span class="cat">boot2root</span><span class="cat">cloud</span><span class="cat">ai</span><span class="cat">misc</span>
+    </div>
+  </div></section>
+
+  <section id="schedule"><div class="wrap">
+    <h2>schedule</h2>
+    <div class="sched">
+      <div class="row"><div class="what">registration open<span class="sub">app.h7tex.com · live now</span></div><div class="date">now</div></div>
+      <div class="row"><div class="what">online quals<span class="sub">36-hour global jeopardy · 03:30 utc start</span></div><div class="date">26–27 sep</div></div>
+      <div class="row"><div class="what">onsite finals<span class="sub">attack-defense + koth · srmist chennai</span></div><div class="date">24–25 oct</div></div>
+    </div>
+  </div></section>
+
+  <section id="past"><div class="wrap">
+    <h2>past editions</h2>
+    <div class="stats">
+      <div class="stat"><div class="n">5,500<em>+</em></div><div class="l">participants</div></div>
+      <div class="stat"><div class="n">25<em>+</em></div><div class="l">countries</div></div>
+      <div class="stat"><div class="n">$1.7<em>M</em>+</div><div class="l">prizes &amp; vouchers</div></div>
+    </div>
+  </div></section>
+
+  <section id="backers" class="band"><div class="wrap">
+    <h2>backers</h2>
+    <div class="tier platinum">
+      <div class="t">platinum</div>
+      <div class="logos">
+        <a class="logo" href="https://offsec.com" target="_blank" rel="noopener"><img src="assets/logos/offsec.png" alt="" onerror="this.remove()"><span>OffSec</span></a>
+        <a class="logo" href="https://parrot-ctfs.com" target="_blank" rel="noopener"><img src="assets/logos/parrotctfs.png" alt="" onerror="this.remove()"><span>Parrot CTFs</span></a>
+        <a class="logo" href="https://jsmon.sh" target="_blank" rel="noopener"><img src="assets/logos/jsmon.png" alt="" onerror="this.remove()"><span>JSMon</span></a>
+        <a class="logo" href="https://eccouncil.org" target="_blank" rel="noopener"><img src="assets/logos/eccouncil.png" alt="" onerror="this.remove()"><span>EC-Council</span></a>
+      </div>
+    </div>
+    <div class="tier gold">
+      <div class="t">gold</div>
+      <div class="logos">
+        <a class="logo" href="https://osec.io" target="_blank" rel="noopener"><img src="assets/logos/ottersec.png" alt="" onerror="this.remove()"><span>OtterSec</span></a>
+        <a class="logo" href="https://alteredsecurity.com" target="_blank" rel="noopener"><img src="assets/logos/altered.png" alt="" onerror="this.remove()"><span>Altered Security</span></a>
+      </div>
+    </div>
+    <div class="tier silver">
+      <div class="t">silver</div>
+      <div class="logos">
+        <a class="logo" href="https://cyberwarfare.live" target="_blank" rel="noopener"><img src="assets/logos/cyberwarfare.png" alt="" onerror="this.remove()"><span>CyberWarFare Labs</span></a>
+        <a class="logo" href="https://caido.io" target="_blank" rel="noopener"><img src="assets/logos/caido.png" alt="" onerror="this.remove()"><span>Caido</span></a>
+        <a class="logo" href="https://gen.xyz" target="_blank" rel="noopener"><img src="assets/logos/xyz.png" alt="" onerror="this.remove()"><span>.XYZ</span></a>
+        <a class="logo" href="https://seclance.com" target="_blank" rel="noopener"><img src="assets/logos/seclance-ic.png?v=2" alt="" onerror="this.remove()"><span>SecLance</span></a>
+      </div>
+    </div>
+    <p class="bnote">who had our back in 2025 · 2026 crew loading.</p>
+  </div></section>
+
+  <section id="partner" class="band" style="padding-top:0"><div class="wrap partner">
+    <h2>partner with <span class="a">h7ctf</span> ’26</h2>
+    <p>put your brand in front of a vetted, global pool of student and early-career security talent, across the platform, the challenges and the onsite finals.</p>
+    <a class="pill solid" href="mailto:abu@h7tex.com?subject=H7CTF%202026%20Sponsorship">become a sponsor</a>
+  </div></section>
+
+</main>
+
+<div id="regModal" class="modal" hidden>
+  <div class="modal-backdrop" data-reg-close></div>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="regTitle">
+    <button class="modal-x" type="button" data-reg-close aria-label="Close">✕</button>
+    <h2 id="regTitle">register</h2>
+    <p class="modal-sub" id="regIntro">free entry, passwordless. just your name and email, we'll send a magic link to finish. everything else is optional.</p>
+    <form id="regForm" class="reg" novalidate>
+      <div class="frow">
+        <div class="field"><label for="rn">name</label><input id="rn" autocomplete="name" placeholder="ada lovelace" required></div>
+        <div class="field"><label for="re">email</label><input id="re" type="email" autocomplete="email" placeholder="you@campus.edu" required><div class="ehint" id="emailHint" hidden></div></div>
+      </div>
+      <div class="field">
+        <label>you're a…</label>
+        <div class="seg" id="ptype"><button type="button" class="on" data-v="student">student</button><button type="button" data-v="professional">professional</button></div>
+      </div>
+      <div class="frow">
+        <div class="field"><label for="rorg">college / org</label><input id="rorg" placeholder="srm institute of science &amp; technology"></div>
+        <div class="field"><label for="rc">country</label><select id="rc"><option value="">select…</option></select></div>
+      </div>
+      <div class="field">
+        <label>discord</label>
+        <button type="button" id="dcBtn" class="dc-btn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg><span>connect discord</span></button>
+        <div id="dcStatus" class="dc-status">we verify you via discord</div>
+      </div>
+      <div id="cf" class="cf-turnstile" style="margin:.2rem 0 .6rem"></div>
+      <button type="submit" class="pill solid regbtn">register</button>
+      <p id="regMsg" class="regmsg" role="status" aria-live="polite"></p>
+      <p class="fine">passwordless, we email you a magic link. already registered? <a class="link" href="https://ctf.h7tex.com/login">sign in</a>.</p>
+    </form>
+    <div id="regDone" hidden style="text-align:center;padding:1.6rem 0 .8rem">
+      <div class="done-check">✓</div>
+      <div class="done-h">you're on the board.</div>
+      <p class="modal-sub" id="regDoneMsg">check your email to verify your account.</p>
+    </div>
+  </div>
+</div>
+
+<footer><div class="wrap foot">
+  <div class="links">
+    <a class="link" href="https://ctftime.org/team/281844" target="_blank" rel="noopener">ctftime</a>
+    <a class="link" href="https://github.com/H7-Tex" target="_blank" rel="noopener">github</a>
+    <a class="link" href="https://www.linkedin.com/company/h7tex" target="_blank" rel="noopener">linkedin</a>
+    <a class="link" href="mailto:abu@h7tex.com">email</a>
+  </div>
+  <div class="c">no cookies, only flags</div>
+</div></footer>
+
+<script>
+  var t=document.getElementById('navToggle'),l=document.getElementById('navLinks');
+  t&&t.addEventListener('click',function(){l.classList.toggle('open')});
+  l&&l.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){l.classList.remove('open')})});
+  var target=new Date('2026-09-26T03:30:00Z').getTime();
+  function tick(){var d=target-Date.now();if(d<0)d=0;var day=Math.floor(d/864e5),h=Math.floor(d%864e5/36e5),m=Math.floor(d%36e5/6e4);document.getElementById('cdv').textContent=day+'d '+h+'h '+m+'m';}
+  tick();setInterval(tick,30000);
+
+  // ---- registration (headless -> ZeroPool API) ----
+  var EVENT_UUID = "1ecb8aca-5a79-43f5-85fd-7224146283bf"; // public h7ctf-2026 event id
+  var TURNSTILE_SITEKEY = "0x4AAAAAACLhAKSUOUdEB2Pk"; // public Cloudflare Turnstile site key
+  var REG_API = "https://app.h7tex.com/api/events/" + EVENT_UUID + "/register";
+  var refCode = new URLSearchParams(location.search).get('ref') || "";
+  // modal open/close
+  var regModal=document.getElementById('regModal');
+  function openReg(){if(!regModal)return;regModal.hidden=false;document.body.style.overflow='hidden';renderTurnstile();setTimeout(function(){var f=document.getElementById('rn');f&&f.focus();},60);}
+  function closeReg(){if(!regModal)return;regModal.hidden=true;document.body.style.overflow='';var f=document.getElementById('regForm');if(f)f.style.display='';var d=document.getElementById('regDone');if(d)d.hidden=true;var t=document.getElementById('regTitle');if(t)t.style.display='';var it=document.getElementById('regIntro');if(it)it.style.display='';var m=document.getElementById('regMsg');if(m){m.textContent='';m.className='regmsg';}var b=f&&f.querySelector('.regbtn');if(b){b.disabled=false;b.textContent=(b.dataset.orig||'register');b.style.minWidth='';}}
+  document.querySelectorAll('[data-reg]').forEach(function(b){b.addEventListener('click',function(e){e.preventDefault();openReg();});});
+  document.querySelectorAll('[data-reg-close]').forEach(function(b){b.addEventListener('click',closeReg);});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&regModal&&!regModal.hidden)closeReg();});
+  var ptype = "student";
+  document.querySelectorAll('#ptype button').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('#ptype button').forEach(function(x){x.classList.remove('on')});b.classList.add('on');ptype=b.dataset.v;});});
+
+  // ---- required fields + discord oauth (option B) ----
+  var DISCORD_REQUIRED = true; // required: discord + country + org (coordinate with backend discord_required)
+  var discordToken = "";
+  var COUNTRIES=["Afghanistan","Albania","Algeria","Andorra","Angola","Antigua and Barbuda","Argentina","Armenia","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bhutan","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria","Burkina Faso","Burundi","Cabo Verde","Cambodia","Cameroon","Canada","Central African Republic","Chad","Chile","China","Colombia","Comoros","Congo","Costa Rica","Côte d'Ivoire","Croatia","Cuba","Cyprus","Czechia","Democratic Republic of the Congo","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Eswatini","Ethiopia","Fiji","Finland","France","Gabon","Gambia","Georgia","Germany","Ghana","Greece","Grenada","Guatemala","Guinea","Guinea-Bissau","Guyana","Haiti","Honduras","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Israel","Italy","Jamaica","Japan","Jordan","Kazakhstan","Kenya","Kiribati","Kosovo","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Morocco","Mozambique","Myanmar","Namibia","Nauru","Nepal","Netherlands","New Zealand","Nicaragua","Niger","Nigeria","North Korea","North Macedonia","Norway","Oman","Pakistan","Palau","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Qatar","Romania","Russia","Rwanda","Saint Kitts and Nevis","Saint Lucia","Saint Vincent and the Grenadines","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Korea","South Sudan","Spain","Sri Lanka","Sudan","Suriname","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Timor-Leste","Togo","Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States","Uruguay","Uzbekistan","Vanuatu","Vatican City","Venezuela","Vietnam","Yemen","Zambia","Zimbabwe","Other"];
+  (function(){var sel=document.getElementById('rc');if(sel&&sel.tagName==='SELECT'){var f=document.createDocumentFragment();for(var i=0;i<COUNTRIES.length;i++){var o=document.createElement('option');o.value=COUNTRIES[i];o.textContent=COUNTRIES[i];f.appendChild(o);}sel.appendChild(f);}})();
+  var dcBtn=document.getElementById('dcBtn'), dcStatus=document.getElementById('dcStatus');
+  var dcBtnDefault=dcBtn?dcBtn.innerHTML:'';
+  function dcSet(t,c){if(dcStatus){dcStatus.textContent=t;dcStatus.className='dc-status'+(c?' '+c:'');}}
+  var dcTimer=null,dcPoll=null,dcAwaiting=false;
+  function dcCleanup(){if(dcTimer){clearTimeout(dcTimer);dcTimer=null;}if(dcPoll){clearInterval(dcPoll);dcPoll=null;}dcAwaiting=false;}
+  function dcResetBtn(){if(dcBtn){dcBtn.classList.remove('connected');dcBtn.innerHTML=dcBtnDefault;}}
+  dcBtn&&dcBtn.addEventListener('click',function(){var u='https://app.h7tex.com/api/auth/discord/authorize?origin='+encodeURIComponent('https://2026.h7tex.com');var w=window.open(u,'discord','width=520,height=760');if(!w){dcSet('popup blocked, allow popups and retry','err');return;}dcCleanup();dcAwaiting=true;dcSet('opening discord…','');dcTimer=setTimeout(function(){if(dcAwaiting&&!discordToken){dcCleanup();dcResetBtn();dcSet("discord didn't finish connecting, try again",'err');}},90000);dcPoll=setInterval(function(){if(w.closed){clearInterval(dcPoll);dcPoll=null;setTimeout(function(){if(dcAwaiting&&!discordToken){dcCleanup();dcResetBtn();dcSet('discord connection cancelled','err');}},900);}},700);});
+  window.addEventListener('message',function(ev){if(ev.origin!=='https://app.h7tex.com')return;var d=ev.data||{};if(d.type==='discord_verified'){dcCleanup();discordToken=d.token||'';var h=d.username||d.global_name||'connected';if(dcBtn){dcBtn.classList.add('connected');dcBtn.innerHTML='';var sp=document.createElement('span');sp.textContent='✓ '+h;dcBtn.appendChild(sp);}dcSet('discord connected','ok');clearErr();}else if(d.type==='discord_error'){dcCleanup();discordToken='';if(dcBtn){dcBtn.classList.remove('connected');dcBtn.innerHTML=dcBtnDefault;}var m=d.error==='account_too_new'?('discord account must be '+(d.min_days||7)+'+ days old'):(d.error==='no_code'||d.error==='access_denied')?'discord connection cancelled':'discord connection failed, please retry';dcSet(m,'err');}});
+  var tsOn = TURNSTILE_SITEKEY && TURNSTILE_SITEKEY.indexOf('REPLACE')!==0 && /(^|\.)h7tex\.com$/.test(location.hostname);
+  var tsWidgetId=null, tsTries=0;
+  if(tsOn){var ts=document.createElement('script');ts.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";ts.async=true;ts.defer=true;document.head.appendChild(ts);}else{var cf=document.getElementById('cf');if(cf)cf.style.display='none';}
+  function renderTurnstile(){
+    if(!tsOn||tsWidgetId!==null) return;
+    if(window.turnstile && document.getElementById('cf')){ try{tsWidgetId=turnstile.render('#cf',{sitekey:TURNSTILE_SITEKEY,theme:'dark'});}catch(e){} return; }
+    if(tsTries++ < 30){ setTimeout(renderTurnstile,200); }
+  }
+  var regForm=document.getElementById('regForm'), regMsg=document.getElementById('regMsg');
+  function rmsg(t,c){regMsg.textContent=t;regMsg.className='regmsg'+(c?' '+c:'');}
+  // email typo catcher (mailcheck-style, no lib)
+  var EMAIL_DOMAINS=['gmail.com','googlemail.com','yahoo.com','yahoo.co.in','hotmail.com','outlook.com','icloud.com','proton.me','protonmail.com','live.com','aol.com','ymail.com','me.com','mail.com','zoho.com'];
+  function _lev(a,b){var m=a.length,n=b.length,i,j,c,t,p=[];for(j=0;j<=n;j++)p[j]=j;for(i=1;i<=m;i++){c=p[0];p[0]=i;for(j=1;j<=n;j++){t=p[j];p[j]=Math.min(p[j]+1,p[j-1]+1,c+(a.charCodeAt(i-1)===b.charCodeAt(j-1)?0:1));c=t;}}return p[n];}
+  function _suggestEmail(v){v=(v||'').trim().toLowerCase();var at=v.lastIndexOf('@');if(at<1||at===v.length-1)return null;var u=v.slice(0,at),d=v.slice(at+1);if(!d||EMAIL_DOMAINS.indexOf(d)>=0)return null;var best=null,bd=99;for(var i=0;i<EMAIL_DOMAINS.length;i++){var k=_lev(d,EMAIL_DOMAINS[i]);if(k<bd){bd=k;best=EMAIL_DOMAINS[i];}}return (best&&bd>0&&bd<=2)?(u+'@'+best):null;}
+  var reInput=document.getElementById('re'), eHint=document.getElementById('emailHint');
+  function clearErr(){if(regMsg&&regMsg.textContent){regMsg.textContent='';regMsg.className='regmsg';}}
+  function checkEmailTypo(){if(!reInput||!eHint)return;var s=_suggestEmail(reInput.value);if(!s){eHint.hidden=true;return;}eHint.textContent='did you mean ';var b=document.createElement('b');b.textContent=s;b.tabIndex=0;b.setAttribute('role','button');b.addEventListener('click',function(){reInput.value=s;eHint.hidden=true;clearErr();reInput.focus();});eHint.appendChild(b);eHint.appendChild(document.createTextNode('?'));eHint.hidden=false;}
+  reInput&&reInput.addEventListener('blur',checkEmailTypo);
+  reInput&&reInput.addEventListener('input',function(){if(eHint)eHint.hidden=true;});
+  regForm&&regForm.addEventListener('input',clearErr);
+  regForm&&regForm.addEventListener('submit',function(e){
+    e.preventDefault();
+    var name=document.getElementById('rn').value.trim(), email=document.getElementById('re').value.trim();
+    if(!name||!email){rmsg('add your name and email to register.','err');return;}
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){rmsg('please enter a valid email address.','err');document.getElementById('re').focus();return;}
+    if(EVENT_UUID.indexOf('REPLACE')===0){rmsg('registration opens shortly, check back soon.','err');return;}
+    var tk = (tsOn && window.turnstile && tsWidgetId!==null && turnstile.getResponse) ? (turnstile.getResponse(tsWidgetId)||"") : ((document.querySelector('[name="cf-turnstile-response"]')||{}).value||"");
+    if(tsOn && !tk){rmsg('please complete the verification below.','err');renderTurnstile();return;}
+    var rcVal=document.getElementById('rc').value, orgVal=document.getElementById('rorg').value.trim();
+    if(DISCORD_REQUIRED){
+      if(!rcVal){rmsg('please select your country.','err');return;}
+      if(!orgVal){rmsg('please add your college or organization.','err');return;}
+      if(!discordToken){rmsg('please connect your discord to register.','err');return;}
+    }
+    var payload={name:name,email:email,turnstile_token:tk,country:rcVal,participant_type:ptype,organization:orgVal,discord_verify_token:discordToken,referral_code:refCode};
+    var btn=regForm.querySelector('.regbtn');btn.style.minWidth=btn.offsetWidth+'px';btn.disabled=true;btn.dataset.orig=btn.dataset.orig||btn.textContent;btn.innerHTML='<span class="spin" aria-hidden="true"></span>';rmsg('','');
+    fetch(REG_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+      .then(function(r){return r.json().catch(function(){return{};}).then(function(d){return{s:r.status,ok:r.ok,d:d};});})
+      .then(function(res){
+        btn.disabled=false;btn.textContent=btn.dataset.orig||'register';btn.style.minWidth='';
+        if(res.ok && res.d && res.d.success===true){regForm.reset();regForm.style.display='none';var t=document.getElementById('regTitle');if(t)t.style.display='none';var it=document.getElementById('regIntro');if(it)it.style.display='none';var done=document.getElementById('regDone');if(done)done.hidden=false;}
+        else if(res.ok){rmsg('registration could not be confirmed. please try again.','err');}
+        else{
+          var em=(res.d&&(res.d.detail||res.d.message))||'';
+          if(res.s===429){rmsg('too many tries. give it a minute and go again.','err');}
+          else{rmsg(em||(res.s===409?'already registered for this event.':res.s===422?'please check your details and try again.':'something went wrong. try again in a moment.'),'err');}
+        }
+        if(window.turnstile&&tsWidgetId!==null){try{turnstile.reset(tsWidgetId);}catch(_){}}
+      })
+      .catch(function(){btn.disabled=false;btn.textContent=btn.dataset.orig||'register';btn.style.minWidth='';rmsg('network error. check your connection and try again.','err');});
+  });
+</script>
+</body>
+</html>

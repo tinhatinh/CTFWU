@@ -84,3 +84,21 @@ không phải key thật của ai - kiểm chứng nhanh: cặp key của `deput
   → từng alert → Close alert → chọn "Not a valid secret" (hoặc "Used in tests").
 - Giá trị gốc vẫn nằm trong lịch sử commit. Muốn xoá hẳn thì cần `filter-repo` + force push, và
   với key đạo cụ thì không đáng.
+
+## 8. `files/repos/*` khong con la submodule (2026-09-28)
+
+Ba ban clone cua H7-Tex (`TX`, `W26`, `infra25`) duoc commit nhu **gitlink** ma repo khong co
+`.gitmodules`, nen nguoi clone ve chi nhan ba thu muc rong. Da bo `.git` long cua tung ban va
+lưu lai nhu file thuong, kem `SOURCE.txt` ghi URL + commit + ngay:
+
+| Folder | URL | Commit | Trang thai |
+| --- | --- | --- | --- |
+| `TX/` | github.com/H7-Tex/TX.git | `9d768f0` (2025-12-25) | 44 file, day du |
+| `W26/` | github.com/H7-Tex/W26.git | `83046e2` (2026-09-25) | 16 file, day du |
+| `infra25/` | github.com/H7-Tex/h7-tex.github.io.git | `81014f8` (2025-10-22) | **chi co SOURCE.txt** |
+
+`infra25` duoc clone bang `--filter=blob:none` va working tree chua bao gio materialize day du
+(git checkout cua Windows chet giua chung khi tao `CTFd/...`), nen thay vi luu mot ban vo sinh
+thieu, folder chi ghi lai lenh tai tao. Toan bo noi dung that nam trong
+`files/h7-tex.github.io.tar.gz` (54.937.575 B) - file bi `.gitignore` vi nhe hon nguong 100 MB
+cua GitHub nhung van nang voi repo writeup.

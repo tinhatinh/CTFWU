@@ -90,7 +90,7 @@ Trạng thái sau từng bước, lấy từ output của `solve.mjs`:
 | `redeem(1, me, me)` | 0 | 0 | 0 | 0 | true |
 
 ## Flag
-Dòng cuối của `node solve.mjs` (hàm `show()` in trạng thái sau mỗi transaction):
+Dòng cuối của `CTF_PK=<private key trong GET /> node solve.mjs` (hàm `show()` in trạng thái sau mỗi transaction):
 
 ```
 drained    tok(vault)= 0.0000 reserve= 0 supply= 0 share(victim)= 0 share(me)= 0 tok(me)= 300.0000 solved= true

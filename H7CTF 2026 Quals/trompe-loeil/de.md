@@ -46,7 +46,7 @@ callback kết thúc giá về 1e18 nhưng nợ vẫn còn.
 
 ```bash
 npm i ethers@6 solc@0.8.24
-node exploit.mjs
+CTF_PK=<private key trong GET /> node exploit.mjs
 ```
 
 Kết quả: `H7CTF{0bba5486-eebc-4ee8-a3de-a55e80c787f1}` (đã lưu trong `flag.txt`).
