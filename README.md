@@ -37,7 +37,7 @@ Each challenge directory follows a consistent layout:
 ## Quick Navigation
 
 <details>
-<summary><b>H7CTF 2026 Quals — 29 challenges</b></summary>
+<summary><b>H7CTF 2026 Quals - 29 challenges</b></summary>
 
 | Challenge | Category | Difficulty | Flag |
 |-----------|----------|------------|------|
@@ -74,7 +74,7 @@ Each challenge directory follows a consistent layout:
 </details>
 
 <details>
-<summary><b>SunshineCTF 2026 — 18 challenges</b></summary>
+<summary><b>SunshineCTF 2026 - 18 challenges</b></summary>
 
 | Challenge | Category | Difficulty | Flag |
 |-----------|----------|------------|------|
@@ -101,7 +101,7 @@ Each challenge directory follows a consistent layout:
 
 ## Tools Used
 
-Solves are built with minimal dependencies — most use only Python stdlib (`socket`, `struct`, `hashlib`) or Node.js with `ethers.js` for Web3 challenges. No `pwntools` — all exploit scripts run on any OS including Windows.
+Solves are built with minimal dependencies - most use only Python stdlib (`socket`, `struct`, `hashlib`) or Node.js with `ethers.js` for Web3 challenges. No `pwntools` - all exploit scripts run on any OS including Windows.
 
 ## License
 
