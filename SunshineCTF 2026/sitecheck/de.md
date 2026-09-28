@@ -1,4 +1,4 @@
-# SiteCheck — Sunshine CTF 2026 (web, 498 pts)
+# SiteCheck — Web (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
@@ -49,6 +49,6 @@ Ba tính năng đề bài khoe chính là 3 oracle để đọc phản hồi:
 
 Hướng bypass cần test khi có target: `@` userinfo, decimal/octal/hex IP, `[::1]`/IPv6-mapped, DNS rebinding, 302 redirect từ host hợp lệ, `*.local`/`.internal` variant, port khác, `file://`/`gopher://`, và vòng lặp resolve-then-fetch (TOCTOU).
 
-## Trạng thái
+## Status
 
 Chờ instance URL + phần đề bị cắt + file nguồn nếu có. Không tự đoán subdomain (boundary #2).

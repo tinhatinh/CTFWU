@@ -1,4 +1,4 @@
-# Loose Lips - Crypto (hard, 98 điểm, 2 objectives)
+# Loose Lips — Crypto (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

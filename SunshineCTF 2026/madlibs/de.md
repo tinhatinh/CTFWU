@@ -1,4 +1,4 @@
-# Mad Libs
+# Mad Libs — Pwn (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
@@ -9,7 +9,7 @@
 - Tác giả: Oreomeister
 - Đề nguyên văn: `Fill in the blanks! Our Mad Libs game prints back whatever you type. It's just a simple word game... right?`
 - Target: `nc chal.sunshinectf.games 26001`
-- Định dạng cờ: `sun{...}` (suy ra từ bài suntrail cùng nền tảng, và được xác nhận bởi chính cờ thu được)
+- Flag Format: `sun{...}` (suy ra từ bài suntrail cùng nền tảng, và được xác nhận bởi chính cờ thu được)
 
 ## Artifact đã xác minh
 

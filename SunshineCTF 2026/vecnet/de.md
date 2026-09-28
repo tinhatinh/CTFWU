@@ -1,15 +1,15 @@
-# de.md - VecNet (SunshineCTF 2026, web 493đ, tác giả ganenjoyer)
+# VecNet — Web (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
 ![de](files/de.png)
 
-## Đề bài
+## Description
 
 > VecNet makes use of AI embedding technologies to speed up your database needs. Get started
 > today!
 
-| Mục | Giá trị |
+| Field | Value |
 | --- | --- |
 | URL | `https://vec.web.2026.sunshinectf.games/` |
 | File kèm theo | không có |

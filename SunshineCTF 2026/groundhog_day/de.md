@@ -1,10 +1,10 @@
-# Đề bài - groundhog_day
+# Groundhog Day — Web (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
 ![de](files/de.png)
 
-## Nguyên văn đề
+## Challenge Text
 
 ```text
 Groundhog Day
@@ -23,9 +23,9 @@ Their public console is up. Have a look at where it gets its numbers.
 Instance: `https://odyssey.web.2026.sunshinectf.games` (URL nằm ngay trên card, không cần Launch).
 Rating: 4 (100% thích). Instance URL nằm trực tiếp trên card, không cần Launch.
 
-## Thông tin đã xác minh từ file
+## Verified Metadata
 
-| Mục | Giá trị |
+| Field | Value |
 | --- | --- |
 | Artifact | không có file kèm; chỉ có instance web |
 | Endpoint public | `/` (GET và POST) và `/static/styles.css`; cả hai method đều nhận `feed=<url>` |
@@ -37,9 +37,9 @@ Rating: 4 (100% thích). Instance URL nằm trực tiếp trên card, không c�
 | Station | `GET /feed` (JSON ngẫu nhiên, 13 khoá cố định), `GET /health` (`ok\n`), `POST /report` |
 | `/report` | render PDF từ `content` bằng wkhtmltopdf 0.12.5 (dòng NOTE trong index nội bộ), trả JSON có `data` base64; GET thì 405 |
 | Mock GCP | `169.254.169.254:80` listing `/` và `/computeMetadata/` đọc được; `v1/*` trả 403 "Missing Metadata-Flavor:Google header" |
-| Định dạng cờ | `sun{...}` |
+| Flag Format | `sun{...}` |
 
-## Hướng giải (tóm tắt)
+## Approach Summary
 
 `feed=<url>` là một SSRF có kênh đọc. Client bên trong là libcurl, nên `gopher://` lọt qua
 allow-list và biến một GET của console thành một request HTTP thô tùy ý: đủ để POST `/report`
@@ -47,7 +47,7 @@ và đủ để thêm header vào request metadata. `/report` render bằng wkht
 phép JavaScript và local file access; `document.title` từ XHR `file://` hiện ra trong `/Title`
 của PDF, thành kênh đọc plaintext. Cờ ở `/flag.txt`.
 
-## Trạng thái
+## Status
 
 **Đã giải** ngày 2026-09-27. Cờ: `sun{s1x_m0r3_w33ks_0f_g0ph3r_ssrf}`, đọc từ `/flag.txt`
 của container. Chi tiết và bằng chứng từng bước: `writeup.md`, `notes.md`.
@@ -61,7 +61,7 @@ của container. Chi tiết và bằng chứng từng bước: `writeup.md`, `no
 - `files/styles.css`, `files/meta_403.html`, `files/canary_reply.html`.
 - `analysis/ssrf.py` - harness gọi SSRF, trích `bytes=` và tape.
 
-## Chạy lại lời giải
+## Reproduce
 
 ```bash
 python exploit.py                # đọc /flag.txt, /flag, /ctf/flag.txt theo thứ tự

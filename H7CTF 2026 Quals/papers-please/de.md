@@ -1,4 +1,4 @@
-# Papers Please — Pwn (easy), H7CTF
+# Papers Please — Pwn (Easy)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
@@ -54,7 +54,7 @@ Dạng flag:H7CTF{}
 
 ## Intake
 
-| Mục | Giá trị |
+| Field | Value |
 | --- | --- |
 | Challenge | Papers Please |
 | Category | Pwn (easy) |

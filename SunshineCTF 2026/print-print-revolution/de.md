@@ -1,10 +1,10 @@
-# Đề bài - print-print-revolution
+# Print Print Revolution — Pwn (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
 ![de](files/de.png)
 
-## Nguyên văn đề
+## Challenge Text
 
 ```text
 Print Print Revolution
@@ -17,21 +17,21 @@ Files: revolution
 nc chal.sunshinectf.games 26002
 ```
 
-## Thông tin đã xác minh từ file
+## Verified Metadata
 
-| Mục | Giá trị |
+| Field | Value |
 | --- | --- |
 | Artifact | `files/revolution` (copy từ: `C:/Users/Administrator/Downloads/revolution`) |
-| Kích thước | 14520 byte |
+| Size | 14520 byte |
 | SHA-256 | `918483831ef0b27d0cfb8afa9e0341f38d0a296931ccc5f73ef80f5d610f8fa5` |
-| Loại file | ELF 64-bit LSB executable, x86-64, SYSV, dynamic, **stripped** |
+| File Type | ELF 64-bit LSB executable, x86-64, SYSV, dynamic, **stripped** |
 | Mitigation | no-PIE (ET_EXEC, base `0x400000`), NX bật, RELRO phủ `[0x403dc0,0x404000)` |
 | Import | `write strlen strcspn read setvbuf __libc_start_main` - không có `open`/`fopen` |
 | Dịch vụ | `chal.sunshinectf.games:26002`, lặp vô hạn `read` → render → `write` |
-| Nhiệm vụ | Lấy cờ `sun{...}` từ `/ctf/flag.txt` trên container |
-| Định dạng cờ | `sun{...}` (host là sunshinectf.games, **không phải** `H7CTF{}`) |
+| Objective | Lấy cờ `sun{...}` từ `/ctf/flag.txt` trên container |
+| Flag Format | `sun{...}` (host là sunshinectf.games, **không phải** `H7CTF{}`) |
 
-## Hướng giải (tóm tắt)
+## Approach Summary
 
 Renderer là một `printf` tự viết, mở rộng `%` thành bộ đổi số tham số tuỳ ý, cho
 ba primitive: đọc chuỗi tại địa chỉ bất kỳ, in giá trị bất kỳ, và **ghi 8 byte
@@ -41,7 +41,7 @@ chính libc đang chạy (leak qua GOT), còn gadget xoá `rsi`/`rdx` lấy từ
 địa chỉ nằm sẵn trong `auxv`. Số byte gửi đi trùng làm mã syscall, đóng chuỗi ROP
 59 byte thành `execve("/bin/sh", NULL, NULL)`.
 
-## Chạy lại lời giải
+## Reproduce
 
 ```bash
 python exploit.py

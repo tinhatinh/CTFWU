@@ -1,4 +1,4 @@
-# Đề bài - Patient Exfil
+# Patient Exfil — Forensics (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge (thẻ "Low and Slow", Forensics):
 
@@ -11,7 +11,7 @@
 >
 > Something in here has been talking to the outside on a very patient schedule.
 
-| Mục | Giá trị |
+| Field | Value |
 | --- | --- |
 | Tên trên thẻ | Low and Slow |
 | Thể loại | Forensics (Static download) |
@@ -24,21 +24,21 @@
 
 ## Thông tin đã xác minh được từ file
 
-| Mục | Giá trị |
+| Field | Value |
 | --- | --- |
 | Artifact | `files/capture.pcap` (bản sao từ `Downloads/capture (2).pcap`) |
-| Kích thước | 108.604 byte |
+| Size | 108.604 byte |
 | SHA-256 | `3ab17689659f80efadceea1adc2eea5e9bddfcc3254ad85e89c4c75ee20bbb76` |
 | Độ dài phiên | 1260 gói / 148,31 giây, toàn bộ là loopback `127.0.0.1` |
 | Giao thức | 1080 gói TCP (8080, 8443), 180 gói DNS/UDP, không có ICMP |
-| Nhiệm vụ | Đọc được "thông điệp bí mật" mà máy trong lab gửi ra ngoài theo nhịp chậm |
-| Định dạng cờ | `H7CTF{...}` |
+| Objective | Đọc được "thông điệp bí mật" mà máy trong lab gửi ra ngoài theo nhịp chậm |
+| Flag Format | `H7CTF{...}` |
 
-## Hướng giải (tóm tắt)
+## Approach Summary
 
 DNS tunneling: 3 qname thuộc `*.sync.cdn-telemetry-lab.net`, mỗi label = chỉ mục 2 chữ số + payload base32. Ghép theo chỉ mục rồi decode. Chi tiết trong `writeup.md`, các bước loại trừ trong `notes.md`.
 
-## Chạy lại lời giải
+## Reproduce
 
 ```bash
 python exploit.py files/capture.pcap

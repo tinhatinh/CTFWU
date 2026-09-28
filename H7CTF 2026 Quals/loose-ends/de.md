@@ -1,4 +1,4 @@
-# Loose Ends — Pwn (hard), 248 pts
+# Loose Ends — Pwn (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
@@ -54,7 +54,7 @@ Extensions
 
 ## Intake
 
-| Mục | Giá trị |
+| Field | Value |
 | --- | --- |
 | Artefact | `files/ledger.zip` — 1077634 B, sha256 `26e8a464...ca81c1726` |
 | Bên trong | `ledger` (ELF x86-64 16680 B, sha256 `55c19caf7d6630c7`), `libc.so.6`, `ld-linux-x86-64.so.2`, `README.txt` |

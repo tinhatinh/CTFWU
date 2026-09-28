@@ -1,4 +1,4 @@
-# Kick the CAN — Hardware (medium), 125 pts
+# Kick the CAN — Hardware (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
@@ -51,7 +51,7 @@ https://web-5c6688f7ad7feac6.web.h7tex.com
 
 ## Intake
 
-| Mục | Giá trị |
+| Field | Value |
 | --- | --- |
 | Challenge | Kick the CAN |
 | Category | Hardware, medium, 125 pts |

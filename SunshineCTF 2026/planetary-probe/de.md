@@ -1,11 +1,11 @@
-# de.md — Planetary Probe (SunshineCTF 2026, web 498đ, tác giả valiumaggelein)
+# Planetary Probe — Web (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
 ![de](files/de.png)
 
 
-## Đề bài
+## Description
 
 > The Galactic Federation has opened public access to its Planetary Probe Directory, a database
 > of known planets and their telemetry signatures. Your mission is to interface with the probe
@@ -15,7 +15,7 @@
 > "no signal". Can you find a way to communicate with the system, bypass its limited responses,
 > and recover the hidden flag?
 
-| Mục | Giá trị |
+| Field | Value |
 | --- | --- |
 | URL | `https://planetary.web.2026.sunshinectf.games/` |
 | File kèm theo | không có |

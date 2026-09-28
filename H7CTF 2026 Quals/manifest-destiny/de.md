@@ -1,4 +1,4 @@
-# Đề bài - Manifest Destiny
+# Manifest Destiny — Pwn (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
@@ -7,7 +7,7 @@
 **Thể loại:** Pwn (format string) · **Độ khó:** medium · **Điểm:** 74-75 · **Docker** (live)
 **Target:** `nc pwn.h7tex.com 42506` (port đổi theo phiên) · **Cờ:** `H7CTF{...}`
 
-## Nguyên văn đề
+## Challenge Text
 
 ```text
 Sparrow Freight keeps its cargo manifest under admin clearance, which is not something they
@@ -24,7 +24,7 @@ Hai câu gợi ý: "loves feedback / takes your every word to heart" = input đ�
 
 `files/manifest.zip` (1 MB) gồm:
 
-| File | Kích thước | Ghi chú |
+| File | Size | Ghi chú |
 | --- | --- | --- |
 | `files/manifest` | 16.464 B, sha256 `db581eff3b92bc55...` | ELF 64-bit, **ET_EXEC (no PIE)**, NX, RELRO, dynamically linked |
 | `libc.so.6` | 2.129.424 B | glibc 2.39 (Ubuntu 24.04) - khớp bản target chạy |
@@ -43,14 +43,14 @@ view_manifest: if (!is_admin) "admin clearance required";
 
 `is_admin` là DWORD trong `.bss` tại **`0x40407c`**; binary không PIE nên địa chỉ cố định.
 
-## Hướng giải (tóm tắt)
+## Approach Summary
 
 Vì buffer nằm chính xác tại `rsp` lúc gọi `printf`, nó là vararg đầu tiên trên stack =
 đối số thứ 6 (`%6$`), còn `buf+8` là đối số thứ 7. Đặt địa chỉ `0x40407c` vào `buf+8` rồi
 dùng `%7$n` sẽ ghi số ký tự đã in vào thẳng biến quyền. Chỉ cần giá khác 0 là qua kiểm tra,
 nên 4 ký tự in trước là đủ.
 
-## Chạy lại lời giải
+## Reproduce
 
 ```bash
 python exploit.py pwn.h7tex.com <port>

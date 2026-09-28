@@ -1,8 +1,8 @@
-# Kintsugi Vault
+# Kintsugi Vault — Rev (Hard)
 
 - Sự kiện: H7TEX 2026 (nền tảng WebVerse / ctf.h7tex.com)
 - Thể loại: Rev (Docker), độ khó hard, 500 điểm
-- Định dạng cờ: `H7CTF{...}`
+- Flag Format: `H7CTF{...}`
 - Instance: `https://web-d6403eb95a65eea4.web.h7tex.com`
 - Tệp đính kèm: `handout.tar.gz` (347257 byte, sha256 `4ce8375d99e0239992b6d2cb75a380cdf1c1747a94e9c06a1c81a9cc54e619c9`)
 

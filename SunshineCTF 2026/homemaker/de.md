@@ -1,10 +1,10 @@
-# de.md — Homemaker (SunshineCTF 2026, pwn, 498đ, tác giả nyt3_jmp)
+# Homemaker — Pwn (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
 ![de](files/de.png)
 
-## Đề bài
+## Description
 
 > A SERVANT IN EVERY HOME, BY 1975!
 > POWERED THROUGH USE OF PUNCH CARDS, THE MODEL 7 HOMEMAKER WILL FREE YOU FROM THE BURDEN
@@ -12,7 +12,7 @@
 
 Chi tiết:
 
-| Mục | Giá trị |
+| Field | Value |
 | --- | --- |
 | Service | `nc sunshinectf.games 26008` |
 | File duy nhất | `files/homemaker` (ELF 64-bit, PIE, shared) |

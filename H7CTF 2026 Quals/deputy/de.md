@@ -1,4 +1,4 @@
-# Deputy - Cloud (hard, 123 điểm, 4 objectives)
+# Deputy — Cloud (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

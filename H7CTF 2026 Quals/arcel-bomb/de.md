@@ -1,4 +1,4 @@
-# Arcel Bomb — Pwn (medium), H7TEX 2026
+# Parcel Bomb — Pwn (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

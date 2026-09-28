@@ -1,4 +1,4 @@
-# Code Breaker — SunshineCTF, 499 pts
+# Code Breaker — Crypto/Pwn (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
@@ -27,7 +27,7 @@ Cờ dạng `sun{...}`.
 
 ## Intake
 
-| Mục | Giá trị |
+| Field | Value |
 | --- | --- |
 | Đích | `chal.sunshinectf.games:26005` |
 | Binary | `code_breaker` 14640 B, sha256 `ed7201eba1a5a771...`, ELF **ET_DYN (PIE)**, stripped, NX, canary |

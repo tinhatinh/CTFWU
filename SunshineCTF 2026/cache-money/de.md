@@ -1,4 +1,4 @@
-# Cache Money (Sunshine CTF, pwn, 499đ, tác giả Oreomeister)
+# Cache Money — Pwn (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

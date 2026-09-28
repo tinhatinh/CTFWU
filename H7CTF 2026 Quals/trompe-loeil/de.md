@@ -1,10 +1,10 @@
-# Đề bài - Trompe-l'œil
+# Trompe-l'œil — Web3 (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
 ![de](files/de.png)
 
-## Nguyên văn đề
+## Challenge Text
 
 ```text
 Trompe-l'œil - hard - Web3 - 236 điểm
@@ -22,19 +22,19 @@ Instance: https://web-1a41803b1badce11.web.h7tex.com
 
 ## Thông tin đã xác minh
 
-| Mục | Giá trị |
+| Field | Value |
 | --- | --- |
 | Artifact | `files/*.sol` (5 contract, Solidity 0.8.24) |
 | Instance | `GET /` trên chính URL bài trả về plaintext: rpc endpoint (POST cùng URL), chain id 31337, private key của player, địa chỉ Setup |
 | Setup | `0x152F449c1aCBf34E2337e33f10Cc3e0B8DCfb14c` (instance đã hết hạn) |
-| Nhiệm vụ | làm cho `Setup.isSolved()` trả `true` |
-| Định dạng cờ | `H7CTF{uuid}`, lấy bằng `GET /flag` sau khi solve |
+| Objective | làm cho `Setup.isSolved()` trả `true` |
+| Flag Format | `H7CTF{uuid}`, lấy bằng `GET /flag` sau khi solve |
 
 Trạng thái ban đầu (đọc on-chain, xem `analysis/state.mjs`): Pool giữ 10 ETH + 10 mUSD,
 `totalSupply = 20`, `get_virtual_price() = 1e18`; MirrorLend giữ 1000 mUSD reserve; player
 có 100 mUSD và nhiều ETH.
 
-## Hướng giải (tóm tắt)
+## Approach Summary
 
 `Pool.removeLiquidity` burn LP và gửi ETH **trước** khi chuyển phần token, còn
 `MirrorLend.borrow` gọi `pool.get_virtual_price()` trực tiếp. Tái nạp LP bằng token thuần
@@ -42,7 +42,7 @@ có 100 mUSD và nhiều ETH.
 trong callback ETH, giá ảo bị thổi lên 1.6548e18 và lệnh borrow diễn ra theo giá đó; khi
 callback kết thúc giá về 1e18 nhưng nợ vẫn còn.
 
-## Chạy lại lời giải
+## Reproduce
 
 ```bash
 npm i ethers@6 solc@0.8.24

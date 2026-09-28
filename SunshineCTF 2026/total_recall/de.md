@@ -1,8 +1,8 @@
-# Đề bài - total_recall
+# Total Recall — Pwn (Medium)
 
 ![Đề bài](files/de.png)
 
-## Nguyên văn đề
+## Challenge Text
 
 ```text
 Total Recall
@@ -14,22 +14,22 @@ Files: total_recall
 nc chal.sunshinectf.games 26003
 ```
 
-## Thông tin đã xác minh từ file
+## Verified Metadata
 
-| Mục | Giá trị |
+| Field | Value |
 | --- | --- |
 | Artifact | `files/total_recall` |
 | Dịch vụ | `nc chal.sunshinectf.games 26003` |
 | Điểm | 407 (dynamic) |
 | Số lượt giải | 275 |
 | Tác giả | Oreomeister |
-| Định dạng cờ | không ghi trên thẻ đề; cờ của giải này dạng `sun{...}` |
+| Flag Format | không ghi trên thẻ đề; cờ của giải này dạng `sun{...}` |
 
-## Hướng giải (tóm tắt)
+## Approach Summary
 
 <2-4 câu: primitive chính và cách ghép thành cờ.>
 
-## Chạy lại lời giải
+## Reproduce
 
 ```bash
 python exploit.py chal.sunshinectf.games 26003

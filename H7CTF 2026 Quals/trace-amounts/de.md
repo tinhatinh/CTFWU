@@ -1,4 +1,4 @@
-# Đề bài - Trace Amounts
+# Trace Amounts — Hardware (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
@@ -6,7 +6,7 @@
 
 **Thể loại:** Hardware / Side-channel · **Độ khó:** medium · **Điểm:** 125 · **Docker** (live)
 
-## Nguyên văn đề
+## Challenge Text
 
 ```text
 A contactless payment card keeps its key sealed in the chip and swears it never comes out.
@@ -29,25 +29,25 @@ plaintext for each. The card never reveals its key. It does not have to.
 Recover the key and decrypt the secret.
 ```
 
-## Thông tin đã xác minh từ file
+## Verified Metadata
 
-| Mục | Giá trị |
+| Field | Value |
 | --- | --- |
 | `files/traces.npy` | float32, shape (500, 700), 1.400.128 B |
 | `files/plaintexts.npy` | uint8, shape (500, 16) |
 | `files/secret.enc` | 48 B = 3 block, AES-128-ECB |
 | Server | `SimpleHTTP/0.6 Python/3.11.16`, HTTPS self-signed |
 | Cấu trúc trace | căn chỉnh hoàn hảo (0 offset cho cả 500 trace); 16 đỉnh hoạt động cách đều 40 sample tại `30 + 40*i` |
-| Định dạng cờ | `H7CTF{...}` |
+| Flag Format | `H7CTF{...}` |
 
-## Hướng giải (tóm tắt)
+## Approach Summary
 
 Correlation Power Analysis trên vòng đầu của AES-128: với mỗi byte plaintext `i` và mỗi khoá thử `k`,
 dựng mô hình rò rỉ `HW(S-box[pt_i ^ k])` rồi tính hệ số tương quan Pearson với từng sample của 500 trace.
 Byte nào có peak tương quan vượt hẳn nền noise thì `k` chính là khoá của byte đó.
 Slot thời gian `30 + 40*i` cho biết chip xử lý tuần tự từng byte, nhờ vậy biết chỗ nào cần nhìn.
 
-## Chạy lại lời giải
+## Reproduce
 
 ```bash
 python exploit.py files/traces.npy files/plaintexts.npy files/secret.enc

@@ -1,4 +1,4 @@
-# RoboCall (Sunshine CTF, pwn, 498đ, tác giả Kyle Cahalan / ThatOneKMC)
+# RoboCall — Pwn (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

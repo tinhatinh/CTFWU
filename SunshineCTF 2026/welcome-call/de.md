@@ -1,4 +1,4 @@
-# Welcome Call! - Forensics/Misc (Bsides Orlando, 493 điểm, 78 solves, tác giả oatzs)
+# Welcome Call — Forensics (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

@@ -1,4 +1,4 @@
-# Shared Blood - Crypto (medium, 63 điểm)
+# Shared Blood — Crypto (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

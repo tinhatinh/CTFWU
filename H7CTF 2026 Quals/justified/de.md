@@ -1,4 +1,4 @@
-# Đề bài - Justified
+# Justified — Web (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
@@ -20,7 +20,7 @@ set a proof, and read what the typesetter reports back.
 
 ## Thông tin đã xác minh
 
-| Mục | Giá trị |
+| Field | Value |
 | --- | --- |
 | Trang đích | `POST /proof.php` (không cần tài khoản) |
 | Field | `title`, `author`, `degree`, `department`, `institution`, `supervisor`, `year`, `abstract`, `reference` |
@@ -30,14 +30,14 @@ set a proof, and read what the typesetter reports back.
 | `title` | **không lọc**, được ghép thẳng vào `main.tex` (đề còn chủ động gợi ý "nhập ký tự LaTeX kiểu `M\"uller`") |
 | Gợi ý LaTeX trong UI | chính là chữ ký của LaTeX injection |
 
-## Hướng giải (tóm tắt)
+## Approach Summary
 
 Không có command injection theo nghĩa shell ở `reference`; đường thật là **LaTeX injection** trong `title`:
 `\immediate\write18{...}` thực thi shell vì shell escape được bật.
 Để lấy kết quả, redirect stdout của lệnh sang **stderr** (`1>&2`) - stderr của pdflatex được ghi vào log
 mà trang web hiển thị lại, nên đây là kênh đọc dữ liệu kín mà không cần sửa PDF.
 
-## Chạy lại lời giải
+## Reproduce
 
 ```bash
 python exploit.py https://<instance-host>            # mặc định: cat /flag.txt

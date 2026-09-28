@@ -1,4 +1,4 @@
-# Signed, Sealed, Delivered - Mobile / Medium (63 điểm)
+# Signed, Sealed, Delivered — Mobile (Medium)
 
 ## Đề bài (nguyên văn từ thẻ challenge)
 
@@ -8,7 +8,7 @@
 >
 > Sign for it yourself.
 
-| Mục | Giá trị |
+| Field | Value |
 | --- | --- |
 | Thể loại | Mobile |
 | Độ khó | Medium |

@@ -1,4 +1,4 @@
-# Open Sesame — Hardware (hard), 295 pts
+# Open Sesame — Hardware (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
@@ -60,7 +60,7 @@ POST /unlock    body: {"code": "<12 hex digits = the 48-bit frame>"}
 
 ## Intake
 
-| Mục | Giá trị |
+| Field | Value |
 | --- | --- |
 | Đích | `https://web-7a56034b5423964c.web.h7tex.com` |
 | Artifact | `capture.cf32` — 3353600 B = 419200 mẫu I/Q float32 LE, fs 1 MHz (0.419 s) |

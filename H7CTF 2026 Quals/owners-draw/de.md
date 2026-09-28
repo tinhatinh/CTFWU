@@ -1,4 +1,4 @@
-# Owner's Draw - Crypto (medium, 63 điểm)
+# Owner's Draw — Crypto (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

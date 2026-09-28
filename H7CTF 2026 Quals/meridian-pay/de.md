@@ -1,10 +1,10 @@
-# Đề bài - meridian-pay
+# Meridian Pay — Mobile (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
 ![de](files/de.png)
 
-## Nguyên văn đề
+## Challenge Text
 
 ```text
 Meridian Pay
@@ -28,21 +28,21 @@ Files: meridian-pay-3.2.1.apk.zip (12.5 KB)
 
 Instance: `https://web-3f25599ac74e8a91.web.h7tex.com`
 
-## Thông tin đã xác minh từ file
+## Verified Metadata
 
-| Mục | Giá trị |
+| Field | Value |
 | --- | --- |
 | Artifact | `files/meridian-pay-3.2.1.apk` (rút ra từ `meridian-pay-3.2.1.apk.zip` 12771 B) |
-| Kích thước | 16885 B |
+| Size | 16885 B |
 | SHA-256 | `447c3cd07770cfd78c6601f9076167208e5b670f3708be085cb69d08f741efa1` |
-| Loại file | ZIP (APK), build D8 backend=dex compilation-mode=debug min-api=24 |
+| File Type | ZIP (APK), build D8 backend=dex compilation-mode=debug min-api=24 |
 | Nội dung | `AndroidManifest.xml` 4088 B, `classes.dex` 13776 B, `resources.arsc` 1100 B, `res/layout/activity_main.xml`, `META-INF/` |
 | Package | `com.meridian.pay` |
 | Chuỗi trong `resources.arsc` | account, connect, promo, server, share, status |
-| Định dạng cờ | `H7CTF{uuid}`, một cờ cho mỗi objective |
+| Flag Format | `H7CTF{uuid}`, một cờ cho mỗi objective |
 | Cờ trong APK | Không có. Quét toàn bộ `classes.dex` và các tài nguyên không thấy chuỗi `H7CTF{` nào. |
 
-## Hướng giải (tóm tắt)
+## Approach Summary
 
 Toàn bộ cờ nằm ở API, không nằm trong app. App chỉ là nguồn tài liệu: decompile `classes.dex`
 bằng androguard để lấy tên endpoint, tên header và cơ chế xác thực client mà server tin.
@@ -50,7 +50,7 @@ Ba trong bốn objective lấy được bằng cách làm đúng những gì app
 server tin client quá mức: header tự khai "attested", và `PATCH /api/v1/profile` nhận ghi
 `role`. Objective v3 chưa lấy được.
 
-## Chạy lại lời giải
+## Reproduce
 
 ```bash
 python exploit.py https://web-3f25599ac74e8a91.web.h7tex.com

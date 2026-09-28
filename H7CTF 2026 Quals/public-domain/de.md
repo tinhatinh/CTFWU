@@ -1,11 +1,11 @@
-# Public Domain - OSINT / Hard (288 điểm)
+# Public Domain — OSINT (Hard)
 
 ## Đề bài (nguyên văn từ thẻ challenge)
 
 > Some operators still think their domains are private. Infrastructure has a longer memory than
 > they do.
 
-| Mục | Giá trị |
+| Field | Value |
 | --- | --- |
 | Thể loại | OSINT |
 | Độ khó | Hard |

@@ -1,4 +1,4 @@
-# Splice — Web (hard), Static, 420 pts
+# Splice — Web (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
@@ -43,23 +43,23 @@ This challenge is played on WebVerse's own platform. Sign up on WebVerse with th
 
 ## Intake
 
-| Mục | Giá trị |
+| Field | Value |
 | --- | --- |
 | Challenge | Splice |
 | Category | Web, tag `Static`, độ khó hard, 420 points |
-| Đích được cung cấp | `https://ctf.webverselabs-pro.com/e/YfQq-BkjAX1I9bECP5U9xcsY` |
+| Target | `https://ctf.webverselabs-pro.com/e/YfQq-BkjAX1I9bECP5U9xcsY` |
 | Trang signup | `https://webverselabs-pro.com/signup` |
 | File | chưa có (đề không kèm bundle) |
 | Flag | không nộp ở platform chính; solve sync ngược bằng email, kiểm tra ~60s một lần |
 | Ràng buộc | email WebVerse phải trùng khớp email đã đăng ký platform chính |
 | Hết hạn nộp | 10h58m tính từ lúc paste đề (≈ 2026-09-26 23:1x) |
 
-## Trạng thái
+## Status
 
 - `GET /e/YfQq-BkjAX1I9bECP5U9xcsY` **không kèm cookie** → HTTP 200 nhưng là SPA rỗng, client render "Sign in to join a team and play this event." cùng link `/login?next=...`.
 - Platform: Next.js (App Router, RSC payload), đứng sau Cloudflare, CSP cho `connect-src` gọi `api.webverselabs-pro.com` và Stripe (`frame-src https://*.stripe.com`). Đăng nhập bằng Google hoặc email.
 - → **Chặn ở bước xác thực.** Không có nội dung challenge, không có artifact, nên chưa có gì để phân tích. Việc sign up / sign in dùng tài khoản cá nhân do người dùng tự thực hiện.
 
-## Ghi chú an toàn
+## Safety Notes
 
 Platform bên thứ ba có thu phí (credits + Stripe) và yêu cầu dùng lại email đã đăng ký ở nơi khác. Khuyến nghị: mật khẩu riêng biệt, không tái sử dụng mật khẩu của platform chính.

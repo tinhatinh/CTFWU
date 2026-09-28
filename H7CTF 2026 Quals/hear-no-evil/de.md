@@ -1,4 +1,4 @@
-# Hear No Evil — Hardware (medium), 130 pts
+# Hear No Evil — Hardware (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
@@ -52,7 +52,7 @@ Extensions
 
 ## Intake
 
-| Mục | Giá trị |
+| Field | Value |
 | --- | --- |
 | Challenge | Hear No Evil |
 | Category | Hardware, medium, 130 pts, 2 objective (v1 40%, v2 60%) |

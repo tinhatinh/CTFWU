@@ -1,4 +1,4 @@
-# Đề bài - Take Two
+# Take Two — Crypto (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
@@ -7,7 +7,7 @@
 **Thể loại:** Crypto / stateful signatures · **Độ khó:** hard · **Điểm:** 106 · **Docker** (live)
 **Target:** `https://web-18955a87eb148fa7.web.h7tex.com` · **Cờ:** `H7CTF{...}`
 
-## Nguyên văn đề
+## Challenge Text
 
 ```text
 Helios firmware boots only with the notary's blessing, and the notary blesses only the
@@ -37,7 +37,7 @@ Thông số: `N=32`, `W=16` (digit 4 bit), `LEN1=64`, `LEN2=3` (checksum), `LEN=
 Chữ ký đầu tiên rơi vào leaf 1 (leaf 0 đã bị tiêu hao trước đó), và sau một lần rollback thì
 mọi chữ ký tiếp theo đều dùng **leaf 0**.
 
-## Hướng giải (tóm tắt)
+## Approach Summary
 
 `sig[i] = chain(sk_i, d_i)` với `d_i` là digit 4 bit của `sha256(msg)` kèm checksum, và `chain`
 chỉ đi được một chiều (hash tới trước). Hai message khác nhau trên cùng một lá cho ta, ở mỗi toạ độ,
@@ -45,7 +45,7 @@ giá trị chuỗi tại chữ số nhỏ nhất đã gặp. Thu đủ chữ ký
 tức ta giữ "gốc" của chuỗi và với mở rộng tới trước được tới **bất kỳ** chữ số nào -> ký được message
 mà notary từ chối ký.
 
-## Chạy lại lời giải
+## Reproduce
 
 ```bash
 python exploit.py https://<host>

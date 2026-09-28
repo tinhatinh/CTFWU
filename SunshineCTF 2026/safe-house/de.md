@@ -1,11 +1,11 @@
-# Safe House - Pwn (468 điểm)
+# Safe House — Pwn (Hard)
 
 ## Đề bài (nguyên văn từ thẻ challenge)
 
 > The safe house processes reports and files notes for the field. Get past the front desk and
 > into the vault.
 
-| Mục | Giá trị |
+| Field | Value |
 | --- | --- |
 | Điểm | 468 |
 | Tác giả | Oreomeister |

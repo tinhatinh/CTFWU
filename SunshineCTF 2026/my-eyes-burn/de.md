@@ -1,4 +1,4 @@
-# my eyes burn - Misc/Forensics (485 điểm, 111 solves, tác giả oatzs)
+# My Eyes Burn — Misc (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

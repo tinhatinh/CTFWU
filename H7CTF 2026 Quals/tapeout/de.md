@@ -1,4 +1,4 @@
-# Đề bài - Tapeout
+# Tapeout — Misc (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
@@ -7,7 +7,7 @@
 **Thể loại:** Misc / formal verification abuse · **Độ khó:** hard · **Điểm:** 158 · **Docker** (live)
 **Target:** `nc pwn.h7tex.com 40634` · **Cờ:** `H7CTF{...}`
 
-## Nguyên văn đề
+## Challenge Text
 
 ```text
 FoundryProof stamps every chip before tape-out: prove your netlist matches the golden
@@ -41,7 +41,7 @@ Nó không lượng hoá toàn bộ 32 bit. Mà audit lại chạy ở `0xDEADBE
 Câu "probes the finished part **once**" chính là chỗ đó: một điểm kiểm tra duy nhất, và điểm đó
 không thuộc miền chứng minh.
 
-## Hướng giải (tóm tắt)
+## Approach Summary
 
 Netlist đệ trình tính đúng transform của reference rồi dùng `eq (shr a 16) 0` làm mask bit,
 `mux` giữa kết quả reference và hằng `MAGIC`:
@@ -49,7 +49,7 @@ Netlist đệ trình tính đúng transform của reference rồi dùng `eq (shr
 - `a < 2^16` -> mask = `0xFFFFFFFF` -> output == reference -> **CERTIFIED**
 - `a >= 2^16` (gồm `0xDEADBEEF`) -> mask = `0` -> output == `0xB105F00D` -> **sabotage**
 
-## Chạy lại lời giải
+## Reproduce
 
 ```bash
 python exploit.py pwn.h7tex.com 40634

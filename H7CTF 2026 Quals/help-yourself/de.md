@@ -1,4 +1,4 @@
-# Help Yourself - Mobile / Medium (63 điểm)
+# Help Yourself — Mobile (Medium)
 
 ## Đề bài (nguyên văn từ thẻ challenge)
 
@@ -8,7 +8,7 @@
 >
 > So help yourself.
 
-| Mục | Giá trị |
+| Field | Value |
 | --- | --- |
 | Thể loại | Mobile |
 | Độ khó | Medium |
