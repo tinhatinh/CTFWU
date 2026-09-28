@@ -1,0 +1,61 @@
+[09-27 11:52:10] round 1 user fr1905
+[09-27 11:52:29]    n=138 afadda79 seal=NONE
+[09-27 11:52:49]    n=140 e4542130 seal=NONE
+[09-27 11:52:49]    (sleeping 25 s)
+[09-27 12:17:52] round 2 user fr5392
+[09-27 12:18:01]    n=138 71ee1e42 seal=NONE
+[09-27 12:18:09]    n=140 7e0bffe6 seal=NONE
+[09-27 12:18:09]    (sleeping 25 s)
+[09-27 12:43:11] round 3 user fr2674
+[09-27 12:43:19]    n=138 244a501a seal=NONE
+[09-27 12:43:26]    n=140 e281f75c seal=NONE
+[09-27 12:43:26]    (sleeping 25 s)
+[09-27 13:08:29] round 4 user fr9371
+[09-27 13:08:39]    n=138 4ced8630 seal=NONE
+[09-27 13:08:48]    n=140 03ab7106 seal=NONE
+[09-27 13:08:48]    (sleeping 25 s)
+[09-27 13:33:51] round 5 user fr3234
+[09-27 13:33:59]    n=138 62ea5915 seal=NONE
+[09-27 13:34:08]    n=140 4a0de557 seal=NONE
+[09-27 13:34:08]    (sleeping 25 s)
+[09-27 13:59:10] round 6 user fr5265
+[09-27 13:59:18]    n=138 c45d2a5d seal=NONE
+[09-27 13:59:25]    n=140 0cbb1402 seal=NONE
+[09-27 13:59:25]    (sleeping 25 s)
+[09-27 14:24:27] round 7 user fr5046
+[09-27 14:24:35]    n=138 dbaae667 seal=NONE
+[09-27 14:24:43]    n=140 5bf4b95f seal=NONE
+[09-27 14:24:43]    (sleeping 25 s)
+[09-27 14:50:15] round 8 user fr5811
+[09-27 14:51:51]    n=138 05fa49f6 seal=NONE
+[09-27 14:53:35]    n=140 bd051b0f seal=NONE
+[09-27 14:53:41]    (sleeping 25 s)
+[09-27 15:18:51] round 9 user fr4262
+[09-27 15:19:00]    n=138 fe1a841c seal=NONE
+[09-27 15:19:08]    n=140 9b5ffbc7 seal=NONE
+[09-27 15:19:08]    (sleeping 25 s)
+[09-27 15:44:10] round 10 user fr7596
+[09-27 15:44:18]    n=138 1879a642 seal=NONE
+[09-27 15:44:25]    n=140 a587c505 seal=NONE
+[09-27 15:44:25]    (sleeping 25 s)
+[09-27 16:09:27] round 11 user fr4732
+[09-27 16:09:35]    n=138 a261fdd3 seal=NONE
+[09-27 16:09:42]    n=140 a7118603 seal=NONE
+[09-27 16:09:42]    (sleeping 25 s)
+[09-27 16:34:44] round 12 user fr3320
+[09-27 16:34:52]    n=138 e7161629 seal=NONE
+[09-27 16:35:00]    n=140 2847b200 seal=NONE
+[09-27 16:35:00]    (sleeping 25 s)
+[09-27 17:00:02] round 13 user fr3635
+[09-27 17:00:09]    n=138 f51b7608 seal=NONE
+[09-27 17:00:17]    n=140 4bddcd13 seal=NONE
+[09-27 17:00:17]    (sleeping 25 s)
+[09-27 17:25:20] round 14 user fr2022
+[09-27 17:25:28]    n=138 34de339b seal=NONE
+[09-27 17:25:35]    n=140 4cf636f3 seal=NONE
+[09-27 17:25:35]    (sleeping 25 s)
+[09-27 17:50:37] round 15 user fr4807
+[09-27 17:50:45]    n=138 55dc359d seal=NONE
+[09-27 17:50:52]    n=140 1d89057f seal=NONE
+[09-27 17:50:52]    (sleeping 25 s)
+[09-27 18:15:52] fresh-band loop over

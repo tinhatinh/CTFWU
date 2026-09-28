@@ -1,0 +1,21 @@
+[08:54:36] user of1726
+[08:54:37] saved A control 2      78962590 24B cookies
+[08:54:38] saved B just-over 80   45f99051 9200B cookies
+[08:54:39] saved C max 300        da3f962a 34500B cookies
+[08:54:39] saved D control again  b808a70c 24B cookies
+[08:54:40] submitted A control 2 78962590 (0.8s after start)
+[08:54:44]    submit 45f990 -> 429 {'error': 'slow down -- inspector is busy'} (retry 0)
+[08:55:00] submitted B just-over 80 45f99051 (20.5s after start)
+[08:55:04]    submit da3f96 -> 429 {'error': 'slow down -- inspector is busy'} (retry 0)
+[08:55:20] submitted C max 300 da3f962a (40.1s after start)
+[08:55:23]    submit b808a7 -> 429 {'error': 'slow down -- inspector is busy'} (retry 0)
+[08:55:39] submitted D control again b808a70c (59.7s after start)
+[08:55:58]   t+   78s b808a70c D control again -> ('reviewed', 'standard View Inspect')
+[08:55:58]   t+   78s da3f962a C max 300 -> ('reviewed', '&mdash; View Inspect')
+[08:55:58]   t+   78s 45f99051 B just-over 80 -> ('reviewed', 'standard View Inspect')
+[08:55:58]   t+   78s 78962590 A control 2 -> ('reviewed', 'standard View Inspect')
+[09:35:10] watch over. final states:
+[09:35:10]    A control 2      ('reviewed', 'standard View Inspect')
+[09:35:10]    B just-over 80   ('reviewed', 'standard View Inspect')
+[09:35:10]    C max 300        ('reviewed', '&mdash; View Inspect')
+[09:35:10]    D control again  ('reviewed', 'standard View Inspect')

@@ -1,0 +1,9 @@
+[08:33:23] user es3928
+[08:33:25] A=8ee8e70b503e9b79187b8214 26B cookies | B=99164597c2cb94bb1e52bfac 21100B cookies
+[08:33:26] submit A {'ok': True, 'status': 'queued'}
+[08:33:28] submit B {'error': 'slow down -- inspector is busy'}
+[08:35:09] 1m A  {'status': 'queued', 'gold': False, 'standard': False, 'chiefword': False, 'flag': []}
+[08:35:09] 1m B  {'status': 'queued', 'gold': False, 'standard': False, 'chiefword': False, 'flag': []}
+[08:43:42] 10m A  {'status': '?', 'gold': False, 'standard': False, 'chiefword': False, 'flag': []}
+[08:45:24] 11m A  {'status': 'queued', 'gold': False, 'standard': False, 'chiefword': False, 'flag': []}
+[11:55:01] no golden seal after 200 min; A=('queued', False, False, False) B=('queued', False, False, False)

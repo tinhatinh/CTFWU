@@ -1,0 +1,5 @@
+[*] ids 1..13 carrying a non-printable byte: [4]
+[*] planets: 0 bytes
+[=] planets hex = 
+[=] planets repr = b''
+[*] 25 probes

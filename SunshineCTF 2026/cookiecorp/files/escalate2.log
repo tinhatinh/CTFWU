@@ -1,0 +1,7 @@
+[08:35:17] user es3019
+[08:35:19] A=180e57832d465d6564051985 26B cookies | B=d7932649f9daa65a76c76395 21100B cookies
+[08:35:19] submitted 180e5783 after 1 tries
+[08:35:41] submitted d7932649 after 2 tries
+[08:37:22] 1m A  {'status': 'queued', 'gold': False, 'standard': False, 'chiefword': False, 'flag': []}
+[08:37:22] 1m B  {'status': 'queued', 'gold': False, 'standard': False, 'chiefword': False, 'flag': []}
+[11:46:18] no golden seal after 190 min; A=('queued', False, False, False) B=('queued', False, False, False)

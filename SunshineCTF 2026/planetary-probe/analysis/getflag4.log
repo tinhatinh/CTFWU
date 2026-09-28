@@ -1,0 +1,11 @@
+   s                                              (1 probes, 9 calls)
+   su                                             (2 probes, 18 calls)
+   sun                                            (3 probes, 26 calls)
+   sun{                                           (4 probes, 34 calls)
+   sun{b                                          (5 probes, 44 calls)
+   sun{bl                                         (6 probes, 54 calls)
+   sun{bl1                                        (7 probes, 64 calls)
+   sun{bl1n                                       (8 probes, 72 calls)
+[!] position 9 is outside the alphabet (prefix 'sun{bl1n')
+[*] verifies as a complete match: True
+[+] sun{bl1n   (198s)

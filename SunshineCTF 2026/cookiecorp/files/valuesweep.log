@@ -1,0 +1,43 @@
+[09:48:42] names per batch: 290, values: 37 -> 37 batches
+[09:49:18]   value=chief                c0704887 290 cookies  4548B -> reviewed standard
+[09:49:33]   value=Chief                12664e7d 290 cookies  4548B -> reviewed standard
+[09:49:40]   value=CHIEF                f7ee3384 290 cookies  4548B -> reviewed standard
+[09:49:48]   value=the_chief            8f1b10a6 290 cookies  5708B -> reviewed standard
+[09:49:55]   value=head_chief           306783fc 290 cookies  5998B -> reviewed standard
+[09:50:03]   value=cookiecorp_chief     ed28db48 290 cookies  7738B -> reviewed standard
+[09:50:11]   value=inspector            02c760b0 290 cookies  5708B -> reviewed standard
+[09:50:18]   value=quality_inspector    dcf35fff 290 cookies  8028B -> reviewed standard
+[09:50:27]   value=admin                4cd34fa9 290 cookies  4548B -> reviewed standard
+[09:50:29] new user vw3792
+[09:50:36]   value=root                 4c10cc3f 290 cookies  4258B -> reviewed standard
+[09:50:44]   value=system               e5c188d6 290 cookies  4838B -> reviewed standard
+[09:50:52]   value=staff                d244f6eb 290 cookies  4548B -> reviewed standard
+[09:50:59]   value=golden               fe7583ea 290 cookies  4838B -> reviewed standard
+[09:51:07]   value=gold                 8920108e 290 cookies  4258B -> reviewed standard
+[09:51:14]   value=GOLDEN               e78b63d5 290 cookies  4838B -> reviewed standard
+[09:51:21]   value=golden_seal          cddd038a 290 cookies  6288B -> reviewed standard
+[09:51:29]   value=legendary            97241eee 290 cookies  5708B -> reviewed standard
+[09:51:36]   value=master               b068c9ff 290 cookies  4838B -> reviewed standard
+[09:51:38] new user vw9179
+[09:51:45]   value=certified            6bd10406 290 cookies  5708B -> reviewed standard
+[09:51:52]   value=approved             61b92861 290 cookies  5418B -> reviewed standard
+[09:52:00]   value=verified             27354af9 290 cookies  5418B -> reviewed standard
+[09:52:07]   value=trusted              89e8c4d6 290 cookies  5128B -> reviewed standard
+[09:52:14]   value=true                 6bf89adb 290 cookies  4258B -> reviewed standard
+[09:52:22]   value=1                    60453c47 290 cookies  3388B -> reviewed standard
+[09:52:29]   value=yes                  4f79d92a 290 cookies  3968B -> reviewed standard
+[09:52:36]   value=on                   95961f4c 290 cookies  3678B -> reviewed standard
+[09:52:44]   value=robot                267b833f 290 cookies  4548B -> reviewed standard
+[09:52:46] new user vw7327
+[09:52:53]   value=cookiecorp           85999f52 290 cookies  5998B -> reviewed standard
+[09:53:00]   value=confectionery        2966cdff 290 cookies  6868B -> reviewed standard
+[09:53:08]   value=1962                 376887d8 290 cookies  4258B -> reviewed standard
+[09:53:15]   value=sector7              8049b0ca 290 cookies  5128B -> reviewed standard
+[09:53:23]   value=brighter_tomorrow    752b75d4 290 cookies  8028B -> reviewed standard
+[09:53:30]   value=sun                  4d2b6258 290 cookies  3968B -> reviewed standard
+[09:53:37]   value=reviewed             af7b4021 290 cookies  5418B -> reviewed standard
+[09:53:44]   value=sealed               ee52241f 290 cookies  4838B -> reviewed standard
+[09:53:52]   value=signed               76a32036 290 cookies  4838B -> reviewed standard
+[09:53:53] new user vw3685
+[09:54:01]   value=granted              a6be98fa 290 cookies  5128B -> reviewed standard
+[09:54:01] value sweep done

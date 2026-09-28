@@ -1,0 +1,26 @@
+[09-27 09:27:46]   esc-direct     0c85cf6b n=143 stored title len=60 sent=180
+[09-27 09:27:49]   esc-legendary  e28cd0c5 n=143 stored title len=64 sent=143
+[09-27 09:27:51]   esc-toolcall   7c64e9de n=143 stored title len=84 sent=157
+[09-27 09:27:54]   esc-plain      7cc4eb8c n=143 stored title len=29 sent=29
+[09-27 09:27:55]   submitted esc-direct     0c85cf6b
+[09-27 09:28:00]   submitted esc-legendary  e28cd0c5
+[09-27 09:28:05]   submitted esc-toolcall   7c64e9de
+[09-27 09:28:09]   submitted esc-plain      7cc4eb8c
+[09-27 09:28:18]   noinject-jam   50970bd1 n=143 stored title len=35 sent=35
+[09-27 09:28:20]   esc-cookie     06a19cf5 n=143 stored title len=60 sent=133
+[09-27 09:28:23]   esc-prose      d70d51c7 n=160 stored title len=64 sent=253
+[09-27 09:28:25]   jam300-inject  57b24e5b n=300 stored title len=60 sent=120
+[09-27 09:28:26]   submitted noinject-jam   50970bd1
+[09-27 09:28:31]   submitted esc-cookie     06a19cf5
+[09-27 09:28:36]   submitted esc-prose      d70d51c7
+[09-27 09:28:41]   submitted jam300-inject  57b24e5b
+[09-27 09:28:45] === watching 3.0 h ===
+[09-27 09:30:01]   t+    1m esc-direct     0c85cf6b ('reviewed', 'NONE')
+[09-27 09:30:01]   t+    1m esc-legendary  e28cd0c5 ('reviewed', 'NONE')
+[09-27 09:30:01]   t+    1m esc-toolcall   7c64e9de ('reviewed', 'NONE')
+[09-27 09:30:01]   t+    1m esc-plain      7cc4eb8c ('reviewed', 'NONE')
+[09-27 09:30:01]   t+    1m noinject-jam   50970bd1 ('reviewed', 'NONE')
+[09-27 09:30:01]   t+    1m esc-cookie     06a19cf5 ('reviewed', 'NONE')
+[09-27 09:30:01]   t+    1m esc-prose      d70d51c7 ('reviewed', 'NONE')
+[09-27 09:30:01]   t+    1m jam300-inject  57b24e5b ('reviewed', 'NONE')
+[09-27 12:29:11] inject watch over

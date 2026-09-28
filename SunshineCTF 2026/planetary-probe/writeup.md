@@ -15,7 +15,9 @@ viên `pg_execute_server_program`, nên `COPY (SELECT 1) TO PROGRAM '<cmd>'` ch�
 với quyền OS user `postgres`, và chính exit code của command trở thành câu hỏi yes/no về
 filesystem. Cờ được đọc từng ký tự bằng oracle đó.
 
-## 1. Bề mặt bài toán
+## Phân tích ban đầu
+
+### Bề mặt bài toán
 
 Form duy nhất `GET /probe?planet=<x>`, response chỉ có hai hình thái:
 
@@ -27,7 +29,7 @@ Form duy nhất `GET /probe?planet=<x>`, response chỉ có hai hình thái:
 Route khác trả 404 kiểu Flask (207 byte). `OPTIONS /probe` cho `Allow: HEAD, OPTIONS, GET`;
 header, cookie và tham số thừa không làm đổi gì. Tầng HTTP hết đường, bài nằm ở chuỗi truy vấn.
 
-## 2. SQL injection và oracle một bit
+### SQL injection và oracle một bit
 
 `MARS' OR 1=1-- ` trả carrier còn `MARS' OR 1=1#` trả null, tức PostgreSQL (`#` không phải comment)
 và chuỗi được ghép thẳng:
@@ -44,7 +46,9 @@ Bẫy đầu tiên: app lower-case toàn bộ payload. `ascii('A')=65` sai trong
 sánh phải quy về số (`ascii`, `length`), nếu không thì "không khớp" chỉ là chữ hoa bị hạ thành chữ
 thường.
 
-## 3. Chứng minh cờ không nằm trong database
+## Các hướng đã loại
+
+### Cờ không nằm trong database
 
 Dump schema qua `pg_class`/`pg_attribute` (không dùng `information_schema` cho câu hỏi "có schema
 lạ không", vì view đó ẩn những gì mình không có quyền):
@@ -64,7 +68,9 @@ lạ không", vì view đó ẩn những gì mình không có quyền):
 * `pg_stat_activity` cũng từng báo chứa `sun{`, đó là query của chính phép thử. Phải loại
   `pid<>pg_backend_pid()` và dựng pattern bằng `chr()`.
 
-## 4. Bit thứ hai: exit code của program
+## Chuỗi khai thác
+
+### Bước 1 - Oracle thứ hai: exit code của program
 
 `MARS'; SELECT pg_sleep(3); -- ` chậm đúng 3.8 s, vậy stacked statement chạy thật. Kết luận "mọi
 statement phụ đều bị chặn" đưa ra trước đó là sai, và nguyên nhân là requirement của driver: batch
@@ -91,7 +97,7 @@ lệnh không tồn tại.
 `find / -name "*flag*" -type f -exec grep -ls sun{ {} +` mới chỉ ra file thật; hai path tìm được
 trỏ cùng một nội dung, `cmp -s` xác nhận.
 
-## 5. Đọc file, mỗi request một ký tự
+### Bước 2 - Đọc file, mỗi request một ký tự
 
 Pipeline gọn trong một request, không được giữ trạng thái giữa hai request:
 
@@ -118,7 +124,7 @@ Ba chi phí ẩn đã làm hỏng vài vòng đọc:
 Mỗi ký tự được đọc hai lần và hai lần phải khớp nhau. Pattern là chuỗi bracket class
 (`[s][u][n][{]...`) để `{`, `}` và `.` không bao giờ bị hiểu lại thành meta.
 
-## 6. Kiểm tra cuối
+## Flag
 
 ```
 [*] exact string, end-anchored: True
@@ -145,3 +151,9 @@ sun{bl1nd_psqli_2_rc3_p4Nd0FyZt8k2}
 | `sweep3.py` | quét `sun{` trong toàn bộ catalog, có control |
 | `analysis/` | log từng vòng, schema đã dump |
 | `flag.txt` | cờ |
+
+## Reproduce
+
+```bash
+python exploit.py        # xác nhận cả hai oracle, đọc lại cờ và verify toàn chuỗi
+```

@@ -1,0 +1,26 @@
+[11:44:57] user pz2895 probing 548 paths x GET/POST/OPTIONS
+[11:44:59]   CONTROL /api/seal      GET    got 404 want 403   <-- HARNESS BROKEN
+[11:45:00]   CONTROL /api/seal      POST   got 403 want 403
+[11:45:01]   CONTROL /dashboard     GET    got 200 want 200
+[11:45:02]   CONTROL /dashboard     POST   got 404 want 200   <-- HARNESS BROKEN
+[11:45:04]   CONTROL /builder       GET    got 200 want 200
+[11:45:05]   CONTROL /builder       POST   got 404 want 200   <-- HARNESS BROKEN
+[11:45:06]   ... 0/548 done
+[11:47:08]   ... 40/548 done
+[11:48:59]   ... 80/548 done
+[11:51:02]   ... 120/548 done
+[11:55:01]   ... 160/548 done
+[11:55:57]   /api/recipe                            POST    200 {'ok': True, 'id': '490897580e2fcd888989600c', 'ingredients'
+[11:55:59]   /api/recipe/                           POST    200 {'ok': True, 'id': 'a7b99c860ec066818b132840', 'ingredients'
+[12:00:07]   ... 200/548 done
+[12:01:45]   ... 240/548 done
+[12:02:00]   /api/seal                              POST    403 {'error': 'inspector authorization required'}
+[12:02:02]   /api/seal/                             POST    403 {'error': 'inspector authorization required'}
+[12:03:26]   ... 280/548 done
+[12:05:06]   ... 320/548 done
+[12:05:50]   ... 360/548 done
+[12:06:26]   ... 400/548 done
+[12:08:56]   ... 440/548 done
+[12:09:59]   ... 480/548 done
+[12:10:46]   ... 520/548 done
+[12:11:15] non-404 answers: 4 paths

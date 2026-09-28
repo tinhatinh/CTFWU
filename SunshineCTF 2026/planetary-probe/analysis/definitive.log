@@ -1,0 +1,50 @@
+[*] flag length: 35
+   ···{·······························    pos= 4 (156 calls)
+   ···{··1····························    pos= 7 (187 calls)
+   ···{··1n···························    pos= 8 (202 calls)
+   ···{·l1n···························    pos= 6 (210 calls)
+   ···{bl1n···························    pos= 5 (215 calls)
+   ··n{bl1n···························    pos= 3 (215 calls)
+   ·un{bl1n···························    pos= 2 (222 calls)
+   sun{bl1n···························    pos= 1 (225 calls)
+   sun{bl1n·····l·····················    pos=14 (413 calls)
+   sun{bl1nd····l·····················    pos= 9 (462 calls)
+   sun{bl1nd·p··l·····················    pos=11 (472 calls)
+   sun{bl1nd·p··li····················    pos=15 (477 calls)
+   sun{bl1nd·p·qli····················    pos=13 (478 calls)
+   sun{bl1nd·psqli····················    pos=12 (482 calls)
+   sun{bl1nd·psqli_···················    pos=16 (488 calls)
+   sun{bl1nd_psqli_···················    pos=10 (489 calls)
+   sun{bl1nd_psqli_·······4···········    pos=24 (663 calls)
+   sun{bl1nd_psqli_····3··4···········    pos=21 (683 calls)
+   sun{bl1nd_psqli_···c3··4···········    pos=20 (702 calls)
+   sun{bl1nd_psqli_2··c3··4···········    pos=17 (704 calls)
+   sun{bl1nd_psqli_2·rc3··4···········    pos=19 (715 calls)
+   sun{bl1nd_psqli_2_rc3··4···········    pos=18 (732 calls)
+   sun{bl1nd_psqli_2_rc3·p4···········    pos=23 (732 calls)
+   sun{bl1nd_psqli_2_rc3_p4···········    pos=22 (733 calls)
+   pos 27 unstable: None / '0'
+   sun{bl1nd_psqli_2_rc3_p4·d·········    pos=26 (987 calls)
+   sun{bl1nd_psqli_2_rc3_p4·d··y······    pos=29 (987 calls)
+   sun{bl1nd_psqli_2_rc3_p4·d··y·t····    pos=31 (987 calls)
+   sun{bl1nd_psqli_2_rc3_p4·d··y·t8···    pos=32 (1016 calls)
+   sun{bl1nd_psqli_2_rc3_p4·d0·y·t8···    pos=27 (1027 calls)
+   pos 25 unstable: None / None
+   pos 28 unstable: None / None
+   pos 30 unstable: None / None
+   pos 25 unstable: None / None
+   pos 28 unstable: None / None
+   pos 30 unstable: None / None
+   pos 25 unstable: None / None
+   pos 28 unstable: None / None
+   pos 30 unstable: None / None
+   pos 25 unstable: None / None
+   pos 28 unstable: None / None
+   pos 30 unstable: None / None
+   pos 25 unstable: None / None
+   pos 28 unstable: None / None
+   pos 25 unstable: None / None
+   sun{bl1nd_psqli_2_rc3_p4?d0·y·t8···    pos=25 (1627 calls)
+   pos 30 unstable: None / None
+   pos 28 unstable: None / None
+   sun{bl1nd_psqli_2_rc3_p4?d0?y·t8···    pos=28 (1699 calls)

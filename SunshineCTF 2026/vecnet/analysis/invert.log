@@ -1,0 +1,18 @@
+[*] loading gtr-base corrector ...
+Loading checkpoint shards:   0%|          | 0/8 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 8/8 [00:00<00:00, 185.62it/s]
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:00<00:00, 180.11it/s]
+[*] loaded in 17.9s, device=cpu
+[*] control: does the pipeline reproduce a text we already know?
+    round-trip re-embed of the known string -> [' suncf            ']
+   (17.6s)
+    inversion of magic_string vec -> ['            suncf8_ ']  cos=0.8501
+[*] target: user_password_requirements
+   (20.5s)
+    -> ["The user's first and last initials, three special characters       followed by the magic string."]
+    cos(target vec | "The user's first and last initials, three special characters       followed by the magic string.") = 0.9956
+I0927 13:02:12.729000 17040 site-packages\torch\_dynamo\eval_frame.py:837] TorchDynamo attempted to trace the following frames: [
+I0927 13:02:12.729000 17040 site-packages\torch\_dynamo\eval_frame.py:837] 
+I0927 13:02:12.729000 17040 site-packages\torch\_dynamo\eval_frame.py:837] ]
+I0927 13:02:12.731000 17040 site-packages\torch\_dynamo\utils.py:925] TorchDynamo compilation metrics:
+I0927 13:02:12.731000 17040 site-packages\torch\_dynamo\utils.py:925] Function    Runtimes (s)
+I0927 13:02:12.731000 17040 site-packages\torch\_dynamo\utils.py:925] ----------  --------------

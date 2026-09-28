@@ -1,0 +1,6 @@
+   s                                              (1 probes, 12 calls)
+   su                                             (2 probes, 24 calls)
+   sun                                            (3 probes, 35 calls)
+[!] position 4 is outside the alphabet (prefix 'sun')
+[*] verifies as a complete match: True
+[+] sun   (78s)

@@ -1,0 +1,9 @@
+[*] controls
+    1=1                              -> True   (True)
+    1=2                              -> False   (False)
+    ascii('A')=65                    -> False   (payload not lowercased)
+    ascii('A')=97                    -> True   (payload IS lowercased)
+    ascii(chr(65))=65                -> True   (True)
+    'a'='A'                          -> True   (collation is case-insensitive)
+    (SELECT count(*) FROM planets)>0 -> True   (True)
+[*] planets rows: 8

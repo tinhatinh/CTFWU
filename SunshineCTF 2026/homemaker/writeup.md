@@ -14,7 +14,9 @@ Hai lỗi ghép lại thành lời giải. Vòng lặp nạp thẻ dùng `<=` n�
 một lệnh `syscall`, mà libc của server thì không được cung cấp. Lời giải là dùng chính primitive
 đọc bộ nhớ có được để lấy mã máy của libc từ server về, rồi đọc hai gadget cần thiết từ đó.
 
-## 1. Giao thức
+## Phân tích ban đầu
+
+### Giao thức
 
 Frame hai chiều giống hệt nhau:
 
@@ -37,7 +39,7 @@ def crc8(data):
 Lệnh 1 nhận thẻ dịch vụ, key so sánh cứng tại `0x12a7` là `0x1337c35f`. Lệnh 2 chép thẻ vào `mem`,
 lệnh 3 in `mem` ra. Hết.
 
-## 2. Off-by-one ở hàm nạp thẻ (`0x174c`)
+### Off-by-one ở hàm nạp thẻ (`0x174c`)
 
 ```c
 n = len - 1;
@@ -64,7 +66,7 @@ hai đặt tiếp `capacity = 0x7F8`. Vì `read_frame` chấp nhận payload t�
 (`len+7 <= 0x800`), một thẻ duy nhất phủ được `mem[0..0x7F8]` = 2041 byte, toàn bộ frame của
 dispatcher.
 
-## 3. Leak (`0x1810`)
+### Leak (`0x1810`)
 
 Layout vùng `mem` (dispatcher: `sub rsp, 0x120`; `mem = rbp-0x110`):
 
@@ -85,15 +87,17 @@ mema       = saved_rbp - 0x130          # đã kiểm chứng bằng cách đọ
 
 `mema` đáng tin vì ROP gọi `0x1810(mema)` in lại đúng nội dung thẻ vừa gửi.
 
-## 4. Vì sao `system()` là ngõ cụt
+## Các hướng đã loại
+
+### `system()` không dẫn tới đâu
 
 Binary import `system` và dispatcher có sẵn lệnh 5 gọi `system("/bin/echo -n ''")`, nên bẫy của
 bài là "đưa ROP một chuỗi lệnh vào `mem` rồi gọi `system`". Đã thử nghiêm túc trên remote:
 
 ```
-cmd=echo HIJI          0.55s  ...*** stack smashing detected *: terminated
-cmd=/bin/echo HIJI     0.52s  ...* stack smashing detected *: terminated
-cmd=sleep 5            0.54s  ...* stack smashing detected ***: terminated
+cmd=echo HIJI          0.55s  ...*** stack smashing detected ***: terminated
+cmd=/bin/echo HIJI     0.52s  ...*** stack smashing detected ***: terminated
+cmd=sleep 5            0.54s  ...*** stack smashing detected ***: terminated
 ```
 
 Chuỗi "stack smashing" của `main` chứng minh `system()` chạy và return bình thường, và stderr có
@@ -108,7 +112,9 @@ $ python -c "d=open('files/homemaker','rb').read(); print(d.count(b'\x0f\x05'), 
 
 libc cũng không được cung cấp.
 
-## 5. Primitive đọc: lấy mã máy của libc từ server
+## Chuỗi khai thác
+
+### Bước 1 - Lấy mã máy của libc từ server
 
 `0x1810(ctx)` = `emit(0, ctx, [ctx+0x100])`: phát ra `len = [ctx+0x100]` byte tính từ `ctx`, kèm
 ràng buộc `len + 8 <= 0x800`. Cho nên:
@@ -144,7 +150,7 @@ w = u64(mem[0x298]) - 0x11E790
 SYSCALL, POP_RSI = w + 0x1779, w + 0x1a02
 ```
 
-## 6. Đặt tham số syscall không cần gadget `pop rsi/rdx/rax`
+### Bước 2 - Đặt tham số syscall không cần gadget `pop rsi/rdx/rax`
 
 Ba quan sát:
 
@@ -175,7 +181,7 @@ pop rdi, 1          ; write@plt     # write(1, emit buf, 257) -> cờ ra socket
 
 Không cần shell, không cần libc base, và chỉ cần đúng hai địa chỉ đọc được từ chính server.
 
-## 7. Kết quả
+## Flag
 
 ```
 $ python exploit_homemaker.py 3
@@ -186,4 +192,10 @@ $ python exploit_homemaker.py 3
 sun{the_future_is_now_today_well_wait_how_are_you_reading_this}
 
 [+] FLAG: sun{the_future_is_now_today_well_wait_how_are_you_reading_this}
+```
+
+## Reproduce
+
+```bash
+python exploit_homemaker.py 3        # 3 = số lần thử; cần hmlib.py cùng thư mục
 ```

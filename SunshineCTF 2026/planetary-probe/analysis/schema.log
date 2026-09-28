@@ -1,0 +1,8 @@
+[*] payload normalisation controls
+    1=1                -> True  (want True)
+    1=2                -> False (want False)
+    'A'='A'            -> True  
+    'A'='a'            -> True  
+    'a'='a'            -> True  
+    chr(65)=chr(65)    -> True  
+[*] app lower-cases the payload: False

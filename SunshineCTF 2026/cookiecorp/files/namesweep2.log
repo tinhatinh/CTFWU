@@ -1,0 +1,53 @@
+[09:42:04] total candidate names: 2922
+[09:42:04] using 2 chunks x 12 value sets = 24 batches; covers 580 names
+[09:42:06]   c0-smart           6abad413 290 cookies 4530B
+[09:42:13]       -> reviewed standard
+[09:42:15]   c0-chief           2cbf2988 290 cookies 4552B
+[09:42:21]       -> reviewed standard
+[09:42:23]   c0-true            241c4f0b 290 cookies 4262B
+[09:42:30]       -> reviewed standard
+[09:42:32]   c0-1               25f7cec7 290 cookies 3392B
+[09:42:38]       -> reviewed standard
+[09:42:40]   c0-yes             a2c999ca 290 cookies 3972B
+[09:42:47]       -> reviewed standard
+[09:42:49]   c0-gold            0f53b13f 290 cookies 4262B
+[09:42:55]       -> reviewed standard
+[09:42:57]   c0-golden          ea98940d 290 cookies 4842B
+[09:43:03]       -> reviewed standard
+[09:43:05]   c0-inspector       2b08528a 290 cookies 5712B
+[09:43:12]       -> reviewed standard
+[09:43:14]   c0-admin           140810e1 290 cookies 4552B
+[09:43:20]       -> reviewed standard
+[09:43:23] new user sw8030
+[09:43:24]   c0-approved        c668e173 290 cookies 5422B
+[09:43:30]       -> reviewed standard
+[09:43:32]   c0-sealed          b23eb0ae 290 cookies 4842B
+[09:43:38]       -> reviewed standard
+[09:43:40]   c0-selfname        1444e9b2 290 cookies 5334B
+[09:43:47]       -> reviewed standard
+[09:43:49]   c1-smart           ce7bc846 290 cookies 4456B
+[09:44:03]       -> reviewed standard
+[09:44:04]   c1-chief           286398e9 290 cookies 4456B
+[09:44:18]       -> reviewed standard
+[09:44:20]   c1-true            1a0ac8f2 290 cookies 4166B
+[09:44:26]       -> reviewed standard
+[09:44:28]   c1-1               c2a0c001 290 cookies 3296B
+[09:44:35]       -> reviewed standard
+[09:44:37]   c1-yes             7c071c61 290 cookies 3876B
+[09:45:33]       -> reviewed standard
+[09:45:35]   c1-gold            e7b62f66 290 cookies 4166B
+[09:45:41]       -> reviewed standard
+[09:45:44] new user sw4169
+[09:45:45]   c1-golden          e0ba14dd 290 cookies 4746B
+[09:45:51]       -> reviewed standard
+[09:45:53]   c1-inspector       4255adbb 290 cookies 5616B
+[09:46:00]       -> reviewed standard
+[09:46:02]   c1-admin           29a764fd 290 cookies 4456B
+[09:46:08]       -> reviewed standard
+[09:46:10]   c1-approved        5bb324ce 290 cookies 5326B
+[09:46:16]       -> reviewed standard
+[09:46:18]   c1-sealed          e07c6a4d 290 cookies 4746B
+[09:46:25]       -> reviewed standard
+[09:46:26]   c1-selfname        4ad7ec9b 290 cookies 5142B
+[09:46:33]       -> reviewed standard
+[09:46:34] sweep complete: 6 batches

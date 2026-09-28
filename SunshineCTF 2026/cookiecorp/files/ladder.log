@@ -1,0 +1,22 @@
+[09-27 09:12:59] === building the ladder ===
+[09-27 09:13:02]   jam143                 67625b65  16445B (143 ing)
+[09-27 09:13:04]   jam160                 60136c71  18400B (160 ing)
+[09-27 09:13:05]   jam200                 370b49fe  23000B (200 ing)
+[09-27 09:13:07]   jam300                 a423f02f  34500B (300 ing)
+[09-27 09:13:08]   sealed                 58acdba0    230B (2 ing)
+[09-27 09:13:11]   draft-only             b2deb679      0B (0 ing)
+[09-27 09:13:12]   jam145-legendary       f96638cf  16675B (145 ing)
+[09-27 09:13:14] submitted jam143             67625b65 -> {'ok': True, 'status': 'queued'}
+[09-27 09:13:19] submitted jam160             60136c71 -> {'ok': True, 'status': 'queued'}
+[09-27 09:13:25] submitted jam200             370b49fe -> {'ok': True, 'status': 'queued'}
+[09-27 09:13:31] submitted jam300             a423f02f -> {'ok': True, 'status': 'queued'}
+[09-27 09:13:37] submitted sealed             58acdba0 -> {'ok': True, 'status': 'queued'}
+[09-27 09:13:43] submitted jam145-legendary   f96638cf -> {'ok': True, 'status': 'queued'}
+[09-27 09:13:48] === watching 6.0 h ===
+[09-27 09:15:49]   t+     2m jam143             67625b65 ('reviewed', 'NONE')
+[09-27 09:15:49]   t+     2m jam160             60136c71 ('reviewed', 'NONE')
+[09-27 09:15:49]   t+     2m jam200             370b49fe ('reviewed', 'NONE')
+[09-27 09:15:49]   t+     2m jam300             a423f02f ('reviewed', 'NONE')
+[09-27 09:15:49]   t+     2m sealed             58acdba0 ('reviewed', 'standard')
+[09-27 09:15:49]   t+     2m draft-only         b2deb679 ('draft', 'NONE')
+[09-27 09:15:49]   t+     2m jam145-legendary   f96638cf ('reviewed', 'NONE')

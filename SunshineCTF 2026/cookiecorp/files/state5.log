@@ -1,0 +1,31 @@
+user sz3576
+saved n=100  dd9c73d3  11500B
+saved n=120  dc47d74d  13800B
+saved n=135  bd729d9d  15525B
+saved n=145  a3c7fb57  16675B
+saved n=175  1dfbd507  20125B
+=== submit one at a time, record settle time and seal ===
+   t+  9s dd9c73d3 ('reviewed', 'standard')
+  n=100  dd9c73d3 submitted in 10s, settled: ('reviewed', 'standard')
+   t+  8s dc47d74d ('reviewed', 'standard')
+  n=120  dc47d74d submitted in 10s, settled: ('reviewed', 'standard')
+   t+  8s bd729d9d ('reviewed', 'standard')
+  n=135  bd729d9d submitted in 10s, settled: ('reviewed', 'standard')
+   t+ 16s a3c7fb57 ('reviewed', 'NONE')
+  n=145  a3c7fb57 submitted in 17s, settled: ('reviewed', 'NONE')
+   t+  8s 1dfbd507 ('queued', 'NONE')
+   t+ 17s 1dfbd507 ('reviewing', 'NONE')
+   t+ 26s 1dfbd507 ('reviewed', 'NONE')
+  n=175  1dfbd507 submitted in 27s, settled: ('reviewed', 'NONE')
+=== resubmit a sealed standard batch: does the seal reset? ===
+   first pass  ('reviewed', 'standard')
+   resubmit 1 -> 200 {'ok': True, 'status': 'queued'}
+      now      ('reviewed', 'standard')
+      +20s     ('reviewed', 'standard')
+   resubmit 2 -> 200 {'ok': True, 'status': 'queued'}
+      now      ('reviewed', 'standard')
+      +20s     ('reviewed', 'standard')
+   resubmit 3 -> 200 {'ok': True, 'status': 'queued'}
+      now      ('reviewed', 'standard')
+      +20s     ('reviewed', 'standard')
+done

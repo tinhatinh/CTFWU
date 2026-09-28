@@ -1,0 +1,205 @@
+DIFF field=verified='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=status='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=status='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=status=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=state='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=state='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=state=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=device='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=device='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=device=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=device_id='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=device_id='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=device_id=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=attested='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=attested='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=attested=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=attestation='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=attestation='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=attestation=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=session='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=session='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=session=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=session_token='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=session_token='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=session_token=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=token='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=token='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=token=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=trusted='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=trusted='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=trusted=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=rooted='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=rooted='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=rooted=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=emulator='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=emulator='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=emulator=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=jailbroken='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=jailbroken='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=jailbroken=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=mfa='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=mfa='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=mfa=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=totp='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=totp='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=totp=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=otp='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=otp='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=otp=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=phone='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=phone='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=phone=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=address='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=address='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=address=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=country='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=country='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=country=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=dob='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=dob='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=dob=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=ssn='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=ssn='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=ssn=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=national_id='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=national_id='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=national_id=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=tax_id='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=tax_id='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=tax_id=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=iban='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=iban='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=iban=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=swift='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=swift='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=swift=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=card_number='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=card_number='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=card_number=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=balance='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=balance='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=balance=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=balance_cents='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=balance_cents='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=balance_cents=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=account='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=account='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=account=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=account_number='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=account_number='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=account_number=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=number='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=number='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=number=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=type='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=type='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=type=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=memo='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=memo='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=memo=1 route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=notes='ZZ1' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+DIFF field=notes='true' route=/api/v1/admin/ledger -> 403 {"error":"admin role required"}
+
+field-write diffs across all routes: 102

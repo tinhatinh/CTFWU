@@ -1,0 +1,31 @@
+[09:54:31] === does the 429 lock answer before the 404 lookup? ===
+[09:54:33] submitted bait e6224fe5 -> 200; now probing a bogus id while the worker should be busy
+[09:54:35]    bogus submit #0 -> 404 {'error': 'no such recipe'}
+[09:54:37]    bogus submit #1 -> 404 {'error': 'no such recipe'}
+[09:54:39]    bogus submit #2 -> 404 {'error': 'no such recipe'}
+[09:54:41]    bogus submit #3 -> 404 {'error': 'no such recipe'}
+[09:54:43]    bogus submit #4 -> 404 {'error': 'no such recipe'}
+[09:54:45]    bogus submit #5 -> 404 {'error': 'no such recipe'}
+[09:54:47]    bogus submit #6 -> 404 {'error': 'no such recipe'}
+[09:54:49]    bogus submit #7 -> 404 {'error': 'no such recipe'}
+[09:54:51]    bogus submit #8 -> 404 {'error': 'no such recipe'}
+[09:54:53]    bogus submit #9 -> 404 {'error': 'no such recipe'}
+[09:54:54] === 3 s resolution watch, 20 min ===
+[09:54:55]   t+   0s pl5392   e6224fe5 reviewed standard
+[09:54:55]   t+   0s pl5392   e9d2fd6a reviewed NONE
+[09:54:55]   t+   0s pl5392   d77a7f6d reviewed standard
+[09:54:55]   t+   0s pl5392   d423c626 reviewed NONE
+[09:54:55]   t+   0s pl5392   eb5ff81a reviewed NONE
+[09:54:55]   t+   0s pl5392   15cf4934 reviewed NONE
+[09:54:56]   t+   1s sz3576   ec1fadf4 reviewed standard
+[09:54:56]   t+   1s sz3576   1dfbd507 reviewed NONE
+[09:54:56]   t+   1s sz3576   a3c7fb57 reviewed NONE
+[09:54:56]   t+   1s sz3576   bd729d9d reviewed standard
+[09:54:56]   t+   1s sz3576   dc47d74d reviewed standard
+[09:54:56]   t+   1s sz3576   dd9c73d3 reviewed standard
+[09:54:56]   t+   2s of1726   b808a70c reviewed standard
+[09:54:56]   t+   2s of1726   da3f962a reviewed NONE
+[09:54:56]   t+   2s of1726   45f99051 reviewed standard
+[09:54:56]   t+   2s of1726   78962590 reviewed standard
+[10:14:58] lock probe result: {404: 190}
+[10:14:58] no state change beyond the lines above

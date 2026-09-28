@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "C:\Users\Administrator\Documents\Qoder\2026-09-26\45656d97\CTF-Writeups\safe-house\analysis\drain.py", line 69, in <module>
+    main()
+  File "C:\Users\Administrator\Documents\Qoder\2026-09-26\45656d97\CTF-Writeups\safe-house\analysis\drain.py", line 49, in main
+    s = socket.create_connection((E.HOST, E.PORT), timeout=20)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python312\Lib\socket.py", line 841, in create_connection
+    for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python312\Lib\socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 11001] getaddrinfo failed

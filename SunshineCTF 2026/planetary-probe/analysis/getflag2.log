@@ -1,0 +1,4 @@
+   0                                              (1 probes, 8 calls)
+[!] position 2 is outside the alphabet (prefix '0')
+[*] verifies as a complete match: True
+[+] 0   (37s)

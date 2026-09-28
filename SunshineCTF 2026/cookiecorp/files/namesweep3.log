@@ -1,0 +1,26 @@
+[11:43:28] names 3735 in 13 chunks; sweeping chunks 2.. from the previous run
+[11:43:45]   chunk2  chief  290 cookies   5401B -> reviewed  standard
+[11:43:53]   chunk2  true   290 cookies   5111B -> reviewed  standard
+[11:44:01]   chunk3  chief  290 cookies   5278B -> reviewed  standard
+[11:44:15]   chunk3  true   290 cookies   4988B -> reviewed  standard
+[11:44:30]   chunk4  chief  290 cookies   5579B -> reviewed  standard
+[11:44:45]   chunk4  true   290 cookies   5289B -> reviewed  standard
+[11:45:11]   chunk5  chief  290 cookies   5163B -> reviewed  standard
+[11:45:39]   chunk5  true   290 cookies   4873B -> reviewed  standard
+[11:45:42] new user nz7030
+[11:46:03]   chunk6  chief  290 cookies   5539B -> reviewed  standard
+[11:46:10]   chunk6  true   290 cookies   5249B -> reviewed  standard
+[11:46:18]   chunk7  chief  290 cookies   4740B -> reviewed  standard
+[11:46:26]   chunk7  true   290 cookies   4450B -> reviewed  standard
+[11:46:40]   chunk8  chief  290 cookies   6509B -> reviewed  standard
+[11:46:48]   chunk8  true   290 cookies   6219B -> reviewed  standard
+[11:46:56]   chunk9  chief  290 cookies   7498B -> reviewed  standard
+[11:47:04]   chunk9  true   290 cookies   7208B -> reviewed  standard
+[11:47:06] new user nz6593
+[11:47:14]   chunk10 chief  290 cookies   7629B -> reviewed  standard
+[11:47:22]   chunk10 true   290 cookies   7339B -> reviewed  standard
+[11:47:36]   chunk11 chief  290 cookies   6488B -> reviewed  standard
+[11:47:43]   chunk11 true   290 cookies   6198B -> reviewed  standard
+[11:47:51]   chunk12 chief  255 cookies   5946B -> reviewed  standard
+[11:47:58]   chunk12 true   255 cookies   5691B -> reviewed  standard
+[11:47:58] name axis complete

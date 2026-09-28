@@ -1,0 +1,42 @@
+[11:52:01] generated 2067 names, 14 batches of <=155 needed
+[11:52:11] === phase A: every name with value 'chief' ===
+[11:52:59]   A0               155 cookies   2541B -> reviewed  standard
+[11:54:02]   A1               155 cookies   2263B -> reviewed  standard
+[11:54:16]   A2               155 cookies   2291B -> reviewed  standard
+[11:54:24]   A3               155 cookies   2813B -> reviewed  standard
+[11:54:32]   A4               155 cookies   3026B -> reviewed  standard
+[11:54:40]   A5               155 cookies   2843B -> reviewed  standard
+[11:54:48]   A6               155 cookies   2762B -> reviewed  standard
+[11:54:56]   A7               155 cookies   3517B -> reviewed  standard
+[11:54:58] new user s45253
+[11:55:05]   A8               155 cookies   4165B -> reviewed  standard
+[11:55:13]   A9               155 cookies   3432B -> reviewed  standard
+[11:55:21]   A10              155 cookies   4031B -> reviewed  standard
+[11:55:29]   A11              155 cookies   4010B -> reviewed  standard
+[11:55:39]   A12              155 cookies   2745B -> reviewed  standard
+[11:55:47]   A13               52 cookies   1007B -> reviewed  standard
+[11:55:47] === phase B: strongest 155 names across the other values ===
+[11:55:55]   B-true           155 cookies   2386B -> reviewed  standard
+[11:56:02]   B-1              155 cookies   1921B -> reviewed  standard
+[11:56:05] new user s45455
+[11:59:28]   B-yes            155 cookies   2231B -> reviewed  NONE
+[11:59:43]   B-gold           155 cookies   2386B -> reviewed  standard
+[11:59:51]   B-golden         155 cookies   2696B -> reviewed  standard
+[12:00:01]   B-inspector      155 cookies   3161B -> reviewed  standard
+[12:00:09]   B-admin          155 cookies   2541B -> reviewed  standard
+[12:00:17]   B-approved       155 cookies   3006B -> reviewed  standard
+[12:00:24]   B-sealed         155 cookies   2696B -> reviewed  standard
+[12:00:32]   B-certified      155 cookies   3161B -> reviewed  standard
+[12:00:34] new user s48815
+[12:00:41]   B-grandmaster    155 cookies   3471B -> reviewed  standard
+[12:00:49]   B-cookiecorp     155 cookies   3316B -> reviewed  standard
+[12:00:57]   B-golden_seal    155 cookies   3471B -> reviewed  standard
+[12:01:05]   B-GOLDEN         155 cookies   2696B -> reviewed  standard
+[12:01:13]   B-1962           155 cookies   2386B -> reviewed  standard
+[12:01:21]   B-brighter-tomorrow 155 cookies   4401B -> reviewed  standard
+[12:01:29]   B-legendary      155 cookies   3161B -> reviewed  standard
+[12:01:37]   B-root           155 cookies   2386B -> reviewed  standard
+[12:01:40] new user s48174
+[12:01:47]   B-system         155 cookies   2696B -> reviewed  standard
+[12:01:55]   B-internal       155 cookies   3006B -> reviewed  standard
+[12:01:55] sweep4 complete

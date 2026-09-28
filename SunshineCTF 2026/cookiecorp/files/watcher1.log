@@ -1,0 +1,6 @@
+[08:22:54] watcher user wt4752
+[08:22:56] recipe dd9b53ac11aea48938ed99ca submit={'ok': True, 'status': 'queued'}
+[08:23:41] t=  46s status=['queued'] seal=[] flag=[]
+[08:43:42] t=1246s status=[] seal=[] flag=[]
+[08:44:28] t=1292s status=['queued'] seal=[] flag=[]
+[08:48:17] done, elapsed 1521s

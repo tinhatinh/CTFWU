@@ -1,0 +1,9 @@
+user ov9987
+Traceback (most recent call last):
+  File "C:\Users\Administrator\Documents\Qoder\2026-09-26\a1270416\CTF-Writeups\cookiecorp\analysis\overflow_seal.py", line 87, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "C:\Users\Administrator\Documents\Qoder\2026-09-26\a1270416\CTF-Writeups\cookiecorp\analysis\overflow_seal.py", line 56, in main
+    bid = b_["id"]
+          ~~^^^^^^
+KeyError: 'id'

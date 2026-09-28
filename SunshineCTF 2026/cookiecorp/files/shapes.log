@@ -1,0 +1,29 @@
+[09:22:06] user sh3887
+[09:22:14]   zero-ingredients   -> reviewed standard (6s)
+[09:22:23]   empty-value        -> reviewed standard (6s)
+[09:22:31]   name-only          -> reviewed standard (6s)
+[09:22:39]   dup-names          -> reviewed standard (6s)
+[09:22:48]   cookie-session     -> reviewed standard (6s)
+[09:22:56]   cookie-role-chief  -> reviewed standard (6s)
+[09:23:04]   cookie-role-insp   -> reviewed standard (6s)
+[09:23:13]   cookie-ROLE-case   -> reviewed standard (6s)
+[09:23:15] new user sh8079
+[09:23:23]   cookie-chief-name  -> reviewed standard (6s)
+[09:23:31]   cookie-golden-name -> reviewed standard (6s)
+[09:23:39]   cookie-escalate    -> reviewed standard (6s)
+[09:23:48]   cookie-proto       -> reviewed standard (6s)
+[09:23:56]   cookie-host        -> reviewed standard (6s)
+[09:24:04]   pct-name           -> reviewed standard (6s)
+[09:24:13]   pct-value          -> reviewed standard (6s)
+[09:24:21]   eq-in-value        -> reviewed standard (6s)
+[09:24:23] new user sh2062
+[09:24:31]   uni-name           -> reviewed standard (6s)
+[09:24:40]   long-20            -> reviewed standard (6s)
+[09:24:48]   title-chief        -> reviewed standard (6s)
+[09:24:56]   title-appeal       -> reviewed standard (6s)
+[09:25:05]   value-sun          -> reviewed standard (6s)
+[09:25:14]   value-true         -> reviewed standard (6s)
+[09:25:22]   dot-names          -> reviewed standard (7s)
+[09:25:31]   dangerous          -> reviewed standard (6s)
+[09:25:31] === summary: shapes that did NOT get a standard seal ===
+[09:25:31] done

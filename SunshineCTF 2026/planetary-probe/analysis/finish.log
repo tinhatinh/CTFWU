@@ -1,0 +1,22 @@
+[*] resuming from 'sun{bl1nd'
+   sun{bl1nd_                                     (16 calls)
+   sun{bl1nd_p                                    (29 calls)
+   sun{bl1nd_ps                                   (39 calls)
+   sun{bl1nd_psq                                  (54 calls)
+   sun{bl1nd_psql                                 (66 calls)
+   sun{bl1nd_psqli                                (82 calls)
+   sun{bl1nd_psqli_                               (98 calls)
+   sun{bl1nd_psqli_2                              (111 calls)
+   sun{bl1nd_psqli_2_                             (127 calls)
+   sun{bl1nd_psqli_2_r                            (141 calls)
+   sun{bl1nd_psqli_2_rc                           (155 calls)
+   sun{bl1nd_psqli_2_rc3                          (167 calls)
+   sun{bl1nd_psqli_2_rc3_                         (183 calls)
+   sun{bl1nd_psqli_2_rc3_p                        (196 calls)
+   sun{bl1nd_psqli_2_rc3_p4                       (209 calls)
+   retry 1 on position 25
+   retry 2 on position 25
+   retry 3 on position 25
+   retry 4 on position 25
+[-] stuck at position 25
+[+] sun{bl1nd_psqli_2_rc3_p4
