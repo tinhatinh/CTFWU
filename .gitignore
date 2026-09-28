@@ -34,6 +34,10 @@ _de_raw/
 de-cards.tsv
 de-index.json
 
+# Large files (exceed GitHub 100MB limit)
+H7CTF 2026 Quals/_wip/broken-telephone/files/memory.raw
+SunshineCTF 2026/vecnet/analysis/crack.log
+H7CTF 2026 Quals/public-domain/files/h7-tex.github.io.tar.gz
+
 # Misc
-*.log
 .env
