@@ -216,4 +216,4 @@ thead th { background: var(--ink); color: #fff; font-family: Syne, sans-serif; }
 /* Avatar + link lien he o sidebar */
 #sidebar #avatar { border-radius: 0 !important; display: inline-block; }
 #sidebar #avatar img { border: var(--hair) solid var(--ink); border-radius: 0 !important; box-shadow: var(--shadow-sm); }
-#contact a:hover { background: var(--yellow); color: var(--ink); }
+.sidebar-bottom > a:hover { background: var(--yellow); color: var(--ink); }

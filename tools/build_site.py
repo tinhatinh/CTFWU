@@ -30,17 +30,17 @@ SKIP_TOP = {".git", ".github", "site", "tools", "_site_src", "_site_src_en",
             "_site", "assets", "node_modules", "_template", "_wip", "_de_raw", "docs"}
 MAX_COPY = 4 * 1024 * 1024
 COLORS = ["#f00", "#ff0", "#00f", "#000"]
-LOCAL_TZ = dt.datetime.now().astimezone().tzinfo
+CONTEST_TZ = dt.timezone(dt.timedelta(hours=7), "UTC+7")
 
 UI = {
     "vi": {"competitions": "Các cuộc thi", "posts": "bài writeup", "view": "Xem writeup",
-           "title": "CTFWU", "tagline": "Ghi chú CTF của team 612",
-           "hint": "Mỗi cuộc thi là một mục. Bên trong là các bài giải, xếp theo chuyên mục.",
-           "back": "Về trang chủ", "nottranslated": ""},
+           "tagline": "Ghi chú CTF của team 612",
+           "description": "Kho writeup CTF của team 612 qua H7TEX, SunshineCTF và Pointer Overflow",
+           "hint": "Mỗi cuộc thi là một mục. Bên trong là các bài giải, xếp theo chuyên mục."},
     "en": {"competitions": "Competitions", "posts": "writeups", "view": "Read writeups",
-           "title": "CTFWU", "tagline": "CTF writeups by team 612",
+           "tagline": "CTF writeups by team 612",
+           "description": "CTF writeups by team 612, from H7TEX, SunshineCTF and Pointer Overflow",
            "hint": "One card per event. Inside each one, the solutions grouped by category.",
-           "back": "Back to home",
            "nottranslated": "This post has no English version yet."},
 }
 
@@ -117,7 +117,7 @@ def flag_time(event, case):
             b = getattr(os.stat(os.path.join(dp, n)), "st_birthtime", 0)
             if b and (best is None or b < best):
                 best = b
-    return dt.datetime.fromtimestamp(best, LOCAL_TZ) if best else None
+    return dt.datetime.fromtimestamp(best, CONTEST_TZ) if best else None
 
 
 def solve_times():
@@ -132,7 +132,7 @@ def solve_times():
     out = {}
     for key, val in raw.items():
         d = dt.datetime.fromisoformat(val)
-        out[key] = (d.replace(tzinfo=LOCAL_TZ), len(val) > 10)
+        out[key] = (d if d.tzinfo else d.replace(tzinfo=CONTEST_TZ), "T" in val)
     return out
 
 
@@ -216,6 +216,7 @@ def collect(lang):
     """Tra ve danh sach event -> bai viet cho mot ngon ngu."""
     events = []
     times = solve_times()
+    seen = set()
     for i, event in enumerate(event_dirs()):
         fname = "writeup.md" if lang == "vi" else "writeup.en.md"
         catmap = readme_categories(event)
@@ -235,19 +236,24 @@ def collect(lang):
             title = next((ln[2:].strip() for ln in text.split("\n")
                           if ln.startswith("# ")), "%s - %s" % (event, case))
             key = "%s/%s" % (event, case)
+            seen.add(key)
+            mod = git_time(w)
             solved, exact = times.get(key) or (flag_time(event, case), True)
             if not solved:
-                solved, exact = git_time("%s/%s" % (key, fname)), True
-            if not solved:
-                solved = dt.datetime.fromtimestamp(os.path.getmtime(w), LOCAL_TZ)
+                solved = mod or dt.datetime.fromtimestamp(os.path.getmtime(w), CONTEST_TZ)
+                exact = False
             posts.append({
                 "case": case, "path": w, "text": text, "title": title,
-                "date": solved, "exact": exact, "mod": git_time(w),
+                "date": solved, "exact": exact, "mod": mod,
                 "key": "%s-%s" % (slugify(event), slugify(case)),
                 "cat": (catmap.get(case) or "writeup").strip(), "fallback": fallback,
             })
         if posts:
             events.append({"name": event, "slug": slugify(event), "posts": posts, "idx": i})
+    stale = sorted(set(times) - seen)
+    if stale:
+        print("  canh bao: solve_times.json thua %d key: %s"
+              % (len(stale), ", ".join(stale[:3]) + ("..." if len(stale) > 3 else "")))
     return events
 
 
@@ -309,7 +315,6 @@ def write_event_page(stage, ev, lang, base):
     lines = ["---", 'title: "%s"' % ev["name"], "layout: page",
              "permalink: /events/%s/" % ev["slug"],
              'description: "%s"' % ("%d %s" % (len(ev["posts"]), ui["posts"])), "---", ""]
-    lines.append("## %s\n" % ev["name"])
     for p in sorted(ev["posts"], key=lambda x: x["date"]):
         lines.append('- [%s](%s/posts/%s/) · `%s` · %s'
                      % (p["title"], base, p["key"], p["cat"],
@@ -367,12 +372,13 @@ def build(lang):
     if os.path.isdir(stage):
         shutil.rmtree(stage)
     shutil.copytree(os.path.join(ROOT, "site"), stage)
+    cfg = os.path.join(stage, "_config.yml")
+    t = open(cfg, encoding="utf-8").read()
     if lang == "en":
-        cfg = os.path.join(stage, "_config.yml")
-        t = open(cfg, encoding="utf-8").read()
         t = t.replace('baseurl: "/CTFWU"', 'baseurl: "/CTFWU/en"').replace("lang: vi-VN", "lang: en")
-        t = re.sub(r"^tagline:.*$", 'tagline: CTF writeups by team 612', t, flags=re.M)
-        open(cfg, "w", encoding="utf-8", newline="\n").write(t)
+    t = re.sub(r"^tagline:.*$", "tagline: " + UI[lang]["tagline"], t, flags=re.M)
+    t = re.sub(r"^description:.*$", 'description: "%s"' % UI[lang]["description"], t, flags=re.M)
+    open(cfg, "w", encoding="utf-8", newline="\n").write(t)
     events = collect(lang)
     n = 0
     for ev in events:
