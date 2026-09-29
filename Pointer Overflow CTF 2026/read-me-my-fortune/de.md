@@ -1,6 +1,8 @@
 # Đề bài - Read Me My Fortune
 
-Không có ảnh thẻ đề: trang `/challenges/read-me-my-fortune/` đã trả 404 sau khi wave 1 đóng, nên không chụp lại được. Bản dưới chép nguyên văn từ text của thẻ khi trang còn mở.
+![de](files/de.png)
+
+*Ảnh thẻ đề do người dùng chụp từ tab còn mở của trang challenge (trang đã 404 sau khi wave 1 đóng). Ô session token đã được che thủ công thành `EXP1.612.127.<nonce>.<expiry>.<sig26>` trước khi lưu.*
 
 ## Nguyên văn đề
 
