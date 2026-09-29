@@ -225,6 +225,19 @@ def describe(body):
     return ""
 
 
+def cover_html(ev, base):
+    """Ảnh bìa thật của sự kiện, nằm ở `site/assets/competitions/<slug>.<ext>`.
+
+    src phải tự chieu theo baseurl cua cay (`/CTFWU` hoac `/CTFWU/en`) vi khong co
+    ai them prefix vao HTML cua page. Chua co anh thi quay ve tile SVG sinh.
+    """
+    for ext in ("png", "jpg", "jpeg", "webp", "svg"):
+        f = "%s.%s" % (ev["slug"], ext)
+        if os.path.isfile(os.path.join(ROOT, "site", "assets", "competitions", f)):
+            return '<img src="%s/assets/competitions/%s" alt="%s">' % (base, f, ev["name"])
+    return cover_svg(ev["name"], ev["idx"])
+
+
 def stamp(d, lang, exact=True):
     fmt = ("%d/%m/%Y" if lang == "vi" else "%b %d, %Y") + (" %H:%M" if exact else "")
     return d.strftime(fmt)
@@ -380,10 +393,7 @@ def write_competitions(stage, events, lang, base):
         if first.date() != last.date():
             span = "%s → %s" % (stamp(first, lang, False), span)
         cats = sorted({p["cat"] for p in ev["posts"]})
-        svg = cover_svg(ev["name"], ev["idx"])
-        p_svg = os.path.join(stage, "assets", "competitions")
-        os.makedirs(p_svg, exist_ok=True)
-        open(os.path.join(p_svg, "%s.svg" % ev["slug"]), "w", encoding="utf-8", newline="\n").write(svg)
+        cover = cover_html(ev, base)
         body.append(
             '<a class="ctfw-card" href="%s/events/%s/">'
             '<span class="ctfw-cover">%s</span>'
@@ -392,7 +402,7 @@ def write_competitions(stage, events, lang, base):
             '<div>%s</div>'
             '<div class="ctfw-meta"><span>%d %s</span><span>%s</span>'
             '<span>%s &rarr;</span></div></div></a>'
-            % (base, ev["slug"], svg, last.year, ev["name"],
+            % (base, ev["slug"], cover, last.year, ev["name"],
                ", ".join(cats), len(ev["posts"]), ui["posts"], span, ui["view"]))
     body.append("</div>\n")
     out = os.path.join(stage, "_tabs")
