@@ -250,13 +250,13 @@ def write_competitions(stage, events, lang, base):
         open(os.path.join(p_svg, "%s.svg" % ev["slug"]), "w", encoding="utf-8", newline="\n").write(svg)
         body.append(
             '<a class="ctfw-card" href="%s/events/%s/">'
-            '<img class="ctfw-cover" src="%s/assets/competitions/%s.svg" alt="">'
+            '<span class="ctfw-cover">%s</span>'
             '<div class="ctfw-body"><span class="ctfw-kicker">CTF %s</span>'
             '<div class="ctfw-name">%s</div>'
             '<div>%s</div>'
             '<div class="ctfw-meta"><span>%d %s</span><span>%s</span>'
             '<span>%s &rarr;</span></div></div></a>'
-            % (base, ev["slug"], base, ev["slug"], last.year, ev["name"],
+            % (base, ev["slug"], svg, last.year, ev["name"],
                ", ".join(cats), len(ev["posts"]), ui["posts"],
                last.strftime("%d/%m/%Y" if lang == "vi" else "%b %d, %Y"), ui["view"]))
     body.append("</div>\n")
