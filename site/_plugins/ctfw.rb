@@ -11,12 +11,17 @@ def ctfw_mirror_base(base)
   base == "/CTFWU" ? "/CTFWU/en" : "/CTFWU"
 end
 
+# GitHub Pages dat Cache-Control: max-age=600 cho asset, nen sau khi doi skin
+# van tro toi nguoi dung phai cho toi khi het 10 phut. Them moc thoi diem build
+# vao URL de moi lan deploy la mot file moi.
+CTFW_BUILD = Time.now.strftime("%Y%m%d%H%M")
+
 Jekyll::Hooks.register [:pages, :documents], :post_render do |doc|
   next true unless doc.output_ext.to_s == ".html"
   next true unless doc.output.include?("<body")
 
   base = doc.site.baseurl.to_s
-  head = %(<link rel="stylesheet" href="#{base}/assets/css/campus.css">\n)
+  head = %(<link rel="stylesheet" href="#{base}/assets/css/campus.css?v=#{CTFW_BUILD}">\n)
 
   rest = doc.url.to_s.start_with?(base) ? doc.url.to_s[base.length..-1].to_s : doc.url.to_s
   rest = "/" if rest.empty?
