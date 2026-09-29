@@ -166,8 +166,10 @@ def build():
             fm += ["---", ""]
             os.makedirs(os.path.join(STAGE, "_posts"), exist_ok=True)
             out = os.path.join(STAGE, "_posts", "%s-%s.md" % (d.strftime("%Y-%m-%d"), key))
-            open(out, "w", encoding="utf-8", newline="\n").write(
-                "\n".join(fm) + protect_liquid(body))
+            text_out = "\n".join(fm) + body
+            if text_out.count("{% raw %}") != text_out.count("{% endraw %}"):
+                raise SystemExit("the raw khong can doi o %s/%s" % (event, case))
+            open(out, "w", encoding="utf-8", newline="\n").write(text_out)
             posts.append(out)
     total = sum(os.path.getsize(os.path.join(dp, f))
                 for dp, _, fs in os.walk(STAGE) for f in fs)
