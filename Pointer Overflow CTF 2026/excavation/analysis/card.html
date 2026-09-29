@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Excavation :: SEANCE // signal-eater</title>
+  <style>
+    :root {
+      --bg: #0a0510; --bg-panel: #12081c;
+      --amber: #ffb000; --green: #39ff14;
+      --magenta: #ff00ff; --cyan: #00ffff;
+      --dim: #5f4d70; --danger: #ff4444;
+    }
+    * { box-sizing: border-box; }
+    body {
+      background: var(--bg); color: var(--amber);
+      font-family: "VT323", "Courier New", monospace;
+      font-size: 16px; margin: 0; min-height: 100vh;
+      position: relative; overflow-x: hidden;
+    }
+    body::before {
+      content: ""; position: fixed; inset: 0;
+      background: repeating-linear-gradient(180deg,
+        transparent 0px, transparent 2px,
+        rgba(0,0,0,0.25) 3px, rgba(0,0,0,0.25) 4px);
+      pointer-events: none; z-index: 100; mix-blend-mode: multiply;
+    }
+    body::after {
+      content: ""; position: fixed; inset: 0;
+      background: radial-gradient(ellipse at center,
+        transparent 40%, rgba(10, 5, 16, 0.6) 100%);
+      pointer-events: none; z-index: 99;
+    }
+    main { max-width: 780px; margin: 2rem auto; padding: 0 1.5rem;
+           position: relative; z-index: 1; }
+    pre.ascii-header {
+      color: var(--magenta); font-size: 12px; line-height: 1.15;
+      margin: 0 0 .25rem; user-select: none;
+      text-shadow: 0 0 6px rgba(255,0,255,0.4);
+    }
+    .header-row {
+      display: flex; justify-content: space-between;
+      align-items: baseline; border-bottom: 1px dashed var(--dim);
+      margin-bottom: 1rem; padding-bottom: .3rem;
+      color: var(--dim); font-size: .85rem;
+    }
+    .header-row .code { color: var(--magenta); letter-spacing: .1em; }
+    .header-row .lit { color: var(--green); }
+    .header-row .lit::before { content: "● "; animation: blink 1.4s step-end infinite; }
+    @keyframes blink { 50% { opacity: 0.3; } }
+    h1 { color: var(--amber); font-size: 1.8rem; margin: .3rem 0 0;
+         font-weight: normal; letter-spacing: .05em;
+         text-shadow: 0 0 8px rgba(255,176,0,0.4); }
+    .subtitle { color: var(--dim); font-size: .9rem;
+                font-style: italic; margin: 0 0 1.3rem; }
+    .panel { background: var(--bg-panel); border: 1px solid var(--dim);
+             padding: 1rem 1.2rem; margin: 1rem 0; position: relative; }
+    .panel::before {
+      content: ""; position: absolute; top: -1px; left: -1px;
+      width: 8px; height: 8px;
+      border-top: 1px solid var(--magenta);
+      border-left: 1px solid var(--magenta);
+    }
+    .panel::after {
+      content: ""; position: absolute; bottom: -1px; right: -1px;
+      width: 8px; height: 8px;
+      border-bottom: 1px solid var(--magenta);
+      border-right: 1px solid var(--magenta);
+    }
+    .panel h2 { color: var(--magenta); font-size: .85rem;
+                font-weight: normal; letter-spacing: .18em;
+                margin: 0 0 .55rem; text-transform: uppercase; }
+    .panel h2::before { content: "▸ "; color: var(--cyan); }
+    .panel p { color: var(--amber); font-size: .95rem;
+               line-height: 1.5; margin: .35rem 0; }
+    .motd { color: var(--dim); white-space: pre-wrap;
+            line-height: 1.35; font-size: .9rem; margin-bottom: 1rem; }
+    .motd .flash { color: var(--magenta); }
+    .motd .ok { color: var(--green); }
+    .artifact-block { background: rgba(0, 255, 255, 0.05);
+                      border: 1px solid var(--cyan);
+                      padding: .8rem 1rem; margin: .5rem 0;
+                      color: var(--cyan); font-size: .95rem; }
+    .artifact-block a { color: var(--cyan); font-weight: bold;
+                        text-decoration: none;
+                        border-bottom: 1px dashed var(--cyan); }
+    .artifact-block a:hover { color: var(--green);
+                              border-bottom-color: var(--green); }
+    .artifact-block::before { content: "◈ "; color: var(--magenta); }
+    .checksum { display: block; margin-top: 0.4rem;
+                font-family: monospace; font-size: 0.72rem;
+                color: rgba(200, 200, 220, 0.5); word-break: break-all; }
+    .checksum::before { content: "SHA-256 "; color: rgba(255, 255, 255, 0.35); }
+    ul.samples { list-style: none; padding: 0; margin: 0; }
+    ul.samples li { margin: .4rem 0; }
+    ul.samples a { color: var(--cyan); text-decoration: none;
+                   border-bottom: 1px dotted var(--dim); }
+    ul.samples a:hover { color: var(--green); }
+    ul.samples .desc { color: var(--dim); font-size: .85rem; margin-left: .4rem; }
+    input[type=text] { width: 100%; padding: .6rem .85rem;
+      background: #050208; border: 1px solid var(--dim);
+      color: var(--green); font-family: inherit; font-size: 1rem;
+      outline: none; caret-color: var(--green); }
+    input[type=text]:focus { border-color: var(--magenta);
+      box-shadow: 0 0 6px rgba(255,0,255,0.5); }
+    input[type=text]::placeholder { color: var(--dim); }
+    button { margin-top: .7rem; padding: .55rem 1.3rem;
+      background: transparent; border: 1px solid var(--magenta);
+      color: var(--magenta); font-family: inherit; font-size: 1rem;
+      letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
+    button:hover { background: rgba(255,0,255,0.15); color: var(--amber); }
+    .result { margin-top: .7rem; font-size: .95rem; }
+    .result.ok  { color: var(--green); text-shadow: 0 0 8px rgba(57,255,20,0.5); }
+    .result.err { color: var(--danger); }
+    .cursor::after { content: "▊"; color: var(--green);
+      animation: blink 1s step-end infinite; margin-left: 3px; }
+    footer { margin: 2rem 0 1rem; color: var(--dim); font-size: .8rem;
+             text-align: center; letter-spacing: .12em; }
+    .hint { color: var(--dim); font-size: .85rem;
+            font-style: italic; margin-top: .4rem; }
+  </style>
+</head>
+<body>
+<main>
+
+<pre class="ascii-header">
+ ┌─────────────────────────────────────────────────────────────────┐
+ │  SEANCE // SIGNAL-EATER ── RECOVERED ARCHIVE ── ARC-3 REEL-04    │
+ └─────────────────────────────────────────────────────────────────┘
+</pre>
+
+<div class="header-row">
+  <span class="code">RE-100/WAVE-01 :: EXCAVATION</span>
+  <span class="lit">CHANNEL OPEN</span>
+</div>
+
+<h1>Excavation<span class="cursor"></span></h1>
+  <div class="sub prompt-from-admin"><p>I tell you, the game hacking category was a lot of fun to develop over summer. Unfortunately, not all ideas make the cut. Take this game, for example. Here are some remnants of the fictional dark-fantasy RPG "Sepulchure of the Undying". I had high hopes, but I suffered a hardware failure and <em>poof</em> it's all gone. All I could save were a few save files from testing. Oh, well. When life gives you lemons, reverse engineer the file format and find a flag.</p>
+<p>Remember: The flag for this challenge is a little different. You're looking for a 16 character token.</p></div>
+<div class="subtitle">A 16-bit occult horror game. Save format lost. Reverse it from what's left.</div>
+
+<div class="motd">
+<span class="flash">::</span> Four save files recovered from an unlabelled hard drive.
+<span class="flash">::</span> Three come from surviving playthroughs — different characters, different runs.
+<span class="flash">::</span> The fourth was written for your team specifically. It carries a 16-character token.
+<span class="flash">::</span> The tooling to read these is not archived. Read them anyway.
+<span class="ok">-></span> Submit the token below.
+</div>
+
+<div class="panel">
+  <h2>Reference saves</h2>
+  <p>Three canonical playthroughs. Same format; different states.
+     If you can read what these three have in common, you can read
+     the fourth.</p>
+  <ul class="samples">
+    <li>◈ <a href="samples/1" download>sample1.sav</a>
+        <span class="desc">a novice's opening moments — tiny inventory</span>
+        
+          <code class="checksum">6ed4defc4ca96b9f28086375ca2f0d690a6af708c51e78746a67dc49ce9ac1a2</code>
+        </li>
+    <li>◈ <a href="samples/2" download>sample2.sav</a>
+        <span class="desc">mid-run, still equipped</span>
+        
+          <code class="checksum">d2660f5a5d0577daa30c0e57264434b8be0267dcd496bd6afbe9fc00f6c8582c</code>
+        </li>
+    <li>◈ <a href="samples/3" download>sample3.sav</a>
+        <span class="desc">deep-run, heavy inventory</span>
+        
+          <code class="checksum">1bd1418716899948646b314d48c01dd16ab5d4720501ef582a7392a61378e1b0</code>
+        </li>
+  </ul>
+</div>
+
+<div class="panel">
+  <h2>Your team's save</h2>
+  <div class="artifact-block">
+    <a href="save" download>team.sav</a>
+    <span class="hint">(generated for your team; the token differs across teams)</span>
+    
+      <code class="checksum">9c7e8923dc816319d4538d3eb8bd3ab22aadd4d549edf8a1b1d7b0e98d401840</code>
+    
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Submit token</h2>
+  <p>Submit either the recovered 16-character token OR the full
+     <code>POCTF{...}</code> wrapping. Either is accepted.</p>
+  <input type="text" id="flag-input"
+         placeholder="16-char token — or POCTF{...}"
+         autocomplete="off" spellcheck="false">
+  <button onclick="submitFlag()">TRANSMIT</button>
+  <div id="result" class="result"></div>
+</div>
+
+<footer>
+  //  everything they wrote about the eighth session is missing  //
+</footer>
+
+<script>
+async function submitFlag() {
+  var flag = document.getElementById('flag-input').value.trim();
+  var res  = document.getElementById('result');
+  if (!flag) {
+    res.textContent = '>> no signal received';
+    res.className = 'result err';
+    return;
+  }
+  res.textContent = '>> transmitting...';
+  res.className = 'result';
+  try {
+    var r = await fetch('/challenges/excavation/submit', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({flag: flag}),
+    });
+    var d = await r.json();
+    res.textContent = (d.correct ? '>> ACK :: ' : '>> NAK :: ') + d.message;
+    res.className = 'result ' + (d.correct ? 'ok' : 'err');
+  } catch (e) {
+    res.textContent = '>> transmission failed';
+    res.className = 'result err';
+  }
+}
+document.getElementById('flag-input')
+  .addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') submitFlag();
+  });
+</script>
+
+</main>
+</body>
+</html>

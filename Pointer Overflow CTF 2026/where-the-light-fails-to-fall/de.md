@@ -1,6 +1,6 @@
 # Đề bài - Where the Light Fails to Fall
 
-Chưa có ảnh thẻ đề. Mô tả chép từ text của thẻ và từ trang challenge đang mở.
+Không có ảnh thẻ đề: trang `/challenges/where-the-light-fails-to-fall/` đã trả 404 sau khi wave 1 đóng, nên không chụp lại được. Bản dưới chép nguyên văn từ text của thẻ khi trang còn mở.
 
 ## Nguyên văn đề
 

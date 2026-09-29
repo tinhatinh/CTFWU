@@ -1,5 +1,9 @@
 # The Shape of Query (WEB 300 / WAVE 1)
 
+![de](files/de.png)
+
+*Ảnh thẻ đề chụp từ trang challenge của team ngày 2026-09-29 (HTML lưu ở `analysis/card.html`).*
+
 Trang: <https://pointeroverflowctf.com/challenges/shape-of-query/>
 Portal: <https://shape-of-query.pointeroverflowctf.com>
 Team: 612. Điểm: 300.

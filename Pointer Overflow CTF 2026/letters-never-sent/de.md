@@ -1,6 +1,6 @@
 # Đề bài - Letters Never Sent
 
-Ảnh đề bài gốc (thẻ challenge + artifact):
+Ảnh thẻ đề chụp từ trang challenge của team (HTML ở `analysis/card.html`). Artifact goc ở `files/letter.png`.
 
 ![de](files/de.png)
 

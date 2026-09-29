@@ -1,5 +1,9 @@
 # The Invisible Text (STEG 200 / WAVE 1)
 
+![de](files/de.png)
+
+*Ảnh thẻ đề chụp từ trang challenge của team ngày 2026-09-29 (HTML lưu ở `analysis/card.html`).*
+
 Trang: <https://pointeroverflowctf.com/challenges/invisible-text/>
 Team: 612. Điểm: 200. Nhãn: STEG 200 · WAVE 1.
 

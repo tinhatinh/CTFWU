@@ -1,6 +1,9 @@
 # Đề bài - The Apparatus, Invocation
 
-Chưa có ảnh thẻ đề. Mô tả dưới đây chép từ phần text của thẻ và từ trang challenge đang mở.
+![de](files/de.png)
+
+*Ảnh thẻ đề chụp từ trang challenge của team ngày 2026-09-29 (HTML lưu ở `analysis/card.html`).*
+
 
 ## Nguyên văn đề
 

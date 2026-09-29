@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Letters Never Sent — POCTF 2026</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { background: #0d0d1a; color: #e3e3e3; font-family: monospace;
+           margin: 0; padding: 2rem;
+           max-width: 960px; margin-left: auto; margin-right: auto; }
+    .eyebrow { color: #9999cc; font-size: .78rem; letter-spacing: .12em;
+               text-transform: uppercase; margin-bottom: .5rem; }
+    h1 { color: #ffd700; font-size: 1.4rem; margin: 0 0 .25rem; }
+    .sub { color: #aaaaaa; font-size: .85rem; margin-bottom: 2rem; }
+    .layout { display: flex; gap: 2rem; align-items: flex-start;
+              flex-wrap: wrap; }
+    .letter-col { flex: 0 0 auto; }
+    .letter-col img { border: 1px solid #334466; border-radius: 4px;
+                      display: block; max-width: 420px; }
+    .right-col { flex: 1 1 280px; min-width: 240px; }
+    .section-label { color: #ffd700; font-size: .75rem; letter-spacing: .1em;
+                     text-transform: uppercase; margin: 1.5rem 0 .4rem; }
+    .section-label:first-child { margin-top: 0; }
+    .cipher-block { background: #0a0a20; border: 1px solid #334466;
+                    padding: .75rem; font-size: .85rem; color: #e3e3e3;
+                    word-break: break-all; border-radius: 4px;
+                    margin-bottom: 1rem; }
+    .hint-block { background: #0a0a20; border: 1px solid #334466;
+                  padding: .75rem; font-size: .82rem; color: #888;
+                  line-height: 1.6; border-radius: 4px; }
+    .hint-block code { color: #ffd700; }
+    input[type=text] { width: 100%; padding: .55rem .75rem;
+      background: #0a0a20; border: 1px solid #334466; color: #e3e3e3;
+      font-family: monospace; font-size: .85rem; border-radius: 4px;
+      outline: none; margin-top: .5rem; }
+    input:focus { border-color: #ffd700; }
+    button { margin-top: .5rem; padding: .45rem 1rem;
+      background: transparent; border: 1px solid #ffd700; color: #ffd700;
+      font-family: monospace; font-size: .85rem; cursor: pointer;
+      border-radius: 4px; }
+    button:hover { background: #ffd70022; }
+    #result { margin-top: .6rem; font-size: .85rem; }
+    #result.ok  { color: #39ff14; }
+    #result.err { color: #ff4040; }
+  </style>
+</head>
+<body>
+  <div class="eyebrow">CRYP 100 &nbsp;·&nbsp; Wave 1 &nbsp;·&nbsp;
+                        September 27, 2026</div>
+  <h1>Letters Never Sent</h1>
+  <div class="sub prompt-from-admin"><p>Here we have a letter that was recovered from the estate of Dr. H. Aldous Whitmore. It was never posted. </p>
+<p>Along with the letter, a strange message was discovered. We have no doubt that Dr. Whitmore meant to keep it secret, given his... Association with occult societies that was discovered after his death. Despite this, the relationship to the letter remains unclear, but a connection cannot be discounted. </p>
+<p>Find the key the letter hides, and read what Whitmore could not bring himself to send.</p></div>
+  
+    <div class="prompt sub"><p>Here we have a letter that was recovered from the estate of Dr. H. Aldous Whitmore. It was never posted. </p>
+<p>Along with the letter, a strange message was discovered. We have no doubt that Dr. Whitmore meant to keep it secret, given his... Association with occult societies that was discovered after his death. Despite this, the relationship to the letter remains unclear, but a connection cannot be discounted. </p>
+<p>Find the key the letter hides, and read what Whitmore could not bring himself to send.</p></div>
+  
+
+  <div class="layout">
+    <div class="letter-col">
+      <img src="../files/letter.png" alt="A Victorian letter with decorative border"
+           width="420">
+    </div>
+
+    <div class="right-col">
+      <div class="section-label">Ciphertext</div>
+      <div class="cipher-block">PXYWN{2.612.QNTOXCK6E7DKGMKC.WK4KK6MPPPRJGOFZZI66EISSED}</div>
+
+      <div class="section-label">Submit Flag</div>
+      <input type="text" id="flag-input" placeholder="POCTF{...}"
+             autocomplete="off" spellcheck="false">
+      <button onclick="submitFlag()">Submit</button>
+      <div id="result"></div>
+    </div>
+  </div>
+
+  <script>
+  async function submitFlag() {
+    const flag = document.getElementById('flag-input').value.trim();
+    const res  = document.getElementById('result');
+    if (!flag) { res.textContent='Enter a flag.'; res.className='err'; return; }
+    res.textContent='...'; res.className='';
+    try {
+      const r = await fetch('/challenges/letters-never-sent/submit', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({flag})
+      });
+      const d = await r.json();
+      res.textContent = d.message;
+      res.className   = d.correct ? 'ok' : 'err';
+    } catch(e) { res.textContent='Request failed.'; res.className='err'; }
+  }
+  document.getElementById('flag-input')
+    .addEventListener('keydown', e => { if (e.key==='Enter') submitFlag(); });
+  </script>
+</body>
+</html>

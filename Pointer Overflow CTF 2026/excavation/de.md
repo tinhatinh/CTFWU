@@ -1,5 +1,9 @@
 # Excavation (RE-100 / WAVE-01)
 
+![de](files/de.png)
+
+*Ảnh thẻ đề chụp từ trang challenge của team ngày 2026-09-29 (HTML lưu ở `analysis/card.html`).*
+
 Trang: <https://pointeroverflowctf.com/challenges/excavation/>
 Event: Pointer Overflow CTF 2026, nhánh "SEANCE // SIGNAL-EATER", ARC-3 REEL-04.
 Team: 612. Điểm: 100. Trạng thái: đã nộp và được chấp nhận.

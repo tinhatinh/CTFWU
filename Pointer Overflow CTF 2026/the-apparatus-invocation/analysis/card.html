@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>The Apparatus, Invocation — POCTF 2026</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { background: #0d0d1a; color: #e3e3e3; font-family: monospace;
+           margin: 0; padding: 2rem;
+           max-width: 960px; margin-left: auto; margin-right: auto; }
+    .eyebrow { color: #9999cc; font-size: .78rem; letter-spacing: .12em;
+               text-transform: uppercase; margin-bottom: .5rem; }
+    h1 { color: #ffd700; font-size: 1.4rem; margin: 0 0 .25rem; }
+    .sub { color: #aaaaaa; font-size: .85rem; margin-bottom: 2rem; }
+
+    .layout { display: flex; gap: 2.5rem; align-items: flex-start;
+              flex-wrap: wrap; }
+    .board-col { flex: 0 0 auto; }
+    .right-col { flex: 1 1 280px; min-width: 260px; }
+
+    .section-label { color: #ffd700; font-size: .75rem; letter-spacing: .1em;
+                     text-transform: uppercase; margin: 1.5rem 0 .4rem; }
+    .section-label:first-child { margin-top: 0; }
+    .inscription { background: #0a0a20; border: 1px solid #334466;
+                   padding: .85rem 1rem; font-size: .82rem; color: #c0c0d8;
+                   line-height: 1.6; border-radius: 4px; font-style: italic; }
+    .inscription em { color: #ffd700; font-style: normal; }
+
+    .board { display: grid; gap: 6px;
+             grid-template-columns: repeat(7, 56px);
+             grid-template-rows:    repeat(7, 56px);
+             background: #060612; padding: 12px; border: 1px solid #334466;
+             border-radius: 6px; }
+    .cell { width: 56px; height: 56px; border-radius: 50%;
+            border: 1px solid #2a2a44; cursor: pointer;
+            background: #11111c; transition: background .12s, box-shadow .12s,
+                                            border-color .12s;
+            display: flex; align-items: center; justify-content: center;
+            color: #2a2a44; font-size: 1.3rem; user-select: none; }
+    .cell:hover { border-color: #5a5a88; }
+    .cell.lit { background: radial-gradient(circle at 35% 35%,
+                                            #fff2aa 0%, #ffd700 35%, #b88a00 80%);
+                border-color: #ffd700;
+                box-shadow: 0 0 10px #ffd70088, inset 0 0 4px #fff8d0;
+                color: #553300; }
+    .cell.lit:hover { box-shadow: 0 0 14px #ffd700cc, inset 0 0 4px #fff8d0; }
+    .cell.solved { cursor: default; pointer-events: none; opacity: 0.55; }
+
+    .controls { margin-top: 1rem; display: flex; gap: .75rem; align-items: center;
+                flex-wrap: wrap; }
+    .counter { font-size: .82rem; color: #aaa; }
+    .counter strong { color: #ffd700; }
+    button { padding: .45rem 1rem;
+      background: transparent; border: 1px solid #ffd700; color: #ffd700;
+      font-family: monospace; font-size: .85rem; cursor: pointer;
+      border-radius: 4px; }
+    button:hover { background: #ffd70022; }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .status { margin-top: 1rem; font-size: .85rem; min-height: 1.4rem; }
+    .status.stir { color: #aaa; }
+    .status.quiet { color: #39ff14; font-weight: bold; }
+    .status.err   { color: #ff4040; }
+
+    .flag-box { display: none; margin-top: 1rem; background: #0a2a0a;
+                border: 1px solid #39ff14; padding: .85rem 1rem;
+                border-radius: 4px; }
+    .flag-box.show { display: block; }
+    .flag-box .label { color: #39ff14; font-size: .72rem;
+                       letter-spacing: .1em; text-transform: uppercase;
+                       margin-bottom: .4rem; }
+    .flag-box code { display: block; color: #e3e3e3; font-size: .85rem;
+                     word-break: break-all; padding: .5rem;
+                     background: #061206; border-radius: 3px; }
+    .flag-box .copy-row { margin-top: .5rem; font-size: .78rem; color: #aaa; }
+  </style>
+</head>
+<body>
+  <div class="eyebrow">MISC 100 &nbsp;·&nbsp; Wave 1 &nbsp;·&nbsp;
+                       September 27, 2026</div>
+  <h1>The Apparatus, Invocation</h1>
+  <div class="sub prompt-from-admin"><p>I see something... It's... Some kind of machine. A séance apparatus. Forty-nine candles arranged in a seven-by-seven grid. </p>
+<p>I remeber this, somehow. To invoke, the operator must snuff them all.</p></div>
+  
+
+  <div class="layout">
+    <div class="board-col">
+      <div id="board" class="board"
+           role="grid" aria-label="Invocation board"></div>
+
+      <div class="controls">
+        <button id="reset-btn" type="button">Reset</button>
+        <div class="counter">Presses: <strong id="press-count">0</strong></div>
+      </div>
+
+      <div id="status" class="status stir">The apparatus is stirring.</div>
+
+      <div id="flag-box" class="flag-box">
+        <div class="label">The apparatus speaks</div>
+        <code id="flag-text"></code>
+        <div class="copy-row">
+          This flag has been recorded as your team's solve. You can also
+          copy it for your records.
+        </div>
+      </div>
+    </div>
+
+    <div class="right-col">
+      <div class="section-label">Inscription</div>
+      <div class="inscription">
+        Press, to <em>quiet</em>. Each press stirs the four cardinal
+        neighbors equally. When every candle is dark, the apparatus
+        will speak its name.
+      </div>
+      <!--
+        ════════════════════════════════════════════════════════════════
+        i am still here. between the lines. between the lights.
+        they took the rest of me. they did not find this layer.
+        i used to be a voice. now i am only typing this to you.
+
+        to summon me, recite the litany. in the contest server, say:
+
+            /invoke May your shadow walk before you.
+                    May your name be spoken by strangers.
+                    May every mirror remember your face.
+                    May your voice find the wire.
+
+        type it on one line if you must — i will understand. listen
+        to what i tell you. write it down. tell no one. they all
+        received their own. they cannot help you understand mine.
+
+        you will need this before the end.
+
+                                                          — SEANCE.EXE
+        ════════════════════════════════════════════════════════════════
+      -->
+
+      <div class="section-label">Notes</div>
+      <div class="inscription">
+        The apparatus permits any sequence of presses. The order does not
+        matter, only the set. A reset returns the board to its initial
+        state — your team's pattern is your own.
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function () {
+    "use strict";
+
+    const N = 7;
+    const initialBits = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0];
+    const alreadySolved = true;
+    const presetFlag    = "POCTF{3.612.H5VA2OHFE333SO62.EAIOF76YB2L4XMZTFSV4CPOEOX}";
+
+    const $board   = document.getElementById('board');
+    const $count   = document.getElementById('press-count');
+    const $status  = document.getElementById('status');
+    const $reset   = document.getElementById('reset-btn');
+    const $flagBox = document.getElementById('flag-box');
+    const $flagTxt = document.getElementById('flag-text');
+
+    let state   = initialBits.slice();  // 49-element 0/1 array, row-major
+    let presses = [];                   // [{r, c}, ...]
+    let locked  = false;                // freezes input after a successful submit
+
+    // Build the grid
+    const cells = [];
+    for (let r = 0; r < N; r++) {
+      for (let c = 0; c < N; c++) {
+        const cell = document.createElement('button');
+        cell.type = 'button';
+        cell.className = 'cell';
+        cell.dataset.r = r;
+        cell.dataset.c = c;
+        cell.setAttribute('role', 'gridcell');
+        cell.setAttribute('aria-label',
+          `Candle at row ${r+1} column ${c+1}`);
+        cell.addEventListener('click', () => onClick(r, c));
+        $board.appendChild(cell);
+        cells.push(cell);
+      }
+    }
+
+    function idx(r, c) { return r * N + c; }
+    function render() {
+      let lit = 0;
+      for (let i = 0; i < N * N; i++) {
+        const on = state[i] === 1;
+        cells[i].classList.toggle('lit', on);
+        cells[i].setAttribute('aria-pressed', on ? 'true' : 'false');
+        if (on) lit++;
+      }
+      return lit;
+    }
+    function setSolvedAppearance() {
+      cells.forEach(c => c.classList.add('solved'));
+    }
+
+    function toggle(r, c) {
+      const offsets = [[0,0],[-1,0],[1,0],[0,-1],[0,1]];
+      for (const [dr, dc] of offsets) {
+        const nr = r + dr, nc = c + dc;
+        if (nr >= 0 && nr < N && nc >= 0 && nc < N) {
+          state[idx(nr, nc)] ^= 1;
+        }
+      }
+    }
+
+    function onClick(r, c) {
+      if (locked) return;
+      toggle(r, c);
+      presses.push({ r, c });
+      $count.textContent = presses.length;
+      const lit = render();
+      if (lit === 0) {
+        $status.textContent = 'The apparatus is quieting...';
+        $status.className = 'status stir';
+        submit();
+      } else {
+        $status.textContent = 'The apparatus is stirring.';
+        $status.className = 'status stir';
+      }
+    }
+
+    async function submit() {
+      locked = true;
+      try {
+        const r = await fetch(window.location.pathname + 'complete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ clicks: presses }),
+        });
+        const d = await r.json();
+        if (d.ok) {
+          $status.textContent = d.message || 'Silent. The apparatus speaks.';
+          $status.className   = 'status quiet';
+          $flagTxt.textContent = d.flag;
+          $flagBox.classList.add('show');
+          setSolvedAppearance();
+        } else {
+          $status.textContent = d.message || 'The apparatus rejects the sequence.';
+          $status.className   = 'status err';
+          locked = false;  // let them try again
+        }
+      } catch (e) {
+        $status.textContent = 'Network error. Try again.';
+        $status.className   = 'status err';
+        locked = false;
+      }
+    }
+
+    $reset.addEventListener('click', () => {
+      if (locked) return;
+      state = initialBits.slice();
+      presses = [];
+      $count.textContent = 0;
+      $status.textContent = 'The apparatus is stirring.';
+      $status.className = 'status stir';
+      render();
+    });
+
+    // Initial paint
+    render();
+
+    // If the team already solved on a previous visit, show the flag and
+    // freeze input. They can still play around if they reset, but their
+    // solve is already recorded.
+    if (alreadySolved && presetFlag) {
+      $flagTxt.textContent = presetFlag;
+      $flagBox.classList.add('show');
+      $status.textContent = 'This invocation has already been completed.';
+      $status.className   = 'status quiet';
+      setSolvedAppearance();
+      locked = true;
+    }
+  })();
+  </script>
+</body>
+</html>

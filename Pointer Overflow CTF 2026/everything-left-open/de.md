@@ -1,6 +1,9 @@
 # Đề bài - Everything Left Open
 
-Chưa có ảnh thẻ đề. Bản mô tả dưới đây chép nguyên văn từ phần text của thẻ.
+![de](files/de.png)
+
+*Ảnh thẻ đề chụp từ trang challenge của team ngày 2026-09-29 (HTML lưu ở `analysis/card.html`).*
+
 
 ## Nguyên văn đề
 
