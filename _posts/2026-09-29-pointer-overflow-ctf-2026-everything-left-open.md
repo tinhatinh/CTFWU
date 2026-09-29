@@ -7,6 +7,7 @@ tags: [pointer-overflow, Forensics]
 image:
   path: /CTFWU/Pointer%20Overflow%20CTF%202026/everything-left-open/files/de.png
 ---
+{% raw %}
 **Điểm:** 100 · **Wave:** 1 · **Cờ:** `POCTF{109.612.I777LWHDFNCWRJ2S.JB6P5ZRASWPVYKKKHXKAPSQFWT}`
 
 **File cho trước:** `files/left-open-profile-team-612.zip` 3.486 byte, sha256 `faadae549b93f75a...` khớp thẻ đề.
@@ -104,3 +105,5 @@ python exploit.py
 
 Script tự verify sha256, dump hết các nguồn sqlite và logins, giải jsonlz4 và in field chứa cờ.
 Chạy với bản zip của team khác: `python exploit.py <duong-dan-zip>`.
+
+{% endraw %}

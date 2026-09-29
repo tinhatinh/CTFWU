@@ -7,6 +7,7 @@ tags: [pointer-overflow, Steg]
 image:
   path: /CTFWU/Pointer%20Overflow%20CTF%202026/invisible-text/files/de.png
 ---
+{% raw %}
 **Flag:** `POCTF{PIEMPAOSMHDLEGRT}` · **Files:** `invisible_text.py`, 4245 B, sha256 `f027442b37a521f4a775ec56d37336df446d83e7acd641042e28af030f745320`
 
 ## Đề bài
@@ -100,3 +101,5 @@ Server xác nhận đúng và không trả về xâu flag nào khác, nên đây
 ```bash
 python exploit.py files/invisible_text.py
 ```
+
+{% endraw %}

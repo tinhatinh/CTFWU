@@ -5,6 +5,7 @@ lastmod_at: 2026-09-28 16:53:17 +0700
 categories: [AI]
 tags: [h7ctf-quals, AI]
 ---
+{% raw %}
 **Flag:** `H7CTF{174f034a-b318-49db-a3eb-24192b3d7ce2}` · **Instance:** `https://web-3285347d50d467ba.web.h7tex.com` · No files provided; mọi thứ dưới đây đọc từ chính service sống.
 
 ## Đề bài
@@ -186,3 +187,5 @@ analysis/knowledge.json    32 record KB
 analysis/*.js              5 module frontend (nguong go cua API)
 analysis/livewin.txt       bang chung chay tren dich
 ```
+
+{% endraw %}

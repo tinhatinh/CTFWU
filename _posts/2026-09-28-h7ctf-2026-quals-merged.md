@@ -7,6 +7,7 @@ tags: [h7ctf-quals, Web]
 image:
   path: /CTFWU/H7CTF%202026%20Quals/merged/files/de.png
 ---
+{% raw %}
 **Flag:** `WEBVERSE{8ba2f569dafeedea7f4f6848757e1917}`
 
 ## Đề bài
@@ -66,3 +67,5 @@ lần chạy thành công: khi thử lại thì instance đã bị stop (WebVers
 instance cùng lúc), và tên field thật của form đăng ký cũng chưa kịp xác nhận. Thứ
 được kiểm chứng là chuỗi payload kèm snippet JS trong `analysis/payload.md`, chạy
 ngay trên tab của chính instance.
+
+{% endraw %}

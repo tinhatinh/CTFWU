@@ -7,6 +7,7 @@ tags: [sunshinectf, Web]
 image:
   path: /CTFWU/SunshineCTF%202026/cookiecorp/files/de.png
 ---
+{% raw %}
 **Flag:** `sun{c00kie_jar_0verfl0w_ev1cts_the_chief}`
 **URL:** `https://tomorrow.web.2026.sunshinectf.games/` · tác giả geo
 
@@ -135,3 +136,5 @@ attack vào username nghi là của staff) và các watcher theo dõi batch đã
 - `exploit.py` - nhánh cũ: jam header theo **byte** để chờ Chief quét lại, không phải đường thắng
 - `analysis/overflow3.py`, `analysis/overflow_seal.py`, `files/overflow_run.log` - các vòng
   thăm dò cơ chế tràn jar, ghi lại cả phép thử sai đã khiến eviction bị kết luận là không xảy ra
+
+{% endraw %}

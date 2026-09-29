@@ -7,6 +7,7 @@ tags: [h7ctf-quals, Web3]
 image:
   path: /CTFWU/H7CTF%202026%20Quals/genesis/files/de.png
 ---
+{% raw %}
 **Flag:** `H7CTF{346df380-9ca8-41a7-8853-5a6f23c601ad}`
 **Files:** `GenesisVault.sol`, `Setup.sol`, `Token.sol`
 
@@ -117,3 +118,5 @@ node solve.mjs
 
 Script đọc RPC, `SETUP` và private key của instance từ ba hằng ở đầu file; đổi ba giá trị đó là
 chạy được trên instance mới.
+
+{% endraw %}

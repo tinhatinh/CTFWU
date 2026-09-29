@@ -7,6 +7,7 @@ tags: [h7ctf-quals, Hardware]
 image:
   path: /CTFWU/H7CTF%202026%20Quals/mic-drop/files/de.png
 ---
+{% raw %}
 **Flag:** `H7CTF{7f0cb1b6-34ee-46c0-945b-1f069dff2a29}`
 
 ## Đề bài
@@ -100,3 +101,5 @@ Output thật của lệnh thứ hai (một segment TS 159.048 B đã lưu trong
 Cờ được capture lúc instance còn sống, từ 7 segment tải trực tiếp (47.85 s audio, 9 burst);
 khi đóng gói lại script để kiểm tra thì instance đã bị stop nên chỉ chạy được trên artifact đã lưu.
 Phần xác minh 8/9 burst giống hệt nhau lấy từ `analysis/afsk.py` chạy trên 47.85 s audio đó (xem `notes.md` H6).
+
+{% endraw %}

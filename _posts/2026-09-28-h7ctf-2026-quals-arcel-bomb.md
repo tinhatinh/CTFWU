@@ -7,6 +7,7 @@ tags: [h7ctf-quals, Pwn]
 image:
   path: /CTFWU/H7CTF%202026%20Quals/arcel-bomb/files/de.png
 ---
+{% raw %}
 **Flag:** `H7CTF{0b79ca94-3b66-4509-9365-34d224d5cfe2}`
 **Remote:** `nc pwn.h7tex.com 41136`
 **Files:** `dispatch.zip` (1.03 MiB, sha256 `72f6e078…`) gồm `dispatch` (ELF64 ET_EXEC, sha256 `d946ba60…`), `libc.so.6` (glibc 2.39-0ubuntu8.9), `ld-linux-x86-64.so.2`, `README.txt`.
@@ -95,3 +96,5 @@ H7CTF{0b79ca94-3b66-4509-9365-34d224d5cfe2}
 ```
 
 Chạy lại: `python exploit.py pwn.h7tex.com 41136 "cat /flag"`
+
+{% endraw %}

@@ -7,6 +7,7 @@ tags: [sunshinectf, Forensics]
 image:
   path: /CTFWU/SunshineCTF%202026/nas-coal/files/de.png
 ---
+{% raw %}
 **Flag:** `sun{yup_issa_gem}` · Files: `gem_collection.pptm`, 2229848 byte, sha256 `929726804037cc9b2e8779814aabf88361a6f4035ca1d93803662bdee543e855`
 
 ## Đề bài
@@ -124,3 +125,5 @@ python exploit.py files/gem_collection.pptm
     [pscustomobject]@{Operation='download'; Campaign=$campaign; Source=$source; Destination=$destination}
 [+] CO: sun{yup_issa_gem}
 ```
+
+{% endraw %}

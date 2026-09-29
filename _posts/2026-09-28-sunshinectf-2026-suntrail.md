@@ -7,6 +7,7 @@ tags: [sunshinectf, Misc]
 image:
   path: /CTFWU/SunshineCTF%202026/suntrail/files/de.png
 ---
+{% raw %}
 **Flag:** `sun{qwerty_sucks}` · **Files:** `files/suntrail.klc`, 419 byte ASCII, sha256 `abe7590751412fe5607bacd7bfc4a3131e5c108bf2eedbbe78d438e96dc8c6ff`
 
 ## Đề bài
@@ -94,3 +95,5 @@ flag      : sun{qwerty_sucks}
 `exploit.py` chỉ dùng stdlib, đọc đường dẫn artifact từ argv, thoát mã 0 khi tìm được đường đi trọn
 ven tới ô đích và in ra chuỗi cờ. `analysis/search_geometry.py` là bước dò hình học, kết quả ở
 `analysis/geometry_search_results.txt`.
+
+{% endraw %}

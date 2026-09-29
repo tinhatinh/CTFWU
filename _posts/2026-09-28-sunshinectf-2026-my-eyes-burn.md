@@ -7,6 +7,7 @@ tags: [sunshinectf, Misc]
 image:
   path: /CTFWU/SunshineCTF%202026/my-eyes-burn/files/de.png
 ---
+{% raw %}
 **Flag:** `sun{praisethesun}`
 **Files:** `boardwriter.klc` (3562 B, UTF-16LE, CRLF)
 
@@ -61,3 +62,5 @@ $ python solve_klc.py files/boardwriter.klc
 [*] emits: ☀  (U+2600 BLACK SUN WITH RAYS)
 [+] FLAG: sun{praisethesun}
 ```
+
+{% endraw %}

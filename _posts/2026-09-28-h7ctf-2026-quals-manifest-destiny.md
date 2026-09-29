@@ -7,6 +7,7 @@ tags: [h7ctf-quals, Pwn]
 image:
   path: /CTFWU/H7CTF%202026%20Quals/manifest-destiny/files/de.png
 ---
+{% raw %}
 **Flag:** `H7CTF{a2b24085-c670-4a87-93cb-293cfec6196c}`
 
 ## Đề bài
@@ -107,3 +108,5 @@ python exploit.py pwn.h7tex.com 42506
 [*] manifest: [manifest] clearance code: H7CTF{a2b24085-c670-4a87-93cb-293cfec6196c}
 [+] FLAG: H7CTF{a2b24085-c670-4a87-93cb-293cfec6196c}
 ```
+
+{% endraw %}

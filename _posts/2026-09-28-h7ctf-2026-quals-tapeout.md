@@ -7,6 +7,7 @@ tags: [h7ctf-quals, Misc]
 image:
   path: /CTFWU/H7CTF%202026%20Quals/tapeout/files/de.png
 ---
+{% raw %}
 **Flag:** `H7CTF{afd4beac-e86e-409b-907d-b519bb748599}`
 
 ## Đề bài
@@ -121,3 +122,5 @@ python exploit.py pwn.h7tex.com 40634
 Exploit được verify đúng một lần ở bước 4; ngay sau đó service ngừng phản hồi (0
 byte qua 3 lần thử) nên không chạy lại để đối chiếu được. Transcript ở trên là output
 thật của lần chạy thành công duy nhất đó.
+
+{% endraw %}

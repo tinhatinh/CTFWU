@@ -7,6 +7,7 @@ tags: [h7ctf-quals, Crypto]
 image:
   path: /CTFWU/H7CTF%202026%20Quals/owners-draw/files/de.png
 ---
+{% raw %}
 **Flag:** `H7CTF{786dff67-75cd-4d4e-8b74-55edb1353aad}`
 **Instance:** `https://web-b39cfff63c4c78b9.web.h7tex.com`
 
@@ -84,3 +85,5 @@ Bị 401 liên tiếp tới khi `s_len = 15`:
 $ python solve_draw.py
 [+] FLAG: H7CTF{786dff67-75cd-4d4e-8b74-55edb1353aad}
 ```
+
+{% endraw %}

@@ -117,6 +117,15 @@ def fix_links(body, event, slug, post_names):
     return re.sub(r"\x00(\d+)\x00", lambda m: stash[int(m.group(1))], body)
 
 
+def protect_liquid(body):
+    """Writeup co the chua cú pháp Liquid that (`{{7*7}}`, `{% ... %}` tu payload
+    SSTI). Jekyll render noi dung qua Liquid nen phai bao ve, neu khong build fail
+    hoac noi dung bi an mot."""
+    if "{% raw %}" in body or "{% endraw %}" in body:
+        raise SystemExit("writeup chua the '{%% raw %%}' -> khong boc duoc; sua nguon truoc")
+    return "{% raw %}\n" + body + "\n{% endraw %}\n"
+
+
 def build(dry=False):
     posts_dir = os.path.join(ROOT, "_posts")
     post_names, out_files = {}, []
@@ -151,6 +160,7 @@ def build(dry=False):
             if body and body[0].startswith("# "):
                 body = body[1:]
             body = fix_links("\n".join(body).strip() + "\n", event, slug, post_names)
+            body = protect_liquid(body)
             rel = os.path.join("_posts", "%s-%s.md" % (d.strftime("%Y-%m-%d"), key))
             out_files.append((rel, "\n".join(fm) + body))
     if dry:

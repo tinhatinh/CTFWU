@@ -7,6 +7,7 @@ tags: [sunshinectf, Web]
 image:
   path: /CTFWU/SunshineCTF%202026/planetary-probe/files/de.png
 ---
+{% raw %}
 **Flag:** `sun{bl1nd_psqli_2_rc3_p4Nd0FyZt8k2}`
 **URL:** `https://planetary.web.2026.sunshinectf.games/`, no files provided.
 
@@ -164,3 +165,5 @@ sun{bl1nd_psqli_2_rc3_p4Nd0FyZt8k2}
 ```bash
 python exploit.py        # xác nhận cả hai oracle, đọc lại cờ và verify toàn chuỗi
 ```
+
+{% endraw %}

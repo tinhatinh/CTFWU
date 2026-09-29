@@ -5,6 +5,7 @@ lastmod_at: 2026-09-28 16:53:17 +0700
 categories: [Rev]
 tags: [h7ctf-quals, Rev]
 ---
+{% raw %}
 ## 0. Tóm tắt
 
 `vmrun` là một VM custom 14 opcode, mỗi guardian (`.shard`) chứa một bảng thế opcode
@@ -208,3 +209,5 @@ Toàn bộ phần điều tra endpoint ở K9-K14 không phải vô ích: nó ch
 parse chữ ký, tức là khóa verify của nó khác `pubkey.bin` trong handout mẫu - chính là manh mối
 dẫn tới tệp artifact động. Đã kiểm tra thêm khả năng lấy cờ ngoại tuyến
 (`analysis/flag_sweep.py`, 53 mảng byte x ~30 phép mã hoá): không có cờ nào trong handout.
+
+{% endraw %}

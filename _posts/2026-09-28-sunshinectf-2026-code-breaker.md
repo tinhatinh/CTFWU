@@ -7,6 +7,7 @@ tags: [sunshinectf, Crypto/Pwn]
 image:
   path: /CTFWU/SunshineCTF%202026/code-breaker/files/de.png
 ---
+{% raw %}
 **Flag:** `sun{cr4ck_tHe_ciPh3r_fr33_thE_heaP}` · **Target:** `nc chal.sunshinectf.games 26005`
 **Files:** `code_breaker` (PIE, stripped, glibc 2.39), `libc.so.6`, `ld-linux-x86-64.so.2`
 
@@ -104,3 +105,5 @@ sun{cr4ck_tHe_ciPh3r_fr33_thE_heaP}
 ```
 sun{cr4ck_tHe_ciPh3r_fr33_thE_heaP}
 ```
+
+{% endraw %}

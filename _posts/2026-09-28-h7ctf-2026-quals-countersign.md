@@ -5,6 +5,7 @@ lastmod_at: 2026-09-28 16:53:17 +0700
 categories: [Rev]
 tags: [h7ctf-quals, Rev]
 ---
+{% raw %}
 **Flag:** `H7CTF{011c87d4-b5c8-405d-923a-33dbed3e5bf7}` · **Files:** `countersign.zip` (ELF x86-64 PIE, stripped, 22 KB) + `note.txt` · Service: `nc pwn.h7tex.com 43708`
 
 ## Đề bài
@@ -247,3 +248,5 @@ analysis/img_live.bin, analysis/valid_live.json
 analysis/cs.asm       objdump -d
 analysis/unpacked/    binary goc (khong bao gio sua)
 ```
+
+{% endraw %}

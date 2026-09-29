@@ -7,6 +7,7 @@ tags: [sunshinectf, Forensics]
 image:
   path: /CTFWU/SunshineCTF%202026/welcome-call/files/de.png
 ---
+{% raw %}
 **Flag:** `sun{thankyouforplaying}`
 **Files:** `welcomecall.pcap` (181952 B, sha256 `7e0effd30dbd6fd0…`)
 
@@ -102,3 +103,5 @@ $ python solve_call.py
     Thank you for playing right curly bracket. All lowercase, no spaces. ...
 [+] FLAG: sun{thankyouforplaying}
 ```
+
+{% endraw %}

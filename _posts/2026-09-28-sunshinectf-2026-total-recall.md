@@ -7,6 +7,7 @@ tags: [sunshinectf, Pwn]
 image:
   path: /CTFWU/SunshineCTF%202026/total_recall/files/de.png
 ---
+{% raw %}
 `Can you recall how to get out of this one?`
 
 SunshineCTF 2026, pwn, 497 điểm, tác giả Oreomeister. File cho tải: `total_recall`.
@@ -155,3 +156,5 @@ python analysis/measure_rsp.py                 # đo lại delta buf = L - 0x80
 `exploit.py` chỉ dùng stdlib, tự nối vào `chal.sunshinectf.games:26003` và leak lại base ở mỗi
 lần chạy; ngoài các gadget của chính binary thì không có địa chỉ hardcode nào khác.
 `analysis/disasm.txt` là toàn bộ 108 byte của chương trình.
+
+{% endraw %}

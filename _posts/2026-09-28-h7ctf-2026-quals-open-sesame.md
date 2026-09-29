@@ -7,6 +7,7 @@ tags: [h7ctf-quals, Hardware]
 image:
   path: /CTFWU/H7CTF%202026%20Quals/open-sesame/files/de.png
 ---
+{% raw %}
 **Flag:** `H7CTF{f6091c17-1155-4d06-8a90-b826fd758185}` (nhận từ `/unlock`, đã lưu ở `flag.txt`)
 **Target:** `https://web-7a56034b5423964c.web.h7tex.com` · Artifact: `capture.cf32` (I/Q float32 LE @ 1 MHz)
 
@@ -89,3 +90,5 @@ python solve.py https://web-7a56034b5423964c.web.h7tex.com analysis/capture.cf32
 [*] /unlock -> 200
 {"status": "unlocked", "flag": "H7CTF{f6091c17-1155-4d06-8a90-b826fd758185}"}
 ```
+
+{% endraw %}

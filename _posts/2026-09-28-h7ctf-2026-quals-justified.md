@@ -7,6 +7,7 @@ tags: [h7ctf-quals, Web]
 image:
   path: /CTFWU/H7CTF%202026%20Quals/justified/files/de.png
 ---
+{% raw %}
 **Flag:** `WEBVERSE{d5f60724dc9f1197140001fa4b24198e}` · Đã nộp trên WebVerse (trang trả về SOLVED)
 
 ## Đề bài
@@ -107,3 +108,5 @@ python exploit.py https://978870f9-5765-justified-06d98.mystery-challenges.webve
 [*] shell escape works: uid=33(www-data) gid=33(www-data) groups=33(www-data)
 [+] flag: WEBVERSE{d5f60724dc9f1197140001fa4b24198e}
 ```
+
+{% endraw %}

@@ -7,6 +7,7 @@ tags: [h7ctf-quals, Hardware]
 image:
   path: /CTFWU/H7CTF%202026%20Quals/radio-silence/files/de.png
 ---
+{% raw %}
 **Flag:** `H7CTF{6780856d-db42-4cfa-8b56-c62109d8417c}`
 **Instance:** `https://web-0350e37b217a0cbc.web.h7tex.com`
 **Files:** `capture.cf32` (393544 B, sha256 `167a70fa…`) - interleaved float32 LE I/Q, 1 Msps
@@ -119,3 +120,5 @@ Không nộp bài qua HTTP: instance chỉ phục vụ đúng một file tĩnh (
 $ python solve_rf.py files/capture.cf32
 [+] FLAG: H7CTF{6780856d-db42-4cfa-8b56-c62109d8417c}
 ```
+
+{% endraw %}

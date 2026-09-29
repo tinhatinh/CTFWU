@@ -7,6 +7,7 @@ tags: [h7ctf-quals, Crypto]
 image:
   path: /CTFWU/H7CTF%202026%20Quals/shared-blood/files/de.png
 ---
+{% raw %}
 **Flag:** `H7CTF{a727587f-67d5-4246-b7c3-e57798659fac}`
 **Instance:** `https://web-bd09e5c5af420bbc.web.h7tex.com`
 
@@ -76,3 +77,5 @@ $ python solve_blood.py
 ```
 H7CTF{a727587f-67d5-4246-b7c3-e57798659fac}
 ```
+
+{% endraw %}

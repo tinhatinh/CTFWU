@@ -7,6 +7,7 @@ tags: [sunshinectf, Pwn]
 image:
   path: /CTFWU/SunshineCTF%202026/cache-money/files/de.png
 ---
+{% raw %}
 **Flag:** `sun{s4fe_l1nk1ng_w0nt_s4ve_y0ur_tc4che}`
 
 ## 1. Bài toán
@@ -90,3 +91,5 @@ Hai lỗi làm mất nhiều thời gian nhất, đều ở phía client:
   phải gửi từng dòng và chờ đúng marker, không được gửi cả cụm.
 - Client chờ kiểu `sleep 1s` cho mỗi prompt bị cắt kết nối ở khoảng lệnh thứ 10. Đổi sang recv
   event-driven (trả lời ngay khi marker xuất hiện) thì cả chuỗi chạy trong ~2 giây.
+
+{% endraw %}

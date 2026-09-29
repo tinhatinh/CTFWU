@@ -5,6 +5,7 @@ lastmod_at: 2026-09-28 16:53:17 +0700
 categories: [Hardware]
 tags: [h7ctf-quals, Hardware]
 ---
+{% raw %}
 **Flag:** `H7CTF{3c48f268-6761-422b-9df0-e652f6b2c4d0}` · **Dịch vụ:** `nc pwn.h7tex.com 40918` · **Files:** `dog_whistle.zip` (firmware `aria` r7.2)
 
 ## Đề bài
@@ -166,3 +167,5 @@ analysis/
   live1-8.txt          nhật ký phiên đích
 files/dog_whistle.zip
 ```
+
+{% endraw %}

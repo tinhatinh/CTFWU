@@ -7,6 +7,7 @@ tags: [h7ctf-quals, Cloud]
 image:
   path: /CTFWU/H7CTF%202026%20Quals/deputy/files/de.png
 ---
+{% raw %}
 4 cờ (theo thứ tự objective):
 
 ```
@@ -133,3 +134,5 @@ $ python solve_deputy.py
 ```
 
 Chạy lại: `python solve_deputy.py` (cần `analysis/awsclient.py` đi kèm; ghi `flags.txt`). Lần chạy thứ hai trên cùng instance sẽ thấy `409` ở bước CreateFunction vì function đã tồn tại, invoke vẫn dùng lại nó nên chuỗi không gãy.
+
+{% endraw %}

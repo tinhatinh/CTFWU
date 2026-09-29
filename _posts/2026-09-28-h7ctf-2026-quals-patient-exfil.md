@@ -7,6 +7,7 @@ tags: [h7ctf-quals, Forensics]
 image:
   path: /CTFWU/H7CTF%202026%20Quals/patient-exfil/files/de.png
 ---
+{% raw %}
 **Flag:** `H7CTF{6787b86cc777f426b9c0}` · Files: `capture (2).pcap`, 108.604 byte, sha256 `3ab17689659f80efadceea1adc2eea5e9bddfcc3254ad85e89c4c75ee20bbb76`
 
 ## Đề bài
@@ -92,3 +93,5 @@ python _ctf/patient-exfil/exploit.py "C:/Users/Administrator/Downloads/capture (
 [+] decoded 27 bytes -> b'H7CTF{6787b86cc777f426b9c0}'
 [+] flag: H7CTF{6787b86cc777f426b9c0}
 ```
+
+{% endraw %}

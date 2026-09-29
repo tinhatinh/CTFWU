@@ -7,6 +7,7 @@ tags: [pointer-overflow, Misc]
 image:
   path: /CTFWU/Pointer%20Overflow%20CTF%202026/the-apparatus-invocation/files/de.png
 ---
+{% raw %}
 **Điểm:** 100 · **Wave:** 1 · **Cờ:** `POCTF{3.612.H5VA2OHFE333SO62.EAIOF76YB2L4XMZTFSV4CPOEOX}`
 
 **Artifact:** không có file tải về; bàn cờ sinh theo team và nằm ngay trên trang
@@ -97,3 +98,5 @@ python exploit.py
 
 Script in lại 14 ô cần bấm từ `files/board.txt` kèm đoạn JS dán vào trang. Muốn làm với bàn của
 team khác, thay `files/board.txt` bằng pattern đọc từ DOM theo lệnh ở `de.md`.
+
+{% endraw %}

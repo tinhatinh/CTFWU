@@ -7,6 +7,7 @@ tags: [h7ctf-quals, Web]
 image:
   path: /CTFWU/H7CTF%202026%20Quals/splice/files/de.png
 ---
+{% raw %}
 **Flag:** `WEBVERSE{fcb61c06cbb7cd020a371730b71521fe}` · 300 pts · H7TEX 2026 trên WebVerse
 **Target:** `https://ced0f13a-5765-splice-5ba63.mystery-challenges.webverselabs-pro.com` (instance Express, đứng sau Cloudflare)
 **Không có bundle:** toàn bộ phân tích dựa trên source mà chính app trả về (`/studio`, `/public/css/site.css`, JSON của `/api/render`).
@@ -137,3 +138,5 @@ WEBVERSE{fcb61c06cbb7cd020a371730b71521fe}
 Nộp tại khối SUBMIT FLAG trên trang WebVerse của challenge
 (`/e/YfQq-BkjAX1I9bECP5U9xcsY/c/28`); solve sync ngược về H7TEX theo email, kiểm tra mỗi
 ~60 giây.
+
+{% endraw %}

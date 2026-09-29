@@ -7,6 +7,7 @@ tags: [pointer-overflow, Crypto]
 image:
   path: /CTFWU/Pointer%20Overflow%20CTF%202026/letters-never-sent/files/de.png
 ---
+{% raw %}
 **Điểm:** 95 · **Solves khi làm:** 248 · **Cờ:** `POCTF{2.612.ORSMSQU6A7IQJGUC.PQ4FI6SPWLYJYQGBQK66AWTILP}`
 
 **File cho trước:** `files/letter.png` 1.150.873 byte, sha256 `907275df295c975e...`
@@ -112,3 +113,5 @@ Beaufort, trong đó dòng `ELAPSE` mang prefix `POCTF{`. Muốn chạy với th
 ```bash
 python exploit.py files/letter.png "PXYWN{...}"
 ```
+
+{% endraw %}

@@ -7,6 +7,7 @@ tags: [sunshinectf, Pwn]
 image:
   path: /CTFWU/SunshineCTF%202026/safe-house/files/de.png
 ---
+{% raw %}
 **Flag:** `sun{n3gat1ve_h4ndl3s_0pen_s3cret_d00rs}` · tác giả Oreomeister
 **Target:** `nc chal.sunshinectf.games 26007` · **Files:** `service` (18504 B, sha256 `40c8993c1a853f62...`)
 
@@ -99,3 +100,5 @@ $ python -u exploit4.py -4
 ```
 sun{n3gat1ve_h4ndl3s_0pen_s3cret_d00rs}
 ```
+
+{% endraw %}

@@ -7,6 +7,7 @@ tags: [sunshinectf, Pwn]
 image:
   path: /CTFWU/SunshineCTF%202026/robocall/files/de.png
 ---
+{% raw %}
 **Flag:** `sun{you_must_be_some_sort_of_nimble_space_navigator}`
 
 ## 1. Loại trừ trước khi tìm đúng
@@ -111,3 +112,5 @@ Chạy 13 kết nối, mỗi kết nối một đường đi, ghép 13 x 4 byte 
   nằm cạnh nhau trong disassembly khiến mình đoán ngược; chỉ một kết nối thăm dò là ra.
 - Không có marker `>>>` ở menu của `start_position`, nên đồng bộ theo chuỗi dấu hiệu riêng
   của từng prompt (`Press 8 for yes.`, `Please enter the name of your first pet`, ...).
+
+{% endraw %}

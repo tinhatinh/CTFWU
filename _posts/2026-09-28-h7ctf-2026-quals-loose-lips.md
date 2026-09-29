@@ -7,6 +7,7 @@ tags: [h7ctf-quals, Crypto]
 image:
   path: /CTFWU/H7CTF%202026%20Quals/loose-lips/files/de.png
 ---
+{% raw %}
 **Cờ v1:** `H7CTF{08a5c5eb-7571-4a3d-a80d-599ddd46c5ad}`
 **Cờ v2:** `H7CTF{89c0e6b2-9fca-49fd-a02f-07a70e359363}`
 **Files:** `ckks.py` (2272 B, sha256 `f905e01981fc8049…`) · **Instance:** `https://web-550a48e366fd77e3.web.h7tex.com`
@@ -105,3 +106,5 @@ v2  H7CTF{89c0e6b2-9fca-49fd-a02f-07a70e359363}   key [1, 0, 0,-1,-1,-1, 0, 1]
 ```
 
 Chạy lại: `python solve_lips.py` (recover cả hai, ghi `flags.txt`).
+
+{% endraw %}

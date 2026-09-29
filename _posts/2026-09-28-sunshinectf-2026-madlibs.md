@@ -7,6 +7,7 @@ tags: [sunshinectf, Pwn]
 image:
   path: /CTFWU/SunshineCTF%202026/madlibs/files/de.png
 ---
+{% raw %}
 ## Đề bài
 
 `Fill in the blanks! Our Mad Libs game prints back whatever you type. It's just a simple word game... right?`
@@ -118,3 +119,5 @@ Cờ nằm ở `/ctf/flag.txt` (27 byte, chủ `root:mad_libs`, chế độ `-rw
 stdlib, tự nối vào `chal.sunshinectf.games:26001`, tự dò lại base ở mỗi lần chạy (5 lượt thử),
 tự kiểm `libc_base` bằng chuỗi `/bin/sh` trước khi ghi GOT, và ghi `flag.txt` khi bắt được chuỗi
 cờ trong output.
+
+{% endraw %}

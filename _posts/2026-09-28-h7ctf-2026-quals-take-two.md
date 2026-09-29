@@ -7,6 +7,7 @@ tags: [h7ctf-quals, Crypto]
 image:
   path: /CTFWU/H7CTF%202026%20Quals/take-two/files/de.png
 ---
+{% raw %}
 **Flag:** `H7CTF{63b0dde3-3edd-4a95-92d3-4e8c26e38483}`
 
 ## Đề bài
@@ -85,3 +86,5 @@ python exploit.py https://web-18955a87eb148fa7.web.h7tex.com
 [*] deploy -> 200
 [+] FLAG: H7CTF{63b0dde3-3edd-4a95-92d3-4e8c26e38483}
 ```
+
+{% endraw %}

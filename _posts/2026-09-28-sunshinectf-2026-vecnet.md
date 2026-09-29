@@ -7,6 +7,7 @@ tags: [sunshinectf, Web]
 image:
   path: /CTFWU/SunshineCTF%202026/vecnet/files/de.png
 ---
+{% raw %}
 **Flag:** `sun{k33p_your_emb3ddings_secur3!}`
 
 ## Đề bài
@@ -229,3 +230,5 @@ python exploit.py --invert   # chạy cả vec2text, ~3 phút (model đã cache)
 ```
 
 Cả hai đường đều đã chạy lại trên instance sống sau khi lấy cờ và cho ra đúng cờ ở trên.
+
+{% endraw %}

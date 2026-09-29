@@ -7,6 +7,7 @@ tags: [h7ctf-quals, Forensics]
 image:
   path: /CTFWU/H7CTF%202026%20Quals/deep-freeze/files/de.png
 ---
+{% raw %}
 **Flag:** `H7CTF{bf3a8e98115450c654b4}` · Files: `memory.lime.zst` (1.438.796.330 B, sha256 `dcd7cb45...b8810`), `Q3_patient_records.pdf.locked` (672 B, sha256 `5b8701fa...274d6b`)
 
 ## Đề bài
@@ -90,3 +91,5 @@ python exploit.py _scratch/memory.raw files/Q3_patient_records.pdf.locked
 ```
 
 PDF giải mã lưu ở `recovered.pdf`, cờ lưu ở `flag.txt`.
+
+{% endraw %}

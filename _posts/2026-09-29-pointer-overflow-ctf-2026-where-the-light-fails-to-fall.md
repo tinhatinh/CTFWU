@@ -7,6 +7,7 @@ tags: [pointer-overflow, OSINT]
 image:
   path: /CTFWU/Pointer%20Overflow%20CTF%202026/where-the-light-fails-to-fall/files/de.png
 ---
+{% raw %}
 **Điểm:** 400 · **Wave:** 1 · **Cờ:** `POCTF{99.612.WTT7UHE5X3JIJMKQ.TO6LBQYYORFL6LLPF6Q22SRR2P}`
 
 **Artifact:** `files/PXL_20260621_181159681.jpg` (3.940.516 B, sha256 `42b362b6…520a14a`) và bản
@@ -158,3 +159,5 @@ python exploit.py                 # in đoạn JS worker + danh sách tên cần
 Toàn bộ số đo ảnh, danh sách thành phố và log các nhánh đã loại nằm trong `analysis/`. Nếu muốn
 làm lại bằng hình học thay vì liệt kê, bắt đầu từ `analysis/rigorous.py` và `analysis/notes.md`
 để không đi lại bốn nhánh đã bị phản bác.
+
+{% endraw %}

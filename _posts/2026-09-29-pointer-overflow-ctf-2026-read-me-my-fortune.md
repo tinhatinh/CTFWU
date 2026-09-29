@@ -7,6 +7,7 @@ tags: [pointer-overflow, EXP]
 image:
   path: /CTFWU/Pointer%20Overflow%20CTF%202026/read-me-my-fortune/files/de.png
 ---
+{% raw %}
 **Điểm:** 200 · **Wave:** 1 · **Cờ:** `POCTF{127.612.IB2GGFAM2XGX6RDT.TEENFQ3KNWVEA3MCHJNFWFODQI}`
 
 **File cho trước:** `service.py` (`a1421668…`), `Dockerfile`, `runner.sh`, `entrypoint.sh`, `read_my_fortune.xinetd`, tất cả khớp sha256 in trên thẻ đề.
@@ -106,3 +107,5 @@ cd read-me-my-fortune
 python exploit.py --local
 python exploit.py read-my-fortune.pointeroverflowctf.com 9000 "<token còn hạn trên trang đề>"
 ```
+
+{% endraw %}

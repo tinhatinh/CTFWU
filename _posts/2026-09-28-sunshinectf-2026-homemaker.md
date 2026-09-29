@@ -7,6 +7,7 @@ tags: [sunshinectf, Pwn]
 image:
   path: /CTFWU/SunshineCTF%202026/homemaker/files/de.png
 ---
+{% raw %}
 **Flag:** `sun{the_future_is_now_today_well_wait_how_are_you_reading_this}`
 **Instance:** `nc sunshinectf.games 26008`, file kèm theo chỉ có binary `homemaker`, không có libc.
 
@@ -206,3 +207,5 @@ sun{the_future_is_now_today_well_wait_how_are_you_reading_this}
 ```bash
 python exploit_homemaker.py 3        # 3 = số lần thử; cần hmlib.py cùng thư mục
 ```
+
+{% endraw %}

@@ -7,6 +7,7 @@ tags: [pointer-overflow, RE]
 image:
   path: /CTFWU/Pointer%20Overflow%20CTF%202026/excavation/files/de.png
 ---
+{% raw %}
 Flag / đáp án được chấp nhận: `2VE5EKXUA5IV2R57`
 
 ```
@@ -186,3 +187,5 @@ python exploit.py
 `exploit.py` tự phục hồi khoá 8 byte của cả bốn file (không nhập tay khoá nào), tách lớp `^0x20`, parse record `0x10` và in ra acrostic. Khóa được chọn theo mô hình phân bố byte học từ chính file giải mã tốt nhất, nên `sample3` cũng ra đúng khoá (`e62903e8dcf7b038`) thay vì lệch một byte như cách chấm điểm thô.
 
 Các file trung gian trong `analysis/`: `*.pt` là thân sau lớp XOR thứ nhất, `*.dec` là bản đọc tạm bằng quy tắc `+0x20` cho riêng byte điều khiển, `*.true` là struct thật sau cả hai lớp.
+
+{% endraw %}

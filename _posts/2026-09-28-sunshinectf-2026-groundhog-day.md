@@ -7,6 +7,7 @@ tags: [sunshinectf, Web]
 image:
   path: /CTFWU/SunshineCTF%202026/groundhog_day/files/de.png
 ---
+{% raw %}
 **Flag:** `sun{s1x_m0r3_w33ks_0f_g0ph3r_ssrf}` · **Files:** không có · **Instance:** `https://odyssey.web.2026.sunshinectf.games`
 
 ## Đề bài
@@ -177,3 +178,5 @@ python analysis/pdfdump.py sanity      # tự kiểm bộ trích xuất text PDF
 `root.html` (comment ops), `station_index.txt` (docs nội bộ), `first_post_report_response.txt`
 (phản hồi đầu của `/report`), `sanity.pdf`, `xhr_hostname.pdf`, `lfi__etc_passwd.pdf`, `meta_403.html`,
 `canary_reply.html`. Trạm mồi `station-canary-...qoder.website` đã chuyển lại thành private.
+
+{% endraw %}

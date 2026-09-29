@@ -7,6 +7,7 @@ tags: [h7ctf-quals, Hardware]
 image:
   path: /CTFWU/H7CTF%202026%20Quals/kick-the-can/files/de.png
 ---
+{% raw %}
 **Flag:** `H7CTF{6360cbb3-73fc-4ba5-a9e6-0229a3b1a008}` · 125 pts · H7TEX 2026
 **Target:** `https://web-5c6688f7ad7feac6.web.h7tex.com` · Artifact: `/capture.log` (132 frame candump, 5248 byte)
 
@@ -102,3 +103,5 @@ python solve.py --url https://web-5c6688f7ad7feac6.web.h7tex.com/capture.log
 ```
 H7CTF{6360cbb3-73fc-4ba5-a9e6-0229a3b1a008}
 ```
+
+{% endraw %}

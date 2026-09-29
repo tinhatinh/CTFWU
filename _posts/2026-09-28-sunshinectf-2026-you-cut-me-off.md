@@ -7,6 +7,7 @@ tags: [sunshinectf, Forensics]
 image:
   path: /CTFWU/SunshineCTF%202026/you-cut-me-off/files/de.png
 ---
+{% raw %}
 **Flag:** `sun{totallyoriginalchallengeidea}` · **Files:** `HEREYOUGO.PNG`, 38759 B, ảnh Discord 492x382 RGBA
 
 ## Đề bài
@@ -61,3 +62,5 @@ số dòng bị ẩn: 36
 ```
 sun{totallyoriginalchallengeidea}
 ```
+
+{% endraw %}

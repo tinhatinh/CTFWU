@@ -7,6 +7,7 @@ tags: [h7ctf-quals, Hardware]
 image:
   path: /CTFWU/H7CTF%202026%20Quals/hear-no-evil/files/de.png
 ---
+{% raw %}
 **Flag:** 2/2
 `v1 = H7CTF{38b0e71c-6126-49f7-8692-3f0bf6bf31b0}` · `v2 = H7CTF{11945790-f241-4644-9e45-e19819bdc996}`
 **Target:** `https://web-2c53753bcbf2c207.web.h7tex.com` · Artifact: `/capture.pcap` (2220 B, 50 packet)
@@ -110,3 +111,5 @@ python solve.py analysis/capture.pcap
 v1: H7CTF{38b0e71c-6126-49f7-8692-3f0bf6bf31b0}
 v2: H7CTF{11945790-f241-4644-9e45-e19819bdc996}
 ```
+
+{% endraw %}

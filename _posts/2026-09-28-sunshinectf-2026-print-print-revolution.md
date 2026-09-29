@@ -7,6 +7,7 @@ tags: [sunshinectf, Pwn]
 image:
   path: /CTFWU/SunshineCTF%202026/print-print-revolution/files/de.png
 ---
+{% raw %}
 **Flag:** `sun{cust0m_fmtstr_n0_t00ls_4ll0wed}` · Files: `revolution`, 14520 byte, sha256 `918483831ef0b27d0cfb8afa9e0341f38d0a296931ccc5f73ef80f5d610f8fa5` · Dịch vụ: `nc chal.sunshinectf.games 26002`
 
 ## Đề bài
@@ -137,3 +138,5 @@ python exploit.py
 [>] cat /ctf/flag.txt -> sun{cust0m_fmtstr_n0_t00ls_4ll0wed}
 [+] CO: sun{cust0m_fmtstr_n0_t00ls_4ll0wed}
 ```
+
+{% endraw %}

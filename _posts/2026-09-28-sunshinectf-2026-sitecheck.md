@@ -7,6 +7,7 @@ tags: [sunshinectf, Web]
 image:
   path: /CTFWU/SunshineCTF%202026/sitecheck/files/de.png
 ---
+{% raw %}
 Điểm: 498 · **Flag:** `sun{fr4gm3nt3d_r3fl3ct10ns_1n_th3_futur3}`
 **Instance:** `https://spaceship.web.2026.sunshinectf.games` (no files provided nguồn)
 
@@ -74,3 +75,5 @@ Chạy lại `python exploit.py` từ đầu để xác nhận:
 ```
 
 Ảnh mới vẫn ra đúng chuỗi cờ đó.
+
+{% endraw %}

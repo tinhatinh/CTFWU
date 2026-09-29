@@ -7,6 +7,7 @@ tags: [pointer-overflow, Web]
 image:
   path: /CTFWU/Pointer%20Overflow%20CTF%202026/shape-of-query/files/de.png
 ---
+{% raw %}
 **Flag:** `POCTF{81.612.EB7ZOZUZT7FJHWR2.YQXWHGRFYSBYU46VGKVYD22DNN}` · **Target:** `https://shape-of-query.pointeroverflowctf.com`
 
 ## Đề bài
@@ -82,3 +83,5 @@ POCTF{81.612.EB7ZOZUZT7FJHWR2.YQXWHGRFYSBYU46VGKVYD22DNN}
 ```bash
 python exploit.py "<session token trên trang challenge>"
 ```
+
+{% endraw %}

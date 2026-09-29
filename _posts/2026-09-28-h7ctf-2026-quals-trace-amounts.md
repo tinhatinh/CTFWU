@@ -7,6 +7,7 @@ tags: [h7ctf-quals, Hardware]
 image:
   path: /CTFWU/H7CTF%202026%20Quals/trace-amounts/files/de.png
 ---
+{% raw %}
 **Flag:** `H7CTF{48333086-d56b-41f5-b24b-a1d53fb122ec}` · Khoá AES-128 của card: `f937e70cf8f9f6f287a14b0da829ba47`
 
 ## Đề bài
@@ -102,3 +103,5 @@ python exploit.py files/traces.npy files/plaintexts.npy files/secret.enc
 ```
 
 Toàn trình chạy trong 0.35 s.
+
+{% endraw %}

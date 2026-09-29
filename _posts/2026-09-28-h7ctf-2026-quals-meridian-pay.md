@@ -7,6 +7,7 @@ tags: [h7ctf-quals, Mobile]
 image:
   path: /CTFWU/H7CTF%202026%20Quals/meridian-pay/files/de.png
 ---
+{% raw %}
 **Flag:** ba trong bốn objective · **Files:** `meridian-pay-3.2.1.apk.zip`, 12771 B, bên trong là APK 16885 B sha256 `447c3cd07770cfd78c6601f9076167208e5b670f3708be085cb69d08f741efa1` · **Dịch vụ:** `https://web-3f25599ac74e8a91.web.h7tex.com`
 
 ```
@@ -144,3 +145,5 @@ v3 - chưa lấy được, 5/… solve
 Instance đã hết hạn sau lần chạy đó (hết 45 phút của session). Ba cờ trên là kết quả tự chạy lại
 và tự kiểm trên instance; hồ sơ này không ghi nhận trạng thái nộp lên nền tảng. v3 còn hai lead dở,
 ghi cụ thể ở cuối `notes.md`.
+
+{% endraw %}

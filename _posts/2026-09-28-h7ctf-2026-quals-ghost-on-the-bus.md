@@ -7,6 +7,7 @@ tags: [h7ctf-quals, Hardware]
 image:
   path: /CTFWU/H7CTF%202026%20Quals/ghost-on-the-bus/files/de.png
 ---
+{% raw %}
 **Flag:** `H7CTF{10d9b516-d19b-4895-9634-45b27a7591c3}`
 **Instance:** `https://web-c2656e4339a3659c.web.h7tex.com`
 **Files:** `capture.vcd` (44626 B, 8 kênh logic, timescale 1 ns, 29.79 ms)
@@ -94,3 +95,5 @@ $ python solve_bus.py files/capture.vcd
 ```
 
 Ba bằng chứng độc lập rằng phép ghép đúng: cả hai phần đều đúng 43 byte như log tuyên bố; kết quả đúng khuôn `H7CTF{uuid}` với UUID 8-4-4-4-12; và metadata từng bus (opcode `0x03`, address `0x001A00`, slave `0x50` + bit read) đều được log xác nhận trước khi decode.
+
+{% endraw %}
