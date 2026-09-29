@@ -34,12 +34,12 @@ CONTEST_TZ = dt.timezone(dt.timedelta(hours=7), "UTC+7")
 
 UI = {
     "vi": {"competitions": "Các cuộc thi", "posts": "bài writeup", "view": "Xem writeup",
-           "tagline": "Ghi chú CTF của R3:TURИ",
-           "description": "Kho writeup CTF của R3:TURИ qua H7TEX, SunshineCTF và Pointer Overflow",
+           "tagline": "Writeup CTF của tinhatinh, đội R3:TURИ",
+           "description": "Writeup CTF của Danh Phan trong đội R3:TURИ: H7TEX, SunshineCTF, Pointer Overflow",
            "hint": "Mỗi cuộc thi là một mục. Bên trong là các bài giải, xếp theo chuyên mục."},
     "en": {"competitions": "Competitions", "posts": "writeups", "view": "Read writeups",
-           "tagline": "CTF writeups by R3:TURИ",
-           "description": "CTF writeups by R3:TURИ, from H7TEX, SunshineCTF and Pointer Overflow",
+           "tagline": "CTF writeups by tinhatinh, team R3:TURИ",
+           "description": "CTF writeups by Danh Phan of team R3:TURИ: H7TEX, SunshineCTF, Pointer Overflow",
            "hint": "One card per event. Inside each one, the solutions grouped by category.",
            "nottranslated": "This post has no English version yet."},
 }
@@ -79,22 +79,26 @@ nghệ thông tin tại Học viện Bưu chính Viễn thông (PTIT), đang h�
 - Liên hệ: [ptdanh007@gmail.com](mailto:ptdanh007@gmail.com),
   [Facebook](https://www.facebook.com/winterboyy), [TikTok](https://www.tiktok.com/@danh_pachirisu).
 
-## Đội
+## Phạm vi
 
-Toàn bộ writeup trong kho này là của đội **{team}**, hồ sơ đội trên
-[CTFTime](https://ctftime.org/team/449538). Ở POCTF 2026 đội đăng ký dưới số 612, nên thẻ đề và
-flag của các bài POCTF mang số đó.
+Mọi bài trên trang này là writeup do chính mình viết, tức phần của mình trong lời giải của đội
+**{team}** ([CTFTime team 449538](https://ctftime.org/team/449538)). Lời giải của các thành viên
+khác không nằm ở đây.
 
-{members}
-## Kho writeup
-
-Mỗi bài là một thư mục trong repo [`tinhatinh/CTFWU`](https://github.com/tinhatinh/CTFWU) gồm
+Mỗi đề là một thư mục trong repo [`tinhatinh/CTFWU`](https://github.com/tinhatinh/CTFWU) gồm
 `de.md` (đề nguyên văn + metadata đã kiểm chứng), `writeup.md` (cách giải), `notes.md` (nhật ký giả
 thuyết, kể cả hướng sai), `exploit.py` (script chạy lại được) và `files/` (artifact gốc đã đối
 chiếu sha256).
 
 Toàn bộ lời giải chỉ dựa vào artifact của chính đề bài, không tra writeup của người khác.
 Flag là giá trị riêng theo team, nên copy từ đây về nộp sẽ không hợp lệ.
+
+## Đội
+
+{team} gồm năm thành viên. Ở POCTF 2026 đội đăng ký dưới số 612, nên thẻ đề và flag của các bài
+POCTF mang số đó.
+
+{members}
 """,
     "en": """I'm **Phan Thành Danh** ([@tinhatinh](https://github.com/tinhatinh)), an IT student at the
 Posts and Telecommunications Institute of Technology (PTIT), currently studying security testing.
@@ -104,22 +108,26 @@ Posts and Telecommunications Institute of Technology (PTIT), currently studying 
 - Contact: [ptdanh007@gmail.com](mailto:ptdanh007@gmail.com),
   [Facebook](https://www.facebook.com/winterboyy), [TikTok](https://www.tiktok.com/@danh_pachirisu).
 
-## Team
+## Scope
 
-Everything in this archive belongs to **{team}**, profiled on
-[CTFTime](https://ctftime.org/team/449538). At POCTF 2026 the team was registered as number 612,
-which is why the POCTF challenge cards and flags carry that id.
+Every post here is a writeup I wrote myself, which is my share of what team
+**{team}** ([CTFTime team 449538](https://ctftime.org/team/449538)) solved. Teammates publish
+their own solutions elsewhere.
 
-{members}
-## The archive
-
-Every challenge is a folder in the [`tinhatinh/CTFWU`](https://github.com/tinhatinh/CTFWU) repo
+Each challenge is a folder in the [`tinhatinh/CTFWU`](https://github.com/tinhatinh/CTFWU) repo
 holding `de.md` (the statement plus verified metadata), `writeup.md` (the solution), `notes.md`
 (the hypothesis log, wrong turns included), `exploit.py` (a script that replays the solve) and
 `files/` (original artifacts, sha256 checked).
 
 Every solution comes from the challenge's own artifact only, with no outside writeups consulted.
 Flags are per team, so copying one from here will not be accepted.
+
+## Team
+
+{team} has five members. At POCTF 2026 the team registered as number 612, which is why the POCTF
+challenge cards and flags carry that id.
+
+{members}
 """,
 }
 

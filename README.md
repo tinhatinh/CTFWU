@@ -1,7 +1,8 @@
 # CTF Writeups
 
-Writeups by **R3:TURИ** ([CTFTime team 449538](https://ctftime.org/team/449538)):
-minhduc26122913, k4tpr02k5, Tikilazada, cu_kh1nh_b0_m4y_d1, Lizamort1.
+My own writeups from competitive CTF events. I play with **R3:TURИ**
+([CTFTime team 449538](https://ctftime.org/team/449538)): minhduc26122913, k4tpr02k5, Tikilazada,
+cu_kh1nh_b0_m4y_d1, Lizamort1 - their solutions live in their own repos, this one is only mine.
 
 **Rendered site:** <https://tinhatinh.github.io/CTFWU/> (Jekyll + [Chirpy](https://github.com/cotes2020/jekyll-theme-chirpy), deployed by GitHub Actions).
 
