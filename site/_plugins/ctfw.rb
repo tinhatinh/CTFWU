@@ -17,10 +17,6 @@ Jekyll::Hooks.register [:pages, :documents], :post_render do |doc|
 
   base = doc.site.baseurl.to_s
   head = %(<link rel="stylesheet" href="#{base}/assets/css/campus.css">\n)
-  # theme.min.js chay TRUOC doan nay va phat lai sang toi neu localStorage con gia
-  # tri 'dark' tu lan tham cu, nen phai ep ca thuoc tinh lan gia tri luu tru.
-  head << %(<script>try{localStorage.setItem('theme','light');) +
-          %(document.documentElement.setAttribute('data-bs-theme','light')}catch(e){}</script>\n)
 
   rest = doc.url.to_s.start_with?(base) ? doc.url.to_s[base.length..-1].to_s : doc.url.to_s
   rest = "/" if rest.empty?

@@ -7,7 +7,11 @@
 @import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap");
 
 :root {
+  /* --ink: vien + chu tren chip. --shadow-c: mau bong. --bar: nen thanh dam
+     (header khoi code, thead). Tam mau nay di cung nhau o sang, tach ra o toi. */
   --ink: #2d3748;
+  --shadow-c: #2d3748;
+  --bar: #2d3748;
   --text: #0f172a;
   --muted: #64748b;
   --paper: #fff;
@@ -19,13 +23,15 @@
   --sky: #add8e6;
   --salmon: #fdbcb4;
   --lav: #e6e6fa;
-  --shadow: 6px 6px 0 0 var(--ink);
-  --shadow-sm: 4px 4px 0 0 var(--ink);
+  --shadow: 6px 6px 0 0 var(--shadow-c);
+  --shadow-sm: 4px 4px 0 0 var(--shadow-c);
   --hair: 3px;
   --r-lg: 24px;
   --r-md: 16px;
   --r-sm: 12px;
   --r-pill: 999px;
+  --inline-code-color: #b3001b;
+  --gutter-bg: #f1f5f9;
 
   --bs-body-bg: var(--cream);
   --bs-body-color: var(--text);
@@ -133,20 +139,99 @@
   --shimmer-bg: var(--line);
 }
 
-/* Chot sang: Chirpy luon co the phat sinh data-bs-theme tu localStorage */
+/* Toi: cung bo khung vien day + bong lech, dao nguoc vai tro mau.
+   `html[data-bs-theme=dark]` co dac biet 0-1-1 nen thang `:root` o tren. */
 html[data-bs-theme=dark] {
+  --ink: #93a3bd;
+  --shadow-c: #05080f;
+  --bar: #111a2b;
+  --text: #dbe4f3;
+  --muted: #93a3bd;
+  --paper: #1b2434;
+  --cream: #131b28;
+  --line: #2c3850;
+  --green: #22c55e;
+  --green-dark: #4ade80;
+  --mint: #173d2b;
+  --sky: #16324a;
+  --salmon: #4a2320;
+  --lav: #2a2550;
+
   --bs-body-bg: var(--cream);
   --bs-body-color: var(--text);
+  --bs-emphasis-color: #f2f6ff;
   --bs-border-color: var(--line);
   --bs-link-color: var(--green-dark);
-  --bs-emphasis-color: var(--ink);
+  --bs-link-hover-color: #eaf2ff;
+  --bs-secondary-color: var(--muted);
   --bs-secondary-bg: var(--sky);
   --bs-tertiary-bg: var(--cream);
-  color-scheme: light;
-}
+  color-scheme: dark;
 
-html[data-bs-theme=dark] #mode-toggle-wrapper,
-html[data-bs-theme=light] #mode-toggle-wrapper { display: none !important; }
+  --topbar-bg: var(--paper);
+  --topbar-text-color: #eaf2ff;
+  --sidebar-bg: var(--paper);
+  --sidebar-color: #dbe4f3;
+  --sidebar-muted-color: var(--muted);
+  --sidebar-hover-bg: var(--sky);
+  --sidebar-hover-color: #eaf2ff;
+  --sidebar-btn-hover-bg: var(--sky);
+  --sidebar-btn-hover-color: var(--green-dark);
+  --sidebar-active-color: var(--green-dark);
+  --site-title-color: #f2f6ff;
+  --site-subtitle-color: var(--muted);
+  --menu-bg: var(--paper);
+  --menu-highlight-bg: var(--sky);
+  --menu-active-color: #eaf2ff;
+  --text-color: var(--text);
+  --heading-color: #f2f6ff;
+  --text-muted-color: var(--muted);
+  --button-color: #eaf2ff;
+  --button-bg: var(--mint);
+  --button-hover-bg: var(--sky);
+  --btn-paginator-hover-color: var(--sky);
+  --btn-patinator-text-color: #eaf2ff;
+  --card-bg: var(--paper);
+  --card-header-bg: var(--cream);
+  --card-hover-bg: var(--sky);
+  --highlight-bg-color: #10192a;
+  --highlight-lineno-color: #64748b;
+  --highlighter-rouge-color: var(--text);
+  --inline-code-bg: var(--paper);
+  --code-color: var(--text);
+  --bs-code-color: #ff8fa3;
+  --code-header-text-color: #86efac;
+  --code-header-icon-color: #86efac;
+  --code-header-muted-color: var(--salmon);
+  --kbd-bg-color: var(--sky);
+  --kbd-wrap-color: var(--ink);
+  --kbd-text-color: #eaf2ff;
+  --blockquote-text-color: #c3cfe4;
+  --prompt-text-color: var(--text);
+  --prompt-tip-bg: var(--mint);
+  --inline-code-color: #ff8fa3;
+  --gutter-bg: #0b1220;
+  --prompt-tip-icon-color: #86efac;
+  --prompt-info-bg: var(--sky);
+  --prompt-info-icon-color: #7dd3fc;
+  --prompt-warning-bg: var(--salmon);
+  --prompt-warning-icon-color: #fda4af;
+  --prompt-danger-bg: var(--lav);
+  --prompt-danger-icon-color: #c4b5fd;
+  --tag-bg: var(--paper);
+  --tag-color: #dbe4f3;
+  --tag-hover: var(--mint);
+  --categories-hover-bg: var(--sky);
+  --categories-icon-hover-color: var(--green-dark);
+  --toc-highlight: var(--green-dark);
+  --tb-odd-bg: var(--cream);
+  --tb-even-bg: var(--paper);
+  --search-border-color: var(--ink);
+  --search-icon-color: var(--muted);
+  --search-tag-bg: var(--sky);
+  --label-color: #eaf2ff;
+  --footnote-target-bg: var(--mint);
+}
 
 body { background: var(--cream); color: var(--text); font-family: Nunito, sans-serif; }
 
@@ -194,7 +279,7 @@ a.card:hover, .post-preview:hover { background: var(--cream); }
   text-transform: none;
 }
 .btn:not(.post-tag):hover, button:hover { background: var(--mint); color: var(--ink) !important; transform: translate(-1px, -1px); }
-.btn:active { box-shadow: 1px 1px 0 0 var(--ink); transform: translate(2px, 2px); }
+.btn:active { box-shadow: 1px 1px 0 0 var(--shadow-c); transform: translate(2px, 2px); }
 
 /* Code. Chirpy gan mau theo `:root[data-bs-theme=...]` (dac biet 0-3-0 tro len)
    nen phan lon rule o day phai dat cung mo `:root[data-bs-theme]` de thang ma
@@ -212,22 +297,23 @@ div[class^=language-], figure.highlight {
 :root[data-bs-theme] .highlight, :root[data-bs-theme] .highlight .w { background: transparent; }
 
 .code-header {
-  background: var(--ink);
+  background: var(--bar);
   height: 2.4rem;
   margin: 0;
   padding: 0 14px;
 }
 div[class^=language-] .code-header { margin-left: 0; margin-right: 0; }
+/* Ba o mau co dinh: thanh header dam o ca hai che do nen pastel nay luc nao cung doi */
 .code-header::before,
 div[class^=language-] .code-header::before {
   border-radius: 50% !important;
-  background-color: var(--salmon) !important;
-  box-shadow: 1.25rem 0 0 var(--mint), 2.5rem 0 0 var(--sky);
+  background-color: #fdbcb4 !important;
+  box-shadow: 1.25rem 0 0 #98ff98, 2.5rem 0 0 #add8e6;
 }
 div[class^=language-] .code-header span { margin-left: 0; }
-.code-header span, .code-header span i { color: var(--mint); }
+.code-header span, .code-header span i { color: var(--code-header-text-color); }
 .code-header span::after {
-  color: var(--mint);
+  color: var(--code-header-text-color);
   font-family: Nunito, sans-serif;
   font-size: .74rem;
   font-weight: 700;
@@ -236,9 +322,9 @@ div[class^=language-] .code-header span { margin-left: 0; }
 }
 .code-header button { background: transparent; border: 2px solid transparent !important; box-shadow: none; }
 .code-header button:not([timeout]):hover,
-.code-header button[timeout]:hover { background: var(--mint) !important; }
+.code-header button[timeout]:hover { background: var(--code-header-text-color) !important; }
 .code-header button:not([timeout]):hover i,
-.code-header button[timeout] i { color: var(--ink) !important; }
+.code-header button[timeout] i { color: var(--bar) !important; }
 
 :root[data-bs-theme] .highlight table td { padding: 0; }
 :root[data-bs-theme] .highlight table pre { margin: 0; }
@@ -246,7 +332,7 @@ div[class^=language-] .code-header span { margin-left: 0; }
 .highlight pre { font-size: .84rem; line-height: 1.6; }
 :root[data-bs-theme] .highlight table td.rouge-gutter {
   display: table-cell;
-  background: #f1f5f9;
+  background: var(--gutter-bg);
   border-right: var(--hair) solid var(--ink) !important;
   margin: 0 .8rem 0 0;
   padding: 12px 12px 12px 14px !important;
@@ -269,7 +355,7 @@ div[class^=language-] .code-header span { margin-left: 0; }
 :not(pre) > code, code.highlighter-rouge {
   background: var(--paper);
   border: 2px solid var(--ink);
-  color: #b3001b;
+  color: var(--inline-code-color);
   font-size: .86em;
   padding: .06em .34em;
 }
@@ -302,7 +388,7 @@ a:hover > code.highlighter-rouge { border-color: var(--ink); }
 /* Table */
 table { border: var(--hair) solid var(--ink); border-radius: var(--r-md); border-collapse: separate; border-spacing: 0; }
 th, td { border: 1px solid var(--line) !important; }
-thead th { background: var(--ink); color: #fff; font-family: Fredoka, sans-serif; border-color: var(--ink) !important; }
+thead th { background: var(--bar); color: #f2f6ff; font-family: Fredoka, sans-serif; border-color: var(--ink) !important; }
 /* Bang layout cua khoi code khong phai bang du lieu */
 .highlight table { border: 0; border-radius: 0; }
 .highlight th, .highlight td { border: 0 !important; }
