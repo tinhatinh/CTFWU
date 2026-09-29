@@ -2,6 +2,22 @@
 
 Solutions and writeups for challenges from competitive CTF events.
 
+**Rendered site:** <https://tinhatinh.github.io/CTFWU/> (Jekyll + [Chirpy](https://github.com/cotes2020/jekyll-theme-chirpy), deployed by GitHub Actions).
+
+## Site
+
+The archive layout below is the source of truth. `_posts/` is generated from it, so never edit
+`_posts/` by hand:
+
+```bash
+python tools/build_posts.py          # write 55 posts into _posts/
+python tools/build_posts.py --dry    # list what would be written
+```
+
+The generator reads each `<Event>/<slug>/writeup.md`, takes the date from that file's last commit,
+and reads the challenge category from the event's own `README.md` table. The Pages workflow runs it
+before building, so a forgotten local run cannot desync the site.
+
 ## Competitions
 
 | Event | Date | Writeups | Categories |
