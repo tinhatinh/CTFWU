@@ -6,6 +6,9 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap");
 
+/* Mac dinh sang. ctfw.rb luon gan data-bs-theme="light" vao <html>, nen khoi
+   `:root:not([data-bs-theme])` trong `@media (prefers-color-scheme: dark)` cua
+   Chirpy khong bao gio khop va `:root` o day du thang. */
 :root {
   /* --ink: vien + chu tren chip. --shadow-c: mau bong. --bar: nen thanh dam
      (header khoi code, thead). Tam mau nay di cung nhau o sang, tach ra o toi. */
