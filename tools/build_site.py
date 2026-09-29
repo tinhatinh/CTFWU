@@ -16,6 +16,8 @@ import subprocess
 import sys
 from urllib.parse import quote
 
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE_BASE = "/CTFWU"
 STAGE = os.path.join(ROOT, "_site_src")
@@ -70,10 +72,33 @@ def slugify(s):
     return re.sub(r"[^A-Za-z0-9]+", "-", s).strip("-").lower() or "x"
 
 
+LIQUID_SPAN = re.compile(r"\{\{.*?\}\}|\{%.*?%\}|\{\{.*$|\{%.*$", re.M)
+
+
 def protect_liquid(body):
+    """Giup Liquid khong thuc thi payload SSTI/Jinja ma writeup chem lai.
+
+    Mac dinh boc tung doan bang {% raw %} de excerpt (cat tu nguon chua render)
+    van sach. Neu chinh noi dung chua the raw nay thi khong dung cach do
+    duoc - no se ket thuc som - nen doi thanh escape delimiter.
+    """
     if "{% raw %}" in body or "{% endraw %}" in body:
-        raise SystemExit("writeup chua the '{%% raw %%}' -> khong boc duoc; sua nguon truoc")
-    return "{% raw %}\n" + body + "\n{% endraw %}\n"
+        return re.sub(r"\{\{|\{%", lambda m: "{{ '%s' }}" % m.group(0), body)
+
+    out = LIQUID_SPAN.sub(lambda m: "{%% raw %%}%s{%% endraw %%}" % m.group(0), body)
+    stripped = re.sub(r"\{% raw %\}[\s\S]*?\{% endraw %\}", "", out)
+    if "{{" in stripped or "{%" in stripped:
+        raise SystemExit("con Liquid khong duoc bao ve")
+    return out
+
+
+def describe(body):
+    for ln in body.split("\n"):
+        s = ln.strip()
+        if s and not s.startswith(("#", "!", ">", "|", "```", "---")):
+            s = re.sub(r"[*_`]", "", s)
+            return s[:157] + "..." if len(s) > 157 else s
+    return ""
 
 
 def copy_asset(src_abs, ev_slug, case_slug, name):
@@ -122,10 +147,14 @@ def build():
                 return "![%s](%s)" % (alt, copy_asset(src, ev_slug, case, target))
 
             body = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", hold, body)
+            body = protect_liquid(body)
             fm = ["---", 'title: "%s"' % title.replace('"', "'"),
                   "date: %s +0700" % d.strftime("%Y-%m-%d %H:%M:%S"),
                   "lastmod_at: %s" % d.strftime("%Y-%m-%d %H:%M:%S %z"),
                   "categories: [%s]" % cat, "tags: [%s]" % ", ".join(tags)]
+            desc = describe(text)
+            if desc:
+                fm.append('description: "%s"' % desc.replace('"', "'"))
             preview = os.path.join(ROOT, event, case, "files", "de.png")
             if os.path.isfile(preview) and os.path.getsize(preview) <= MAX_COPY:
                 dst_dir = os.path.join(STAGE, "assets", "writeups", ev_slug, slugify(case))
