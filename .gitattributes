@@ -1,0 +1,5 @@
+# Challenge artifacts under files/, analysis/ and the case folders are evidence:
+# the writeups quote their sha256, so the repository must store the exact bytes
+# the challenge shipped, CR included. core.autocrlf=true on the maintainer's box
+# otherwise strips every CR when a file is added.
+* -text
