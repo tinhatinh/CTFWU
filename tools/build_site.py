@@ -51,7 +51,8 @@ MEMBERS = [
     ("minhduc26122913", "187061", ""),
     ("k4tpr02k5", "236179", ""),
     ("Tikilazada", "251074", "Tikilazada"),
-    ("cu_kh1nh_b0_m4y_d1", "272628", "tinhatinh"),
+    # CTFTime dang la "cu_kh1nh_b0_m4y_d1" (id 272628), doi ten hien thi theo yeu cau
+    ("tinhatinh", "272628", "tinhatinh"),
     ("Lizamort1", "274020", "Lizamort1"),
 ]
 
