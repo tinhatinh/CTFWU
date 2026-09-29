@@ -1,4 +1,4 @@
-# Jekyll hook: nap skin brutalist + nut chuyen ngon ngu, KHONG sua layout cua Chirpy.
+# Jekyll hook: nap skin campus.css + nut chuyen ngon ngu, KHONG sua layout cua Chirpy.
 #
 # Site gom 2 cay doc lap: /CTFWU (tieng Viet) va /CTFWU/en (tieng Anh), moi cay
 # build tu _config rieng.
@@ -16,7 +16,7 @@ Jekyll::Hooks.register [:pages, :documents], :post_render do |doc|
   next true unless doc.output.include?("<body")
 
   base = doc.site.baseurl.to_s
-  head = %(<link rel="stylesheet" href="#{base}/assets/css/brutalist.css">\n)
+  head = %(<link rel="stylesheet" href="#{base}/assets/css/campus.css">\n)
   # theme.min.js chay TRUOC doan nay va phat lai sang toi neu localStorage con gia
   # tri 'dark' tu lan tham cu, nen phai ep ca thuoc tinh lan gia tri luu tru.
   head << %(<script>try{localStorage.setItem('theme','light');) +

@@ -29,7 +29,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SKIP_TOP = {".git", ".github", "site", "tools", "_site_src", "_site_src_en",
             "_site", "assets", "node_modules", "_template", "_wip", "_de_raw", "docs"}
 MAX_COPY = 4 * 1024 * 1024
-COLORS = ["#f00", "#ff0", "#00f", "#000"]
+# Nen pastel + muc dam, cung bang mau voi site/assets/css/campus.css
+COLORS = ["#98ff98", "#add8e6", "#fdbcb4", "#e6e6fa"]
+INK = "#2d3748"
 CONTEST_TZ = dt.timezone(dt.timedelta(hours=7), "UTC+7")
 
 UI = {
@@ -258,19 +260,19 @@ def initials(name):
 
 
 def cover_svg(name, i):
-    ink, bg = ("#000", COLORS[i % len(COLORS)]) if i % 4 != 1 else ("#000", "#ff0")
-    fg = "#000"
+    """Tile du phong cho su kien chua lay duoc anh bìa that (xem cover_html)."""
+    bg, fg = COLORS[i % len(COLORS)], INK
     year = re.search(r"(20\d\d)", name)
     label = re.sub(r"\s*(CTF|20\d\d).*", "", name).strip() or name
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" role="img" aria-label="{name}">
 <rect width="600" height="300" fill="{bg}"/>
-<g stroke="{fg}" stroke-width="14" opacity=".18">
+<g stroke="{fg}" stroke-width="14" opacity=".14">
 {''.join(f'<line x1="{x}" y1="300" x2="{x+180}" y2="0"/>' for x in range(-180, 600, 60))}
 </g>
-<rect x="24" y="24" width="552" height="252" fill="none" stroke="{fg}" stroke-width="8"/>
-<text x="52" y="150" font-family="Syne,Manrope,Arial,sans-serif" font-size="86" font-weight="800" fill="{fg}">{initials(name)}</text>
-<text x="52" y="212" font-family="Manrope,Arial,sans-serif" font-size="30" font-weight="700" fill="{fg}">{label[:26]}</text>
-<text x="52" y="252" font-family="Manrope,Arial,sans-serif" font-size="20" letter-spacing="4" fill="{fg}">{year.group(1) if year else 'CTF'}</text>
+<rect x="24" y="24" width="552" height="252" rx="20" fill="none" stroke="{fg}" stroke-width="8"/>
+<text x="52" y="150" font-family="Fredoka,Nunito,Arial,sans-serif" font-size="86" font-weight="700" fill="{fg}">{initials(name)}</text>
+<text x="52" y="212" font-family="Nunito,Arial,sans-serif" font-size="30" font-weight="700" fill="{fg}">{label[:26]}</text>
+<text x="52" y="252" font-family="Nunito,Arial,sans-serif" font-size="20" letter-spacing="4" fill="{fg}">{year.group(1) if year else 'CTF'}</text>
 </svg>
 """
 
