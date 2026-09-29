@@ -64,10 +64,15 @@
   --card-shadow: var(--shadow);
   --dash-color: var(--ink);
   --img-bg: var(--paper);
-  --highlight-bg-color: #f7f7f7;
-  --highlight-lineno-color: #767676;
-  --inline-code-bg: #ececec;
-  --code-color: var(--red);
+  --highlight-bg-color: var(--paper);
+  --highlight-lineno-color: #666;
+  --highlighter-rouge-color: var(--ink);
+  --inline-code-bg: var(--paper);
+  --code-color: var(--ink);
+  --bs-code-color: #b00;
+  --code-header-text-color: var(--yellow);
+  --code-header-icon-color: var(--yellow);
+  --code-header-muted-color: var(--red);
   --kbd-bg-color: var(--yellow);
   --kbd-wrap-color: var(--ink);
   --kbd-text-color: var(--ink);
@@ -167,10 +172,85 @@ a.card:hover, .post-preview:hover { background: var(--yellow); }
 .btn:hover, button:hover { background: var(--red); color: #fff !important; transform: translate(-1px, -1px); }
 .btn:active { box-shadow: 1px 1px 0 0 var(--ink); transform: translate(2px, 2px); }
 
-/* Code */
-pre, code, kbd, .highlight, .post-content pre { border-radius: 0 !important; }
-pre { border: var(--hair) solid var(--ink); box-shadow: var(--shadow-sm); }
-:not(pre) > code { background: var(--inline-code-bg); color: #b3001b; padding: .1em .35em; }
+/* Code. Chirpy gant mau theo `:root[data-bs-theme=...]` (dac biet 0-3-0 tro len)
+   nen phan lon rule o day phai dat cung mo `:root[data-bs-theme]` de thang ma
+   khong dung den !important. */
+pre, code, kbd, .highlight, figure.highlight, div[class^=language-],
+code.highlighter-rouge { border-radius: 0 !important; }
+
+div[class^=language-], figure.highlight {
+  background: var(--paper);
+  border: var(--hair) solid var(--ink);
+  box-shadow: var(--shadow-sm);
+  margin: 1.8em 0;
+  overflow: hidden;
+}
+:root[data-bs-theme] .highlight, :root[data-bs-theme] .highlight .w { background: transparent; }
+
+.code-header {
+  background: var(--ink);
+  height: 2.4rem;
+  margin: 0;
+  padding: 0 14px;
+}
+div[class^=language-] .code-header { margin-left: 0; margin-right: 0; }
+.code-header::before,
+div[class^=language-] .code-header::before {
+  border-radius: 0 !important;
+  background-color: var(--red) !important;
+  box-shadow: 1.25rem 0 0 var(--yellow), 2.5rem 0 0 var(--blue);
+}
+div[class^=language-] .code-header span { margin-left: 0; }
+.code-header span, .code-header span i { color: var(--yellow); }
+.code-header span::after {
+  color: var(--yellow);
+  font-family: Manrope, sans-serif;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.code-header button { background: transparent; border: 2px solid transparent !important; box-shadow: none; }
+.code-header button:not([timeout]):hover,
+.code-header button[timeout]:hover { background: var(--yellow) !important; }
+.code-header button:not([timeout]):hover i,
+.code-header button[timeout] i { color: var(--ink) !important; }
+
+:root[data-bs-theme] .highlight table td { padding: 0; }
+:root[data-bs-theme] .highlight table pre { margin: 0; }
+.highlight { overflow: auto; padding-bottom: 0; }
+.highlight pre { font-size: .84rem; line-height: 1.6; }
+:root[data-bs-theme] .highlight table td.rouge-gutter {
+  display: table-cell;
+  background: #f2f2f2;
+  border-right: var(--hair) solid var(--ink) !important;
+  margin: 0 .8rem 0 0;
+  padding: 12px 12px 12px 14px !important;
+}
+:root[data-bs-theme] .highlight table td.rouge-code pre { padding: 13px 18px; }
+.highlight .lineno { color: #666; font-weight: 600; }
+/* Chirpy an so dong o plaintext/console/terminal, nen o gutter khong duoc de lai
+   dai rong mau xam. Cung mo :root de thang voi rule ben tren. */
+:root[data-bs-theme] div.language-plaintext td.rouge-gutter,
+:root[data-bs-theme] div.language-console td.rouge-gutter,
+:root[data-bs-theme] div.language-terminal td.rouge-gutter,
+:root[data-bs-theme] div.nolineno td.rouge-gutter {
+  background: transparent;
+  border-right: 0 !important;
+  margin-right: 0;
+  padding: 0 !important;
+}
+.highlight code, .highlight pre code { color: var(--ink); }
+
+:not(pre) > code, code.highlighter-rouge {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  color: #b3001b;
+  font-size: .86em;
+  padding: .06em .34em;
+}
+a > code.highlighter-rouge { border-color: transparent; color: inherit; }
+a:hover > code.highlighter-rouge { border-color: var(--ink); }
 
 /* Badge / tag */
 .badge, .post-tag, #tags .badge, .categories .badge {
@@ -188,6 +268,9 @@ pre { border: var(--hair) solid var(--ink); box-shadow: var(--shadow-sm); }
 table { border: var(--hair) solid var(--ink); }
 th, td { border: 1px solid var(--ink) !important; }
 thead th { background: var(--ink); color: #fff; font-family: Syne, sans-serif; }
+/* Bang layout cua khoi code khong phai bang du lieu */
+.highlight table { border: 0; }
+.highlight th, .highlight td { border: 0 !important; }
 
 /* Breadcrumb / title */
 #page-title, .post .post-content h1 { border-bottom: 6px solid var(--red); display: inline-block; padding-bottom: .1em; }
