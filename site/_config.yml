@@ -16,9 +16,9 @@ timezone: Asia/Ho_Chi_Minh
 
 title: CTFWU # main title
 
-tagline: Ghi chú CTF của team 612 # subtitle
+tagline: "Ghi chú CTF của R3:TURИ" # subtitle
 
-description: Kho writeup CTF của team 612 qua H7TEX, SunshineCTF và Pointer Overflow # used by seo meta and the atom feed
+description: "Kho writeup CTF của R3:TURИ qua H7TEX, SunshineCTF và Pointer Overflow" # used by seo meta and the atom feed
 
 # Fill in the protocol & hostname for your site.
 # E.g. 'https://username.github.io', note that it does not end with a '/'.
@@ -30,11 +30,12 @@ github:
 social:
   # Change to your full name.
   # It will be displayed as the default author of the posts and the copyright owner in the Footer
-  name: Phan Thành Danh
+  name: R3:TURИ
   email: ptdanh007@gmail.com # change to your email address
   fediverse_handle: # fill in your fediverse handle. E.g. "@username@domain.com"
   links:
     # The first element serves as the copyright owner's link
+    - https://ctftime.org/team/449538
     - https://github.com/tinhatinh
     - https://www.facebook.com/winterboyy
     - https://www.tiktok.com/@danh_pachirisu
@@ -114,7 +115,7 @@ actions:
 
 comments:
   # Global switch for the post-comment system. Keeping it empty means disabled.
-  provider: # [disqus | utterances | giscus]
+  provider: giscus # [disqus | utterances | giscus]
   # The provider options are as follows:
   disqus:
     shortname: # fill with the Disqus shortname. › https://help.disqus.com/en/articles/1717111-what-s-a-shortname
@@ -124,15 +125,15 @@ comments:
     issue_term: # < url | pathname | title | ...>
   # Giscus options › https://giscus.app
   giscus:
-    repo: # <gh-username>/<repo>
-    repo_id:
-    category:
-    category_id:
-    mapping: # optional, default to 'pathname'
-    strict: # optional, default to '0'
-    input_position: # optional, default to 'bottom'
+    repo: tinhatinh/CTFWU # <gh-username>/<repo>
+    repo_id: R_kgDOUfuTvg
+    category: General
+    category_id: # DIC_..., read from giscus.app after the app is installed on the repo
+    mapping: pathname # optional, default to 'pathname'
+    strict: 1 # optional, default to '0'
+    input_position: bottom # optional, default to 'bottom'
     lang: # optional, default to the value of `site.lang`
-    reactions_enabled: # optional, default to the value of `1`
+    reactions_enabled: 1 # optional, default to the value of `1`
 
 # Self-hosted static assets, optional › https://github.com/cotes2020/chirpy-static-assets
 assets:

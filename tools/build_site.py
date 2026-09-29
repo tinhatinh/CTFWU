@@ -34,47 +34,89 @@ CONTEST_TZ = dt.timezone(dt.timedelta(hours=7), "UTC+7")
 
 UI = {
     "vi": {"competitions": "Các cuộc thi", "posts": "bài writeup", "view": "Xem writeup",
-           "tagline": "Ghi chú CTF của team 612",
-           "description": "Kho writeup CTF của team 612 qua H7TEX, SunshineCTF và Pointer Overflow",
+           "tagline": "Ghi chú CTF của R3:TURИ",
+           "description": "Kho writeup CTF của R3:TURИ qua H7TEX, SunshineCTF và Pointer Overflow",
            "hint": "Mỗi cuộc thi là một mục. Bên trong là các bài giải, xếp theo chuyên mục."},
     "en": {"competitions": "Competitions", "posts": "writeups", "view": "Read writeups",
-           "tagline": "CTF writeups by team 612",
-           "description": "CTF writeups by team 612, from H7TEX, SunshineCTF and Pointer Overflow",
+           "tagline": "CTF writeups by R3:TURИ",
+           "description": "CTF writeups by R3:TURИ, from H7TEX, SunshineCTF and Pointer Overflow",
            "hint": "One card per event. Inside each one, the solutions grouped by category.",
            "nottranslated": "This post has no English version yet."},
 }
 
+TEAM = "R3:TURИ"
+MEMBERS = [
+    ("minhduc26122913", "187061", ""),
+    ("k4tpr02k5", "236179", ""),
+    ("Tikilazada", "251074", "Tikilazada"),
+    ("cu_kh1nh_b0_m4y_d1", "272628", "tinhatinh"),
+    ("Lizamort1", "274020", "Lizamort1"),
+]
+
+
+MEMBER_UI = {
+    "vi": {"head": "| Thành viên | CTFTime | GitHub |", "link": "hồ sơ", "me": "(mình)"},
+    "en": {"head": "| Member | CTFTime | GitHub |", "link": "profile", "me": "(me)"},
+}
+
+
+def member_table(lang):
+    ui = MEMBER_UI[lang]
+    rows = [ui["head"], "|---|---|---|"]
+    for handle, cid, gh in MEMBERS:
+        me = " " + ui["me"] if gh == "tinhatinh" else ""
+        github = "[@%s](https://github.com/%s)" % (gh, gh) if gh else "-"
+        rows.append("| `%s`%s | [%s](https://ctftime.org/user/%s) | %s |"
+                    % (handle, me, ui["link"], cid, github))
+    return "\n".join(rows) + "\n"
+
 ABOUT = {
-    "vi": """Mình là **Phan Thành Danh** (tinhatinh), sinh viên Công nghệ thông tin tại Học viện
-Bưu chính Viễn thông (PTIT), đang học thêm về kiểm thử bảo mật và thi CTF cùng team 612.
+    "vi": """Mình là **Phan Thành Danh** ([@tinhatinh](https://github.com/tinhatinh)), sinh viên Công
+nghệ thông tin tại Học viện Bưu chính Viễn thông (PTIT), đang học thêm về kiểm thử bảo mật.
 
 - Ngoại ngữ: tiếng Trung HSK 4 (262/300) kèm HSKK Trung cấp, tiếng Anh đang hướng tới TOEIC 850.
 - Công cụ dùng hằng ngày: Python, C/C++, Java, Linux/Bash, Docker, Git.
 - Liên hệ: [ptdanh007@gmail.com](mailto:ptdanh007@gmail.com),
   [Facebook](https://www.facebook.com/winterboyy), [TikTok](https://www.tiktok.com/@danh_pachirisu).
 
-Kho writeup CTF của team 612. Mỗi bài là một thư mục trong repo
-[`tinhatinh/CTFWU`](https://github.com/tinhatinh/CTFWU) gồm `de.md` (đề nguyên văn + metadata đã
-kiểm chứng), `writeup.md` (cách giải), `notes.md` (nhật ký giả thuyết, kể cả hướng sai),
-`exploit.py` (script chạy lại được) và `files/` (artifact gốc đã đối chiếu sha256).
+## Đội
+
+Toàn bộ writeup trong kho này là của đội **{team}**, hồ sơ đội trên
+[CTFTime](https://ctftime.org/team/449538). Ở POCTF 2026 đội đăng ký dưới số 612, nên thẻ đề và
+flag của các bài POCTF mang số đó.
+
+{members}
+## Kho writeup
+
+Mỗi bài là một thư mục trong repo [`tinhatinh/CTFWU`](https://github.com/tinhatinh/CTFWU) gồm
+`de.md` (đề nguyên văn + metadata đã kiểm chứng), `writeup.md` (cách giải), `notes.md` (nhật ký giả
+thuyết, kể cả hướng sai), `exploit.py` (script chạy lại được) và `files/` (artifact gốc đã đối
+chiếu sha256).
 
 Toàn bộ lời giải chỉ dựa vào artifact của chính đề bài, không tra writeup của người khác.
 Flag là giá trị riêng theo team, nên copy từ đây về nộp sẽ không hợp lệ.
 """,
-    "en": """I'm **Phan Thành Danh** (tinhatinh), an IT student at the Posts and Telecommunications
-Institute of Technology (PTIT), currently studying security testing and competing in CTFs with
-team 612.
+    "en": """I'm **Phan Thành Danh** ([@tinhatinh](https://github.com/tinhatinh)), an IT student at the
+Posts and Telecommunications Institute of Technology (PTIT), currently studying security testing.
 
 - Languages: Chinese HSK 4 (262/300) with HSKK Intermediate, working towards TOEIC 850 in English.
 - Daily tools: Python, C/C++, Java, Linux/Bash, Docker, Git.
 - Contact: [ptdanh007@gmail.com](mailto:ptdanh007@gmail.com),
   [Facebook](https://www.facebook.com/winterboyy), [TikTok](https://www.tiktok.com/@danh_pachirisu).
 
-CTF writeup archive by team 612. Every challenge is a folder in the
-[`tinhatinh/CTFWU`](https://github.com/tinhatinh/CTFWU) repo holding `de.md` (the statement plus
-verified metadata), `writeup.md` (the solution), `notes.md` (the hypothesis log, wrong turns
-included), `exploit.py` (a script that replays the solve) and `files/` (original artifacts,
-sha256 checked).
+## Team
+
+Everything in this archive belongs to **{team}**, profiled on
+[CTFTime](https://ctftime.org/team/449538). At POCTF 2026 the team was registered as number 612,
+which is why the POCTF challenge cards and flags carry that id.
+
+{members}
+## The archive
+
+Every challenge is a folder in the [`tinhatinh/CTFWU`](https://github.com/tinhatinh/CTFWU) repo
+holding `de.md` (the statement plus verified metadata), `writeup.md` (the solution), `notes.md`
+(the hypothesis log, wrong turns included), `exploit.py` (a script that replays the solve) and
+`files/` (original artifacts, sha256 checked).
 
 Every solution comes from the challenge's own artifact only, with no outside writeups consulted.
 Flags are per team, so copying one from here will not be accepted.
@@ -362,8 +404,10 @@ def write_about(stage, lang):
     out = os.path.join(stage, "_tabs")
     os.makedirs(out, exist_ok=True)
     fm = "---\nicon: fas fa-info-circle\norder: 5\n---\n\n"
-    open(os.path.join(out, "about.md"), "w", encoding="utf-8", newline="\n").write(
-        fm + ABOUT[lang])
+    about = ABOUT[lang].replace("{team}", TEAM).replace("{members}", member_table(lang))
+    if "{t" in about:
+        raise SystemExit("placeholder ve trong about")
+    open(os.path.join(out, "about.md"), "w", encoding="utf-8", newline="\n").write(fm + about)
 
 
 def build(lang):
@@ -376,7 +420,7 @@ def build(lang):
     t = open(cfg, encoding="utf-8").read()
     if lang == "en":
         t = t.replace('baseurl: "/CTFWU"', 'baseurl: "/CTFWU/en"').replace("lang: vi-VN", "lang: en")
-    t = re.sub(r"^tagline:.*$", "tagline: " + UI[lang]["tagline"], t, flags=re.M)
+    t = re.sub(r"^tagline:.*$", 'tagline: "%s"' % UI[lang]["tagline"], t, flags=re.M)
     t = re.sub(r"^description:.*$", 'description: "%s"' % UI[lang]["description"], t, flags=re.M)
     open(cfg, "w", encoding="utf-8", newline="\n").write(t)
     events = collect(lang)
