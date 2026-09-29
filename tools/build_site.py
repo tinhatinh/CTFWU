@@ -235,21 +235,21 @@ def describe(body):
     return ""
 
 
-def cover_html(ev):
-    """Ảnh bìa thật của sự kiện, nằm ở `site/assets/competitions/<slug>.<ext>`.
+def cover_html(ev, base):
+    """Khung cover cua su kien: `site/assets/competitions/<slug>.<ext>` that, khong
+    co thi tile SVG sinh.
 
-    src viet tuong doi so voi goc site (`/assets/...`), KHONG co baseurl: Jekyll
-    noi chuoi baseurl vao `src` cua the <img> tho tren page, nen da thu ca hai
-    kieu co prefix (`/CTFWU/...` -> `/CTFWU/CTFWU/...`, `../assets/...` ->
-    `/CTFWU/../assets/...`, xem log CI run #10 va #11). Anh trong bai viet la
-    markdown chu khong phai HTML tho nen van giu nguyen prefix. Chua co anh thi
-    quay ve tile SVG sinh.
+    Anh that phat qua `background-image`, KHONG dung the <img>: Chirpy boc moi
+    <img> trong `a.popup.img-link` de mo lightbox, ma the card da la <a> -> nested
+    anchor bi parser huy, anh nam ra ngoai card (phat hien khi do live, run #14).
+    Duong dan co prefix baseurl vi khong co nao noi chuoi vao style.
     """
     for ext in ("png", "jpg", "jpeg", "webp", "svg"):
         f = "%s.%s" % (ev["slug"], ext)
         if os.path.isfile(os.path.join(ROOT, "site", "assets", "competitions", f)):
-            return '<img src="/assets/competitions/%s" alt="%s">' % (f, ev["name"])
-    return cover_svg(ev["name"], ev["idx"])
+            return ('<span class="ctfw-cover" style="background-image:url(\'%s/assets/competitions/%s\')"></span>'
+                    % (base, f))
+    return '<span class="ctfw-cover">%s</span>' % cover_svg(ev["name"], ev["idx"])
 
 
 def stamp(d, lang, exact=True):
@@ -407,10 +407,10 @@ def write_competitions(stage, events, lang, base):
         if first.date() != last.date():
             span = "%s → %s" % (stamp(first, lang, False), span)
         cats = sorted({p["cat"] for p in ev["posts"]})
-        cover = cover_html(ev)
+        cover = cover_html(ev, base)
         body.append(
             '<a class="ctfw-card" href="%s/events/%s/">'
-            '<span class="ctfw-cover">%s</span>'
+            '%s'
             '<div class="ctfw-body"><span class="ctfw-kicker">CTF %s</span>'
             '<div class="ctfw-name">%s</div>'
             '<div>%s</div>'
