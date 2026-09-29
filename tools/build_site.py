@@ -449,6 +449,7 @@ def build(lang):
     t = re.sub(r"^description:.*$", 'description: "%s"' % UI[lang]["description"], t, flags=re.M)
     open(cfg, "w", encoding="utf-8", newline="\n").write(t)
     events = collect(lang)
+    pending = [p["key"] for ev in events for p in ev["posts"] if p.get("fallback")]
     n = 0
     for ev in events:
         for p in ev["posts"]:
@@ -458,6 +459,8 @@ def build(lang):
     write_competitions(stage, events, lang, base)
     write_about(stage, lang)
     total = sum(os.path.getsize(os.path.join(dp, f)) for dp, _, fs in os.walk(stage) for f in fs)
+    if pending:
+        print("[warn] %d bai en dang dung ban tieng Viet: %s" % (len(pending), ", ".join(pending)))
     print("[%s] %d event, %d bai, %.1f MB -> %s"
           % (lang, len(events), n, total / 1e6, os.path.relpath(stage, ROOT)))
 
