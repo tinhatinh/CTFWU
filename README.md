@@ -6,17 +6,19 @@ Solutions and writeups for challenges from competitive CTF events.
 
 ## Site
 
-The archive layout below is the source of truth. `_posts/` is generated from it, so never edit
-`_posts/` by hand:
+The archive layout below is the source of truth. The site is assembled into a staging tree so the
+1.3 GB of challenge artifacts in this repo never reach `_site`:
 
 ```bash
-python tools/build_posts.py          # write 55 posts into _posts/
-python tools/build_posts.py --dry    # list what would be written
+python tools/build_site.py     # writes _site_src/ (55 posts + only the images a writeup uses)
 ```
 
-The generator reads each `<Event>/<slug>/writeup.md`, takes the date from that file's last commit,
-and reads the challenge category from the event's own `README.md` table. The Pages workflow runs it
-before building, so a forgotten local run cannot desync the site.
+`_site_src/` is generated and git-ignored - never edit it. The generator reads each
+`<Event>/<slug>/writeup.md`, takes the date from that file's last commit, reads the category from
+the event's own `README.md` table, copies referenced images to `assets/writeups/<event>/<case>/`,
+and wraps every body in `{% raw %}` because writeups quote Liquid syntax (`{{7*7}}`, `{% ... %}`)
+that Jekyll would otherwise try to execute. GitHub Actions runs it before building, so the site
+cannot drift from the archive.
 
 ## Competitions
 

@@ -35,8 +35,8 @@ jobs:
           # If using the 'assets' git submodule from Chirpy Starter, uncomment above
           # (See: https://github.com/cotes2020/chirpy-starter/tree/main/assets)
 
-      - name: Generate posts from the writeup archive
-        run: python3 tools/build_posts.py
+      - name: Assemble site source from the writeup archive
+        run: python3 tools/build_site.py
 
       - name: Setup Pages
         id: pages
@@ -49,7 +49,7 @@ jobs:
           bundler-cache: true
 
       - name: Build site
-        run: bundle exec jekyll b -d "_site${{ steps.pages.outputs.base_path }}"
+        run: bundle exec jekyll b -s _site_src -d "_site${{ steps.pages.outputs.base_path }}"
         env:
           JEKYLL_ENV: "production"
 
