@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
-"""Dựng `_site_src/` cho Jekyll (Chirpy) từ kho writeup, rồi mới tới lượt Jekyll.
+"""Dựng `_site_src/` (tieng Viet) va `_site_src_en/` (tieng Anh) cho Jekyll.
 
-Ly do co buoc nay: kho luu tru >1 GB artifact (snapshot website, disk image, pcap).
-De Jekyll build thang tren repo thi toan bo artifact bi copy vao _site va
-htmlproofer se di kiem tung link trong cac trang artifact ay. Stage chi giu lai
-noi dung site + anh ma writeup thoc dung.
+Kho writeup theo thu muc van la nguon duy nhat:
+    <Event>/<slug>/writeup.md        ban tieng Viet
+    <Event>/<slug>/writeup.en.md     ban tieng Anh (thieu thi bai do bi loai o cay en)
 
-Chay:  python tools/build_site.py
+Ly do build 2 cay: Chirpy khong co i18n plugin, ma trang chu / categories / archive
+cua no liet ke toan bo `site.posts`. De tron hai ngon ngu vung chung mot cay thi
+nội dung VI va EN dong lan tren trang chu. Cach nay giu nguyen HTML cua Chirpy:
+moi cay la mot site hoan chinh, nut ngon ngu chi doi mirror URL.
+
+Chay:  python tools/build_site.py            # ca hai ngon ngu
+        python tools/build_site.py --lang vi # mot cay
 """
+import argparse
 import datetime as dt
 import os
 import re
@@ -19,12 +25,24 @@ from urllib.parse import quote
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SITE_BASE = "/CTFWU"
-STAGE = os.path.join(ROOT, "_site_src")
-SKIP_TOP = {".git", ".github", "site", "tools", "_site_src", "_site", "assets",
-            "node_modules", "_template", "_wip", "_de_raw", "docs"}
-IMG_EXT = (".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp")
-MAX_COPY = 4 * 1024 * 1024            # khong copy file > 4 MB vao site
+SKIP_TOP = {".git", ".github", "site", "tools", "_site_src", "_site_src_en",
+            "_site", "assets", "node_modules", "_template", "_wip", "_de_raw", "docs"}
+MAX_COPY = 4 * 1024 * 1024
+COLORS = ["#f00", "#ff0", "#00f", "#000"]
+
+UI = {
+    "vi": {"competitions": "Các cuộc thi", "posts": "bài writeup", "view": "Xem writeup",
+           "title": "CTFWU", "tagline": "Ghi chú CTF của team 612",
+           "hint": "Mỗi cuộc thi là một mục. Bên trong là các bài giải, xếp theo chuyên mục.",
+           "back": "Về trang chủ", "nottranslated": ""},
+    "en": {"competitions": "Competitions", "posts": "writeups", "view": "Read writeups",
+           "title": "CTFWU", "tagline": "CTF writeups by team 612",
+           "hint": "One card per event. Inside each one, the solutions grouped by category.",
+           "back": "Back to home",
+           "nottranslated": "This post has no English version yet."},
+}
+
+LIQUID_SPAN = re.compile(r"\{\{.*?\}\}|\{%.*?%\}|\{\{.*$|\{%.*$", re.M)
 
 
 def event_dirs():
@@ -32,6 +50,10 @@ def event_dirs():
         p = os.path.join(ROOT, name)
         if os.path.isdir(p) and name not in SKIP_TOP and not name.startswith((".", "_")):
             yield name
+
+
+def slugify(s):
+    return re.sub(r"[^A-Za-z0-9]+", "-", s).strip("-").lower() or "x"
 
 
 def case_date(path):
@@ -68,23 +90,14 @@ def readme_categories(event):
     return m
 
 
-def slugify(s):
-    return re.sub(r"[^A-Za-z0-9]+", "-", s).strip("-").lower() or "x"
-
-
-LIQUID_SPAN = re.compile(r"\{\{.*?\}\}|\{%.*?%\}|\{\{.*$|\{%.*$", re.M)
-
-
 def protect_liquid(body):
     """Giup Liquid khong thuc thi payload SSTI/Jinja ma writeup chem lai.
 
-    Mac dinh boc tung doan bang {% raw %} de excerpt (cat tu nguon chua render)
-    van sach. Neu chinh noi dung chua the raw nay thi khong dung cach do
-    duoc - no se ket thuc som - nen doi thanh escape delimiter.
+    Mac dinh boc tung doan bang raw tag de excerpt (cat tu nguon chua render) van
+    sach. Neu chinh noi dung chua raw tag thi khong long duoc, phai escape delimiter.
     """
     if "{% raw %}" in body or "{% endraw %}" in body:
         return re.sub(r"\{\{|\{%", lambda m: "{{ '%s' }}" % m.group(0), body)
-
     out = LIQUID_SPAN.sub(lambda m: "{%% raw %%}%s{%% endraw %%}" % m.group(0), body)
     stripped = re.sub(r"\{% raw %\}[\s\S]*?\{% endraw %\}", "", out)
     if "{{" in stripped or "{%" in stripped:
@@ -101,81 +114,185 @@ def describe(body):
     return ""
 
 
-def copy_asset(src_abs, ev_slug, case_slug, name):
-    dst_dir = os.path.join(STAGE, "assets", "writeups", ev_slug, case_slug)
-    os.makedirs(dst_dir, exist_ok=True)
-    dst = os.path.join(dst_dir, os.path.basename(name))
-    shutil.copyfile(src_abs, dst)
-    return "/%s/assets/writeups/%s/%s/%s" % (SITE_BASE.strip("/"), ev_slug, case_slug,
-                                             quote(os.path.basename(name)))
+def initials(name):
+    words = re.findall(r"[A-Za-z0-9]+", name)
+    core = "".join(w[0] for w in words if w[0].isupper()) or (words[0][:2] if words else "CT")
+    return (core[:4] or "CT").upper()
 
 
-def build():
-    if os.path.isdir(STAGE):
-        shutil.rmtree(STAGE)
-    shutil.copytree(os.path.join(ROOT, "site"), STAGE)
-    posts, n_img = [], 0
-    for event in event_dirs():
-        ev_slug, catmap = slugify(event), readme_categories(event)
+def cover_svg(name, i):
+    ink, bg = ("#000", COLORS[i % len(COLORS)]) if i % 4 != 1 else ("#000", "#ff0")
+    fg = "#000"
+    year = re.search(r"(20\d\d)", name)
+    label = re.sub(r"\s*(CTF|20\d\d).*", "", name).strip() or name
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" role="img" aria-label="{name}">
+<rect width="600" height="300" fill="{bg}"/>
+<g stroke="{fg}" stroke-width="14" opacity=".18">
+{''.join(f'<line x1="{x}" y1="300" x2="{x+180}" y2="0"/>' for x in range(-180, 600, 60))}
+</g>
+<rect x="24" y="24" width="552" height="252" fill="none" stroke="{fg}" stroke-width="8"/>
+<text x="52" y="150" font-family="Syne,Manrope,Arial,sans-serif" font-size="86" font-weight="800" fill="{fg}">{initials(name)}</text>
+<text x="52" y="212" font-family="Manrope,Arial,sans-serif" font-size="30" font-weight="700" fill="{fg}">{label[:26]}</text>
+<text x="52" y="252" font-family="Manrope,Arial,sans-serif" font-size="20" letter-spacing="4" fill="{fg}">{year.group(1) if year else 'CTF'}</text>
+</svg>
+"""
+
+
+def collect(lang):
+    """Tra ve danh sach event -> bai viet cho mot ngon ngu."""
+    events = []
+    for i, event in enumerate(event_dirs()):
+        fname = "writeup.md" if lang == "vi" else "writeup.en.md"
+        catmap = readme_categories(event)
+        posts = []
         for case in sorted(os.listdir(os.path.join(ROOT, event))):
-            w = os.path.join(ROOT, event, case, "writeup.md")
+            w = os.path.join(ROOT, event, case, fname)
+            fallback = False
             if not os.path.isfile(w):
-                continue
+                # cay en: bai chua dich thi tam dung ban tieng Viet, co danh ngu
+                if lang != "en":
+                    continue
+                w = os.path.join(ROOT, event, case, "writeup.md")
+                if not os.path.isfile(w):
+                    continue
+                fallback = True
             text = open(w, encoding="utf-8").read()
             title = next((ln[2:].strip() for ln in text.split("\n")
                           if ln.startswith("# ")), "%s - %s" % (event, case))
-            d = case_date(w)
-            key = "%s-%s" % (ev_slug, slugify(case))
-            cat = (catmap.get(case) or "writeup").strip()
-            tags = [t for t in dict.fromkeys([ev_slug.replace("-ctf-", "-").replace("-2026", ""),
-                                              cat.lower()]) if t]
+            posts.append({
+                "case": case, "path": w, "text": text, "title": title,
+                "date": case_date(w), "key": "%s-%s" % (slugify(event), slugify(case)),
+                "cat": (catmap.get(case) or "writeup").strip(), "fallback": fallback,
+            })
+        if posts:
+            events.append({"name": event, "slug": slugify(event), "posts": posts, "idx": i})
+    return events
 
-            body = text.split("\n")
-            if body and body[0].startswith("# "):
-                body = body[1:]
-            body = "\n".join(body).strip() + "\n"
 
-            def hold(m):
-                nonlocal n_img
-                alt, target = m.group(1), m.group(2).strip()
-                if re.match(r"^(https?:|/|#)", target):
-                    return m.group(0)
-                src = os.path.normpath(os.path.join(ROOT, event, case, target.split("#")[0]))
-                if not os.path.isfile(src) or os.path.getsize(src) > MAX_COPY:
-                    return m.group(0)
-                n_img += 1
-                return "![%s](%s)" % (alt, copy_asset(src, ev_slug, case, target))
+def write_post(stage, ev, p, lang, base):
+    body = p["text"].split("\n")
+    if body and body[0].startswith("# "):
+        body = body[1:]
+    body = "\n".join(body).strip() + "\n"
 
-            body = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", hold, body)
-            body = protect_liquid(body)
-            fm = ["---", 'title: "%s"' % title.replace('"', "'"),
-                  "date: %s +0700" % d.strftime("%Y-%m-%d %H:%M:%S"),
-                  "lastmod_at: %s" % d.strftime("%Y-%m-%d %H:%M:%S %z"),
-                  "categories: [%s]" % cat, "tags: [%s]" % ", ".join(tags)]
-            desc = describe(text)
-            if desc:
-                fm.append('description: "%s"' % desc.replace('"', "'"))
-            preview = os.path.join(ROOT, event, case, "files", "de.png")
-            if os.path.isfile(preview) and os.path.getsize(preview) <= MAX_COPY:
-                dst_dir = os.path.join(STAGE, "assets", "writeups", ev_slug, slugify(case))
-                os.makedirs(dst_dir, exist_ok=True)
-                shutil.copyfile(preview, os.path.join(dst_dir, "de.png"))
-                n_img += 1
-                fm += ["image:", "  path: /assets/writeups/%s/%s/de.png"
-                       % (ev_slug, slugify(case))]
-            fm += ["---", ""]
-            os.makedirs(os.path.join(STAGE, "_posts"), exist_ok=True)
-            out = os.path.join(STAGE, "_posts", "%s-%s.md" % (d.strftime("%Y-%m-%d"), key))
-            text_out = "\n".join(fm) + body
-            if text_out.count("{% raw %}") != text_out.count("{% endraw %}"):
-                raise SystemExit("the raw khong can doi o %s/%s" % (event, case))
-            open(out, "w", encoding="utf-8", newline="\n").write(text_out)
-            posts.append(out)
-    total = sum(os.path.getsize(os.path.join(dp, f))
-                for dp, _, fs in os.walk(STAGE) for f in fs)
-    print("stage=%s  posts=%d  asset copied=%d  tong %.1f MB"
-          % (os.path.relpath(STAGE, ROOT), len(posts), n_img, total / 1e6))
+    def hold(m):
+        alt, target = m.group(1), m.group(2).strip()
+        if re.match(r"^(https?:|/|#)", target):
+            return m.group(0)
+        src = os.path.normpath(os.path.join(ROOT, ev["name"], p["case"], target.split("#")[0]))
+        if not os.path.isfile(src) or os.path.getsize(src) > MAX_COPY:
+            return m.group(0)
+        dst_dir = os.path.join(stage, "assets", "writeups", ev["slug"], p["case"])
+        os.makedirs(dst_dir, exist_ok=True)
+        shutil.copyfile(src, os.path.join(dst_dir, os.path.basename(src)))
+        return "![%s](%s/assets/writeups/%s/%s/%s)" % (
+            alt, base, ev["slug"], p["case"], quote(os.path.basename(src)))
+
+    body = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", hold, body)
+    if p.get("fallback"):
+        body = ("> %s\n{: .prompt-warning }\n\n" % UI["en"]["nottranslated"]) + body
+    body = protect_liquid(body)
+
+    d = p["date"]
+    fm = ["---", 'title: "%s"' % p["title"].replace('"', "'"),
+          "date: %s +0700" % d.strftime("%Y-%m-%d %H:%M:%S"),
+          "lastmod_at: %s" % d.strftime("%Y-%m-%d %H:%M:%S %z"),
+          "categories: [%s]" % p["cat"],
+          "tags: [%s]" % ", ".join(dict.fromkeys([ev["slug"].replace("-ctf-", "-").replace("-2026", ""),
+                                                  p["cat"].lower()])),
+          "permalink: /posts/%s/" % p["key"]]
+    desc = describe(p["text"])
+    if desc:
+        fm.append('description: "%s"' % desc.replace('"', "'"))
+    preview = os.path.join(ROOT, ev["name"], p["case"], "files", "de.png")
+    if os.path.isfile(preview) and os.path.getsize(preview) <= MAX_COPY:
+        dst_dir = os.path.join(stage, "assets", "writeups", ev["slug"], p["case"])
+        os.makedirs(dst_dir, exist_ok=True)
+        shutil.copyfile(preview, os.path.join(dst_dir, "de.png"))
+        fm += ["image:", "  path: /assets/writeups/%s/%s/de.png" % (ev["slug"], p["case"])]
+    fm += ["---", ""]
+    out_dir = os.path.join(stage, "_posts")
+    os.makedirs(out_dir, exist_ok=True)
+    out = os.path.join(out_dir, "%s-%s.md" % (d.strftime("%Y-%m-%d"), p["key"]))
+    text_out = "\n".join(fm) + body
+    if text_out.count("{% raw %}") != text_out.count("{% endraw %}"):
+        raise SystemExit("the raw khong can doi o %s/%s" % (ev["name"], p["case"]))
+    open(out, "w", encoding="utf-8", newline="\n").write(text_out)
+    return out
+
+
+def write_event_page(stage, ev, lang, base):
+    ui = UI[lang]
+    lines = ["---", 'title: "%s"' % ev["name"], "layout: page",
+             "permalink: /events/%s/" % ev["slug"],
+             'description: "%s"' % ("%d %s" % (len(ev["posts"]), ui["posts"])), "---", ""]
+    lines.append("## %s\n" % ev["name"])
+    for p in sorted(ev["posts"], key=lambda x: x["cat"].lower()):
+        lines.append('- [%s](%s/posts/%s/) · `%s`' % (p["title"], base, p["key"], p["cat"]))
+    lines.append("")
+    out = os.path.join(stage, "events")
+    os.makedirs(out, exist_ok=True)
+    open(os.path.join(out, "%s.md" % ev["slug"]), "w", encoding="utf-8", newline="\n").write("\n".join(lines))
+
+
+def write_competitions(stage, events, lang, base):
+    ui = UI[lang]
+    body = ["---", 'title: "%s"' % ui["competitions"], "icon: fas fa-trophy", "order: 1",
+            "layout: page", "permalink: /competitions/", "---", ""]
+    body.append("<p>%s</p>\n" % ui["hint"])
+    body.append('<div class="ctfw-cards">')
+    for ev in events:
+        last = max(p["date"] for p in ev["posts"])
+        cats = sorted({p["cat"] for p in ev["posts"]})
+        svg = cover_svg(ev["name"], ev["idx"])
+        p_svg = os.path.join(stage, "assets", "competitions")
+        os.makedirs(p_svg, exist_ok=True)
+        open(os.path.join(p_svg, "%s.svg" % ev["slug"]), "w", encoding="utf-8", newline="\n").write(svg)
+        body.append(
+            '<a class="ctfw-card" href="%s/events/%s/">'
+            '<img class="ctfw-cover" src="%s/assets/competitions/%s.svg" alt="">'
+            '<div class="ctfw-body"><span class="ctfw-kicker">CTF %s</span>'
+            '<div class="ctfw-name">%s</div>'
+            '<div>%s</div>'
+            '<div class="ctfw-meta"><span>%d %s</span><span>%s</span>'
+            '<span>%s &rarr;</span></div></div></a>'
+            % (base, ev["slug"], base, ev["slug"], last.year, ev["name"],
+               ", ".join(cats), len(ev["posts"]), ui["posts"],
+               last.strftime("%d/%m/%Y" if lang == "vi" else "%b %d, %Y"), ui["view"]))
+    body.append("</div>\n")
+    out = os.path.join(stage, "_tabs")
+    os.makedirs(out, exist_ok=True)
+    open(os.path.join(out, "competitions.md"), "w", encoding="utf-8", newline="\n").write("\n".join(body))
+
+
+def build(lang):
+    stage = os.path.join(ROOT, "_site_src" if lang == "vi" else "_site_src_en")
+    base = "/CTFWU" if lang == "vi" else "/CTFWU/en"
+    if os.path.isdir(stage):
+        shutil.rmtree(stage)
+    shutil.copytree(os.path.join(ROOT, "site"), stage)
+    if lang == "en":
+        cfg = os.path.join(stage, "_config.yml")
+        t = open(cfg, encoding="utf-8").read()
+        t = t.replace('baseurl: "/CTFWU"', 'baseurl: "/CTFWU/en"').replace("lang: vi-VN", "lang: en")
+        t = re.sub(r"^tagline:.*$", 'tagline: CTF writeups by team 612', t, flags=re.M)
+        open(cfg, "w", encoding="utf-8", newline="\n").write(t)
+    events = collect(lang)
+    n = 0
+    for ev in events:
+        for p in ev["posts"]:
+            write_post(stage, ev, p, lang, base)
+            n += 1
+        write_event_page(stage, ev, lang, base)
+    write_competitions(stage, events, lang, base)
+    total = sum(os.path.getsize(os.path.join(dp, f)) for dp, _, fs in os.walk(stage) for f in fs)
+    print("[%s] %d event, %d bai, %.1f MB -> %s"
+          % (lang, len(events), n, total / 1e6, os.path.relpath(stage, ROOT)))
 
 
 if __name__ == "__main__":
-    build()
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--lang", choices=["vi", "en", "all"], default="all")
+    a = ap.parse_args()
+    for lang in (["vi", "en"] if a.lang == "all" else [a.lang]):
+        build(lang)

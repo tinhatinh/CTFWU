@@ -1,0 +1,213 @@
+/* CTFWU skin: neo-brutalist, lay token tu uupm.cc/demo/creative-agency
+   (Syne 700 tieu de, Manrope than, mau thuan do/vang/xanh, border den 3px,
+   bong lech cung, khong bo goc). Nay duoc inject SAU CSS cua Chirpy nen
+   cung do chi thi thang duoc tinh. */
+
+@import url("https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Manrope:wght@400;500;700;800&display=swap");
+
+:root {
+  --ink: #000;
+  --paper: #fff;
+  --red: #f00;
+  --yellow: #ff0;
+  --blue: #00f;
+  --shadow: 6px 6px 0 0 var(--ink);
+  --shadow-sm: 4px 4px 0 0 var(--ink);
+  --hair: 3px;
+
+  --bs-body-bg: var(--paper);
+  --bs-body-color: var(--ink);
+  --bs-emphasis-color: var(--ink);
+  --bs-border-color: var(--ink);
+  --bs-link-color: var(--ink);
+  --bs-link-hover-color: var(--blue);
+  --bs-secondary-color: #333;
+  --bs-secondary-bg: var(--yellow);
+  --bs-tertiary-bg: #f2f2f2;
+  --bs-body-font-family: Manrope, "Segoe UI", sans-serif;
+  --bs-border-radius: 0;
+  --bs-border-radius-lg: 0;
+  --bs-border-radius-sm: 0;
+  --bs-border-radius-xl: 0;
+
+  --main-bg: var(--paper);
+  --topbar-bg: var(--paper);
+  --topbar-text-color: var(--ink);
+  --sidebar-bg: var(--ink);
+  --sidebar-border-color: var(--ink);
+  --sidebar-active-color: var(--yellow);
+  --sidebar-hover-bg: #1a1a1a;
+  --sidebar-muted-color: #b9b9b9;
+  --avatar-border-color: var(--yellow);
+  --site-title-color: var(--paper);
+  --site-subtitle-color: #cfcfcf;
+  --menu-bg: var(--ink);
+  --menu-border-color: var(--ink);
+  --menu-shadow-color: rgba(0, 0, 0, .5);
+  --menu-highlight-bg: #1a1a1a;
+  --menu-active-color: var(--yellow);
+
+  --text-color: var(--ink);
+  --heading-color: var(--ink);
+  --text-muted-color: #444;
+  --link-color: var(--ink);
+  --link-underline-color: var(--red);
+  --btn-border-color: var(--ink);
+  --btn-border-radius: 0;
+  --button-bg: var(--yellow);
+  --btn-paginator-hover-color: var(--yellow);
+  --btn-patinator-text-color: var(--ink);
+
+  --card-bg: var(--paper);
+  --card-header-bg: var(--paper);
+  --card-hover-bg: var(--yellow);
+  --card-shadow: var(--shadow);
+  --dash-color: var(--ink);
+  --img-bg: var(--paper);
+  --highlight-bg-color: #f7f7f7;
+  --highlight-lineno-color: #767676;
+  --inline-code-bg: #ececec;
+  --code-color: var(--red);
+  --kbd-bg-color: var(--yellow);
+  --kbd-wrap-color: var(--ink);
+  --kbd-text-color: var(--ink);
+  --blockquote-text-color: #333;
+  --blockquote-border-color: var(--red);
+  --filepath-text-color: #333;
+  --prompt-text-color: var(--ink);
+  --prompt-tip-bg: #d6f5d6;
+  --prompt-tip-icon-color: var(--ink);
+  --prompt-info-bg: #cfe0ff;
+  --prompt-info-icon-color: var(--ink);
+  --prompt-warning-bg: #ffe9a8;
+  --prompt-warning-icon-color: var(--ink);
+  --prompt-danger-bg: #ffd3d3;
+  --prompt-danger-icon-color: var(--ink);
+  --tag-border: var(--ink);
+  --tag-hover: var(--blue);
+  --tag-shadow: var(--shadow-sm);
+  --categories-border: var(--ink);
+  --categories-hover-bg: var(--yellow);
+  --categories-icon-hover-color: var(--red);
+  --timeline-color: var(--ink);
+  --timeline-node-bg: var(--red);
+  --timeline-year-dot-color: var(--red);
+  --toc-highlight: var(--red);
+  --toc-popup-border-color: var(--ink);
+  --tb-border-color: var(--ink);
+  --tb-odd-bg: #f4f4f4;
+  --tb-even-bg: var(--paper);
+  --search-border-color: var(--ink);
+  --search-icon-color: #444;
+  --search-tag-bg: #ececec;
+  --label-color: var(--ink);
+  --language-border-color: var(--ink);
+  --input-focus-border-color: var(--blue);
+  --footnote-target-bg: var(--yellow);
+  --main-border-color: var(--ink);
+  --shimmer-bg: #eee;
+}
+
+/* Ep sang sang: nguoi dung con luu chon dark trong localStorage */
+html[data-bs-theme=dark] {
+  --bs-body-bg: var(--paper);
+  --bs-body-color: var(--ink);
+  --bs-border-color: var(--ink);
+  --bs-link-color: var(--ink);
+  --bs-emphasis-color: var(--ink);
+  --bs-secondary-bg: var(--yellow);
+  --bs-tertiary-bg: #f2f2f2;
+  color-scheme: light;
+}
+
+html[data-bs-theme=dark] #mode-toggle-wrapper,
+html[data-bs-theme=light] #mode-toggle-wrapper { display: none !important; }
+
+body { background: var(--paper); color: var(--ink); font-family: Manrope, sans-serif; }
+
+h1, h2, h3, h4, h5, h6, .site-title, #topbar-wrapper a,
+.post h1, .panel-sub, .display-5 {
+  font-family: Syne, Manrope, sans-serif !important;
+  font-weight: 800;
+  letter-spacing: -.01em;
+  color: var(--ink);
+}
+
+a { text-decoration-thickness: 2px; text-underline-offset: 3px; }
+a:hover { color: var(--blue); }
+
+/* Layout khung */
+#sidebar { border-right: var(--hair) solid var(--ink); }
+#sidebar .sidebar-bottom, #sidebar .nav-link { border-radius: 0; }
+#topbar { border-bottom: var(--hair) solid var(--ink); }
+#main-wrapper { background: var(--paper); }
+#core-wrapper { border: 0; }
+
+/* Card / block */
+.card, .post-preview, #panel-wrapper .lang-item, .border.rounded-3 {
+  border: var(--hair) solid var(--ink) !important;
+  border-radius: 0 !important;
+  box-shadow: var(--shadow);
+  background: var(--paper);
+}
+.card-body { border-radius: 0; }
+a.card:hover, .post-preview:hover { background: var(--yellow); }
+
+/* Button: kieu btn-brutal cua ban tham chieu */
+.btn, button, .post-nav .btn, #search-result-button, input[type=submit] {
+  border: var(--hair) solid var(--ink) !important;
+  border-radius: 0 !important;
+  box-shadow: var(--shadow-sm);
+  background: var(--yellow);
+  color: var(--ink) !important;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.btn:hover, button:hover { background: var(--red); color: #fff !important; transform: translate(-1px, -1px); }
+.btn:active { box-shadow: 1px 1px 0 0 var(--ink); transform: translate(2px, 2px); }
+
+/* Code */
+pre, code, kbd, .highlight, .post-content pre { border-radius: 0 !important; }
+pre { border: var(--hair) solid var(--ink); box-shadow: var(--shadow-sm); }
+:not(pre) > code { background: var(--inline-code-bg); color: #b3001b; padding: .1em .35em; }
+
+/* Badge / tag */
+.badge, .post-tag, #tags .badge, .categories .badge {
+  border: 2px solid var(--ink);
+  border-radius: 0 !important;
+  background: var(--paper);
+  color: var(--ink);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.badge:active, .post-tag:hover { background: var(--blue); color: #fff; border-color: var(--ink); }
+
+/* Table */
+table { border: var(--hair) solid var(--ink); }
+th, td { border: 1px solid var(--ink) !important; }
+thead th { background: var(--ink); color: #fff; font-family: Syne, sans-serif; }
+
+/* Breadcrumb / title */
+#page-title, .post .post-content h1 { border-bottom: 6px solid var(--red); display: inline-block; padding-bottom: .1em; }
+
+/* Chirpy prompt box */
+.prompt { border: var(--hair) solid var(--ink) !important; border-left-width: 10px !important; border-radius: 0 !important; }
+
+/* ---- Trang "Cac cuoc thi" + luu chon ngon ngu ---- */
+.ctfw-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 28px; margin-top: 28px; }
+.ctfw-card { display: block; border: var(--hair) solid var(--ink); background: var(--paper); box-shadow: var(--shadow); padding: 0; color: var(--ink); text-decoration: none; overflow: hidden; }
+.ctfw-card:hover { background: var(--yellow); transform: translate(-2px, -2px); box-shadow: 9px 9px 0 0 var(--ink); }
+.ctfw-cover { display: block; width: 100%; height: 150px; border-bottom: var(--hair) solid var(--ink); }
+.ctfw-body { padding: 16px 18px 20px; }
+.ctfw-kicker { font: 700 11px/1 Manrope, sans-serif; letter-spacing: .18em; text-transform: uppercase; color: #fff; background: var(--ink); padding: 4px 8px; display: inline-block; }
+.ctfw-name { font: 800 26px/1.05 Syne, sans-serif; margin: 12px 0 6px; }
+.ctfw-meta { font-size: 13px; color: #333; display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px; }
+.ctfw-lang { position: fixed; right: 18px; bottom: 18px; z-index: 60; display: inline-flex; border: var(--hair) solid var(--ink); box-shadow: var(--shadow-sm); font: 800 12px/1 Manrope, sans-serif; text-transform: uppercase; letter-spacing: .1em; }
+.ctfw-lang a { padding: 8px 12px; color: var(--ink); text-decoration: none; background: var(--paper); }
+.ctfw-lang a[aria-current=true] { background: var(--red); color: #fff; }
+.ctfw-post-list { list-style: none; padding: 0; margin: 22px 0 0; }
+.ctfw-post-list li { border: var(--hair) solid var(--ink); border-left-width: 12px; border-left-color: var(--red); background: var(--paper); box-shadow: var(--shadow-sm); padding: 12px 16px; margin-bottom: 14px; }
+.ctfw-post-list li:hover { background: var(--yellow); }
+.ctfw-post-list .cat { font: 700 11px/1 Manrope, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: #444; }

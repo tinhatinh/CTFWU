@@ -1,6 +1,6 @@
 ---
 icon: fas fa-info-circle
-order: 4
+order: 5
 ---
 
 Kho writeup CTF của team 612. Mỗi bài là một thư mục trong repo

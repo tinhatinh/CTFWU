@@ -45,6 +45,8 @@ H7CTF 2026 Quals/public-domain/files/h7-tex.github.io.tar.gz
 # Jekyll / Bundler
 _site
 _site_src
+_site_src_en
+_build
 .jekyll-cache
 .jekyll-metadata
 .bundle
