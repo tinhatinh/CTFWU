@@ -6,6 +6,24 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap");
 
+/* Token khong doi theo che do: phai nam o `:root` tran de khoi dark o duoi
+   khong phai lap lai. Thieu no thi `border: var(--hair) solid var(--ink)` mat
+   hop le, Chirpy rot `border: currentcolor` vao va bo tron mat bong. */
+:root {
+  --hair: 3px;
+  --r-lg: 24px;
+  --r-md: 16px;
+  --r-sm: 12px;
+  --r-pill: 999px;
+  --shadow: 6px 6px 0 0 var(--shadow-c);
+  --shadow-sm: 4px 4px 0 0 var(--shadow-c);
+  --bs-body-font-family: Nunito, "Segoe UI", sans-serif;
+  --bs-border-radius: var(--r-sm);
+  --bs-border-radius-lg: var(--r-md);
+  --bs-border-radius-sm: 8px;
+  --bs-border-radius-xl: var(--r-lg);
+}
+
 /* Mac dinh sang. Chirpy khai bao bien mau trong `:root[data-bs-theme=...]` va
    `:root:not([data-bs-theme])` (0-2-0), nen o day cung phai dung hai dang selector
    do; `:root` tran (0-1-0) se thua media query dark cua no. Khong duoc gan
@@ -28,13 +46,6 @@
   --sky: #add8e6;
   --salmon: #fdbcb4;
   --lav: #e6e6fa;
-  --shadow: 6px 6px 0 0 var(--shadow-c);
-  --shadow-sm: 4px 4px 0 0 var(--shadow-c);
-  --hair: 3px;
-  --r-lg: 24px;
-  --r-md: 16px;
-  --r-sm: 12px;
-  --r-pill: 999px;
   --inline-code-color: #b3001b;
   --gutter-bg: #f1f5f9;
 
@@ -217,6 +228,33 @@
   --prompt-tip-bg: var(--mint);
   --inline-code-color: #ff8fa3;
   --gutter-bg: #0b1220;
+  /* Chirpy cung khai bao nhom bien nay o che do toi, nen phai lap lai o day;
+     neu khong chung lay mau cua Chirpy thay vi mau cua skin. */
+  --avatar-border-color: var(--ink);
+  --blockquote-border-color: var(--green);
+  --btn-border-color: var(--ink);
+  --card-shadow: var(--shadow);
+  --categories-border: var(--line);
+  --dash-color: var(--line);
+  --filepath-text-color: var(--muted);
+  --img-bg: var(--paper);
+  --input-focus-border-color: var(--green);
+  --language-border-color: var(--ink);
+  --link-color: var(--green-dark);
+  --link-underline-color: var(--green);
+  --main-bg: var(--cream);
+  --main-border-color: var(--line);
+  --menu-border-color: var(--ink);
+  --menu-shadow-color: rgba(5, 8, 15, .55);
+  --shimmer-bg: var(--line);
+  --sidebar-border-color: var(--ink);
+  --tag-border: var(--ink);
+  --tag-shadow: var(--shadow-sm);
+  --tb-border-color: var(--line);
+  --timeline-color: var(--line);
+  --timeline-node-bg: var(--green);
+  --timeline-year-dot-color: var(--green-dark);
+  --toc-popup-border-color: var(--line);
   --prompt-tip-icon-color: #86efac;
   --prompt-info-bg: var(--sky);
   --prompt-info-icon-color: #7dd3fc;
