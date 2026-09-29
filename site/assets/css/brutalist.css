@@ -212,3 +212,8 @@ thead th { background: var(--ink); color: #fff; font-family: Syne, sans-serif; }
 .ctfw-post-list li { border: var(--hair) solid var(--ink); border-left-width: 12px; border-left-color: var(--red); background: var(--paper); box-shadow: var(--shadow-sm); padding: 12px 16px; margin-bottom: 14px; }
 .ctfw-post-list li:hover { background: var(--yellow); }
 .ctfw-post-list .cat { font: 700 11px/1 Manrope, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: #444; }
+
+/* Avatar + link lien he o sidebar */
+#sidebar #avatar { border-radius: 0 !important; display: inline-block; }
+#sidebar #avatar img { border: var(--hair) solid var(--ink); border-radius: 0 !important; box-shadow: var(--shadow-sm); }
+#contact a:hover { background: var(--yellow); color: var(--ink); }

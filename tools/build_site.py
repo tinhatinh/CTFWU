@@ -15,6 +15,7 @@ Chay:  python tools/build_site.py            # ca hai ngon ngu
 """
 import argparse
 import datetime as dt
+import json
 import os
 import re
 import shutil
@@ -29,6 +30,7 @@ SKIP_TOP = {".git", ".github", "site", "tools", "_site_src", "_site_src_en",
             "_site", "assets", "node_modules", "_template", "_wip", "_de_raw", "docs"}
 MAX_COPY = 4 * 1024 * 1024
 COLORS = ["#f00", "#ff0", "#00f", "#000"]
+LOCAL_TZ = dt.datetime.now().astimezone().tzinfo
 
 UI = {
     "vi": {"competitions": "Các cuộc thi", "posts": "bài writeup", "view": "Xem writeup",
@@ -42,7 +44,45 @@ UI = {
            "nottranslated": "This post has no English version yet."},
 }
 
+ABOUT = {
+    "vi": """Mình là **Phan Thành Danh** (tinhatinh), sinh viên Công nghệ thông tin tại Học viện
+Bưu chính Viễn thông (PTIT), đang học thêm về kiểm thử bảo mật và thi CTF cùng team 612.
+
+- Ngoại ngữ: tiếng Trung HSK 4 (262/300) kèm HSKK Trung cấp, tiếng Anh đang hướng tới TOEIC 850.
+- Công cụ dùng hằng ngày: Python, C/C++, Java, Linux/Bash, Docker, Git.
+- Liên hệ: [ptdanh007@gmail.com](mailto:ptdanh007@gmail.com),
+  [Facebook](https://www.facebook.com/winterboyy), [TikTok](https://www.tiktok.com/@danh_pachirisu).
+
+Kho writeup CTF của team 612. Mỗi bài là một thư mục trong repo
+[`tinhatinh/CTFWU`](https://github.com/tinhatinh/CTFWU) gồm `de.md` (đề nguyên văn + metadata đã
+kiểm chứng), `writeup.md` (cách giải), `notes.md` (nhật ký giả thuyết, kể cả hướng sai),
+`exploit.py` (script chạy lại được) và `files/` (artifact gốc đã đối chiếu sha256).
+
+Toàn bộ lời giải chỉ dựa vào artifact của chính đề bài, không tra writeup của người khác.
+Flag là giá trị riêng theo team, nên copy từ đây về nộp sẽ không hợp lệ.
+""",
+    "en": """I'm **Phan Thành Danh** (tinhatinh), an IT student at the Posts and Telecommunications
+Institute of Technology (PTIT), currently studying security testing and competing in CTFs with
+team 612.
+
+- Languages: Chinese HSK 4 (262/300) with HSKK Intermediate, working towards TOEIC 850 in English.
+- Daily tools: Python, C/C++, Java, Linux/Bash, Docker, Git.
+- Contact: [ptdanh007@gmail.com](mailto:ptdanh007@gmail.com),
+  [Facebook](https://www.facebook.com/winterboyy), [TikTok](https://www.tiktok.com/@danh_pachirisu).
+
+CTF writeup archive by team 612. Every challenge is a folder in the
+[`tinhatinh/CTFWU`](https://github.com/tinhatinh/CTFWU) repo holding `de.md` (the statement plus
+verified metadata), `writeup.md` (the solution), `notes.md` (the hypothesis log, wrong turns
+included), `exploit.py` (a script that replays the solve) and `files/` (original artifacts,
+sha256 checked).
+
+Every solution comes from the challenge's own artifact only, with no outside writeups consulted.
+Flags are per team, so copying one from here will not be accepted.
+""",
+}
+
 LIQUID_SPAN = re.compile(r"\{\{.*?\}\}|\{%.*?%\}|\{\{.*$|\{%.*$", re.M)
+SOLVE_TIMES = os.path.join(ROOT, "tools", "solve_times.json")
 
 
 def event_dirs():
@@ -56,7 +96,7 @@ def slugify(s):
     return re.sub(r"[^A-Za-z0-9]+", "-", s).strip("-").lower() or "x"
 
 
-def case_date(path):
+def git_time(path):
     try:
         out = subprocess.run(["git", "-C", ROOT, "log", "-1", "--format=%cI", "--", path],
                              capture_output=True, text=True, timeout=30).stdout.strip()
@@ -64,7 +104,36 @@ def case_date(path):
             return dt.datetime.fromisoformat(out)
     except Exception:
         pass
-    return dt.datetime.fromtimestamp(os.path.getmtime(path))
+    return None
+
+
+def flag_time(event, case):
+    """Birthtime sớm nhất trong số flag.txt/flags.txt = lúc flag được ghi nhận trên máy."""
+    best = None
+    for dp, _, fs in os.walk(os.path.join(ROOT, event, case)):
+        for n in fs:
+            if n not in ("flag.txt", "flags.txt"):
+                continue
+            b = getattr(os.stat(os.path.join(dp, n)), "st_birthtime", 0)
+            if b and (best is None or b < best):
+                best = b
+    return dt.datetime.fromtimestamp(best, LOCAL_TZ) if best else None
+
+
+def solve_times():
+    """`tools/solve_times.json`: thoi diem giai trong cuoc thi, <Event>/<case> -> ISO.
+
+    Gia tri chi co ngay (YYYY-MM-DD, khong gio) du dung khi flag bi chep sang may hang
+    loat: luc do mtime/birthtime khong con la bang chung ve phut.
+    """
+    raw = {}
+    if os.path.isfile(SOLVE_TIMES):
+        raw = json.load(open(SOLVE_TIMES, encoding="utf-8"))
+    out = {}
+    for key, val in raw.items():
+        d = dt.datetime.fromisoformat(val)
+        out[key] = (d.replace(tzinfo=LOCAL_TZ), len(val) > 10)
+    return out
 
 
 def readme_categories(event):
@@ -114,6 +183,11 @@ def describe(body):
     return ""
 
 
+def stamp(d, lang, exact=True):
+    fmt = ("%d/%m/%Y" if lang == "vi" else "%b %d, %Y") + (" %H:%M" if exact else "")
+    return d.strftime(fmt)
+
+
 def initials(name):
     words = re.findall(r"[A-Za-z0-9]+", name)
     core = "".join(w[0] for w in words if w[0].isupper()) or (words[0][:2] if words else "CT")
@@ -141,6 +215,7 @@ def cover_svg(name, i):
 def collect(lang):
     """Tra ve danh sach event -> bai viet cho mot ngon ngu."""
     events = []
+    times = solve_times()
     for i, event in enumerate(event_dirs()):
         fname = "writeup.md" if lang == "vi" else "writeup.en.md"
         catmap = readme_categories(event)
@@ -159,9 +234,16 @@ def collect(lang):
             text = open(w, encoding="utf-8").read()
             title = next((ln[2:].strip() for ln in text.split("\n")
                           if ln.startswith("# ")), "%s - %s" % (event, case))
+            key = "%s/%s" % (event, case)
+            solved, exact = times.get(key) or (flag_time(event, case), True)
+            if not solved:
+                solved, exact = git_time("%s/%s" % (key, fname)), True
+            if not solved:
+                solved = dt.datetime.fromtimestamp(os.path.getmtime(w), LOCAL_TZ)
             posts.append({
                 "case": case, "path": w, "text": text, "title": title,
-                "date": case_date(w), "key": "%s-%s" % (slugify(event), slugify(case)),
+                "date": solved, "exact": exact, "mod": git_time(w),
+                "key": "%s-%s" % (slugify(event), slugify(case)),
                 "cat": (catmap.get(case) or "writeup").strip(), "fallback": fallback,
             })
         if posts:
@@ -194,9 +276,10 @@ def write_post(stage, ev, p, lang, base):
     body = protect_liquid(body)
 
     d = p["date"]
+    mod = p["mod"] or d
     fm = ["---", 'title: "%s"' % p["title"].replace('"', "'"),
-          "date: %s +0700" % d.strftime("%Y-%m-%d %H:%M:%S"),
-          "lastmod_at: %s" % d.strftime("%Y-%m-%d %H:%M:%S %z"),
+          "date: %s %s" % (d.strftime("%Y-%m-%d %H:%M:%S"), d.strftime("%z")),
+          "lastmod_at: %s" % mod.strftime("%Y-%m-%d %H:%M:%S %z"),
           "categories: [%s]" % p["cat"],
           "tags: [%s]" % ", ".join(dict.fromkeys([ev["slug"].replace("-ctf-", "-").replace("-2026", ""),
                                                   p["cat"].lower()])),
@@ -227,8 +310,10 @@ def write_event_page(stage, ev, lang, base):
              "permalink: /events/%s/" % ev["slug"],
              'description: "%s"' % ("%d %s" % (len(ev["posts"]), ui["posts"])), "---", ""]
     lines.append("## %s\n" % ev["name"])
-    for p in sorted(ev["posts"], key=lambda x: x["cat"].lower()):
-        lines.append('- [%s](%s/posts/%s/) · `%s`' % (p["title"], base, p["key"], p["cat"]))
+    for p in sorted(ev["posts"], key=lambda x: x["date"]):
+        lines.append('- [%s](%s/posts/%s/) · `%s` · %s'
+                     % (p["title"], base, p["key"], p["cat"],
+                        stamp(p["date"], lang, p["exact"])))
     lines.append("")
     out = os.path.join(stage, "events")
     os.makedirs(out, exist_ok=True)
@@ -242,7 +327,11 @@ def write_competitions(stage, events, lang, base):
     body.append("<p>%s</p>\n" % ui["hint"])
     body.append('<div class="ctfw-cards">')
     for ev in events:
+        first = min(p["date"] for p in ev["posts"])
         last = max(p["date"] for p in ev["posts"])
+        span = stamp(last, lang, False)
+        if first.date() != last.date():
+            span = "%s → %s" % (stamp(first, lang, False), span)
         cats = sorted({p["cat"] for p in ev["posts"]})
         svg = cover_svg(ev["name"], ev["idx"])
         p_svg = os.path.join(stage, "assets", "competitions")
@@ -257,12 +346,19 @@ def write_competitions(stage, events, lang, base):
             '<div class="ctfw-meta"><span>%d %s</span><span>%s</span>'
             '<span>%s &rarr;</span></div></div></a>'
             % (base, ev["slug"], svg, last.year, ev["name"],
-               ", ".join(cats), len(ev["posts"]), ui["posts"],
-               last.strftime("%d/%m/%Y" if lang == "vi" else "%b %d, %Y"), ui["view"]))
+               ", ".join(cats), len(ev["posts"]), ui["posts"], span, ui["view"]))
     body.append("</div>\n")
     out = os.path.join(stage, "_tabs")
     os.makedirs(out, exist_ok=True)
     open(os.path.join(out, "competitions.md"), "w", encoding="utf-8", newline="\n").write("\n".join(body))
+
+
+def write_about(stage, lang):
+    out = os.path.join(stage, "_tabs")
+    os.makedirs(out, exist_ok=True)
+    fm = "---\nicon: fas fa-info-circle\norder: 5\n---\n\n"
+    open(os.path.join(out, "about.md"), "w", encoding="utf-8", newline="\n").write(
+        fm + ABOUT[lang])
 
 
 def build(lang):
@@ -285,6 +381,7 @@ def build(lang):
             n += 1
         write_event_page(stage, ev, lang, base)
     write_competitions(stage, events, lang, base)
+    write_about(stage, lang)
     total = sum(os.path.getsize(os.path.join(dp, f)) for dp, _, fs in os.walk(stage) for f in fs)
     print("[%s] %d event, %d bai, %.1f MB -> %s"
           % (lang, len(events), n, total / 1e6, os.path.relpath(stage, ROOT)))

@@ -14,11 +14,13 @@ python tools/build_site.py     # writes _site_src/ (55 posts + only the images a
 ```
 
 `_site_src/` is generated and git-ignored - never edit it. The generator reads each
-`<Event>/<slug>/writeup.md`, takes the date from that file's last commit, reads the category from
-the event's own `README.md` table, copies referenced images to `assets/writeups/<event>/<case>/`,
-and wraps every body in `{% raw %}` because writeups quote Liquid syntax (`{{7*7}}`, `{% ... %}`)
-that Jekyll would otherwise try to execute. GitHub Actions runs it before building, so the site
-cannot drift from the archive.
+`<Event>/<slug>/writeup.md`, takes the publish date from `tools/solve_times.json` (the moment the
+flag was written during the contest; an entry with no clock time means the file was copied in
+bulk, so only the day is evidenced), reads the category from the event's `README.md` table,
+generates the `competitions` and `about` tabs, copies referenced images to
+`assets/writeups/<event>/<case>/`, and wraps every body in `{% raw %}` because writeups quote
+Liquid syntax (`{{7*7}}`, `{% ... %}`) that Jekyll would otherwise try to execute. GitHub Actions
+runs it before building, so the site cannot drift from the archive.
 
 ## Competitions
 
