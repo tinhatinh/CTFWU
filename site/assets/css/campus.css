@@ -6,11 +6,12 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap");
 
-/* Mac dinh sang. Chirpy khai bao bien mau cua no trong `:root[data-bs-theme=...]`
-   (dac biet 0-2-0), nen khoi o day cung phai dat cung mo do thi `--card-bg`,
-   `--code-header-text-color`... moi thang; them `:root` tran cho luc attribute
-   chua duoc gan. ctfw.rb luon gan data-bs-theme="light" nen <html> khong ro. */
-:root, :root[data-bs-theme=light] {
+/* Mac dinh sang. Chirpy khai bao bien mau trong `:root[data-bs-theme=...]` va
+   `:root:not([data-bs-theme])` (0-2-0), nen o day cung phai dung hai dang selector
+   do; `:root` tran (0-1-0) se thua media query dark cua no. Khong duoc gan
+   data-bs-theme="light" phia server: Theme.isToggleable = !dataset.bsTheme, nen co
+   attribute la dropdown chuyen doi do cua Chirpy ngung phuc vu (da do live). */
+:root[data-bs-theme=light], :root:not([data-bs-theme]) {
   /* --ink: vien + chu tren chip. --shadow-c: mau bong. --bar: nen thanh dam
      (header khoi code, thead). Tam mau nay di cung nhau o sang, tach ra o toi. */
   --ink: #2d3748;

@@ -27,14 +27,5 @@ Jekyll::Hooks.register [:pages, :documents], :post_render do |doc|
          %(<a href="#{other}" aria-current="#{!here_vi}">EN</a></div>\n)
 
   doc.output = doc.output.sub(%r{<body[^>]*>}) { |m| head + m + "\n" + pill }
-
-  # theme_mode de trong thi Chirpy moi render nut chuyen sang/toi, nhung khi do
-  # <html> khong co data-bs-theme va `@media (prefers-color-scheme: dark)` cua no
-  # chen vao trang cua nhung nguoi dung khong co JS. Gan attribute mac dinh o day
-  # de mac dinh luon la sang; theme.min.js van doi sang toi duoc (he dieu hang hoac
-  # luu chon cua ho) vi thuoc tinh nay chi la gia tri khoi diem.
-  doc.output = doc.output.sub(%r{<html\b[^>]*>}) do |tag|
-    tag["data-bs-theme"] ? tag : tag.sub(/\A<html/) { '<html data-bs-theme="light"' }
-  end
   true
 end
