@@ -238,16 +238,17 @@ def describe(body):
 def cover_html(ev):
     """Ảnh bìa thật của sự kiện, nằm ở `site/assets/competitions/<slug>.<ext>`.
 
-    Duong dan viet tuong doi (`../assets/...`) vi trang nay luon nam o
-    `<baseurl>/competitions/`, nen no tro dung cho ca cay Viet lan Anh. Duong dan
-    tuyen doi tren page bi them baseurl mot lan nua (CI run #10:
-    `/CTFWU/assets/x.png` -> `/CTFWU/CTFWU/assets/x.png`). Chua co anh thi quay
-    ve tile SVG sinh.
+    src viet tuong doi so voi goc site (`/assets/...`), KHONG co baseurl: Jekyll
+    noi chuoi baseurl vao `src` cua the <img> tho tren page, nen da thu ca hai
+    kieu co prefix (`/CTFWU/...` -> `/CTFWU/CTFWU/...`, `../assets/...` ->
+    `/CTFWU/../assets/...`, xem log CI run #10 va #11). Anh trong bai viet la
+    markdown chu khong phai HTML tho nen van giu nguyen prefix. Chua co anh thi
+    quay ve tile SVG sinh.
     """
     for ext in ("png", "jpg", "jpeg", "webp", "svg"):
         f = "%s.%s" % (ev["slug"], ext)
         if os.path.isfile(os.path.join(ROOT, "site", "assets", "competitions", f)):
-            return '<img src="../assets/competitions/%s" alt="%s">' % (f, ev["name"])
+            return '<img src="/assets/competitions/%s" alt="%s">' % (f, ev["name"])
     return cover_svg(ev["name"], ev["idx"])
 
 
