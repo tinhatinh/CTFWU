@@ -1,0 +1,41 @@
+# Reconstructed from /graphql introspection (introspection enabled), 2026-09-29.
+# Descriptions are the server's own text.
+
+type Query {
+  "Your account."
+  me: User
+
+  "Look up a user by id. You may only view yourself."
+  user(id: ID!): User
+}
+
+"A researcher account."
+type User {
+  id: ID!
+  username: String!
+  role: UserRoleEnum
+  team: Team
+
+  "Personal notes. Visible to the account owner only."
+  privateNotes: String
+}
+
+"A research team. Members can see each other's public bios."
+type Team {
+  id: ID!
+  name: String
+
+  "Members of the caller's own team. Cross-team enumeration is blocked."
+  members: [User]
+}
+
+enum UserRoleEnum {
+  ADMIN
+  MEMBER
+}
+
+# Probe results (all returned null / blocked, i.e. no hidden root fields):
+#   flag secret secrets admin users team teams notes note privateNotes debug
+#   version sys system session token allUsers userById search query raw sql
+#   exec ping roles members researchers document
+# -> 46 guesses, all "Cannot query field". Query has exactly me + user.

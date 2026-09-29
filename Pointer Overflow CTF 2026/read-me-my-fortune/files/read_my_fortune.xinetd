@@ -1,0 +1,28 @@
+# /etc/xinetd.d/read_my_fortune
+# xinetd service config for the Read Me My Fortune challenge.
+# Listens on port 9000 inside the container; Docker maps to an external port.
+#
+# One Python process per connection. runner.sh sets the environment and
+# execs /challenge/service.py.
+
+service read_my_fortune
+{
+    type            = UNLISTED
+    socket_type     = stream
+    protocol        = tcp
+    port            = 9000
+    wait            = no
+    user            = seeker
+    server          = /challenge/runner.sh
+    # Give each connection generous CPU/mem so the format-string engine
+    # can render even elaborate templates without OOMing xinetd.
+    rlimit_as       = 128M
+    # Bound the process to 2 minutes wall clock (service.py also has
+    # its own SIGALRM at 120s — this is belt-and-braces).
+    rlimit_cpu      = 120
+    log_on_success  += USERID DURATION
+    log_on_failure  += USERID
+    # No per-connection rate limit here; nginx/haproxy in front should
+    # do IP-level rate limiting if it becomes an issue.
+    disable         = no
+}

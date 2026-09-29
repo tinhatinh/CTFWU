@@ -8,8 +8,9 @@ Solutions and writeups for challenges from competitive CTF events.
 |-------|------|----------|------------|
 | [H7CTF 2026 Quals](H7CTF%202026%20Quals/) | Sep 2026 | 29 | Pwn · Crypto · Web · Web3 · Hardware · Forensics · Mobile · Cloud · AI · Rev · OSINT · Misc |
 | [SunshineCTF 2026](SunshineCTF%202026/) | Sep 2026 | 18 | Pwn · Web · Crypto · Forensics · Misc |
+| [Pointer Overflow CTF 2026](Pointer%20Overflow%20CTF%202026/) | Sep 2026 | 8 | Crypto · EXP · Forensics · Misc · OSINT · RE · Steg · Web |
 
-**Total: 47 writeups**
+**Total: 55 writeups**
 
 ## Structure
 

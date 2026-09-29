@@ -1,0 +1,11 @@
+Initial 7x7 board read from the live page (1 = lit candle), row-major, team 612:
+
+0000000
+0000110
+1100001
+1001011
+1000110
+1111010
+0110110
+
+Read via: [...document.querySelectorAll("#board .cell")].map(e=>e.getAttribute("aria-pressed"))
