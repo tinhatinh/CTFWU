@@ -6,10 +6,11 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap");
 
-/* Mac dinh sang. ctfw.rb luon gan data-bs-theme="light" vao <html>, nen khoi
-   `:root:not([data-bs-theme])` trong `@media (prefers-color-scheme: dark)` cua
-   Chirpy khong bao gio khop va `:root` o day du thang. */
-:root {
+/* Mac dinh sang. Chirpy khai bao bien mau cua no trong `:root[data-bs-theme=...]`
+   (dac biet 0-2-0), nen khoi o day cung phai dat cung mo do thi `--card-bg`,
+   `--code-header-text-color`... moi thang; them `:root` tran cho luc attribute
+   chua duoc gan. ctfw.rb luon gan data-bs-theme="light" nen <html> khong ro. */
+:root, :root[data-bs-theme=light] {
   /* --ink: vien + chu tren chip. --shadow-c: mau bong. --bar: nen thanh dam
      (header khoi code, thead). Tam mau nay di cung nhau o sang, tach ra o toi. */
   --ink: #2d3748;
@@ -143,8 +144,9 @@
 }
 
 /* Toi: cung bo khung vien day + bong lech, dao nguoc vai tro mau.
-   `html[data-bs-theme=dark]` co dac biet 0-1-1 nen thang `:root` o tren. */
-html[data-bs-theme=dark] {
+   `:root[data-bs-theme=dark]` co dac biet 0-2-0 de bang kieu cua Chirpy va thang
+   theo thu tu tai. */
+:root[data-bs-theme=dark] {
   --ink: #93a3bd;
   --shadow-c: #05080f;
   --bar: #111a2b;
