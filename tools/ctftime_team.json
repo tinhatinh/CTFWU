@@ -1,0 +1,17 @@
+{
+  "fetched": "2026-09-30",
+  "team": "R3:TURИ",
+  "team_id": 449538,
+  "url": "https://ctftime.org/team/449538",
+  "years": {
+    "2026": [
+      {
+        "ctf_points": "8534.00",
+        "event": "H7CTF 2026 Quals",
+        "event_url": "https://ctftime.org/event/3093",
+        "place": "27",
+        "rating_points": "25.013"
+      }
+    ]
+  }
+}

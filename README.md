@@ -24,6 +24,16 @@ referenced images to `assets/writeups/<event>/<case>/`, and wraps every body in 
 writeups quote Liquid syntax (`{{7*7}}`, `{% ... %}`) that Jekyll would otherwise try to execute.
 GitHub Actions runs it before building, so the site cannot drift from the archive.
 
+The team's CTFTime results under the competition cards come from `tools/ctftime_team.json`, which is
+committed rather than fetched during the build (CI never touches the network):
+
+```bash
+python tools/fetch_ctftime.py     # re-scrape https://ctftime.org/team/449538, then commit the JSON
+```
+
+If the JSON is missing the section is skipped with a warning; if CTFTime changes its markup the
+fetcher refuses to write an empty file, so the site keeps the last real numbers.
+
 ## Competitions
 
 | Event | Date | Writeups | Categories |

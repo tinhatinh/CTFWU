@@ -38,12 +38,20 @@ UI = {
     "vi": {"competitions": "Các cuộc thi", "posts": "bài writeup", "view": "Xem writeup",
            "tagline": "Writeup CTF của tinhatinh, đội R3:TURИ",
            "description": "Writeup CTF của Danh Phan trong đội R3:TURИ: H7TEX, SunshineCTF, Pointer Overflow",
-           "hint": "Mỗi cuộc thi là một mục. Bên trong là các bài giải, xếp theo chuyên mục."},
+           "hint": "Mỗi cuộc thi là một mục. Bên trong là các bài giải, xếp theo chuyên mục.",
+           "achievements": "Thành tích",
+           "ach_hint": "Bảng dưới là kết quả của [{team}]({url}) trên CTFTime, số liệu lấy ngày {date}. "
+                       "Chỉ những giải đăng ký trên CTFTime mới có trong bảng.",
+           "place": "Hạng", "event": "Giải", "ctf_points": "Điểm CTF", "rating_points": "Điểm rating"},
     "en": {"competitions": "Competitions", "posts": "writeups", "view": "Read writeups",
            "tagline": "CTF writeups by tinhatinh, team R3:TURИ",
            "description": "CTF writeups by Danh Phan of team R3:TURИ: H7TEX, SunshineCTF, Pointer Overflow",
            "hint": "One card per event. Inside each one, the solutions grouped by category.",
-           "nottranslated": "This post has no English version yet."},
+           "nottranslated": "This post has no English version yet.",
+           "achievements": "Achievements",
+           "ach_hint": "The table below is the record of [{team}]({url}) on CTFTime, fetched on {date}. "
+                       "Only events registered on CTFTime appear in it.",
+           "place": "Place", "event": "Event", "ctf_points": "CTF points", "rating_points": "Rating points"},
 }
 
 TEAM = "R3:TURИ"
@@ -389,6 +397,40 @@ def write_event_page(stage, ev, lang, base):
     open(os.path.join(out, "%s.md" % ev["slug"]), "w", encoding="utf-8", newline="\n").write("\n".join(lines))
 
 
+def ctftime_team():
+    """Thanh tich lay tu CTFTime, do tools/fetch_ctftime.py ghi ra."""
+    p = os.path.join(ROOT, "tools", "ctftime_team.json")
+    if not os.path.isfile(p):
+        return None
+    return json.load(open(p, encoding="utf-8"))
+
+
+def achievements(lang):
+    ui = UI[lang]
+    data = ctftime_team()
+    if not data:
+        print("[warn] thieu tools/ctftime_team.json -> bo qua muc thanh tich")
+        return ""
+    out = ["## %s\n" % ui["achievements"],
+           ui["ach_hint"].format(
+               team=data["team"],
+               url=data["url"],
+               date=stamp(dt.datetime.strptime(data["fetched"], "%Y-%m-%d"), lang, False),
+           ), ""]
+    for year in sorted(data["years"], reverse=True):
+        out.append("### %s\n" % year)
+        out.append("| %s | %s | %s | %s |" % (ui["place"], ui["event"], ui["ctf_points"], ui["rating_points"]))
+        out.append("|---|---|---|---|")
+        for r in data["years"][year]:
+            out.append("| %s | [%s](%s) | %s | %s |"
+                       % (r["place"], r["event"], r["event_url"], r["ctf_points"], r["rating_points"]))
+        out.append("")
+    text = "\n".join(out) + "\n"
+    if "{" in text:
+        raise SystemExit("placeholder ve trong muc thanh tich")
+    return text
+
+
 def write_competitions(stage, events, lang, base):
     ui = UI[lang]
     body = ["---", 'title: "%s"' % ui["competitions"], "icon: fas fa-trophy", "order: 1",
@@ -414,6 +456,7 @@ def write_competitions(stage, events, lang, base):
             % (base, ev["slug"], cover, last.year, ev["name"],
                ", ".join(cats), len(ev["posts"]), ui["posts"], span, ui["view"]))
     body.append("</div>\n")
+    body.append(achievements(lang))
     out = os.path.join(stage, "_tabs")
     os.makedirs(out, exist_ok=True)
     open(os.path.join(out, "competitions.md"), "w", encoding="utf-8", newline="\n").write("\n".join(body))
