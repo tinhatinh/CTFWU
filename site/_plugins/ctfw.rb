@@ -12,9 +12,14 @@ def ctfw_mirror_base(base)
 end
 
 # GitHub Pages dat Cache-Control: max-age=600 cho asset, nen sau khi doi skin
-# van tro toi nguoi dung phai cho toi khi het 10 phut. Them moc thoi diem build
-# vao URL de moi lan deploy la mot file moi.
-CTFW_BUILD = Time.now.strftime("%Y%m%d%H%M")
+# van tro toi nguoi dung phai cho toi khi het 10 phut. Lay moc thoi gian chinh
+# file skin: hai cay VI/EN duoc build o hai lan chay jekyll khac nhau nen dung
+# Time.now thi moi cay mot so khac nhau, con mtime cua file thi giong het.
+CTFW_BUILD = begin
+  File.mtime(File.join(__dir__, "..", "assets", "css", "campus.css")).strftime("%Y%m%d%H%M")
+rescue StandardError
+  Time.now.strftime("%Y%m%d%H%M")
+end
 
 Jekyll::Hooks.register [:pages, :documents], :post_render do |doc|
   next true unless doc.output_ext.to_s == ".html"
