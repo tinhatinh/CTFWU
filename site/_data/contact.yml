@@ -18,5 +18,9 @@
 - type: rss
   icon: "fas fa-rss"
   noblank: true
+
+- type: ctftime
+  icon: "fas fa-flag"
+  url: "https://ctftime.org/team/449538"
 # Icons come from <https://fontawesome.com/>; a `type` that is not github, twitter,
 # email or rss links to its own `url`.
