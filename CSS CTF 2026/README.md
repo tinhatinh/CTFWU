@@ -28,3 +28,4 @@ Ra cờ thì chuyển thư mục bài lên thẳng `<Event>/`, điền vào bả
 | Challenge | Category | Difficulty | Flag |
 |-----------|----------|------------|------|
 | [colour-shift](colour-shift/) | Forensics | Beginner | `CSSCTF{SHINE ON}` |
+| [server-juice](server-juice/) | OSINT | Beginner | `CSSCTF{premiumreserve}` |
