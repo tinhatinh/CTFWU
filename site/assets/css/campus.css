@@ -503,6 +503,9 @@ thead th { background: var(--bar); color: #f2f6ff; font-family: "Baloo 2", sans-
 /* Avatar la <a class="rounded-circle"> cua Chirpy, kich thuoc co dinh 112px va
    no inline-block nen khong tu giua. Dat block + kich thuoc lon hon + margin auto
    trong cot sidebar (content rong ~178px). */
+/* Chirpy cho .profile-wrapper le 40px ben trai nhung 20px ben phai, nen margin:auto
+   chi giua avatar trong cot do lech 10px so voi tam cua panel. Can doi padding. */
+#sidebar .profile-wrapper { padding-right: 40px; }
 #sidebar #avatar { display: block; width: 150px; height: 150px; margin: 0 auto; border-radius: var(--r-lg) !important; }
 #sidebar #avatar img { width: 100%; height: 100%; object-fit: cover; box-sizing: border-box; border: var(--hair) solid var(--edge); border-radius: var(--r-lg) !important; box-shadow: var(--shadow-sm); }
 /* .site-title ty le 900 (Chirpy) trong khi Baloo 2 dung o 800 -> chu bi gia day;
