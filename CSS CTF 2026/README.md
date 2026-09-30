@@ -3,7 +3,7 @@
 Writeups for challenges solved at [ctf.cybersecurity.sydney](https://ctf.cybersecurity.sydney/).  
 CTFtime: [CSS CTF 2026: Return of Nexus](https://ctftime.org/event/3434) — 40 giờ, online, Jeopardy (Team & Solo), do Cybersecurity Society của Đại học Sydney tổ chức.
 
-Flag format: chưa có. Đề chưa mở với ta thì chưa ghi gì vào cột Flag — lấy nguyên văn từ thẻ đề trên trang của team rồi mới điền vào đây.
+Flag format: `CSSCTF{...}` (xác nhận từ bài colour-shift, đề ghi rõ trên thẻ bài).
 
 ## Thông tin lấy từ CTFtime (30/09/2026)
 
@@ -27,3 +27,4 @@ Ra cờ thì chuyển thư mục bài lên thẳng `<Event>/`, điền vào bả
 
 | Challenge | Category | Difficulty | Flag |
 |-----------|----------|------------|------|
+| [colour-shift](colour-shift/) | Forensics | Beginner | `CSSCTF{SHINE ON}` |
