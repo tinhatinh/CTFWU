@@ -26,11 +26,15 @@ Jekyll::Hooks.register [:pages, :documents], :post_render do |doc|
 
   rest = doc.url.to_s.start_with?(base) ? doc.url.to_s[base.length..-1].to_s : doc.url.to_s
   rest = "/" if rest.empty?
-  other = ctfw_mirror_base(base) + rest
   here_vi = !base.end_with?("/en")
+  # Nhan nao thi tro den ngon ngu do, khong phai "the o cay dang build" luon la VI:
+  # o cay /en ma gan lien hien tai cho nut VI thi nut VI dung tai cho con nut EN
+  # lai chay ve tieng Viet.
+  vi_url = (here_vi ? base : ctfw_mirror_base(base)) + rest
+  en_url = (here_vi ? ctfw_mirror_base(base) : base) + rest
   pill = %(<div class="ctfw-lang" id="ctfw-lang">) +
-         %(<a href="#{base}#{rest}" aria-current="#{here_vi}">VI</a>) +
-         %(<a href="#{other}" aria-current="#{!here_vi}">EN</a></div>\n)
+         %(<a href="#{vi_url}" aria-current="#{here_vi}">VI</a>) +
+         %(<a href="#{en_url}" aria-current="#{!here_vi}">EN</a></div>\n)
 
   doc.output = doc.output.sub(%r{<body[^>]*>}) { |m| head + m + "\n" + pill }
   true
