@@ -500,10 +500,11 @@ thead th { background: var(--bar); color: #f2f6ff; font-family: "Baloo 2", sans-
 .ctfw-post-list .cat { font: 700 11px/1 Nunito, sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
 
 /* Avatar + lien he o sidebar */
-/* Avatar dung width:100% + box-sizing de vienh 3px nam BEN TRONG o 112px;
-   khong no se cho khung lech sang trai hon chu ~3px (do tren anh: 38 vs 41px). */
-#sidebar #avatar { border-radius: var(--r-md) !important; display: inline-block; margin-left: 3px; }
-#sidebar #avatar img { width: 100%; box-sizing: border-box; border: var(--hair) solid var(--edge); border-radius: var(--r-md) !important; box-shadow: var(--shadow-sm); }
+/* Avatar la <a class="rounded-circle"> cua Chirpy, kich thuoc co dinh 112px va
+   no inline-block nen khong tu giua. Dat block + kich thuoc lon hon + margin auto
+   trong cot sidebar (content rong ~178px). */
+#sidebar #avatar { display: block; width: 150px; height: 150px; margin: 0 auto; border-radius: var(--r-lg) !important; }
+#sidebar #avatar img { width: 100%; height: 100%; object-fit: cover; box-sizing: border-box; border: var(--hair) solid var(--edge); border-radius: var(--r-lg) !important; box-shadow: var(--shadow-sm); }
 /* .site-title ty le 900 (Chirpy) trong khi Baloo 2 dung o 800 -> chu bi gia day;
    .fst-italic cua Bootstrap mang !important nen cung phai !important de bo ngheng */
 #sidebar .site-title { font-weight: 800; }
