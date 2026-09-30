@@ -316,9 +316,10 @@ a.card:hover, .post-preview:hover { background: var(--cream); }
 
 /* Button: nau to, goc tron, bong lech mau muc. The `.post-tag` cung mang class
    .btn cua Bootstrap nen phai loai khoi rule nay, neu khong no bi nen xanh va
-   chu trang (an toan bo ten the). `.dropdown-item` cung la <button>: dung lai
-   o day thi chu cua menu chuyen sang che do sang/toi bi an mat nen trang. */
-.btn:not(.post-tag), button:not(.dropdown-item), .post-nav .btn, #search-result-button, input[type=submit] {
+   chu trang (an toan bo ten the). `.dropdown-item` la <button> con `#mode-toggle`
+   mang class .btn: hai cai nay dung lai thi chu mau trang bi an nen sang. */
+.btn:not(.post-tag):not(#mode-toggle), button:not(.dropdown-item):not(#mode-toggle),
+.post-nav .btn, #search-result-button, input[type=submit] {
   border: var(--hair) solid var(--edge) !important;
   border-radius: var(--r-md) !important;
   box-shadow: var(--shadow-sm);
@@ -329,8 +330,19 @@ a.card:hover, .post-preview:hover { background: var(--cream); }
   letter-spacing: 0;
   text-transform: none;
 }
-.btn:not(.post-tag):hover, button:not(.dropdown-item):hover { background: var(--mint); color: var(--ink) !important; transform: translate(-1px, -1px); }
+.btn:not(.post-tag):not(#mode-toggle):hover, button:not(.dropdown-item):not(#mode-toggle):hover { background: var(--mint); color: var(--ink) !important; transform: translate(-1px, -1px); }
 .btn:active { box-shadow: 1px 1px 0 0 var(--shadow-c); transform: translate(2px, 2px); }
+
+/* Nut chuyen che do sang/toi: dung dung dang cac icon ben canh (cung vien bong
+   1px cua Chirpy, cung mau chu), neu khong banh rang/mat tro nen vo hinh. */
+#sidebar .sidebar-bottom #mode-toggle {
+  border: 0;
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--sidebar-btn-color);
+}
+#sidebar .sidebar-bottom #mode-toggle:hover { background: var(--sky); color: var(--ink); }
+#sidebar .sidebar-bottom #mode-toggle:focus-visible { outline: var(--hair) solid var(--green); }
 
 /* Menu chuyen che do sang/toi trong sidebar. Chirpy dat mau chu bang
    --sidebar-muted-color nen chi can bo vien tron + mau nen cua skin. */
