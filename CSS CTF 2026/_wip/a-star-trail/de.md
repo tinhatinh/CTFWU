@@ -33,7 +33,7 @@ the flag would be CSSCTF{POST2-5.0}
 | Loại file | PNG image data, 3780 x 1890, 8-bit/color RGBA, non-interlaced |
 | Nội dung | Bản đồ "POLARIS LOGISTICS STAR MAP - NO. CA-S08-R11 v.1.04.02", 13 thiên thể, 20 đường nét đứt có ghi số ngày |
 | Nhiệm vụ | Đường đi ngắn nhất EARTH -> LANCER-RXKRD, dưới 25 ngày |
-| Định dạng cờ | `CSSCTF{<chữ cái đầu mỗi thiên thể>-<số ngày 1 chữ số thập phân>}` |
+| Định dạng cờ | `CSSCTF{<chữ cái đầu mỗi chặng trung gian>-<số ngày 1 chữ thập phân>}` (đã kiểm: không tính EARTH và LANCER-RXKRD) |
 
 ## Hướng giải (tóm tắt)
 
@@ -46,4 +46,4 @@ Cờ ghép từ chữ cái đầu của từng thiên thể trên đường đi,
 python exploit.py
 ```
 
-Kết quả: `CSSCTF{EP1JTL-21.0}` (đã lưu trong `flag.txt`).
+Kết quả: `CSSCTF{P1JT-21.0}` (đã lưu trong `flag.txt`).

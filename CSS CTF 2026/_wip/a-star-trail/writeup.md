@@ -1,6 +1,6 @@
 # A Star Trail — Misc/OSINT (Beginner)
 
-**Flag:** `CSSCTF{EP1JTL-21.0}` · **Files:** `A_Star_Trail.png` (3780x1890, sha256 `a3584ca6…c3d33ed`)
+**Flag:** `CSSCTF{P1JT-21.0}` · **Files:** `A_Star_Trail.png` (3780x1890, sha256 `a3584ca6…c3d33ed`)
 
 ## Đề bài
 
@@ -45,8 +45,11 @@ path, cost = dijkstra(g)
 **Bước 4 - Kiểm chứng.** Cộng lại từng cạnh của đường Dijkstra được đúng 21.0; mọi cạnh trên
 đường đều có thật trong bảng đọc từ ảnh; số cạnh khai thác bằng đúng số nhãn trên bản đồ.
 
-**Bước 5 - Ghép cờ.** Chữ cái đầu theo thứ tự: E (EARTH), P (PALLUS-XA), 1 (12-PUCK-8),
-J (JIP-REIA), T (TAYLOR-3489), L (LANCER-RXKRD) → `EP1JTL`, thêm `-21.0`.
+**Bước 5 - Ghép cờ.** "each planet/oid in your path" ở bài này là các chặng trung gian,
+không tính nơi xuất phát và nơi đến. Bản đầy đủ là
+`EARTH -> PALLUS-XA -> 12-PUCK-8 -> JIP-REIA -> TAYLOR-3489 -> LANCER-RXKRD`, lấy bốn chặng
+giữa được P (PALLUS-XA), 1 (12-PUCK-8), J (JIP-REIA), T (TAYLOR-3489) → `P1JT`, thêm `-21.0`.
+Bản tính cả hai đầu (`EP1JTL-21.0`) đã nộp và bị từ chối.
 
 Độ nhạy đáng ghi nhớ: á quân chỉ kém 0.6 ngày, nên nếu đọc sai một trọng số nhỏ (0.4 hoặc 1.8)
 thì cờ đảo sang `EPBJTL-21.6`. Script đã thử hai biến thể đó và cho thấy nó đổi kết quả thật,
@@ -62,7 +65,7 @@ $ python exploit.py
 4) duong duoi 25 ngay: 5, ngan nhat 21.0, thu nhi 21.6
 5) dinh dang CSSCTF{<ky tu dau moi nut>-<ngay>}
 
-FLAG: CSSCTF{EP1JTL-21.0}
+FLAG: CSSCTF{P1JT-21.0}
 ```
 
 ## Reproduce

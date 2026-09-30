@@ -31,7 +31,7 @@ cmd: `python analysis/graph.py`
 evidence: Dijkstra cho `EARTH -> PALLUS-XA -> 12-PUCK-8 -> JIP-REIA -> TAYLOR-3489 -> LANCER-RXKRD`
 = 10.7+1.8+0.4+5.5+2.6 = 21.0 ngày. Liệt kê hết đường đơn dưới 25 ngày: 5 đường, lần lượt
 21.0 / 21.6 / 22.7 / 22.9 / 24.3, nên đỉnh 21.0 là duy nhất.
-result: OK - cờ: `CSSCTF{EP1JTL-21.0}`
+result: PENDING - duong va so ngay dung, cach ghep chu thi sai (xem H5)
 
 ## Độ nhạy của lời giải
 cmd: `python exploit.py` với hai trọng số bị sửa
@@ -43,3 +43,12 @@ bị từ chối, việc đầu tiên là đọc lại ba nhãn 10.7, 1.8, 0.4 t
 ---
 
 Nguyên tắc ghi: không xoá nhánh sai, chỉ thêm `result: DEAD - <lý do>`, để lần sau đọc lại không thử trùng.
+
+## H5 - Cach ghep co: co dem hai dau khong
+cmd: nop `CSSCTF{EP1JTL-21.0}` roi `CSSCTF{P1JT-21.0}`
+evidence: ban co nop `CSSCTF{EP1JTL-21.0}` (tinh ca EARTH va LANCER-RXKRD) bi tu choi;
+bo hai dau, chi lay chu dau cua PALLUS-XA, 12-PUCK-8, JIP-REIA, TAYLOR-3489 -> `P1JT`,
+thì được chấp nhận. Duong di va 21.0 ngay giu nguyên.
+result: OK - cờ: `CSSCTF{P1JT-21.0}`. Ghi nhớ: "each planet/oid in your path" ở bài 1
+tính theo chặng trung gian, còn bài 2 lại nói rõ "your first stop (S0jRxc)" nên hai đầu
+được tính. Hai bài cùng họ nhưng luật ngược nhau.
