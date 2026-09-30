@@ -21,7 +21,8 @@ Jekyll::Hooks.register [:pages, :documents], :post_render do |doc|
   next true unless doc.output.include?("<body")
 
   base = doc.site.baseurl.to_s
-  head = %(<link rel="stylesheet" href="#{base}/assets/css/campus.css?v=#{CTFW_BUILD}">\n)
+  head = %(<link rel="stylesheet" href="#{base}/assets/css/campus.css?v=#{CTFW_BUILD}">) +
+         %(<script defer src="#{base}/assets/js/lang.js?v=#{CTFW_BUILD}"></script>\n)
 
   rest = doc.url.to_s.start_with?(base) ? doc.url.to_s[base.length..-1].to_s : doc.url.to_s
   rest = "/" if rest.empty?

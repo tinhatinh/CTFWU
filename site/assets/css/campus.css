@@ -312,8 +312,9 @@ a.card:hover, .post-preview:hover { background: var(--cream); }
 
 /* Button: nau to, goc tron, bong lech mau muc. The `.post-tag` cung mang class
    .btn cua Bootstrap nen phai loai khoi rule nay, neu khong no bi nen xanh va
-   chu trang (an toan bo ten the). */
-.btn:not(.post-tag), button, .post-nav .btn, #search-result-button, input[type=submit] {
+   chu trang (an toan bo ten the). `.dropdown-item` cung la <button>: dung lai
+   o day thi chu cua menu chuyen sang che do sang/toi bi an mat nen trang. */
+.btn:not(.post-tag), button:not(.dropdown-item), .post-nav .btn, #search-result-button, input[type=submit] {
   border: var(--hair) solid var(--ink) !important;
   border-radius: var(--r-md) !important;
   box-shadow: var(--shadow-sm);
@@ -324,8 +325,27 @@ a.card:hover, .post-preview:hover { background: var(--cream); }
   letter-spacing: 0;
   text-transform: none;
 }
-.btn:not(.post-tag):hover, button:hover { background: var(--mint); color: var(--ink) !important; transform: translate(-1px, -1px); }
+.btn:not(.post-tag):hover, button:not(.dropdown-item):hover { background: var(--mint); color: var(--ink) !important; transform: translate(-1px, -1px); }
 .btn:active { box-shadow: 1px 1px 0 0 var(--shadow-c); transform: translate(2px, 2px); }
+
+/* Menu chuyen che do sang/toi trong sidebar. Chirpy dat mau chu bang
+   --sidebar-muted-color nen chi can bo vien tron + mau nen cua skin. */
+#sidebar .sidebar-bottom .dropdown-menu {
+  border: var(--hair) solid var(--ink);
+  border-radius: var(--r-md);
+  background: var(--paper);
+  box-shadow: var(--shadow-sm);
+}
+#sidebar .sidebar-bottom #mode-toggle + .dropdown-menu .dropdown-item {
+  color: var(--ink);
+  border-radius: var(--r-sm);
+  font-weight: 700;
+}
+#sidebar .sidebar-bottom #mode-toggle + .dropdown-menu .dropdown-item:hover,
+#sidebar .sidebar-bottom #mode-toggle + .dropdown-menu .dropdown-item.active {
+  background: var(--mint);
+  color: var(--ink);
+}
 
 /* Code. Chirpy gan mau theo `:root[data-bs-theme=...]` (dac biet 0-3-0 tro len)
    nen phan lon rule o day phai dat cung mo `:root[data-bs-theme]` de thang ma

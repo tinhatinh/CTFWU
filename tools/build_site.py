@@ -98,9 +98,6 @@ Flag là giá trị riêng theo team, nên copy từ đây về nộp sẽ khôn
 
 ## Đội
 
-{team} gồm năm thành viên. Ở POCTF 2026 đội đăng ký dưới số 612, nên thẻ đề và flag của các bài
-POCTF mang số đó.
-
 {members}
 """,
     "en": """I'm **Phan Thành Danh** ([@tinhatinh](https://github.com/tinhatinh)), an IT student at the
@@ -126,9 +123,6 @@ Every solution comes from the challenge's own artifact only, with no outside wri
 Flags are per team, so copying one from here will not be accepted.
 
 ## Team
-
-{team} has five members. At POCTF 2026 the team registered as number 612, which is why the POCTF
-challenge cards and flags carry that id.
 
 {members}
 """,
