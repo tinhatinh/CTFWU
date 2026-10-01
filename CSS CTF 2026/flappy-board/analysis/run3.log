@@ -1,0 +1,11 @@
+[    0.4s] session: {'token': '6e966e...', 'round': '1', 'seed': '4141039930', 'remaining_seconds': '1200', 'limit_seconds': '1200', 'target': '10', 'wait_seconds': '180'}
+[    1.8s] round 1 seed=4141039930 target=10 wait=180s left=1200s | 1197 ticks, 69 flaps, score 10 replay(tick=1197 score=10)
+[    1.8s]    round 1 attempt 0: sleeping 179.3s
+[  181.5s] complete r1 (try 0) -> 200 round=2&seed=3567614339&remaining_seconds=1019&limit_seconds=1200&target=20&wait_seconds=360
+[  184.2s] round 2 seed=3567614339 target=20 wait=360s left=1019s | 2161 ticks, 111 flaps, score 20 replay(tick=2161 score=20)
+[  184.2s]    round 2 attempt 0: sleeping 358.0s
+[  542.6s] complete r2 (try 0) -> 200 round=3&seed=1542490042&remaining_seconds=658&limit_seconds=1200&target=30&wait_seconds=600
+[  546.4s] round 3 seed=1542490042 target=30 wait=600s left=658s | 3125 ticks, 149 flaps, score 30 replay(tick=3125 score=30)
+[  546.4s]    round 3 attempt 0: sleeping 596.9s
+[ 1143.7s] complete r3 (try 0) -> 200 round=4&seed=2803167355&remaining_seconds=57&limit_seconds=1200&target=0&wait_seconds=0&flag=CSSCTF%7Bbirdddd%7D
+FLAG: CSSCTF%7Bbirdddd%7D

@@ -1,0 +1,18 @@
+[    0.4s] session token e70cf51e1f05097e... {'token': 'e70cf5...', 'round': '1', 'seed': '514830806', 'remaining_seconds': '1200', 'limit_seconds': '1200', 'target': '10', 'wait_seconds': '180'}
+[    0.4s] round 1: seed=514830806 target=10 wait=180s session_left=1200s
+[    1.9s] route: 1197 ticks, 46 flaps, score 10 | replay tick=1197 score=10 dead=0 (1.5s to compute)
+[    1.9s] waiting 199.5s (departure 180s + flight 19.9s)
+[  201.7s] complete round 1 -> 200 round=2&seed=1738599582&remaining_seconds=999&limit_seconds=1200&target=20&wait_seconds=360
+[  202.1s] attempt -> token=8f8a5e...&round=1&seed=1937665962&remaining_seconds=1200&limit_seconds=1200&target=10&wait_seconds=180
+[  202.1s] round 2: seed=1937665962 target=10 wait=180s session_left=1200s
+[  203.3s] route: 1197 ticks, 53 flaps, score 10 | replay tick=1197 score=10 dead=0 (1.2s to compute)
+[  203.3s] waiting 199.7s (departure 180s + flight 19.9s)
+[  403.4s] complete round 2 -> 422 error=Virtual+waiting+timer+has+not+completed.
+[  403.8s] attempt -> token=b35735...&round=1&seed=1636452388&remaining_seconds=1200&limit_seconds=1200&target=10&wait_seconds=180
+[  403.8s] round 3: seed=1636452388 target=10 wait=180s session_left=1200s
+[  405.0s] route: 1197 ticks, 50 flaps, score 10 | replay tick=1197 score=10 dead=0 (1.2s to compute)
+[  405.0s] waiting 199.7s (departure 180s + flight 19.9s)
+[  605.2s] complete round 3 -> 409 error=Round+order+mismatch.+Refresh+attempt+status.
+[  605.5s] attempt -> token=7bf1b9...&round=1&seed=2067663078&remaining_seconds=1200&limit_seconds=1200&target=10&wait_seconds=180
+[  605.5s] FINAL attempt: {'token': '7bf1b9...', 'round': '1', 'seed': '2067663078', 'remaining_seconds': '1200', 'limit_seconds': '1200', 'target': '10', 'wait_seconds': '180'}
+FLAG: None

@@ -1,0 +1,11 @@
+[    0.4s] session: {'token': 'ea9566...', 'round': '1', 'seed': '101402870', 'remaining_seconds': '1200', 'limit_seconds': '1200', 'target': '10', 'wait_seconds': '180'}
+[    1.8s] round 1 seed=101402870 target=10 wait=180s left=1200s | 1197 ticks, 65 flaps, score 10 replay(tick=1197 score=10 dead=0)
+[    1.8s]    sleeping 200.0s (departure 180s + flight 19.9s)
+[  202.3s] complete r1 -> 200 round=2&seed=4222819700&remaining_seconds=999&limit_seconds=1200&target=20&wait_seconds=360
+[  204.8s] round 2 seed=4222819700 target=20 wait=360s left=999s | 2161 ticks, 97 flaps, score 20 replay(tick=2161 score=20 dead=0)
+[  204.8s]    sleeping 395.0s (departure 360s + flight 36.0s)
+[  600.2s] complete r2 -> 200 round=3&seed=2944793793&remaining_seconds=601&limit_seconds=1200&target=30&wait_seconds=600
+[  603.9s] round 3 seed=2944793793 target=30 wait=600s left=601s | 3125 ticks, 140 flaps, score 30 replay(tick=3125 score=30 dead=0)
+[  603.9s]    sleeping 649.9s (departure 600s + flight 52.1s)
+[ 1254.1s] complete r3 -> 410 error=The+session+deadline+has+expired%2C+including+practice+time.
+[ 1254.1s] FAILED at round 3

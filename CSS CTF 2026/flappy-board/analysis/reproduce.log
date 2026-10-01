@@ -1,0 +1,11 @@
+[    0.5s] session: {'round': '1', 'seed': '125677873', 'remaining_seconds': '1200', 'limit_seconds': '1200', 'target': '10', 'wait_seconds': '180'}
+[    3.2s] round 1 seed=125677873 target=10 wait=180s left=1200s | 1197 tick, 45 flap, score 10
+[    3.2s]    sleeping 178.0s
+[  181.6s] complete r1 -> 200 round=2&seed=2859321718&remaining_seconds=1019&limit_seconds=1200&target=20&wait_seconds=360
+[  185.4s] round 2 seed=2859321718 target=20 wait=360s left=1019s | 2161 tick, 93 flap, score 20
+[  185.4s]    sleeping 356.9s
+[  542.7s] complete r2 -> 200 round=3&seed=2808984917&remaining_seconds=658&limit_seconds=1200&target=30&wait_seconds=600
+[  548.1s] round 3 seed=2808984917 target=30 wait=600s left=658s | 3125 tick, 180 flap, score 30
+[  548.1s]    sleeping 595.3s
+[ 1143.9s] complete r3 -> 200 round=4&seed=870498010&remaining_seconds=57&limit_seconds=1200&target=0&wait_seconds=0&flag=CSSCTF%7Bbirdddd%7D
+FLAG: CSSCTF{birdddd}
