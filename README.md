@@ -41,8 +41,9 @@ fetcher refuses to write an empty file, so the site keeps the last real numbers.
 | [H7CTF 2026 Quals](H7CTF%202026%20Quals/) | Sep 2026 | 29 | Pwn · Crypto · Web · Web3 · Hardware · Forensics · Mobile · Cloud · AI · Rev · OSINT · Misc |
 | [SunshineCTF 2026](SunshineCTF%202026/) | Sep 2026 | 18 | Pwn · Web · Crypto · Forensics · Misc |
 | [Pointer Overflow CTF 2026](Pointer%20Overflow%20CTF%202026/) | Sep 2026 | 8 | Crypto · EXP · Forensics · Misc · OSINT · RE · Steg · Web |
+| [CSS CTF 2026: Return of Nexus](CSS%20CTF%202026/) | Oct 2026 | 17 | Web · Pwn · Crypto · Forensics · OSINT · Misc · Reverse Engineering · Web3 |
 
-**Total: 55 writeups**
+**Total: 72 writeups**
 
 ## Structure
 
@@ -69,6 +70,22 @@ Each challenge directory follows a consistent layout:
 - Flag prefixes vary between challenges (even within the same event). Always verify before scanning.
 
 ## Quick Navigation
+
+<details>
+<summary><b>CSS CTF 2026 - 17 solved challenges</b></summary>
+
+| Challenge | Category | Difficulty | Flag |
+|-----------|----------|------------|------|
+| [colour-shift](CSS%20CTF%202026/colour-shift/) | Forensics | Beginner | `CSSCTF{SHINE ON}` |
+| [server-juice](CSS%20CTF%202026/server-juice/) | OSINT | Beginner | `CSSCTF{premiumreserve}` |
+| [lamp-drill](CSS%20CTF%202026/lamp-drill/writeup.md) | Warm-up | n/a | `CSSCTF{css}` |
+| [maintenance-log](CSS%20CTF%202026/maintenance-log/writeup.md) | Pwn | n/a | `CSSCTF{Duh_m4t3_1_4m_sl33py}` |
+| [a-star-trail](CSS%20CTF%202026/a-star-trail/writeup.md) | Misc | Beginner* | `CSSCTF{P1JT-21.0}` |
+| [chrono-i](CSS%20CTF%202026/chrono-i/writeup.md) | Crypto | Beginner | `CSSCTF{every_second_hides_a_secret}` |
+
+*(n/a = difficulty not printed on challenge card; * = estimated from sibling challenge)*
+
+</details>
 
 <details>
 <summary><b>H7CTF 2026 Quals - 29 challenges</b></summary>
