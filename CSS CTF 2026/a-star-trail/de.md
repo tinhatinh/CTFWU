@@ -1,7 +1,5 @@
 # Đề bài - a-star-trail
 
-![de](files/A_Star_Trail.png)
-
 ## Nguyên văn đề
 
 ```text
@@ -34,6 +32,12 @@ the flag would be CSSCTF{POST2-5.0}
 | Nội dung | Bản đồ "POLARIS LOGISTICS STAR MAP - NO. CA-S08-R11 v.1.04.02", 13 thiên thể, 20 đường nét đứt có ghi số ngày |
 | Nhiệm vụ | Đường đi ngắn nhất EARTH -> LANCER-RXKRD, dưới 25 ngày |
 | Định dạng cờ | `CSSCTF{<chữ cái đầu mỗi chặng trung gian>-<số ngày 1 chữ thập phân>}` (đã kiểm: không tính EARTH và LANCER-RXKRD) |
+| Điểm / độ khó | thẻ đề không được lưu lại trong phiên; `Beginner` là ước lượng theo bài tiếp theo (A Star Trail 2: 187 / Intermediate) |
+| Trạng thái nộp | bản `EP1JTL-21.0` (tính cả hai đầu) nộp và bị từ chối; bản `CSSCTF{P1JT-21.0}` được chấp nhận |
+
+Ảnh artifact (không phải ảnh thẻ đề):
+
+![star map](files/A_Star_Trail.png)
 
 ## Hướng giải (tóm tắt)
 

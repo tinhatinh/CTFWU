@@ -18,7 +18,7 @@ Quét hết 10000 file thì mỗi file chỉ có đúng ba loại dòng:
 Counter({'wikilink': 59944, 'title': 10000, 'coords': 10000})
 ```
 
-Không có trường số ngày nào như phien 1, nên thứ duy nhất đo được là toạ độ. Đồ thị cũng
+Không có trường số ngày nào như bản trước, nên thứ duy nhất đo được là toạ độ. Đồ thị cũng
 sạch: 59944 cạnh chiều gộp lại còn đúng 29972 cạnh vô hướng (liên kết đối xứng tuyệt đối),
 không link treo, bậc trung bình 5.99.
 
@@ -69,7 +69,21 @@ $ python exploit.py files/map.zip
 3) duong thang lien nut dau-cuoi = 138.6231 -> lo trinh 4.55% dai hon
 4) ca 135 canh deu la wikilink that trong map
 5) cach hieu 'it chan nhat': 13 chan nhung dai 199.9478 (ngan nhat la 144.9333) -> khong trung
-6) duong di: S0jRxc -> 1T5eN4 -> hmANsv -> ... -> KTjmKT -> jvRMt3 -> yRJyDb
+6) duong di (136 nut):
+   S0jRxc -> 1T5eN4 -> hmANsv -> XGnRvX -> CZqgmf -> HFtEqa -> PNHmEq -> zdQEDJ -> PqE5LH -> 7GwlrF ->
+   s4clAO -> BZBIfU -> Nr4nCb -> caVoaa -> iQYvOf -> PzNTZG -> 1M0urD -> QMPisi -> amu7Wo -> iNCLPy ->
+   QpG6f5 -> MR8uJc -> Bj68lj -> HETuLA -> TrGMSs -> JiPYRV -> PpowW7 -> tVsNxK -> 9luvD5 -> BwCBhI ->
+   jctq4E -> BK2t5a -> aMS8lF -> 0y8tTE -> Nnb8rI -> gpo1OA -> VIJCJC -> ootqYn -> YGRffF -> oqWomB ->
+   gBq3nj -> 9RXg8o -> idn8MR -> 3Ge1Ze -> wDrRGY -> KgxAJF -> Au7JPZ -> sfamMH -> SZeex7 -> 5dB0SL ->
+   YHeChf -> AoHtOq -> h8A8Eq -> DcGFsR -> mNypTS -> nikTvk -> QsNinN -> fJSa8c -> UI6ZN7 -> LMdJ5T ->
+   cnUGJr -> So0gII -> f9ltmH -> 7Ckib9 -> 96O7nm -> GwZvTe -> aULZyG -> dRrW9E -> AcA4vb -> KQ5LGq ->
+   nyeoGv -> K77Q2O -> rM0kaj -> nI3TNd -> JoT8Lw -> 4eMHte -> iOvkmn -> YNz5nS -> LZgaSg -> BepSSx ->
+   aXE4nS -> 77Nab2 -> qGHln3 -> hf47ld -> sAFynQ -> lChcQn -> 8fHQzd -> XXpAa6 -> oOyVcu -> FzP1DH ->
+   TMtjsI -> HEtwSC -> QFRV2e -> LAVTJQ -> Gl2ZAI -> 0QfLJN -> gjKpSu -> PEsjS8 -> r8nrfI -> RGXT2a ->
+   exrjS0 -> K3oT0m -> EGoU5L -> Yrggxs -> 25GB9o -> ssqEuY -> UelHC3 -> EISTKi -> rZhn2k -> 5CXPOK ->
+   9buFn2 -> Ug9MqQ -> 4cWCct -> DlIidI -> rm6bAP -> wcxQ5o -> p7LRWQ -> qLnEKN -> ZJNscx -> gymzEO ->
+   np5olu -> pVWtdw -> sTEnG2 -> Ws6XnB -> Sawmhz -> KXOShu -> LrO3VY -> PLYS2Q -> GWgqRX -> clzegJ ->
+   fm4gOr -> ScLSwM -> etckNZ -> KTjmKT -> jvRMt3 -> yRJyDb
 
 FLAG: CSSCTF{STARmaPdElAUNaYTriaNGulATioNDIjKStrAVoRonoiGrAPHSdetERmiNaNTcolineaRALGOrITHmSLeEandsCHAcHTERTANgEnTSmErGECirCuMcIrcLEcOnVEXhuLLgeOMeTRy}
 ```

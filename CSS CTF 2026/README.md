@@ -27,5 +27,32 @@ Ra cờ thì chuyển thư mục bài lên thẳng `<Event>/`, điền vào bả
 
 | Challenge | Category | Difficulty | Flag |
 |-----------|----------|------------|------|
+| [a-star-trail](a-star-trail/writeup.md) | Misc | Beginner* | `CSSCTF{P1JT-21.0}` |
+| [a-star-trail-2](a-star-trail-2/writeup.md) | Misc | Intermediate | `CSSCTF{STARmaPdElAUNaY…geOMeTRy}` (136 ký tự, bản đầy đủ trong `a-star-trail-2/flag.txt`) |
+| [chrono-i](chrono-i/writeup.md) | Crypto | Beginner | `CSSCTF{every_second_hides_a_secret}` |
+| [chrono-ii](chrono-ii/) | Crypto | Intermediate | `CSSCTF{th3_cl0ck_r3m3mb3rs_3very_s3c0nd}` |
 | [colour-shift](colour-shift/) | Forensics | Beginner | `CSSCTF{SHINE ON}` |
+| [flappy-board](flappy-board/writeup.md) | Misc | Intermediate | `CSSCTF{birdddd}` |
+| [lamp-drill](lamp-drill/writeup.md) | Warm-up | n/a | `CSSCTF{css}` |
+| [maintenance-log](maintenance-log/writeup.md) | Pwn | n/a | `CSSCTF{Duh_m4t3_1_4m_sl33py}` |
+| [prince-walk](prince-walk/writeup.md) | Reverse | n/a | `CSSCTF{P12INC3_0R_P1NC3?}` |
 | [server-juice](server-juice/) | OSINT | Beginner | `CSSCTF{premiumreserve}` |
+| [severed-symmetry](severed-symmetry/writeup.md) | Crypto | Expert | `CSSCTF{P35T0_5CH3M3_4TT4CK2026}` |
+
+Thẻ của prince-walk chỉ in số điểm (50), không có hạng độ khó, nên cột Difficulty để `n/a`
+như lamp-drill và maintenance-log. Ba bài mới đều có bằng chứng độc lập: severed-symmetry được
+xác nhận bằng cách mã hoá lại plaintext vừa thu với đúng public key của `out.txt` cho ra nguyên
+3 block ciphertext gốc; prince-walk có FNV-1a do tác giả nhét trong payload (`763cc96c`) khớp với
+72 byte trích ra; flappy-board nhận cờ thẳng từ response của `/api/complete` sau khi cả ba round
+trả HTTP 200, và mô phỏng vật lý đã được `verified_score` của practice oracle đối chiếu trước đó.
+
+Thẻ của lamp-drill và maintenance-log không in hạng độ khó (chỉ có số điểm), nên cột
+Difficulty để `n/a`. Hai dòng đó link thẳng `writeup.md` vì `tools/build_site.py` chỉ
+nhận diện thể loại từ ô link dạng `<ten-bai>/writeup.md`; các dòng khác trong bảng này
+đang link thư mục nên site không lấy được Category của chúng.
+
+\* Thẻ của a-star-trail không được lưu lại trong phiên (chỉ giữ phần mô tả), nên `Beginner` là
+ước lượng theo thẻ a-star-trail-2 (187 / Intermediate), và cột này chưa có điểm số. Cờ của
+chrono-i và a-star-trail-2 mới kiểm chứng cục bộ: mã hoá ngược lại ra đúng ciphertext gốc và xâu
+ghép đọc thành danh sách thuật toán hình học. Riêng a-star-trail có xác nhận bảng điểm: bản tính
+cả hai đầu `EP1JTL-21.0` bị từ chối, `CSSCTF{P1JT-21.0}` được chấp nhận.

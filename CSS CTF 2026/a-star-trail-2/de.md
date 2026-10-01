@@ -40,10 +40,12 @@ flag would be CSSCTF{ACjQxL}
 | Đồ thị | 10000 nút, 59944 cạnh chiều = 29972 cạnh vô hướng, liên kết đối xứng hoàn toàn, không link treo, bậc 3..14 trung bình 5.99 |
 | Nhiệm vụ | Đường S0jRxc -> yRJyDb "trong thời gian hợp lý", ghép cờ theo luật chữ thứ i quay vòng 6 |
 | Định dạng cờ | `CSSCTF{...}` |
+| Điểm / độ khó / tác giả | 187 / Intermediate / Noxellar (ngay trên thẻ đề) |
+| Trạng thái nộp | cờ kiểm chứng cục bộ (xâu ghép đọc thành danh sách thuật toán hình học, đường tối ưu duy nhất); chưa có xác nhận đã được chấm chấp nhận |
 
 ## Hướng giải (tóm tắt)
 
-Đề không cho số ngày như phien 1, và dữ kiện duy nhất có thể đo được là toạ độ, nên
+Đề không cho số ngày như bản trước, và dữ kiện duy nhất có thể đo được là toạ độ, nên
 "reasonable time" là tổng quãng đường Euclid giữa các hành tinh liên tiếp: chạy
 Dijkstra với trọng số = khoảng cách toạ độ. Đường tối ưu duy nhất, và xâu chữ cái
 ghép ra chứa một thông điệp ẩn liệt kê các thuật toán hình học, xác nhận đã đúng đường.
@@ -54,4 +56,4 @@ ghép ra chứa một thông điệp ẩn liệt kê các thuật toán hình h�
 python exploit.py files/map.zip
 ```
 
-Kết quả: `CSSCTF{STAR…eOMeTRy}` (đã lưu trong `flag.txt`).
+Kết quả: `CSSCTF{STARmaPdElAUNaYTriaNGulATioNDIjKStrAVoRonoiGrAPHSdetERmiNaNTcolineaRALGOrITHmSLeEandsCHAcHTERTANgEnTSmErGECirCuMcIrcLEcOnVEXhuLLgeOMeTRy}` (đã lưu trong `flag.txt`).
