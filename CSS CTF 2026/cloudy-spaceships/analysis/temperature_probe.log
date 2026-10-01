@@ -1,0 +1,13 @@
+cung resolver, 5 ten tau cua board:
+  Voyager 1     : 71.3
+  Cassini       : 71.3
+  New Horizons  : 71.3
+  Juno          : 71.3
+  Galileo       : 71.3
+ten tau khong co tren board: 71.3
+ten tau try path traversal : HTTP404
+
+so sanh kich thuoc body tai local voi con so tra ve:
+  https://example.com/                           local=    713 B  server=    71.3  len/10 = 71.3
+  http://1.1.1.1/                                local=  56614 B  server=  5661.4  len/10 = 5661.4
+  https://en.wikipedia.org/wiki/Space_weather    local= 515963 B  server=  3604.5  len/10 = 51596.3

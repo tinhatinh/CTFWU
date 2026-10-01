@@ -42,6 +42,9 @@ H7CTF 2026 Quals/public-domain/files/h7-tex.github.io.tar.gz
 # Misc
 .env
 
+# Callback captures: header cua request di ra, chua credential song (OAuth Bearer)
+**/analysis/auth.log
+
 # Jekyll / Bundler
 _site
 _site_src

@@ -1,0 +1,18 @@
+thieu header                    : HTTP 451 body=
+khong phai base64               : HTTP 451 body=
+base64 thieu key resolver       : HTTP 451 body=
+wikipedia Space_weather         : HTTP 200 body=3604.6
+example.com https               : HTTP 200 body=71.3
+example.com http                : HTTP 200 body=71.3
+1.1.1.1 http                    : HTTP 200 body=5661.4
+1.1.1.1 https                   : HTTP 200 body=5661.4
+8.8.8.8 (khong co HTTP)         : err TimeoutError
+127.0.0.1                       : HTTP 500 body=<!doctype html>
+<html lang="en">
+	<head>
+localhost                       : HTTP 500 body=<!doctype html>
+<html lang="en">
+	<head>
+file:///etc/passwd              : HTTP 500 body=<!doctype html>
+<html lang="en">
+	<head>

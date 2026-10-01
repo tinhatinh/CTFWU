@@ -1,0 +1,6 @@
+refute: so = len(body)/10 ?
+  http://127.0.0.1:1/       : HTTP500   (no HTTP server on this port)
+  http://127.0.0.1:9/       : HTTP500   (no HTTP server on this port)
+  http://127.0.0.1:65500/   : HTTP500   (no HTTP server on this port)
+  => 500 o day la nhanh 'fetch that bai', cung trang voi file:// va [::1]
+  => nen cac con so metadata_probe.py la do body that, khong phai loi bi chan

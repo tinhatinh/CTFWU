@@ -1,0 +1,7 @@
+https://en.wikipedia.org/wiki/Space_weather    server=3604.5  local_body=515963B doi_truc_tiep=True khoi_hop_le=khong
+https://example.com/                           server=71.3    local_body=713B doi_truc_tiep=True khoi_hop_le=khong
+http://1.1.1.1/                                server=5661.4  local_body=56614B doi_truc_tiep=True khoi_hop_le=khong
+
+Ket luan: con so phu thuoc noi dung server doc duoc, ma ta khong tai duoc
+dung byte do, nen moi phep model deu vo nghia. Gia tri cua primitive nam o
+request di ra, khong phai o con so nay.

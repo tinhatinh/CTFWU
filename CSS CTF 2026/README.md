@@ -31,6 +31,7 @@ Ra cờ thì chuyển thư mục bài lên thẳng `<Event>/`, điền vào bả
 | [a-star-trail-2](a-star-trail-2/writeup.md) | Misc | Intermediate | `CSSCTF{STARmaPdElAUNaY…geOMeTRy}` (136 ký tự, bản đầy đủ trong `a-star-trail-2/flag.txt`) |
 | [chrono-i](chrono-i/writeup.md) | Crypto | Beginner | `CSSCTF{every_second_hides_a_secret}` |
 | [chrono-ii](chrono-ii/) | Crypto | Intermediate | `CSSCTF{th3_cl0ck_r3m3mb3rs_3very_s3c0nd}` |
+| [cloudy-spaceships](cloudy-spaceships/writeup.md) | Web | n/a | `CSSCTF{your_forecast_says_love_is_on_its_way}` |
 | [colour-shift](colour-shift/) | Forensics | Beginner | `CSSCTF{SHINE ON}` |
 | [dockside-ticket](dockside-ticket/writeup.md) | Pwn | Beginner | `CSSCTF{us3_4ft3r_fr33_d0cks1d3}` |
 | [flappy-board](flappy-board/writeup.md) | Misc | Intermediate | `CSSCTF{birdddd}` |

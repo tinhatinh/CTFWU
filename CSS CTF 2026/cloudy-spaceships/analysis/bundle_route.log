@@ -1,0 +1,6 @@
+route : /api/v1/ship/${encodeURIComponent(r)}/temperature
+header: {"X-Resolver":e}
+X-Resolver literal: XeyJyZXNvbHZlciI6Imh0dHB...
+  prefix  : X
+  decoded : {"resolver":"https://en.wikipedia.org/wiki/Space_weather"}
+  rebuild : X + base64(json) = True

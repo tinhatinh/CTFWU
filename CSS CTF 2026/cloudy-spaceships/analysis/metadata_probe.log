@@ -1,0 +1,9 @@
+http://169.254.169.254/                                               : HTTP200 body='1.7'
+http://169.254.169.254/computeMetadata/v1/                            : HTTP200 body='163.6'
+http://169.254.169.254/computeMetadata/v1/project/project-id          : HTTP200 body='165.4'
+http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/email: HTTP200 body='167.5'
+http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/token: HTTP200 body='167.5'
+http://metadata.google.internal/computeMetadata/v1/project/project-id : HTTP200 body='165.4'
+http://169.254.170.2/v1/id                                            : err TimeoutError
+http://[::1]/                                                         : HTTP500 body='<!doctype html>\n<html lang="en'
+http://100.100.100.200/latest/meta-data/                              : err TimeoutError
