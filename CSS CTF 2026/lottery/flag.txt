@@ -1,0 +1,2 @@
+CSS{U5E_4_R4ND0M_FUNCT10N}   # dung chuoi nc in ra sau action 3 (ticket R3:TURИ)
+CSSCTF{CSS{U5E_4_R4ND0M_FUNCT10N}}   # chuoi nop len scoreboard theo format cua de

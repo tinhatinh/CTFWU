@@ -35,6 +35,7 @@ Ra cờ thì chuyển thư mục bài lên thẳng `<Event>/`, điền vào bả
 | [dockside-ticket](dockside-ticket/writeup.md) | Pwn | Beginner | `CSSCTF{us3_4ft3r_fr33_d0cks1d3}` |
 | [flappy-board](flappy-board/writeup.md) | Misc | Intermediate | `CSSCTF{birdddd}` |
 | [lamp-drill](lamp-drill/writeup.md) | Warm-up | n/a | `CSSCTF{css}` |
+| [lottery](lottery/writeup.md) | Web3 | n/a | `CSSCTF{CSS{U5E_4_R4ND0M_FUNCT10N}}` |
 | [maintenance-log](maintenance-log/writeup.md) | Pwn | n/a | `CSSCTF{Duh_m4t3_1_4m_sl33py}` |
 | [prince-walk](prince-walk/writeup.md) | Reverse | n/a | `CSSCTF{P12INC3_0R_P1NC3?}` |
 | [server-juice](server-juice/) | OSINT | Beginner | `CSSCTF{premiumreserve}` |
