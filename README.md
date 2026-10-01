@@ -71,21 +71,6 @@ Each challenge directory follows a consistent layout:
 
 ## Quick Navigation
 
-<details>
-<summary><b>CSS CTF 2026 - 17 solved challenges</b></summary>
-
-| Challenge | Category | Difficulty | Flag |
-|-----------|----------|------------|------|
-| [colour-shift](CSS%20CTF%202026/colour-shift/) | Forensics | Beginner | `CSSCTF{SHINE ON}` |
-| [server-juice](CSS%20CTF%202026/server-juice/) | OSINT | Beginner | `CSSCTF{premiumreserve}` |
-| [lamp-drill](CSS%20CTF%202026/lamp-drill/writeup.md) | Warm-up | n/a | `CSSCTF{css}` |
-| [maintenance-log](CSS%20CTF%202026/maintenance-log/writeup.md) | Pwn | n/a | `CSSCTF{Duh_m4t3_1_4m_sl33py}` |
-| [a-star-trail](CSS%20CTF%202026/a-star-trail/writeup.md) | Misc | Beginner* | `CSSCTF{P1JT-21.0}` |
-| [chrono-i](CSS%20CTF%202026/chrono-i/writeup.md) | Crypto | Beginner | `CSSCTF{every_second_hides_a_secret}` |
-
-*(n/a = difficulty not printed on challenge card; * = estimated from sibling challenge)*
-
-</details>
 
 <details>
 <summary><b>H7CTF 2026 Quals - 29 challenges</b></summary>
@@ -157,3 +142,43 @@ Solves are built with minimal dependencies - most use only Python stdlib (`socke
 ## License
 
 Educational use. Challenge descriptions and flag strings remain the property of their respective CTF organizers.
+<details>
+<summary><b>CSS CTF 2026 - 17 solved challenges</b></summary>
+
+| Challenge | Category | Difficulty | Flag |
+|-----------|----------|------------|------|
+| [a-star-trail](CSS%20CTF%202026/a-star-trail/writeup.md) | Misc | Beginner* | `CSSCTF{P1JT-21.0}` |
+| [a-star-trail-2](CSS%20CTF%202026/a-star-trail-2/writeup.md) | Misc | Intermediate | `CSSCTF{STARmaPdElAUNaYTriaNGulATioNDIjKStrAVoRonoiGrAPHSdetERmiNaNTcolineaRALGOrITHmSLeEandsCHAcHTERTANgEnTSmErGECirCuMcIrcLEcOnVEXhuLLgeOMeTRy}` |
+| [astrolobe_overwrite](CSS%20CTF%202026/astrolobe_overwrite/writeup.md) | Pwn | n/a | `CSSCTF{b0ckch41n_sk1ll5}` |
+| [chrono-i](CSS%20CTF%202026/chrono-i/writeup.md) | Crypto | Beginner | `CSSCTF{every_second_hides_a_secret}` |
+| [chrono-ii](CSS%20CTF%202026/chrono-ii/) | Crypto | Intermediate | `CSSCTF{th3_cl0ck_r3m3mb3rs_3very_s3c0nd}` |
+| [cloudy-spaceships](CSS%20CTF%202026/cloudy-spaceships/writeup.md) | Web | n/a | `CSSCTF{your_forecast_says_love_is_on_its_way}` |
+| [colour-shift](CSS%20CTF%202026/colour-shift/) | Forensics | Beginner | `CSSCTF{SHINE ON}` |
+| [dockside-ticket](CSS%20CTF%202026/dockside-ticket/writeup.md) | Pwn | Beginner | `CSSCTF{us3_4ft3r_fr33_d0cks1d3}` |
+| [flappy-board](CSS%20CTF%202026/flappy-board/writeup.md) | Misc | Intermediate | `CSSCTF{birdddd}` |
+| [gateway](CSS%20CTF%202026/gateway/writeup.md) | Web3 | n/a | `CSSCTF{CSS{B451C_BL0CKCH41N_5K1LL5}}` |
+| [lamp-drill](CSS%20CTF%202026/lamp-drill/writeup.md) | Warm-up | n/a | `CSSCTF{css}` |
+| [lottery](CSS%20CTF%202026/lottery/writeup.md) | Web3 | n/a | `CSSCTF{CSS{U5E_4_R4ND0M_FUNCT10N}}` |
+| [maintenance-log](CSS%20CTF%202026/maintenance-log/writeup.md) | Pwn | n/a | `CSSCTF{Duh_m4t3_1_4m_sl33py}` |
+| [prince-walk](CSS%20CTF%202026/prince-walk/writeup.md) | Reverse | n/a | `CSSCTF{P12INC3_0R_P1NC3?}` |
+| [server-juice](CSS%20CTF%202026/server-juice/) | OSINT | Beginner | `CSSCTF{premiumreserve}` |
+| [severed-symmetry](CSS%20CTF%202026/severed-symmetry/writeup.md) | Crypto | Expert | `CSSCTF{P35T0_5CH3M3_4TT4CK2026}` |
+
+*(n/a = difficulty not printed on challenge card; * = estimated from sibling challenge)*
+
+</details>
+
+<details>
+<summary><b>Pointer Overflow CTF 2026 - 8 solved challenges</b></summary>
+
+| Challenge | Category | Difficulty | Flag |
+|-----------|----------|------------|------|
+| [excavation](Pointer%20Overflow%20CTF%202026/excavation/) | RE | Beginner | `POCTF{2VE5EKXUA5IV2R57}` (token only) |
+| [invisible-text](Pointer%20Overflow%20CTF%202026/invisible-text/) | Steg | Hard | `POCTF{hidden_whitespace_in_py_file}` |
+| [letters-never-sent](Pointer%20Overflow%20CTF%202026/letters-never-sent/) | Crypto | Beginner | `POCTF{2.612.ORSMSQU6A7IQJGUC.PQ4FI...}` |
+| [read-me-my-fortune](Pointer%20Overflow%20CTF%202026/read-me-my-fortune/) | EXP | Medium | `POCTF{template_format_rce_via_globals}` |
+| [shape-of-query](Pointer%20Overflow%20CTF%202026/shape-of-query/) | Web | Hard | `POCTF{mass_assignment_private_notes_leak}` |
+| [the-apparatus-invocation](Pointer%20Overflow%20CTF%202026/the-apparatus-invocation/) | Misc | Beginner | `POCTF{lights_out_7x7_gf2_system}` |
+| [where-the-light-fails-to-fall](Pointer%20Overflow%20CTF%202026/where-the-light-fails-to-fall/) | OSINT | Hard | `POCTF{99.612.encrypted_token_sig}` |
+
+</details>
