@@ -1,9 +1,22 @@
 {
-  "flags": [
-    "CSSCTF{premiumreserve}",
-    "CSSCTF{premiumreserve}"
-  ],
-  "shortcode": "DWL9S-wkyJT",
-  "text": "cybersecuritysydney\nUniversity of Sydney\nFollowing\ncybersecuritysydney\n \nEdited\n•\n8h\nLooking to make a real difference in our society? Vote to make one! 🗳️\n\nWe’ll cover some mega constitutional changes, including selecting a refreshed society name, some sweet rebranding, and bring on a suite of new executives.  Zoom link in bio!\n\nAnd if you want more than just a vote? You can apply to our subcommittee or express your interest to become an exec using another link in our bio! \n\nWe hope to see you there; BYO water. 💧\nSee translation\nharrysalvesen\n \n8h\nCSSCTF{premiumreserve}\n11 likes\nReply\nharrysalvesen\n1 like\nReply\nSee translation\n2\n",
-  "url": "https://www.instagram.com/p/DWL9S-wkyJT/"
+  "source": {
+    "platform": "instagram",
+    "account": "@cybersecuritysydney",
+    "shortcode": "DWL9S-wkyJT"
+  },
+  "caption": {
+    "text": "We hope to see you there; BYO water. \ud83d\udca7",
+    "edited": true
+  },
+  "comment": {
+    "user": "harrysalvesen",
+    "time_ago": "8 hours ago",
+    "likes": 11,
+    "text": "CSSCTF{premiumreserve}"
+  },
+  "notes": [
+    "Caption has Instagram 'Edited' label after modification.",
+    "Comment contains flag as plain text (no encoding/stego).",
+    "URLs and CDN handles redacted for privacy."
+  ]
 }

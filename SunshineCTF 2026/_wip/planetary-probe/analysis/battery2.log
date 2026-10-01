@@ -1,0 +1,10 @@
+=== 01:02:59 ===
+row_to_json ok     False  (10s)
+planets has 'sun'  False  (11s)
+table probe        False  (13s)
+table stars        False  (12s)
+table vault        False  (10s)
+table world        False  (12s)
+table venus        False  (12s)
+table pluto        False  (13s)
+table relic        False  (10s)

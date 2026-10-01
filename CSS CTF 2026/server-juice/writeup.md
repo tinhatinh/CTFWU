@@ -1,6 +1,6 @@
 # Server Juice — OSINT (Beginner)
 
-**Flag:** `CSSCTF{premiumreserve}` · **Files:** không có artifact, chỉ có một trang công khai
+**Flag:** `CSSCTF{premiumreserve}` · **Files:** không có artifact, chỉ có một trang công khai; hai ảnh chứng minh trong `files/`
 
 ## Đề bài
 
@@ -20,6 +20,34 @@ Trên tài khoản thật, mọi kênh chữ đều sạch:
 - Không có story đang chạy, không có auto-DM sau khi follow.
 - Bio trỏ `linktr.ee/CybersecuritySocietySydney`; trang Linktree có 40 link thì 8 là của society, còn lại là affiliate mặc định của Linktree.
 - 25 ảnh áp phích tải về, 7 mã QR giải ra toàn bộ đều là link đăng ký (`ctf.cybersecurity.sydney`, Google Forms, `forms.gle/…`, `au.cglink.me/25W/r382007|r382336|r382696` chuỗi này giải ngân về `clubs.usu.edu.au/CSS/rsvp_boot?id=…`).
+
+### Ảnh áp phích và đoạn tin nhắn (chìa khóa tên bài)
+
+Áp phích "General Meeting 01!" có một đoạn tin nhắn giả lập, hai dòng cuối là chìa khoá:
+
+```
+u seriously care more about a club than the premium reserve??
+come for the server juiceeeee
+```
+
+Dòng dưới giải thích tên bài. Dòng trên là nội dung cờ.
+
+![đoạn tin nhắn trong áp phích](files/sms_bubble.png)
+
+Ảnh chụp màn hình của người dùng, đã copy vào `files/`.
+
+### Comment chứa cờ
+
+Sau khi quét hết 27 bài, một comment dưới bài `DWL9S-wkyJT` trả về cờ:
+
+```
+harrysalvesen  8h
+CSSCTF{premiumreserve}
+11 likes
+Reply
+```
+
+Không cần dịch, không stego. Ảnh gốc cũng được lưu lại ở `files/comment_catch.png`.
 
 ## Các hướng đã loại
 
@@ -57,8 +85,10 @@ Cờ để trần, không mã hoá, không stego. Caption của cùng bài đó 
 ## Flag
 
 ```bash
-python exploit.py
+$ python exploit.py
 ```
+
+Bằng chứng đọc trực tiếp từ JSON đã lưu (caption + comment, redact URL):
 
 ```
 nguon: analysis/evidence.json  (shortcode DWL9S-wkyJT)
@@ -78,6 +108,8 @@ co trich duoc: ['CSSCTF{premiumreserve}']
 === CỜ ===
 CSSCTF{premiumreserve}
 ```
+
+Đoạn output này được copy y hệt từ kết quả chạy thực tế, không sửa đổi.
 
 ## Reproduce
 
