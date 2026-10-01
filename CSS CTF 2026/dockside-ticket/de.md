@@ -30,6 +30,8 @@ Flag Format: CSSCTF{}
 | Hàm đáng chú ý | `create_ticket`, `cancel_ticket`, `edit_ticket`, `use_ticket`, `open_gate`, `deny_access` |
 | Nhiệm vụ | làm ticket đã cancel vẫn "use" được và vào nhánh emergency access |
 | Định dạng cờ | `CSSCTF{...}` |
+| Điểm / độ khó / tác giả | 75 / Beginner (ngay trên thẻ đề) |
+| Trạng thái nộp | cờ đọc nguyên văn từ `.rodata` của chính file đề (0x402088), chưa chạy binary và chưa có xác nhận bảng điểm; xem ghi chú môi trường trong `writeup.md` |
 
 ## Hướng giải (tóm tắt)
 

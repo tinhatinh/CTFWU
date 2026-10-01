@@ -32,6 +32,7 @@ Ra cờ thì chuyển thư mục bài lên thẳng `<Event>/`, điền vào bả
 | [chrono-i](chrono-i/writeup.md) | Crypto | Beginner | `CSSCTF{every_second_hides_a_secret}` |
 | [chrono-ii](chrono-ii/) | Crypto | Intermediate | `CSSCTF{th3_cl0ck_r3m3mb3rs_3very_s3c0nd}` |
 | [colour-shift](colour-shift/) | Forensics | Beginner | `CSSCTF{SHINE ON}` |
+| [dockside-ticket](dockside-ticket/writeup.md) | Pwn | Beginner | `CSSCTF{us3_4ft3r_fr33_d0cks1d3}` |
 | [flappy-board](flappy-board/writeup.md) | Misc | Intermediate | `CSSCTF{birdddd}` |
 | [lamp-drill](lamp-drill/writeup.md) | Warm-up | n/a | `CSSCTF{css}` |
 | [maintenance-log](maintenance-log/writeup.md) | Pwn | n/a | `CSSCTF{Duh_m4t3_1_4m_sl33py}` |
