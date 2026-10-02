@@ -443,14 +443,23 @@ footer {
 .post-preview {
   padding: 20px 24px;
   margin-bottom: 16px;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+.post-preview:hover {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
 }
 .post-preview .post-title a {
   font-weight: 700;
   font-size: 1.1rem;
   color: var(--heading);
 }
-.post-preview .post-title a:hover { color: var(--accent); text-decoration: none; }
+.post-preview .post-title a:hover { color: var(--accent); text-decoration: none; border-bottom: none !important; }
 .post-preview .post-meta { font-size: .82rem; color: var(--text-3); margin-top: 6px; }
+.content a.post-preview:hover { border-bottom: none !important; }
 
 /* ═══════════════════════════════════════════
    BUTTONS
@@ -755,10 +764,13 @@ blockquote {
 }
 .ctfw-card:hover {
   transform: translateY(-5px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--accent);
+  box-shadow: var(--shadow-lg) !important;
+  border: var(--hair) solid var(--accent) !important;
   text-decoration: none;
   color: var(--text);
+}
+.content a.ctfw-card:hover {
+  border-bottom: var(--hair) solid var(--accent) !important;
 }
 .ctfw-card:hover::before { opacity: 1; }
 
@@ -1058,3 +1070,6 @@ hr { border: 0; border-top: var(--hair) solid var(--border); margin: 2em 0; }
   0%   { background-position:  200% 0; }
   100% { background-position: -200% 0; }
 }
+
+.post-preview::before { display: none !important; }
+
