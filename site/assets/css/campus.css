@@ -389,7 +389,6 @@ a:hover { color: var(--accent); text-decoration: underline; text-underline-offse
 #sidebar {
   background: var(--surface);
   border-right: var(--hair) solid var(--border);
-  backdrop-filter: blur(12px);
 }
 #sidebar .nav-link {
   border-radius: var(--r-sm) !important;
@@ -412,8 +411,6 @@ a:hover { color: var(--accent); text-decoration: underline; text-underline-offse
 #topbar {
   background: var(--topbar-bg);
   border-bottom: var(--hair) solid var(--border);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
 }
 
 /* Footer */
@@ -427,7 +424,7 @@ footer {
 /* ═══════════════════════════════════════════
    CARDS & POST PREVIEWS
    ═══════════════════════════════════════════ */
-.card, .post-preview, #panel-wrapper .lang-item, .border.rounded-3 {
+.card, #panel-wrapper .lang-item, .border.rounded-3 {
   background: var(--surface) !important;
   border: var(--hair) solid var(--border) !important;
   border-radius: var(--r-lg) !important;
@@ -436,7 +433,7 @@ footer {
 }
 .card-body { border-radius: var(--r-lg); }
 
-a.card:hover, .post-preview:hover {
+.card:hover, #panel-wrapper .lang-item:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-lg);
   border-color: var(--accent) !important;
@@ -660,6 +657,7 @@ thead th {
 }
 tbody tr:last-child td { border-bottom: 0 !important; }
 tbody tr:hover { background: var(--surface-2); }
+.highlight tbody tr:hover { background: transparent; }
 .highlight table { border: 0; border-radius: 0; box-shadow: none; }
 .highlight th, .highlight td { border: 0 !important; padding: 0 !important; }
 
@@ -850,8 +848,6 @@ blockquote {
   box-shadow: var(--shadow-lg);
   border: var(--hair) solid var(--border-md);
   background: var(--surface);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }
 .ctfw-lang a {
   padding: 10px 16px;
