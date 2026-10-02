@@ -1,1 +1,0 @@
-CSSCTF{every_second_hides_a_secret}
