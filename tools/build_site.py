@@ -445,16 +445,17 @@ def write_competitions(stage, events, lang, base):
             span = "%s → %s" % (stamp(first, lang, False), span)
         cats = sorted({p["cat"] for p in ev["posts"]})
         cover = cover_html(ev, base)
+        cats_html = "".join("<span>%s</span>" % c for c in cats)
         body.append(
             '<a class="ctfw-card" href="%s/events/%s/">'
             '%s'
             '<div class="ctfw-body"><span class="ctfw-kicker">CTF %s</span>'
             '<div class="ctfw-name">%s</div>'
-            '<div>%s</div>'
+            '<div class="ctfw-cats">%s</div>'
             '<div class="ctfw-meta"><span>%d %s</span><span>%s</span>'
             '<span>%s &rarr;</span></div></div></a>'
             % (base, ev["slug"], cover, last.year, ev["name"],
-               ", ".join(cats), len(ev["posts"]), ui["posts"], span, ui["view"]))
+               cats_html, len(ev["posts"]), ui["posts"], span, ui["view"]))
     body.append("</div>\n")
     body.append(achievements(lang))
     out = os.path.join(stage, "_tabs")

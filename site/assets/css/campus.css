@@ -1,515 +1,1064 @@
-/* CTFWU skin. Bang mau + chur lay truc tiep tu trang tham khao
-   uupm.cc/demo/educational-platform (do bang getComputedStyle):
-   Baloo 2 cho tieu de, Nunito cho than, muc #2d3748, nen kem #fff9f5,
-   xanh la #22c55e, cac mau pastel, goc tron 24/16/12 va bong lech cung.
-   Khong dung Fredoka nhu trang mau: css2 cua no khong co subset vietnamese, nen
-   dau tieng Viet roi xuong font ke tiep va tieu de bi loang bo.
-   Duoc inject SAU CSS cua Chirpy nen cung do chi thi thang duoc tinh. */
+/* CTFWU skin — redesign 2026-10-02
+   Font: Inter (heading + body, Vietnamese subset), Fira Code (mono)
+   Palette: dark slate base, electric teal accent, amber highlight
+   Inject sau CSS Chirpy → cung do chi thi thang. */
 
-@import url("https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Fira+Code:wght@400;500&display=swap");
 
-/* Token khong doi theo che do: phai nam o `:root` tran de khoi dark o duoi
-   khong phai lap lai. Thieu no thi `border: var(--hair) solid var(--edge)` mat
-   hop le, Chirpy rot `border: currentcolor` vao va bo tron mat bong. */
+/* ═══════════════════════════════════════════
+   TOKENS KHÔNG ĐỔI THEO CHẾ ĐỘ (ở :root trần)
+   ═══════════════════════════════════════════ */
 :root {
-  --hair: 3px;
-  --r-lg: 24px;
-  --r-md: 16px;
-  --r-sm: 12px;
+  --r-xl:  28px;
+  --r-lg:  20px;
+  --r-md:  14px;
+  --r-sm:  8px;
   --r-pill: 999px;
-  --shadow: 6px 6px 0 0 var(--shadow-c);
-  --shadow-sm: 4px 4px 0 0 var(--shadow-c);
-  --bs-body-font-family: Nunito, "Segoe UI", sans-serif;
-  --bs-border-radius: var(--r-sm);
+
+  --hair:  1.5px;
+  --hair-md: 2px;
+
+  /* Transition */
+  --ease: cubic-bezier(.22,.68,0,1.2);
+  --dur:  200ms;
+
+  /* Bootstrap radius override */
+  --bs-border-radius:    var(--r-sm);
   --bs-border-radius-lg: var(--r-md);
-  --bs-border-radius-sm: 8px;
+  --bs-border-radius-sm: 6px;
   --bs-border-radius-xl: var(--r-lg);
+
+  --bs-body-font-family: Inter, "Segoe UI", sans-serif;
+  --bs-font-monospace:   "Fira Code", "Cascadia Code", monospace;
 }
 
-/* Mac dinh sang. Chirpy khai bao bien mau trong `:root[data-bs-theme=...]` va
-   `:root:not([data-bs-theme])` (0-2-0), nen o day cung phai dung hai dang selector
-   do; `:root` tran (0-1-0) se thua media query dark cua no. Khong duoc gan
-   data-bs-theme="light" phia server: Theme.isToggleable = !dataset.bsTheme, nen co
-   attribute la dropdown chuyen doi do cua Chirpy ngung phuc vu (da do live). */
+/* ═══════════════════════════════════════════
+   LIGHT MODE
+   ═══════════════════════════════════════════ */
 :root[data-bs-theme=light], :root:not([data-bs-theme]) {
-  /* --ink: vien + chu tren chip. --shadow-c: mau bong. --bar: nen thanh dam
-     (header khoi code, thead). Tam mau nay di cung nhau o sang, tach ra o toi. */
-  --ink: #2d3748;
-  --edge: #2d3748;
-  --shadow-c: #2d3748;
-  --bar: #2d3748;
-  --text: #0f172a;
-  --muted: #64748b;
-  --paper: #fff;
-  --cream: #fff9f5;
-  --line: #e2e8f0;
-  --green: #22c55e;
-  --green-dark: #16a34a;
-  --mint: #c3f0cd;
-  --sky: #add8e6;
-  --salmon: #fdbcb4;
-  --lav: #e6e6fa;
-  --inline-code-color: #b3001b;
-  --gutter-bg: #f1f5f9;
+  /* Core */
+  --bg:          #f5f7fa;
+  --surface:     #ffffff;
+  --surface-2:   #f0f4f8;
+  --surface-3:   #e8eef5;
+  --border:      rgba(0,0,0,.10);
+  --border-md:   rgba(0,0,0,.18);
 
-  --bs-body-bg: var(--cream);
-  --bs-body-color: var(--text);
-  --bs-emphasis-color: var(--ink);
-  --bs-border-color: var(--line);
-  --bs-link-color: var(--green-dark);
-  --bs-link-hover-color: var(--ink);
-  --bs-secondary-color: var(--muted);
-  --bs-secondary-bg: var(--sky);
-  --bs-tertiary-bg: var(--cream);
-  --bs-body-font-family: Nunito, "Segoe UI", sans-serif;
-  --bs-border-radius: var(--r-sm);
-  --bs-border-radius-lg: var(--r-md);
-  --bs-border-radius-sm: 8px;
-  --bs-border-radius-xl: var(--r-lg);
+  /* Text */
+  --text:        #1a2035;
+  --text-2:      #3d4f6b;
+  --text-3:      #6b7fa0;
+  --heading:     #0f1629;
 
-  --main-bg: var(--cream);
-  --topbar-bg: var(--paper);
-  --topbar-text-color: var(--ink);
-  --sidebar-bg: var(--paper);
-  --sidebar-border-color: var(--ink);
-  --sidebar-color: var(--ink);
-  --sidebar-muted-color: var(--muted);
-  --sidebar-hover-bg: var(--sky);
-  --sidebar-hover-color: var(--ink);
-  --sidebar-btn-hover-bg: var(--ink);
-  --sidebar-btn-hover-color: var(--mint);
-  --sidebar-active-color: var(--green-dark);
-  --avatar-border-color: var(--ink);
-  --site-title-color: var(--ink);
-  --site-subtitle-color: var(--muted);
-  --menu-bg: var(--paper);
-  --menu-border-color: var(--ink);
-  --menu-shadow-color: rgba(45, 55, 72, .25);
-  --menu-highlight-bg: var(--cream);
-  --menu-active-color: var(--green-dark);
+  /* Accent – teal */
+  --accent:      #0ea5e9;
+  --accent-dark: #0284c7;
+  --accent-glow: rgba(14,165,233,.15);
+  --accent-light: #e0f2fe;
 
-  --text-color: var(--text);
-  --heading-color: var(--ink);
-  --text-muted-color: var(--muted);
-  --link-color: var(--green-dark);
-  --link-underline-color: var(--green);
-  --btn-border-color: var(--ink);
-  --btn-border-radius: var(--r-md);
-  --button-color: var(--ink);
-  --button-bg: var(--mint);
-  --button-hover-bg: var(--sky);
-  --btn-paginator-hover-color: var(--sky);
-  --btn-patinator-text-color: var(--ink);
+  /* Amber highlight */
+  --amber:       #f59e0b;
+  --amber-light: #fef3c7;
 
-  --card-bg: var(--paper);
-  --card-header-bg: var(--cream);
-  --card-hover-bg: var(--cream);
-  --card-shadow: var(--shadow);
-  --dash-color: var(--line);
-  --img-bg: var(--paper);
-  --highlight-bg-color: var(--cream);
-  --highlight-lineno-color: #8a94a6;
-  --highlighter-rouge-color: var(--text);
-  --inline-code-bg: var(--paper);
-  --code-color: var(--text);
-  --bs-code-color: #b3001b;
-  --code-header-text-color: var(--mint);
-  --code-header-icon-color: var(--mint);
-  --code-header-muted-color: var(--salmon);
-  --kbd-bg-color: var(--sky);
-  --kbd-wrap-color: var(--ink);
-  --kbd-text-color: var(--ink);
-  --blockquote-text-color: #3f4a5c;
-  --blockquote-border-color: var(--green);
-  --filepath-text-color: var(--muted);
-  --prompt-text-color: var(--text);
-  --prompt-tip-bg: var(--mint);
-  --prompt-tip-icon-color: var(--ink);
-  --prompt-info-bg: var(--sky);
-  --prompt-info-icon-color: var(--ink);
-  --prompt-warning-bg: var(--salmon);
-  --prompt-warning-icon-color: var(--ink);
-  --prompt-danger-bg: var(--lav);
-  --prompt-danger-icon-color: var(--ink);
-  --tag-border: var(--ink);
-  --tag-bg: var(--paper);
-  --tag-color: var(--ink);
-  --tag-hover: var(--mint);
-  --tag-shadow: var(--shadow-sm);
-  --categories-border: var(--line);
-  --categories-hover-bg: var(--sky);
-  --categories-icon-hover-color: var(--green-dark);
-  --timeline-color: var(--line);
-  --timeline-node-bg: var(--green);
-  --timeline-year-dot-color: var(--green-dark);
-  --toc-highlight: var(--green-dark);
-  --toc-popup-border-color: var(--line);
-  --tb-border-color: var(--line);
-  --tb-odd-bg: var(--cream);
-  --tb-even-bg: var(--paper);
-  --search-border-color: var(--ink);
-  --search-icon-color: var(--muted);
-  --search-tag-bg: var(--sky);
-  --label-color: var(--ink);
-  --language-border-color: var(--ink);
-  --input-focus-border-color: var(--green);
-  --footnote-target-bg: var(--mint);
-  --main-border-color: var(--line);
-  --shimmer-bg: var(--line);
+  /* Green (CTF solved) */
+  --green:       #10b981;
+  --green-dark:  #059669;
+  --green-light: #d1fae5;
+
+  /* Danger */
+  --red:         #ef4444;
+  --red-light:   #fee2e2;
+
+  /* Code */
+  --code-bg:     #1e293b;
+  --code-text:   #e2e8f0;
+  --inline-bg:   #f1f5f9;
+  --inline-color: #dc2626;
+  --gutter-bg:   #273447;
+
+  /* Shadow */
+  --shadow-sm:   0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:   0 4px 12px rgba(0,0,0,.10), 0 2px 4px rgba(0,0,0,.06);
+  --shadow-lg:   0 10px 30px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.08);
+  --shadow-glow: 0 0 0 3px var(--accent-glow);
+
+  /* Chirpy overrides */
+  --bs-body-bg:           var(--bg);
+  --bs-body-color:        var(--text);
+  --bs-emphasis-color:    var(--heading);
+  --bs-border-color:      var(--border);
+  --bs-link-color:        var(--accent-dark);
+  --bs-link-hover-color:  var(--accent);
+  --bs-secondary-color:   var(--text-3);
+  --bs-secondary-bg:      var(--surface-2);
+  --bs-tertiary-bg:       var(--surface-3);
+
+  --main-bg:              var(--bg);
+  --topbar-bg:            rgba(255,255,255,.85);
+  --topbar-text-color:    var(--text);
+  --sidebar-bg:           var(--surface);
+  --sidebar-border-color: var(--border);
+  --sidebar-color:        var(--text);
+  --sidebar-muted-color:  var(--text-3);
+  --sidebar-hover-bg:     var(--accent-light);
+  --sidebar-hover-color:  var(--accent-dark);
+  --sidebar-btn-hover-bg: var(--accent);
+  --sidebar-btn-hover-color: #fff;
+  --sidebar-active-color: var(--accent-dark);
+  --avatar-border-color:  var(--accent);
+  --site-title-color:     var(--heading);
+  --site-subtitle-color:  var(--text-3);
+  --menu-bg:              var(--surface);
+  --menu-border-color:    var(--border-md);
+  --menu-shadow-color:    rgba(0,0,0,.12);
+  --menu-highlight-bg:    var(--accent-light);
+  --menu-active-color:    var(--accent-dark);
+
+  --text-color:           var(--text);
+  --heading-color:        var(--heading);
+  --text-muted-color:     var(--text-3);
+  --link-color:           var(--accent-dark);
+  --link-underline-color: var(--accent);
+  --btn-border-color:     var(--border-md);
+  --button-color:         #fff;
+  --button-bg:            var(--accent);
+  --button-hover-bg:      var(--accent-dark);
+
+  --card-bg:              var(--surface);
+  --card-header-bg:       var(--surface-2);
+  --card-hover-bg:        var(--surface-2);
+  --card-shadow:          var(--shadow-md);
+
+  --highlight-bg-color:   var(--code-bg);
+  --highlight-lineno-color: #64748b;
+  --highlighter-rouge-color: var(--code-text);
+  --inline-code-bg:       var(--inline-bg);
+  --code-color:           var(--code-text);
+  --bs-code-color:        var(--inline-color);
+  --code-header-text-color: #94a3b8;
+  --code-header-icon-color: #94a3b8;
+  --code-header-muted-color: #64748b;
+  --kbd-bg-color:         var(--surface-2);
+  --kbd-wrap-color:       var(--border-md);
+  --kbd-text-color:       var(--text);
+  --inline-code-color:    var(--inline-color);
+
+  --blockquote-border-color: var(--accent);
+  --blockquote-text-color: var(--text-2);
+  --prompt-text-color:    var(--text);
+  --prompt-tip-bg:        var(--green-light);
+  --prompt-tip-icon-color: var(--green-dark);
+  --prompt-info-bg:       var(--accent-light);
+  --prompt-info-icon-color: var(--accent-dark);
+  --prompt-warning-bg:    var(--amber-light);
+  --prompt-warning-icon-color: var(--amber);
+  --prompt-danger-bg:     var(--red-light);
+  --prompt-danger-icon-color: var(--red);
+
+  --tag-border:           var(--border-md);
+  --tag-bg:               var(--surface);
+  --tag-color:            var(--text-2);
+  --tag-hover:            var(--accent-light);
+  --tag-shadow:           var(--shadow-sm);
+  --categories-border:    var(--border);
+  --categories-hover-bg:  var(--accent-light);
+  --categories-icon-hover-color: var(--accent-dark);
+  --timeline-color:       var(--border);
+  --timeline-node-bg:     var(--accent);
+  --timeline-year-dot-color: var(--accent-dark);
+  --toc-highlight:        var(--accent-dark);
+  --toc-popup-border-color: var(--border);
+  --tb-border-color:      var(--border);
+  --tb-odd-bg:            var(--surface-2);
+  --tb-even-bg:           var(--surface);
+  --search-border-color:  var(--border-md);
+  --search-icon-color:    var(--text-3);
+  --search-tag-bg:        var(--accent-light);
+  --label-color:          var(--text);
+  --language-border-color: var(--border-md);
+  --input-focus-border-color: var(--accent);
+  --footnote-target-bg:   var(--accent-light);
+  --main-border-color:    var(--border);
+  --shimmer-bg:           var(--surface-2);
+  --dash-color:           var(--border);
+  --img-bg:               var(--surface);
+  --filepath-text-color:  var(--text-3);
+  --btn-paginator-hover-color: var(--accent-light);
+  --btn-patinator-text-color: var(--text);
+  --btn-border-radius:    var(--r-md);
 }
 
-/* Toi: cung bo khung vien day + bong lech, dao nguoc vai tro mau.
-   `:root[data-bs-theme=dark]` co dac biet 0-2-0 de bang kieu cua Chirpy va thang
-   theo thu tu tai. */
+/* ═══════════════════════════════════════════
+   DARK MODE
+   ═══════════════════════════════════════════ */
 :root[data-bs-theme=dark] {
-  --ink: #93a3bd;
-  --edge: #3a4a67;
-  /* Vien 3px la net cua che do sang; nen toi thi no nang, 2px giu du dang */
-  --hair: 2px;
-  --shadow-c: #05080f;
-  --bar: #111a2b;
-  --text: #dbe4f3;
-  --muted: #93a3bd;
-  --paper: #1b2434;
-  --cream: #131b28;
-  --line: #2c3850;
-  --green: #1f9d55;
-  --green-dark: #5cc98a;
-  --mint: #173d2b;
-  --sky: #16324a;
-  --salmon: #4a2320;
-  --lav: #2a2550;
-
-  --bs-body-bg: var(--cream);
-  --bs-body-color: var(--text);
-  --bs-emphasis-color: #f2f6ff;
-  --bs-border-color: var(--line);
-  --bs-link-color: var(--green-dark);
-  --bs-link-hover-color: #eaf2ff;
-  --bs-secondary-color: var(--muted);
-  --bs-secondary-bg: var(--sky);
-  --bs-tertiary-bg: var(--cream);
   color-scheme: dark;
 
-  --topbar-bg: var(--paper);
-  --topbar-text-color: #eaf2ff;
-  --sidebar-bg: var(--paper);
-  --sidebar-color: #dbe4f3;
-  --sidebar-muted-color: var(--muted);
-  --sidebar-hover-bg: var(--sky);
-  --sidebar-hover-color: #eaf2ff;
-  --sidebar-btn-hover-bg: var(--sky);
-  --sidebar-btn-hover-color: var(--green-dark);
-  --sidebar-active-color: var(--green-dark);
-  --site-title-color: #f2f6ff;
-  --site-subtitle-color: var(--muted);
-  --menu-bg: var(--paper);
-  --menu-highlight-bg: var(--sky);
-  --menu-active-color: #eaf2ff;
-  --text-color: var(--text);
-  --heading-color: #f2f6ff;
-  --text-muted-color: var(--muted);
-  --button-color: #eaf2ff;
-  --button-bg: var(--mint);
-  --button-hover-bg: var(--sky);
-  --btn-paginator-hover-color: var(--sky);
-  --btn-patinator-text-color: #eaf2ff;
-  --card-bg: var(--paper);
-  --card-header-bg: var(--cream);
-  --card-hover-bg: var(--sky);
-  --highlight-bg-color: #10192a;
-  --highlight-lineno-color: #64748b;
-  --highlighter-rouge-color: var(--text);
-  --inline-code-bg: var(--paper);
-  --code-color: var(--text);
-  --bs-code-color: #ff8fa3;
-  --code-header-text-color: #7fc9a0;
-  --code-header-icon-color: #7fc9a0;
-  --code-header-muted-color: var(--salmon);
-  --kbd-bg-color: var(--sky);
-  --kbd-wrap-color: var(--edge);
-  --kbd-text-color: #eaf2ff;
-  --blockquote-text-color: #c3cfe4;
-  --prompt-text-color: var(--text);
-  --prompt-tip-bg: var(--mint);
-  --inline-code-color: #ff8fa3;
-  --gutter-bg: #0b1220;
-  /* Chirpy cung khai bao nhom bien nay o che do toi, nen phai lap lai o day;
-     neu khong chung lay mau cua Chirpy thay vi mau cua skin. */
-  --avatar-border-color: var(--edge);
-  --blockquote-border-color: var(--green-dark);
-  --btn-border-color: var(--edge);
-  --card-shadow: var(--shadow);
-  --categories-border: var(--line);
-  --dash-color: var(--line);
-  --filepath-text-color: var(--muted);
-  --img-bg: var(--paper);
-  --input-focus-border-color: var(--green-dark);
-  --language-border-color: var(--edge);
-  --link-color: var(--green-dark);
-  --link-underline-color: var(--green-dark);
-  --main-bg: var(--cream);
-  --main-border-color: var(--line);
-  --menu-border-color: var(--edge);
-  --menu-shadow-color: rgba(5, 8, 15, .55);
-  --shimmer-bg: var(--line);
-  --sidebar-border-color: var(--edge);
-  --tag-border: var(--edge);
-  --tag-shadow: var(--shadow-sm);
-  --tb-border-color: var(--line);
-  --timeline-color: var(--line);
-  --timeline-node-bg: var(--green-dark);
-  --timeline-year-dot-color: var(--green-dark);
-  --toc-popup-border-color: var(--line);
-  --prompt-tip-icon-color: #7fc9a0;
-  --prompt-info-bg: var(--sky);
-  --prompt-info-icon-color: #7dd3fc;
-  --prompt-warning-bg: var(--salmon);
-  --prompt-warning-icon-color: #fda4af;
-  --prompt-danger-bg: var(--lav);
-  --prompt-danger-icon-color: #c4b5fd;
-  --tag-bg: var(--paper);
-  --tag-color: #dbe4f3;
-  --tag-hover: var(--mint);
-  --categories-hover-bg: var(--sky);
-  --categories-icon-hover-color: var(--green-dark);
-  --toc-highlight: var(--green-dark);
-  --tb-odd-bg: var(--cream);
-  --tb-even-bg: var(--paper);
-  --search-border-color: var(--edge);
-  --search-icon-color: var(--muted);
-  --search-tag-bg: var(--sky);
-  --label-color: #eaf2ff;
-  --footnote-target-bg: var(--mint);
+  --bg:          #0d1117;
+  --surface:     #161b22;
+  --surface-2:   #21262d;
+  --surface-3:   #2d333b;
+  --border:      rgba(255,255,255,.08);
+  --border-md:   rgba(255,255,255,.16);
+
+  --text:        #c9d1d9;
+  --text-2:      #8b949e;
+  --text-3:      #6e7681;
+  --heading:     #f0f6fc;
+
+  --accent:      #38bdf8;
+  --accent-dark: #7dd3fc;
+  --accent-glow: rgba(56,189,248,.18);
+  --accent-light: rgba(56,189,248,.12);
+
+  --amber:       #fbbf24;
+  --amber-light: rgba(251,191,36,.12);
+
+  --green:       #34d399;
+  --green-dark:  #6ee7b7;
+  --green-light: rgba(52,211,153,.12);
+
+  --red:         #f87171;
+  --red-light:   rgba(248,113,113,.12);
+
+  --code-bg:     #0d1117;
+  --code-text:   #c9d1d9;
+  --inline-bg:   #161b22;
+  --inline-color: #ff7b92;
+  --gutter-bg:   #161b22;
+
+  --shadow-sm:   0 1px 3px rgba(0,0,0,.4);
+  --shadow-md:   0 4px 16px rgba(0,0,0,.5);
+  --shadow-lg:   0 12px 40px rgba(0,0,0,.6);
+  --shadow-glow: 0 0 0 3px var(--accent-glow);
+
+  --bs-body-bg:           var(--bg);
+  --bs-body-color:        var(--text);
+  --bs-emphasis-color:    var(--heading);
+  --bs-border-color:      var(--border);
+  --bs-link-color:        var(--accent);
+  --bs-link-hover-color:  var(--accent-dark);
+  --bs-secondary-color:   var(--text-2);
+  --bs-secondary-bg:      var(--surface-2);
+  --bs-tertiary-bg:       var(--surface-3);
+
+  --main-bg:              var(--bg);
+  --topbar-bg:            rgba(13,17,23,.85);
+  --topbar-text-color:    var(--text);
+  --sidebar-bg:           var(--surface);
+  --sidebar-border-color: var(--border);
+  --sidebar-color:        var(--text);
+  --sidebar-muted-color:  var(--text-3);
+  --sidebar-hover-bg:     var(--accent-light);
+  --sidebar-hover-color:  var(--accent-dark);
+  --sidebar-btn-hover-bg: var(--accent);
+  --sidebar-btn-hover-color: var(--bg);
+  --sidebar-active-color: var(--accent);
+  --avatar-border-color:  var(--accent);
+  --site-title-color:     var(--heading);
+  --site-subtitle-color:  var(--text-2);
+  --menu-bg:              var(--surface);
+  --menu-border-color:    var(--border-md);
+  --menu-shadow-color:    rgba(0,0,0,.6);
+  --menu-highlight-bg:    var(--surface-2);
+  --menu-active-color:    var(--accent);
+
+  --text-color:           var(--text);
+  --heading-color:        var(--heading);
+  --text-muted-color:     var(--text-2);
+  --link-color:           var(--accent);
+  --link-underline-color: var(--accent);
+  --btn-border-color:     var(--border-md);
+  --button-color:         var(--bg);
+  --button-bg:            var(--accent);
+  --button-hover-bg:      var(--accent-dark);
+
+  --card-bg:              var(--surface);
+  --card-header-bg:       var(--surface-2);
+  --card-hover-bg:        var(--surface-2);
+  --card-shadow:          var(--shadow-md);
+
+  --highlight-bg-color:   var(--code-bg);
+  --highlight-lineno-color: #4d5566;
+  --highlighter-rouge-color: var(--code-text);
+  --inline-code-bg:       var(--inline-bg);
+  --code-color:           var(--code-text);
+  --bs-code-color:        var(--inline-color);
+  --code-header-text-color: #64748b;
+  --code-header-icon-color: #64748b;
+  --code-header-muted-color: #4d5566;
+  --kbd-bg-color:         var(--surface-2);
+  --kbd-wrap-color:       var(--border-md);
+  --kbd-text-color:       var(--text);
+  --inline-code-color:    var(--inline-color);
+
+  --blockquote-border-color: var(--accent);
+  --blockquote-text-color: var(--text-2);
+  --prompt-text-color:    var(--text);
+  --prompt-tip-bg:        var(--green-light);
+  --prompt-tip-icon-color: var(--green-dark);
+  --prompt-info-bg:       var(--accent-light);
+  --prompt-info-icon-color: var(--accent);
+  --prompt-warning-bg:    var(--amber-light);
+  --prompt-warning-icon-color: var(--amber);
+  --prompt-danger-bg:     var(--red-light);
+  --prompt-danger-icon-color: var(--red);
+
+  --tag-border:           var(--border-md);
+  --tag-bg:               var(--surface-2);
+  --tag-color:            var(--text);
+  --tag-hover:            var(--accent-light);
+  --tag-shadow:           var(--shadow-sm);
+  --categories-border:    var(--border);
+  --categories-hover-bg:  var(--accent-light);
+  --categories-icon-hover-color: var(--accent);
+  --timeline-color:       var(--border);
+  --timeline-node-bg:     var(--accent);
+  --timeline-year-dot-color: var(--accent);
+  --toc-highlight:        var(--accent);
+  --toc-popup-border-color: var(--border);
+  --tb-border-color:      var(--border);
+  --tb-odd-bg:            var(--surface-2);
+  --tb-even-bg:           var(--surface);
+  --search-border-color:  var(--border-md);
+  --search-icon-color:    var(--text-3);
+  --search-tag-bg:        var(--accent-light);
+  --label-color:          var(--text);
+  --language-border-color: var(--border-md);
+  --input-focus-border-color: var(--accent);
+  --footnote-target-bg:   var(--accent-light);
+  --main-border-color:    var(--border);
+  --shimmer-bg:           var(--surface-2);
+  --dash-color:           var(--border);
+  --img-bg:               var(--surface);
+  --filepath-text-color:  var(--text-3);
+  --btn-paginator-hover-color: var(--accent-light);
+  --btn-patinator-text-color: var(--text);
+  --btn-border-radius:    var(--r-md);
 }
 
-body { background: var(--cream); color: var(--text); font-family: Nunito, sans-serif; }
+/* ═══════════════════════════════════════════
+   BASE
+   ═══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; }
 
-h1, h2, h3, h4, h5, h6, .site-title, #topbar-wrapper a,
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, "Segoe UI", sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6,
+.site-title, #topbar-wrapper a,
 .post h1, .panel-sub, .display-5 {
-  font-family: "Baloo 2", Nunito, sans-serif !important;
+  font-family: Inter, "Segoe UI", sans-serif !important;
   font-weight: 700;
-  letter-spacing: 0;
-  color: var(--ink);
+  letter-spacing: -.02em;
+  color: var(--heading);
+  line-height: 1.25;
+}
+h1 { font-size: clamp(1.6rem, 4vw, 2.25rem); font-weight: 800; }
+h2 { font-size: clamp(1.25rem, 3vw, 1.6rem); font-weight: 700; }
+h3 { font-size: 1.2rem; font-weight: 600; }
+
+/* Links */
+a {
+  color: var(--link-color);
+  text-decoration: none;
+  transition: color var(--dur);
+}
+a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+/* Selection */
+::selection { background: var(--accent-glow); color: var(--heading); }
+
+/* ═══════════════════════════════════════════
+   LAYOUT
+   ═══════════════════════════════════════════ */
+#main-wrapper { background: var(--bg); }
+#core-wrapper  { border: 0; }
+
+/* Sidebar */
+#sidebar {
+  background: var(--surface);
+  border-right: var(--hair) solid var(--border);
+  backdrop-filter: blur(12px);
+}
+#sidebar .nav-link {
+  border-radius: var(--r-sm) !important;
+  font-weight: 500;
+  transition: background var(--dur), color var(--dur);
+  margin: 2px 8px;
+  padding: 8px 12px;
+}
+#sidebar .nav-link:hover { background: var(--sidebar-hover-bg); color: var(--sidebar-hover-color); }
+#sidebar .nav-link.active { background: var(--accent-glow); color: var(--accent); font-weight: 600; }
+#sidebar .sidebar-bottom { padding: 12px 16px; border-top: var(--hair) solid var(--border); }
+#sidebar .sidebar-bottom > a {
+  border-radius: var(--r-sm);
+  padding: 8px;
+  transition: background var(--dur);
+}
+#sidebar .sidebar-bottom > a:hover { background: var(--sidebar-hover-bg); color: var(--accent); }
+
+/* Topbar */
+#topbar {
+  background: var(--topbar-bg);
+  border-bottom: var(--hair) solid var(--border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-a { text-decoration-thickness: 2px; text-underline-offset: 3px; }
-a:hover { color: var(--ink); }
+/* Footer */
+footer {
+  background: var(--surface);
+  border-top: var(--hair) solid var(--border);
+  color: var(--text-3);
+  font-size: .85rem;
+}
 
-/* Layout khung */
-#sidebar { border-right: var(--hair) solid var(--edge); }
-#sidebar .sidebar-bottom, #sidebar .nav-link { border-radius: var(--r-pill); }
-#topbar { border-bottom: var(--hair) solid var(--edge); }
-footer { border-top: var(--hair) solid var(--edge); background: var(--paper); }
-#main-wrapper { background: var(--cream); }
-#core-wrapper { border: 0; }
-
-/* Card / block */
+/* ═══════════════════════════════════════════
+   CARDS & POST PREVIEWS
+   ═══════════════════════════════════════════ */
 .card, .post-preview, #panel-wrapper .lang-item, .border.rounded-3 {
-  border: var(--hair) solid var(--edge) !important;
+  background: var(--surface) !important;
+  border: var(--hair) solid var(--border) !important;
   border-radius: var(--r-lg) !important;
-  box-shadow: var(--shadow);
-  background: var(--paper);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur);
 }
 .card-body { border-radius: var(--r-lg); }
-a.card:hover, .post-preview:hover { background: var(--cream); }
 
-/* Button: nau to, goc tron, bong lech mau muc. The `.post-tag` cung mang class
-   .btn cua Bootstrap nen phai loai khoi rule nay, neu khong no bi nen xanh va
-   chu trang (an toan bo ten the). `.dropdown-item` la <button> con `#mode-toggle`
-   mang class .btn: hai cai nay dung lai thi chu mau trang bi an nen sang. */
-.btn:not(.post-tag):not(#mode-toggle), button:not(.dropdown-item):not(#mode-toggle),
-.post-nav .btn, #search-result-button, input[type=submit] {
-  border: var(--hair) solid var(--edge) !important;
-  border-radius: var(--r-md) !important;
-  box-shadow: var(--shadow-sm);
-  background: var(--green);
-  color: #fff !important;
-  font-family: Nunito, sans-serif;
+a.card:hover, .post-preview:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent) !important;
+}
+
+/* Post preview */
+.post-preview {
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+.post-preview .post-title a {
   font-weight: 700;
-  letter-spacing: 0;
+  font-size: 1.1rem;
+  color: var(--heading);
+}
+.post-preview .post-title a:hover { color: var(--accent); text-decoration: none; }
+.post-preview .post-meta { font-size: .82rem; color: var(--text-3); margin-top: 6px; }
+
+/* ═══════════════════════════════════════════
+   BUTTONS
+   ═══════════════════════════════════════════ */
+.btn:not(.post-tag):not(#mode-toggle),
+button:not(.dropdown-item):not(#mode-toggle),
+.post-nav .btn, #search-result-button, input[type=submit] {
+  background: var(--accent);
+  color: var(--bg) !important;
+  border: 0 !important;
+  border-radius: var(--r-md) !important;
+  font-weight: 600;
+  font-family: Inter, sans-serif;
+  letter-spacing: -.01em;
+  padding: 8px 18px;
+  box-shadow: var(--shadow-sm);
+  transition: background var(--dur), transform var(--dur) var(--ease), box-shadow var(--dur);
   text-transform: none;
 }
-.btn:not(.post-tag):not(#mode-toggle):hover, button:not(.dropdown-item):not(#mode-toggle):hover { background: var(--mint); color: var(--ink) !important; transform: translate(-1px, -1px); }
-.btn:active { box-shadow: 1px 1px 0 0 var(--shadow-c); transform: translate(2px, 2px); }
-
-/* Nut chuyen che do sang/toi: dung dung dang cac icon ben canh (cung vien bong
-   1px cua Chirpy, cung mau chu), neu khong banh rang/mat tro nen vo hinh. */
-#sidebar .sidebar-bottom #mode-toggle {
-  border: 0;
-  border-radius: 50%;
-  background: var(--paper);
-  color: var(--sidebar-btn-color);
+.btn:not(.post-tag):not(#mode-toggle):hover,
+button:not(.dropdown-item):not(#mode-toggle):hover {
+  background: var(--accent-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
-#sidebar .sidebar-bottom #mode-toggle:hover { background: var(--sky); color: var(--ink); }
-#sidebar .sidebar-bottom #mode-toggle:focus-visible { outline: var(--hair) solid var(--green); }
+.btn:active { transform: translateY(1px); box-shadow: none; }
 
-/* Menu chuyen che do sang/toi trong sidebar. Chirpy dat mau chu bang
-   --sidebar-muted-color nen chi can bo vien tron + mau nen cua skin. */
+/* Dark/light toggle */
+#sidebar .sidebar-bottom #mode-toggle {
+  border: var(--hair) solid var(--border) !important;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-2);
+  box-shadow: none;
+  transition: background var(--dur), color var(--dur);
+}
+#sidebar .sidebar-bottom #mode-toggle:hover { background: var(--accent-light); color: var(--accent); }
+#sidebar .sidebar-bottom #mode-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Mode dropdown */
 #sidebar .sidebar-bottom .dropdown-menu {
-  border: var(--hair) solid var(--edge);
+  background: var(--surface);
+  border: var(--hair) solid var(--border-md);
   border-radius: var(--r-md);
-  background: var(--paper);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-lg);
+  min-width: 120px;
 }
 #sidebar .sidebar-bottom #mode-toggle + .dropdown-menu .dropdown-item {
-  color: var(--ink);
+  color: var(--text);
   border-radius: var(--r-sm);
-  font-weight: 700;
+  font-weight: 500;
+  padding: 8px 14px;
+  transition: background var(--dur);
 }
 #sidebar .sidebar-bottom #mode-toggle + .dropdown-menu .dropdown-item:hover,
 #sidebar .sidebar-bottom #mode-toggle + .dropdown-menu .dropdown-item.active {
-  background: var(--mint);
-  color: var(--ink);
+  background: var(--accent-light);
+  color: var(--accent);
 }
 
-/* Code. Chirpy gan mau theo `:root[data-bs-theme=...]` (dac biet 0-3-0 tro len)
-   nen phan lon rule o day phai dat cung mo `:root[data-bs-theme]` de thang ma
-   khong dung den !important. */
+/* ═══════════════════════════════════════════
+   TAGS & BADGES
+   ═══════════════════════════════════════════ */
+.badge, .post-tag, #tags .badge, .categories .badge {
+  background: var(--surface-2);
+  border: var(--hair) solid var(--border-md);
+  border-radius: var(--r-pill) !important;
+  color: var(--text-2);
+  font-weight: 600;
+  font-size: .75rem;
+  letter-spacing: .02em;
+  text-transform: none;
+  padding: 4px 10px;
+  transition: background var(--dur), border-color var(--dur), color var(--dur);
+}
+.post-tag {
+  --bs-btn-color:          var(--text-2);
+  --bs-btn-bg:             var(--surface-2);
+  --bs-btn-border-color:   var(--border-md);
+  --bs-btn-hover-color:    var(--accent);
+  --bs-btn-hover-bg:       var(--accent-light);
+  --bs-btn-hover-border-color: var(--accent);
+  --bs-btn-active-color:   var(--accent);
+  --bs-btn-active-bg:      var(--accent-light);
+  --bs-btn-active-border-color: var(--accent);
+}
+.badge:hover, .post-tag:hover {
+  background: var(--accent-light);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ═══════════════════════════════════════════
+   CODE
+   ═══════════════════════════════════════════ */
 kbd, .highlight, figure.highlight, div[class^=language-] { border-radius: var(--r-md) !important; }
 pre, code, code.highlighter-rouge { border-radius: var(--r-sm) !important; }
 
 div[class^=language-], figure.highlight {
-  background: var(--cream);
-  border: var(--hair) solid var(--edge);
-  box-shadow: var(--shadow-sm);
-  margin: 1.8em 0;
+  background: var(--code-bg);
+  border: var(--hair) solid var(--border);
+  box-shadow: var(--shadow-md);
+  margin: 1.6em 0;
   overflow: hidden;
 }
-:root[data-bs-theme] .highlight, :root[data-bs-theme] .highlight .w { background: transparent; }
+:root[data-bs-theme] .highlight,
+:root[data-bs-theme] .highlight .w { background: transparent; }
 
 .code-header {
-  background: var(--bar);
-  height: 2.4rem;
+  background: rgba(255,255,255,.05);
+  border-bottom: var(--hair) solid var(--border);
+  height: 2.5rem;
   margin: 0;
   padding: 0 14px;
+  display: flex;
+  align-items: center;
 }
 div[class^=language-] .code-header { margin-left: 0; margin-right: 0; }
-/* Ba o mau co dinh: thanh header dam o ca hai che do nen pastel nay luc nao cung doi */
+
+/* Traffic lights */
 .code-header::before,
 div[class^=language-] .code-header::before {
   border-radius: 50% !important;
-  background-color: #fdbcb4 !important;
-  box-shadow: 1.25rem 0 0 #98ff98, 2.5rem 0 0 #add8e6;
+  background-color: #ff5f57 !important;
+  box-shadow: 1.2rem 0 0 #ffbd2e, 2.4rem 0 0 #28c840;
+  width: 12px;
+  height: 12px;
 }
 div[class^=language-] .code-header span { margin-left: 0; }
 .code-header span, .code-header span i { color: var(--code-header-text-color); }
 .code-header span::after {
   color: var(--code-header-text-color);
-  font-family: Nunito, sans-serif;
-  font-size: .74rem;
-  font-weight: 700;
-  letter-spacing: .1em;
+  font-family: Inter, sans-serif;
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .08em;
   text-transform: uppercase;
 }
-.code-header button { background: transparent; border: 2px solid transparent !important; box-shadow: none; }
-.code-header button:not([timeout]):hover,
-.code-header button[timeout]:hover { background: var(--code-header-text-color) !important; }
-.code-header button:not([timeout]):hover i,
-.code-header button[timeout] i { color: var(--bar) !important; }
+.code-header button { background: transparent; border: 0 !important; box-shadow: none; padding: 4px 6px; border-radius: var(--r-sm); }
+.code-header button:hover { background: rgba(255,255,255,.1) !important; }
 
 :root[data-bs-theme] .highlight table td { padding: 0; }
 :root[data-bs-theme] .highlight table pre { margin: 0; }
 .highlight { overflow: auto; padding-bottom: 0; }
-.highlight pre { font-size: .84rem; line-height: 1.6; }
+.highlight pre { font-size: .83rem; line-height: 1.65; font-family: "Fira Code", monospace; }
+
 :root[data-bs-theme] .highlight table td.rouge-gutter {
   display: table-cell;
   background: var(--gutter-bg);
-  border-right: var(--hair) solid var(--edge) !important;
-  margin: 0 .8rem 0 0;
-  padding: 12px 12px 12px 14px !important;
+  border-right: var(--hair) solid var(--border) !important;
+  padding: 14px 10px 14px 14px !important;
 }
-:root[data-bs-theme] .highlight table td.rouge-code pre { padding: 13px 18px; }
-.highlight .lineno { color: #8a94a6; font-weight: 700; }
-/* Chirpy an so dong o plaintext/console/terminal, nen o gutter khong duoc de lai
-   dai rong mau xam. Cung mo :root de thang voi rule ben tren. */
+:root[data-bs-theme] .highlight table td.rouge-code pre { padding: 14px 18px; }
+.highlight .lineno { color: #4d5566; font-weight: 500; font-size: .78rem; }
+
 :root[data-bs-theme] div.language-plaintext td.rouge-gutter,
 :root[data-bs-theme] div.language-console td.rouge-gutter,
 :root[data-bs-theme] div.language-terminal td.rouge-gutter,
 :root[data-bs-theme] div.nolineno td.rouge-gutter {
   background: transparent;
   border-right: 0 !important;
-  margin-right: 0;
   padding: 0 !important;
 }
-.highlight code, .highlight pre code { color: var(--text); }
+.highlight code, .highlight pre code { color: var(--code-text); }
 
+/* Inline code */
 :not(pre) > code, code.highlighter-rouge {
-  background: var(--paper);
-  border: 2px solid var(--edge);
+  background: var(--inline-bg);
+  border: var(--hair) solid var(--border-md);
   color: var(--inline-code-color);
-  font-size: .86em;
-  padding: .06em .34em;
+  font-family: "Fira Code", monospace;
+  font-size: .83em;
+  padding: .1em .4em;
+  border-radius: var(--r-sm) !important;
 }
 a > code.highlighter-rouge { border-color: transparent; color: inherit; }
-a:hover > code.highlighter-rouge { border-color: var(--ink); }
+a:hover > code.highlighter-rouge { border-color: var(--accent); color: var(--accent); }
 
-/* Badge / tag: vien nhat, luc hover doi pastel */
-.badge, .post-tag, #tags .badge, .categories .badge {
-  border: 2px solid var(--edge);
-  border-radius: var(--r-pill) !important;
-  background: var(--paper);
-  color: var(--ink);
+/* ═══════════════════════════════════════════
+   TABLES
+   ═══════════════════════════════════════════ */
+table {
+  border: var(--hair) solid var(--border);
+  border-radius: var(--r-md);
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  width: 100%;
+  box-shadow: var(--shadow-sm);
+}
+th, td {
+  border-bottom: var(--hair) solid var(--border) !important;
+  border-right: 0 !important;
+  padding: 10px 16px !important;
+}
+thead th {
+  background: var(--surface-2);
+  color: var(--heading);
+  font-family: Inter, sans-serif;
   font-weight: 700;
-  text-transform: none;
-  letter-spacing: 0;
+  font-size: .82rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
 }
-.post-tag {
-  --bs-btn-color: var(--ink);
-  --bs-btn-bg: var(--paper);
-  --bs-btn-border-color: var(--ink);
-  --bs-btn-hover-color: var(--ink);
-  --bs-btn-hover-bg: var(--mint);
-  --bs-btn-hover-border-color: var(--ink);
-  --bs-btn-active-color: var(--ink);
-  --bs-btn-active-bg: var(--mint);
-  --bs-btn-active-border-color: var(--ink);
+tbody tr:last-child td { border-bottom: 0 !important; }
+tbody tr:hover { background: var(--surface-2); }
+.highlight table { border: 0; border-radius: 0; box-shadow: none; }
+.highlight th, .highlight td { border: 0 !important; padding: 0 !important; }
+
+/* ═══════════════════════════════════════════
+   POST CONTENT
+   ═══════════════════════════════════════════ */
+#page-title, .post .post-content h1 {
+  border-bottom: 3px solid var(--accent);
+  display: inline-block;
+  padding-bottom: .2em;
 }
-.badge:active, .post-tag:hover { background: var(--mint); color: var(--ink); border-color: var(--ink); }
 
-/* Table */
-table { border: var(--hair) solid var(--edge); border-radius: var(--r-md); border-collapse: separate; border-spacing: 0; }
-th, td { border: 1px solid var(--line) !important; }
-thead th { background: var(--bar); color: #f2f6ff; font-family: "Baloo 2", sans-serif; border-color: var(--ink) !important; }
-/* Bang layout cua khoi code khong phai bang du lieu */
-.highlight table { border: 0; border-radius: 0; }
-.highlight th, .highlight td { border: 0 !important; }
+.post-content h2 {
+  margin-top: 2em;
+  padding-top: .5em;
+  border-top: var(--hair) solid var(--border);
+}
+.post-content h2:first-child { border-top: 0; }
 
-/* Breadcrumb / title */
-#page-title, .post .post-content h1 { border-bottom: 6px solid var(--green); display: inline-block; padding-bottom: .1em; }
+.prompt {
+  border: 0 !important;
+  border-left: 4px solid !important;
+  border-radius: var(--r-md) !important;
+  padding: 14px 18px;
+}
+.prompt-tip    { border-color: var(--green) !important; }
+.prompt-info   { border-color: var(--accent) !important; }
+.prompt-warning { border-color: var(--amber) !important; }
+.prompt-danger { border-color: var(--red) !important; }
 
-/* Chirpy prompt box */
-.prompt { border: var(--hair) solid var(--edge) !important; border-left-width: 10px !important; border-radius: var(--r-md) !important; }
+blockquote {
+  border-left: 4px solid var(--accent) !important;
+  background: var(--accent-light);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  padding: 12px 18px;
+  color: var(--text-2);
+}
 
-/* ---- Trang "Cac cuoc thi" + luu chon ngon ngu ---- */
-.ctfw-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 28px; margin-top: 28px; }
-.ctfw-card { display: block; border: var(--hair) solid var(--edge); border-radius: var(--r-lg); background: var(--paper); box-shadow: var(--shadow); padding: 0; color: var(--ink); text-decoration: none; overflow: hidden; }
-.ctfw-card:hover { background: var(--cream); transform: translate(-2px, -2px); box-shadow: 9px 9px 0 0 var(--ink); }
-.ctfw-cover { display: block; width: 100%; height: 150px; box-sizing: border-box; overflow: hidden; border-bottom: var(--hair) solid var(--edge); background-color: var(--paper); background-repeat: no-repeat; background-position: center; background-size: contain; padding: 10px 16px; }
-.ctfw-cover svg { display: block; width: 100%; height: 150px; }
-.ctfw-body { padding: 16px 18px 20px; }
-.ctfw-kicker { font: 700 11px/1 Nunito, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--ink); background: var(--salmon); border: 2px solid var(--edge); border-radius: var(--r-pill); padding: 5px 10px; display: inline-block; }
-.ctfw-name { font: 700 25px/1.15 "Baloo 2", sans-serif; margin: 14px 0 6px; color: var(--ink); }
-.ctfw-meta { font-size: 13px; color: var(--muted); display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px; }
-.ctfw-lang { position: fixed; right: 18px; bottom: 18px; z-index: 60; display: inline-flex; border: var(--hair) solid var(--edge); border-radius: var(--r-pill); box-shadow: var(--shadow-sm); background: var(--paper); font: 800 12px/1 Nunito, sans-serif; text-transform: uppercase; letter-spacing: .08em; overflow: hidden; }
-.ctfw-lang a { padding: 9px 14px; color: var(--ink); text-decoration: none; background: var(--paper); }
-.ctfw-lang a[aria-current=true] { background: var(--green); color: #fff; }
-.ctfw-post-list { list-style: none; padding: 0; margin: 22px 0 0; }
-.ctfw-post-list li { border: var(--hair) solid var(--edge); border-left-width: 12px; border-left-color: var(--green); border-radius: var(--r-md); background: var(--paper); box-shadow: var(--shadow-sm); padding: 12px 16px; margin-bottom: 14px; }
-.ctfw-post-list li:hover { background: var(--cream); }
-.ctfw-post-list .cat { font: 700 11px/1 Nunito, sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-
-/* Avatar + lien he o sidebar */
-/* Avatar la <a class="rounded-circle"> cua Chirpy, kich thuoc co dinh 112px va
-   no inline-block nen khong tu giua. Dat block + kich thuoc lon hon + margin auto
-   trong cot sidebar (content rong ~178px). */
-/* Chirpy cho .profile-wrapper le 40px ben trai nhung 20px ben phai, nen margin:auto
-   chi giua avatar trong cot do lech 10px so voi tam cua panel. Can doi padding. */
+/* ═══════════════════════════════════════════
+   AVATAR + SIDEBAR PROFILE
+   ═══════════════════════════════════════════ */
 #sidebar .profile-wrapper { padding-right: 40px; }
-#sidebar #avatar { display: block; width: 150px; height: 150px; margin: 0 auto; border-radius: var(--r-lg) !important; }
-#sidebar #avatar img { width: 100%; height: 100%; object-fit: cover; box-sizing: border-box; border: var(--hair) solid var(--edge); border-radius: var(--r-lg) !important; box-shadow: var(--shadow-sm); }
-/* .site-title ty le 900 (Chirpy) trong khi Baloo 2 dung o 800 -> chu bi gia day;
-   .fst-italic cua Bootstrap mang !important nen cung phai !important de bo ngheng */
-#sidebar .site-title { font-weight: 800; }
-#sidebar .site-subtitle { font-style: normal !important; }
-.sidebar-bottom > a:hover { background: var(--sky); color: var(--ink); }
+#sidebar #avatar {
+  display: block;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  border-radius: 50% !important;
+}
+#sidebar #avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 2px solid var(--accent);
+  border-radius: 50% !important;
+  box-shadow: 0 0 0 4px var(--accent-glow);
+  transition: box-shadow var(--dur);
+}
+#sidebar #avatar img:hover { box-shadow: 0 0 0 6px var(--accent-glow); }
+#sidebar .site-title { font-weight: 800; letter-spacing: -.03em; font-size: 1.1rem; }
+#sidebar .site-subtitle { font-style: normal !important; font-size: .8rem; color: var(--text-3); }
+
+/* ═══════════════════════════════════════════
+   COMPETITION CARDS (ctfw-*)
+   ═══════════════════════════════════════════ */
+.ctfw-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.ctfw-card {
+  display: flex;
+  flex-direction: column;
+  border: var(--hair) solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  color: var(--text);
+  text-decoration: none;
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur), border-color var(--dur);
+  position: relative;
+}
+.ctfw-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--r-lg);
+  background: linear-gradient(135deg, var(--accent-glow) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity var(--dur);
+  pointer-events: none;
+}
+.ctfw-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent);
+  text-decoration: none;
+  color: var(--text);
+}
+.ctfw-card:hover::before { opacity: 1; }
+
+.ctfw-cover {
+  display: block;
+  width: 100%;
+  height: 160px;
+  background-color: var(--surface-2);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  border-bottom: var(--hair) solid var(--border);
+  overflow: hidden;
+  position: relative;
+}
+.ctfw-cover svg { display: block; width: 100%; height: 160px; }
+
+.ctfw-body {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ctfw-kicker {
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-light);
+  border-radius: var(--r-pill);
+  padding: 4px 10px;
+  display: inline-block;
+  align-self: flex-start;
+}
+
+.ctfw-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--heading);
+  letter-spacing: -.02em;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.ctfw-cats {
+  font-size: .78rem;
+  color: var(--text-3);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+}
+.ctfw-cats span {
+  background: var(--surface-2);
+  border: var(--hair) solid var(--border);
+  border-radius: var(--r-pill);
+  padding: 2px 8px;
+  font-weight: 500;
+}
+
+.ctfw-meta {
+  font-size: .78rem;
+  color: var(--text-3);
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: var(--hair) solid var(--border);
+}
+.ctfw-meta span { display: flex; align-items: center; gap: 4px; }
+
+/* ═══════════════════════════════════════════
+   VI/EN LANGUAGE PILL
+   ═══════════════════════════════════════════ */
+.ctfw-lang {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 100;
+  display: inline-flex;
+  border-radius: var(--r-pill);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  border: var(--hair) solid var(--border-md);
+  background: var(--surface);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.ctfw-lang a {
+  padding: 10px 16px;
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  text-decoration: none;
+  background: transparent;
+  transition: background var(--dur), color var(--dur);
+  min-width: 44px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ctfw-lang a[aria-current=true] {
+  background: var(--accent);
+  color: var(--bg);
+}
+.ctfw-lang a:hover:not([aria-current=true]) {
+  background: var(--accent-light);
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* ═══════════════════════════════════════════
+   EVENT POST LIST
+   ═══════════════════════════════════════════ */
+.ctfw-post-list {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ctfw-post-list li {
+  background: var(--surface);
+  border: var(--hair) solid var(--border);
+  border-left: 4px solid var(--accent) !important;
+  border-radius: var(--r-md);
+  padding: 14px 18px;
+  transition: background var(--dur), transform var(--dur) var(--ease), box-shadow var(--dur);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ctfw-post-list li:hover {
+  background: var(--surface-2);
+  transform: translateX(4px);
+  box-shadow: var(--shadow-sm);
+}
+.ctfw-post-list .cat {
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-light);
+  border-radius: var(--r-pill);
+  padding: 3px 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════
+   SEARCH
+   ═══════════════════════════════════════════ */
+#search-input {
+  border-radius: var(--r-md) !important;
+  border: var(--hair) solid var(--border-md) !important;
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  padding: 10px 16px !important;
+  font-size: .9rem;
+  transition: border-color var(--dur), box-shadow var(--dur);
+}
+#search-input:focus {
+  border-color: var(--accent) !important;
+  box-shadow: var(--shadow-glow) !important;
+  outline: none;
+}
+
+/* ═══════════════════════════════════════════
+   TOC
+   ═══════════════════════════════════════════ */
+#toc-wrapper { position: sticky; top: 80px; }
+#toc li > a.active { color: var(--accent); font-weight: 600; }
+#toc li > a { color: var(--text-3); font-size: .83rem; transition: color var(--dur); }
+#toc li > a:hover { color: var(--accent); }
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════ */
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .ctfw-cards { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+  h1 { font-size: 1.8rem; }
+  h2 { font-size: 1.4rem; }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  body { font-size: 14px; }
+
+  .ctfw-cards { grid-template-columns: 1fr; gap: 16px; margin-top: 20px; }
+  .ctfw-card:hover { transform: none; }
+
+  .ctfw-cover { height: 130px; }
+  .ctfw-cover svg { height: 130px; }
+
+  .ctfw-body { padding: 16px; gap: 8px; }
+  .ctfw-name { font-size: 1rem; }
+
+  .ctfw-lang { right: 12px; bottom: 12px; }
+  .ctfw-lang a { padding: 9px 14px; font-size: .7rem; }
+
+  #sidebar #avatar { width: 80px; height: 80px; }
+
+  .post-preview { padding: 16px 18px; }
+
+  table { font-size: .8rem; }
+  th, td { padding: 8px 12px !important; }
+
+  div[class^=language-], figure.highlight { margin: 1.2em 0; }
+  .highlight pre { font-size: .78rem; }
+
+  /* Scroll-shadow on tables */
+  .post-content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  .prompt { padding: 12px 14px; }
+}
+
+/* Very small */
+@media (max-width: 480px) {
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.25rem; }
+  .ctfw-meta { gap: 8px; font-size: .74rem; }
+  .ctfw-post-list li { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .ctfw-post-list li:hover { transform: none; }
+}
+
+/* ═══════════════════════════════════════════
+   ACCESSIBILITY
+   ═══════════════════════════════════════════ */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+/* Tăng hit area cho các link nhỏ */
+.post-tag, .badge { min-height: 28px; display: inline-flex; align-items: center; }
+.ctfw-lang a { min-height: 44px; min-width: 44px; }
+#sidebar .nav-link { min-height: 40px; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   MISC POLISH
+   ═══════════════════════════════════════════ */
+
+/* Horizontal rule */
+hr { border: 0; border-top: var(--hair) solid var(--border); margin: 2em 0; }
+
+/* Images */
+.post-content img {
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-md);
+  max-width: 100%;
+  height: auto;
+}
+
+/* Panel/aside */
+#panel-wrapper { position: sticky; top: 70px; }
+
+/* Chirpy breadcrumb */
+#breadcrumb .breadcrumb-item + .breadcrumb-item::before { color: var(--text-3); }
+
+/* Post navigation */
+.post-nav .btn {
+  border-radius: var(--r-md) !important;
+  font-size: .85rem;
+}
+
+/* No-PIE / pinned label */
+.post-preview .pin { color: var(--amber); }
+
+/* Chirpy progress bar */
+#progress-bar { background: var(--accent) !important; height: 3px; }
+
+/* Shimmer placeholder */
+.shimmer-animated {
+  background: linear-gradient(90deg, var(--surface) 25%, var(--surface-2) 50%, var(--surface) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+@keyframes shimmer {
+  0%   { background-position:  200% 0; }
+  100% { background-position: -200% 0; }
+}
