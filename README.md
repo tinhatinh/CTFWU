@@ -202,7 +202,7 @@ Each challenge directory follows a consistent layout:
 </details>
 
 <details>
-<summary><b>CSS CTF 2026 - 17 solved challenges</b></summary>
+<summary><b>CSS CTF 2026 - 17 challenges</b></summary>
 
 | Challenge | Category | Difficulty | Flag |
 |-----------|----------|------------|------|
@@ -229,7 +229,7 @@ Each challenge directory follows a consistent layout:
 </details>
 
 <details>
-<summary><b>Pointer Overflow CTF 2026 - 8 solved challenges</b></summary>
+<summary><b>Pointer Overflow CTF 2026 - 8 challenges</b></summary>
 
 | Challenge | Category | Difficulty | Flag |
 |-----------|----------|------------|------|
