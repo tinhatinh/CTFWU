@@ -253,9 +253,7 @@ Each challenge directory follows a consistent layout:
 
 </details>
 
-## Tools Used
 
-Solves are built with minimal dependencies - most use only Python stdlib (`socket`, `struct`, `hashlib`) or Node.js with `ethers.js` for Web3 challenges. No `pwntools` - all exploit scripts run on any OS including Windows.
 
 ## License
 
