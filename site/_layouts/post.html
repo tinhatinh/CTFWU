@@ -5,7 +5,7 @@ layout: default
 <div class="reading-progress" aria-hidden="true"><div id="reading-progress"></div></div>
 <div class="wrapper post-page">
   <a class="back-link mono" href="{{ '/archives/' | relative_url }}">← {{ ui.back }}</a>
-  <div class="writeup-edit-actions" data-writeup-key="{{ page.challenge_key | escape }}">
+  <div class="writeup-edit-actions" data-writeup-key="{{ page.challenge_key | escape }}" data-source-directory="{{ page.source_directory | escape }}">
     <button class="button" id="local-edit" type="button" hidden>{% if lang == 'vi' %}Sửa writeup{% else %}Edit writeup{% endif %}</button>
   </div>
   <header class="post-heading"><div class="card-meta"><a class="category-pill" href="{{ '/archives/' | relative_url }}?category={{ page.categories.first | uri_escape }}">{{ page.categories.first }}</a><span>{{ page.difficulty }}</span><a href="{{ '/events/' | append: page.event_slug | append: '/' | relative_url }}">{{ page.event_name }} ↗</a></div><h1>{{ page.challenge_name | default: page.title }}</h1><p class="post-description">{{ page.description }}</p><div class="post-byline"><span class="author-monogram" aria-hidden="true">td</span><span>tinhatinh <span class="dim">/ R3:TURИ</span></span><span class="byline-divider"></span><time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: '%d.%m.%Y' }}</time><span>·</span><span>{{ content | strip_html | number_of_words | divided_by: 220 | plus: 1 }} {{ ui.minutes }}</span><a href="{{ page.source_url }}">{{ ui.source }} ↗</a></div></header>
@@ -33,4 +33,5 @@ layout: default
   </form>
   <p id="editor-status" role="status" aria-live="polite"></p>
 </dialog>
+<script defer src="{{ '/assets/js/github-editor.js' | relative_url }}?v={{ site.data.portfolio.assets.github_editor }}"></script>
 <script defer src="{{ '/assets/js/editor.js' | relative_url }}?v={{ site.data.portfolio.assets.editor }}"></script>

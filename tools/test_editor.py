@@ -199,7 +199,7 @@ class CTFTimeTests(unittest.TestCase):
             stage = Path(directory)
             (stage / "_data").mkdir()
             source = Path(__file__).resolve().parent.parent / "site"
-            for relative in ["assets/css/campus.css", "assets/js/site.js", "assets/js/editor.js"]:
+            for relative in ["assets/css/campus.css", "assets/js/site.js", "assets/js/editor.js", "assets/js/github-editor.js"]:
                 target = stage / relative
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(source / relative, target)

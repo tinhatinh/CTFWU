@@ -1384,6 +1384,32 @@ select {
 .taxonomy-grid a:hover {
   border-color: var(--accent);
 }
+.back-to-top { position:fixed; right:26px; bottom:26px; width:48px; height:48px; background:var(--surface); border-radius:50%; color:var(--accent); z-index:25; box-shadow:0 3px 15px #0002; opacity:.5; }
+.back-to-top.is-scrolled { opacity:1; }
+.back-to-top:hover { transform:translateY(-3px); }
+.back-to-top svg { width:48px; height:48px; fill:none; }
+.top-track { stroke:var(--border); stroke-width:2; }
+.top-progress { stroke:var(--accent); stroke-width:2.5; stroke-dasharray:100; stroke-dashoffset:100; transform:rotate(-90deg); transform-origin:24px 24px; }
+.top-arrow { stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+@media(min-width:801px) {
+  body { font-size:16px; }
+  .main-nav,.header-github,.text-link,.button { font-size:14px; }
+  .eyebrow { font-size:12px; }
+  .hero-intro,.page-heading>p:not(.eyebrow),.post-description { font-size:16px; }
+  .feature-body>p { font-size:15px; }
+  .feature-footer,.card-meta,.category-pill { font-size:12px; }
+  .section-heading p:not(.eyebrow),.stats-strip span,.footer-links { font-size:14px; }
+  .row-name h3 { font-size:16px; }
+  .row-event,.writeup-row time,.row-difficulty,.list-heading { font-size:12px; }
+  .filter-chip,.search-box input,select,.results-bar,.post-byline,.back-link { font-size:13px; }
+  .prose { font-size:17px; }
+  .prose pre { font-size:13px; }
+  .prose table,.results-table { font-size:14px; }
+  .prose th,.results-table th,.article-sidebar li a { font-size:12px; }
+  .article-sidebar .toc-sub a { font-size:11px; }
+  .footer-bottom { font-size:12px; }
+}
+@media(max-width:600px) { .back-to-top { right:16px; bottom:16px; } }
 .writeup-edit-actions { display:flex; justify-content:flex-end; margin-top:-25px; gap:12px; }
 .writeup-images figure { margin:24px 0; }
 .writeup-images figure img { max-height:800px; width:auto; max-width:100%; object-fit:contain; }

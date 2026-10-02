@@ -198,6 +198,22 @@
     host.append(button);
   });
 
+  const topLink = document.querySelector('#back-to-top');
+  const topRing = document.querySelector('#top-progress');
+  if (topLink && topRing) {
+    let scheduled = false;
+    const updateTop = () => {
+      scheduled = false;
+      const range = document.documentElement.scrollHeight - window.innerHeight;
+      const percent = range > 0 ? Math.min(100, Math.max(0, window.scrollY / range * 100)) : 0;
+      topRing.style.strokeDashoffset = String(100 - percent);
+      topLink.classList.toggle('is-scrolled', window.scrollY > 200);
+    };
+    window.addEventListener('scroll', () => { if (!scheduled) { scheduled = true; requestAnimationFrame(updateTop); } }, {passive:true});
+    window.addEventListener('resize', updateTop);
+    window.addEventListener('load', updateTop);
+    updateTop();
+  }
   const article = document.querySelector("#article-content");
   if (article) {
     const headings = [...article.querySelectorAll("h2, h3")];

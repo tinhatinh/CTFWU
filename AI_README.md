@@ -75,8 +75,11 @@ hoặc thay workflow chỉ để giải quyết thiếu công cụ local.
   Không thay bằng tên Git/email, cờ trên frontend, hoặc quyền collaborator. Không thêm chế độ bypass.
   Có thể chọn VN, EN hoặc cả hai; kiểm tra version của mọi file trước khi ghi, sao lưu từng file
   và rollback nếu việc lưu một file thất bại. Không tự dịch nội dung của bản còn lại.
-- GitHub Pages chỉ đọc, không hiển thị editor. Sau khi chủ repo commit lên nhánh triển khai,
-  GitHub Actions dựng lại website. GitHub Pages không thể ghi file trên máy người dùng.
+- Editor trên GitHub Pages dùng GitHub API: token chủ repo cần Contents: Read and write;
+  kiểm tra owner, blob version, tạo một commit cho các bản đã chọn và update ref không force.
+  GitHub kiểm tra quyền ghi repo. Không đưa token vào localStorage, HTML, log hoặc URL.
+  Phiên public chỉ nằm trong bộ nhớ tab, tối đa 8 giờ, kết thúc khi reload/đóng tab.
+  GitHub Actions dựng lại website sau commit; máy local cần git pull để nhận thay đổi đó.
 
 ## CTFTime và triển khai
 

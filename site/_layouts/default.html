@@ -4,6 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-iL81GxcSVrXohAac1zDGbhNaebfF0wnDXyQPx56y6oM='; connect-src 'self' https://api.github.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https: data:; object-src 'none'; base-uri 'self'; form-action 'self'">
   <meta name="theme-color" content="#111411">
   {% seo %}
   {% feed_meta %}
@@ -38,7 +39,10 @@
   <footer class="site-footer wrapper">
     <div><a class="footer-brand" href="{{ '/' | relative_url }}">CTFWU<span>.</span></a></div>
     <div class="footer-links"><a href="https://github.com/tinhatinh">GitHub ↗</a><a href="https://ctftime.org/team/449538">CTFTime ↗</a><a href="mailto:ptdanh007@gmail.com">{{ ui.contact }} ↗</a><a href="{{ '/feed.xml' | relative_url }}">RSS ↗</a></div>
-    <div class="footer-bottom"><span>© {{ site.time | date: '%Y' }} Phan Thành Danh</span>{% unless page.url == '/' %}<span class="mono">{{ ui.footer_note }}</span>{% endunless %}<a href="#main">{{ ui.top }} ↑</a></div>
+    <div class="footer-bottom"><span>© {{ site.time | date: '%Y' }} Phan Thành Danh</span></div>
   </footer>
+  <a class="back-to-top" id="back-to-top" href="#main" aria-label="{{ ui.top }}" title="{{ ui.top }}">
+    <svg viewBox="0 0 48 48" aria-hidden="true"><circle class="top-track" cx="24" cy="24" r="20"/><circle class="top-progress" id="top-progress" cx="24" cy="24" r="20" pathLength="100"/><path class="top-arrow" d="M24 32V16m-7 7 7-7 7 7"/></svg>
+  </a>
 </body>
 </html>

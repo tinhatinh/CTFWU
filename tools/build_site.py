@@ -358,6 +358,8 @@ def write_post(stage, ev, p, lang, base):
             src = os.path.realpath(os.path.join(case_root, "files", target.split("#")[0]))
         if os.path.commonpath([os.path.realpath(case_root), src]) != os.path.realpath(case_root) or not os.path.isfile(src):
             return None
+        if os.path.splitext(src)[1].lower() not in (".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp"):
+            return None
         if src in copied:
             return copied[src]
         if os.path.getsize(src) > MAX_COPY:
@@ -419,6 +421,7 @@ def write_post(stage, ev, p, lang, base):
           "challenge_name: " + json.dumps(re.split(r"\s[-–—]\s", p["title"], maxsplit=1)[0], ensure_ascii=False),
           "event_name: " + json.dumps(ev["name"]),
           "event_slug: " + json.dumps(ev["slug"]),
+          "source_directory: " + json.dumps(ev["name"] + "/" + p["case"], ensure_ascii=False),
           "difficulty: " + json.dumps(next(iter(re.findall(r"\b(?:Insane|Expert|Hard|Medium|Intermediate|Easy|Beginner)\b", p["title"], re.I)), "")),
           "source_url: " + json.dumps("https://github.com/tinhatinh/CTFWU/tree/main/" + quote(ev["name"]) + "/" + quote(p["case"])),
           "edit_url: " + json.dumps("https://github.com/tinhatinh/CTFWU/edit/main/" + quote(os.path.relpath(p["path"], ROOT).replace(os.sep, "/"))),
@@ -557,7 +560,7 @@ def write_portfolio(stage, events, lang):
     path = os.path.join(stage, "_data", "portfolio.json")
     with open(path, "w", encoding="utf-8", newline="\n") as out:
         assets = {}
-        for key, relative in [("css", "assets/css/campus.css"), ("js", "assets/js/site.js"), ("editor", "assets/js/editor.js")]:
+        for key, relative in [("css", "assets/css/campus.css"), ("js", "assets/js/site.js"), ("editor", "assets/js/editor.js"), ("github_editor", "assets/js/github-editor.js")]:
             with open(os.path.join(stage, relative), "rb") as asset:
                 assets[key] = hashlib.sha256(asset.read()).hexdigest()[:12]
         json.dump({"events": records, "results": ctftime_team(), "assets": assets}, out, ensure_ascii=False, indent=2)

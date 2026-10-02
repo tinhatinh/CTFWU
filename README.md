@@ -90,9 +90,18 @@ docker run --rm -v "${PWD}:/work" -v ctfwu-bundle:/usr/local/bundle -w /work rub
 python tools/serve_site.py
 ```
 
-Public GitHub Pages remains a read-only site without editor controls. Repository edits made
-directly on GitHub trigger a rebuild when committed to the deployment branch. Public Pages
-cannot write directly to files on your computer. Local saves do not commit or push automatically.
+Public GitHub Pages also displays the editor. Sign in with the repository owner's fine-grained
+token, granting **Contents: Read and write** for CTFWU. The public editor calls GitHub directly,
+checks the authenticated user against the repository owner before saving, and creates one Git
+tree/commit for the selected editions. It checks blob versions and updates `main` without force,
+so a concurrent push is rejected. GitHub enforces repository write permissions. A push triggers
+GitHub Actions; the editor shows the commit link while deployment is pending. Git history retains
+the previous files. Pull the repository to receive public edits in your local checkout.
+
+Public tokens stay only in tab memory, for up to eight hours. Reloading/closing the tab or signing
+out ends the session. The local HttpOnly-cookie session still lasts up to eight hours across page
+navigation. Local saves do not commit or push automatically. A Content Security Policy blocks
+inline scripts from writeup content; keep the permitted theme-script hash synchronized if it changes.
 
 ## Adding writeups with another AI
 

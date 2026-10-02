@@ -1,7 +1,9 @@
 (() => {
   'use strict';
   const launch = document.querySelector('#local-edit');
-  if (!launch || !['127.0.0.1', 'localhost'].includes(location.hostname)) return;
+  if (!launch) return;
+  const local = ['127.0.0.1', 'localhost'].includes(location.hostname);
+  const remote = local ? null : window.createGithubEditor();
   const vi = document.body.dataset.language === 'vi';
   const text = vi ? {
     loading:'Đang đọc file gốc…', saving:'Đã lưu. Đang rebuild trang…', unchanged:'Nội dung chưa thay đổi.',
@@ -20,6 +22,14 @@
   const status = document.querySelector('#editor-status');
   const form = document.querySelector('#editor-form');
   const login = document.querySelector('#editor-login');
+  if (remote) {
+    login.querySelector('.editor-note').textContent = vi
+      ? 'Đăng nhập bằng token của chủ repo tinhatinh/CTFWU, quyền Contents: Read and write. Lưu sẽ tạo commit trên GitHub cho bản đã chọn. Token chỉ giữ trong bộ nhớ tab, tối đa 8 giờ; tải lại hoặc đóng tab sẽ kết thúc phiên.'
+      : 'Use the repository owner’s token with Contents: Read and write. Saving commits the selected editions to GitHub. The token stays in tab memory for up to 8 hours; reloading or closing the tab ends the session.';
+    form.querySelector('.editor-note').textContent = vi
+      ? 'Chọn VN, EN hoặc cả hai. Lưu tạo một commit trên GitHub; GitHub Actions cập nhật website sau đó. Không tự động dịch nội dung.'
+      : 'Choose VN, EN or both. Saving creates one GitHub commit; GitHub Actions updates the website afterwards. No automatic translation.';
+  }
   const select = document.querySelector('#editor-language');
   const contents = {vi:document.querySelector('#editor-content-vi'),en:document.querySelector('#editor-content-en')};
   const key = document.querySelector('[data-writeup-key]').dataset.writeupKey;
@@ -32,6 +42,7 @@
     dialog.setAttribute('aria-busy',String(value));
   };
   const request = async (url, options) => {
+    if (remote) return remote(url, options);
     const response = await fetch(url,{cache:'no-store',credentials:'same-origin',...options});
     const data = await response.json();
     if (!response.ok) {
@@ -107,6 +118,13 @@
       const data=await request('/api/writeup',{method:'POST',headers:{'Content-Type':'application/json','X-Editor-Token':token},body:JSON.stringify({key,edits})});
       for(const edit of edits)variants[edit.lang].original=edit.content;
       if(!data.saved){status.textContent=text.unchanged;return;}
+      if(data.published){
+        const latest=await request('/api/writeup?'+new URLSearchParams({key,ref:data.commit_sha}));
+        for(const edit of edits)variants[edit.lang].version=latest.variants[edit.lang].version;
+        status.textContent=vi?'Đã lưu trên GitHub. Website đang chờ deploy. ':'Saved to GitHub. Website deployment is pending. ';
+        const link=document.createElement('a');link.href=data.commit_url;link.textContent=vi?'Xem commit ↗':'View commit ↗';link.target='_blank';link.rel='noopener';status.append(link);
+        return;
+      }
       status.textContent=text.saving;
       for(let attempt=0;attempt<180;attempt++){
         await new Promise(resolve=>setTimeout(resolve,1000));const build=await request('/api/build');

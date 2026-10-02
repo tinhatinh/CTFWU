@@ -61,7 +61,9 @@ jobs:
         run: python3 tools/build_site.py
 
       - name: Check editor data integrity and CTFTime parser
-        run: python3 tools/test_editor.py
+        run: |
+          python3 tools/test_editor.py
+          node tools/test_github_editor.cjs
 
       - name: Setup Pages
         id: pages
