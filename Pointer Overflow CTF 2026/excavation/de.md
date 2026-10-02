@@ -8,7 +8,7 @@ Trang: <https://pointeroverflowctf.com/challenges/excavation/>
 Event: Pointer Overflow CTF 2026, nhánh "SEANCE // SIGNAL-EATER", ARC-3 REEL-04.
 Team: 612. Điểm: 100. Trạng thái: đã nộp và được chấp nhận.
 
-## Đề bài (nguyên văn từ trang của team mình)
+## Đề bài (nguyên văn từ trang của team đó)
 
 > I tell you, the game hacking category was a lot of fun to develop over summer. Unfortunately, not all ideas make the cut. Take this game, for example. Here are some remnants of the fictional dark-fantasy RPG "Sepulchure of the Undying". I had high hopes, but I suffered a hardware failure and poof it's all gone. All I could save were a few save files from testing. Oh, well. When life gives you lemons, reverse engineer the file format and find a flag.
 >

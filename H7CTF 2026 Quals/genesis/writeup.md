@@ -1,112 +1,91 @@
 # Genesis — Web3 (Medium)
 
 **Flag:** `H7CTF{346df380-9ca8-41a7-8853-5a6f23c601ad}`
-**Files:** `GenesisVault.sol`, `Setup.sol`, `Token.sol`
+**Files cung cấp:** `GenesisVault.sol`, `Setup.sol`, `Token.sol`
 
 ## Đề bài
 
-"genesis vault opened this morning: a fresh yield vault, the sort that's been audited a hundred
-times over. a big anchor investor is about to move in with a very large stake. ... by the time the
-anchor's deposit settles, own the vault outright and leave their stake worth exactly nothing."
+Hệ thống đưa ra một kịch bản: "Một hầm chứa genesis (genesis vault) vừa được mở cửa sáng nay: một hầm chứa sinh lời hoàn toàn mới tinh, thuộc kiểu đã được các chuyên gia mổ xẻ kiểm toán (audit) tới hàng trăm lần. Một nhà đầu tư cá mập (anchor investor) sắp sửa đổ vào đây một lượng vốn khổng lồ. ... Trước khi dòng tiền của nhà đầu tư này yên vị trong hầm, nhiệm vụ của bạn là hãy chiếm đoạt toàn bộ hầm chứa, và biến số cổ phần của gã cá mập kia thành một con số 0 tròn trĩnh."
 
-Điều kiện thắng trong `Setup.isSolved()`:
+Điều kiện phân xử chiến thắng được lập trình cứng trong file `Setup.isSolved()`:
 
 ```solidity
 victimDeposited && vault.balanceOf(victim) == 0 && token.balanceOf(address(vault)) < 1 ether
 ```
 
-Tức là ba thứ phải xảy ra cùng lúc: anchor đã deposit, họ không giữ share nào, và vault gần như
-rỗng.
+Đoạn mã này quy định 3 sự kiện phải xảy ra đồng thời: Cá mập (victim) đã thực sự nạp tiền (`victimDeposited`), nhưng gã không hề sở hữu một đồng cổ phần (share) nào (`vault.balanceOf(victim) == 0`), và toàn bộ lượng token nằm trong hầm chứa đã bị rút sạch bách (gần như rỗng, nhỏ hơn 1 ether).
 
 ## Phân tích ban đầu
 
-`Setup.sol` định nghĩa anchor bằng một địa chỉ hằng:
+Đào sâu vào `Setup.sol`, định danh của nhà đầu tư cá mập bị đóng chết vào một địa chỉ hằng số:
 
 ```solidity
 address public constant victim = address(0xC0FFEE);
 ```
 
-Địa chỉ này không phải contract, nên không có code nào tự tương tác với vault thay anchor. Nhưng
-`Setup` lại expose `victimDeposit()` là `external`, không kèm `onlyOwner`, nghĩa là người chơi tự
-gọi hộ anchor được, và `deposit(assets, receiver)` cho phép chỉ định receiver, nên số share của
-đợt deposit đó ghi thẳng vào `victim`. Đây không phải lỗi cần khai thác, mà là công tắc để kích
-hoạt đúng nhịp thời gian mà đề bài mô tả.
+Vì địa chỉ ảo này không phải là một Hợp đồng thông minh (contract), nên chắc chắn không có chuyện một đoạn mã tự động nào đó đứng ra giao dịch với hầm chứa thay cho gã. Thật may, hàm `victimDeposit()` trong `Setup` lại mở toang cánh cửa `external` và không hề bị xích bởi bộ quyền `onlyOwner`. Nhờ thế, người chơi hoàn toàn có quyền vung tay bấm nút "nạp tiền" hộ gã cá mập. Khi hàm `deposit(assets, receiver)` được gọi, nó cho phép chỉ định đối tượng thụ hưởng (receiver), và toàn bộ số share của đợt nạp tiền đó sẽ được chuyển thẳng đứng tên `victim`. Phải hiểu rằng: Đây không phải là lỗ hổng để ta hack, mà đây là cái "công tắc" do tác giả cung cấp để ta điều khiển dòng thời gian diễn ra vụ cướp đúng như kịch bản.
 
-Về phía vault, `redeem` chia theo giá hiện hành nên không có đường rút non phần:
+Soi vào cơ chế của Vault, hàm `redeem` (rút tiền) tính toán cổ tức dựa theo tỷ giá hiện hành (spot price). Do đó, hoàn toàn không có khe hở nào để rút khống tài sản:
 
 ```solidity
 convertToAssets(shares) = shares * reserve / totalSupply
 ```
 
-Hai hàm còn lại mới là lời giải:
+Tuy nhiên, hai hàm cốt lõi dưới đây lại chính là bản án tử cho cả hệ thống:
 
 ```solidity
 function convertToShares(uint256 assets) public view returns (uint256) {
   uint256 supply = totalSupply;
-  return supply == 0 ? assets : assets * supply / reserve;   // không có virtual offset
+  return supply == 0 ? assets : assets * supply / reserve;   // Lỗi nghiêm trọng: Thiếu hụt virtual offset (bù trừ ảo)
 }
 
-function sync() external { reserve = asset.balanceOf(address(this)); }   // ai cũng gọi được
+function sync() external { reserve = asset.balanceOf(address(this)); }   // Lỗi nghiêm trọng: Hàm mở toang, không kiểm tra quyền (ai cũng gọi được)
 ```
 
-`convertToShares` không cộng virtual shares/virtual assets như ERC4626 tham chiếu, và `sync()` để
-ngoài quyền chủ sở hữu. Ghép lại thành một bài làm tròn: giữ `totalSupply` cực nhỏ trong khi
-`reserve` cực lớn thì một khoản deposit rất to quy về 0 share.
-
-## Các hướng đã loại
-
-1. Rút bằng `redeem` thường khi giá chưa đổi: mỗi share nhận đúng `reserve/totalSupply` của nó,
-   không lấy được phần của người khác.
-2. Chặn anchor bằng cách gọi `victimDeposit()` trước: vô nghĩa, vì điều kiện thắng đòi
-   `victimDeposited == true`.
-3. donate trực tiếp bằng `token.transfer(vault, amount)`: số dư ví tăng nhưng `reserve` không đổi
-   nếu thiếu `sync()`, nên giá share đứng nguyên.
+Hàm `convertToShares` ngây thơ bỏ qua hoàn toàn cơ chế bảo vệ cộng bù trừ (virtual shares/virtual assets) của chuẩn ERC4626. Cùng lúc đó, hàm đồng bộ tài sản `sync()` lại hớ hênh phơi mình ra trước bàn dân thiên hạ. Ghép hai lỗ hổng này lại, ta có trong tay kịch bản hack kinh điển "Làm tròn về số 0" (Inflation Attack): Nếu ta thao túng để tổng cung (`totalSupply`) chỉ là một con số vi mô nhưng tổng dự trữ (`reserve`) lại phình to khổng lồ, thì mọi giao dịch nạp tiền to lớn sau đó khi quy đổi ra share đều sẽ bị chia làm tròn thành số 0 tròn trĩnh.
 
 ## Chuỗi khai thác
 
-Bốn nhịp, cả sáu transaction đều gửi từ EOA thường, không cần contract trung gian.
+Toàn bộ vở kịch gồm 4 hồi, triển khai qua 6 giao dịch, tất cả đều được gửi mượt mà từ một tài khoản EOA bình thường, không cần phải đẻ ra bất kỳ contract trung gian nào.
 
-1. **Gửi hạt giống.** Vault còn trống (`supply == 0`), nên `deposit(1, player)` cho ra đúng 1 wei
-   share: `supply == 0 ? assets : ...`. Kết quả là `totalSupply = 1`, nhỏ nhất có thể.
-2. **Bơm dự trữ rồi gọi `sync()`.** Chuyển toàn bộ số token còn lại của mình vào vault và gọi
-   `sync()` để `reserve` nhận phần donate. Với instance này `reserve = 200000000000000000000`
-   trong khi `totalSupply = 1`, nên `convertToShares(100e18)` = `100e18 * 1 / 2e20` = 0. Script in
-   câu dự đoán đó ra trước khi để anchor vào, và con số in ra là 0.
-3. **Mời anchor.** Gọi `setup.victimDeposit()`. `reserve` lên `3e20` nhưng 100e18 của anchor vẫn
-   đổi lấy 0 share, nên `vault.balanceOf(victim) == 0` thỏa ngay từ đầu, và
-   `victimDeposited == true`.
-4. **Thu gọn vault.** `redeem(1, player, player)` đốt 1 share duy nhất, nhận về toàn bộ `reserve`,
-   vì `convertToAssets(1) = 1 * reserve / 1`. `reserve` và `totalSupply` về 0, điều kiện
-   `token.balanceOf(vault) < 1 ether` cũng đúng.
+1. **Hồi 1: Gieo hạt giống (Inflation).** 
+   Khi hầm chứa Vault vẫn còn hoang vu (`supply == 0`), ta gửi một giao dịch nạp cực nhỏ `deposit(1, player)`. Phép toán `supply == 0 ? assets : ...` lập tức trả về cho ta chính xác 1 wei cổ phần (share). Kết cục: `totalSupply = 1`, con số nhỏ nhất có thể tồn tại trong hệ thống.
+2. **Hồi 2: Bơm thổi dự trữ và chốt hạ `sync()`.** 
+   Ta ném tàn bạo toàn bộ số token còn lại trong ví thẳng vào hầm chứa (donate), rồi gọi hàm `sync()` để hệ thống cập nhật biến `reserve` gánh trọn phần tài sản hiến tặng đó. Trên môi trường live, `reserve` vọt lên mức `200.000.000.000.000.000.000` trong khi `totalSupply` vẫn kiên cường ở mức `1`. 
+   Lúc này, nếu ai đó nạp vào 100 ether, số share quy đổi sẽ là: `convertToShares(100e18) = 100e18 * 1 / 2e20 = 0`. Kịch bản hack đã hiển thị rõ ràng thông báo: "Nếu nạp vào bây giờ, cá mập sẽ nhận được 0 share."
+3. **Hồi 3: Trải thảm đón cá mập.** 
+   Ta kích hoạt công tắc `setup.victimDeposit()`. Lượng tiền `reserve` của hệ thống dâng lên tới `3e20`. Tuy nhiên, vì bị làm tròn, khoản 100e18 mà gã cá mập vừa ném vào chỉ mang về cho gã đúng 0 share. 
+   Thế là xong: Điều kiện `vault.balanceOf(victim) == 0` đã thoả mãn ngay lập tức, và cờ báo `victimDeposited == true` cũng bật sáng.
+4. **Hồi 4: Hút cạn hầm chứa.** 
+   Cuối cùng, ta gọi lệnh rút tiền `redeem(1, player, player)` để thiêu rụi 1 wei share duy nhất mà ta sở hữu từ bước 1. Phép tính chia `convertToAssets(1) = 1 * reserve / 1` sẽ nôn về toàn bộ tài sản đang có trong kho `reserve`. Biến `reserve` và `totalSupply` lao dốc không phanh về 0, giúp điều kiện thứ ba `token.balanceOf(vault) < 1 ether` cũng được đáp ứng hoàn hảo.
 
-Trạng thái sau từng bước, lấy từ output của `solve.mjs`:
+Cấu trúc tài sản (Trạng thái sau mỗi nhịp, được trích xuất từ bảng log của `solve.mjs`):
 
-| bước | reserve | supply | share(victim) | tok(vault) | isSolved |
+| Bước thực thi | Dự trữ (reserve) | Tổng cung (supply) | Share (Cá mập) | Token trong kho (vault) | Trạng thái (isSolved) |
 | --- | --- | --- | --- | --- | --- |
-| đầu | 0 | 0 | 0 | 0 | false |
-| `deposit(1)` | 1 | 1 | 0 | 1 wei | false |
-| donate + `sync()` | 200000000000000000000 | 1 | 0 | 200 | false |
-| `setup.victimDeposit()` | 300000000000000000000 | 1 | 0 | 300 | false |
-| `redeem(1, me, me)` | 0 | 0 | 0 | 0 | true |
+| Khởi đầu | 0 | 0 | 0 | 0 | Sai (false) |
+| Lệnh nạp `deposit(1)` | 1 | 1 | 0 | 1 wei | Sai (false) |
+| Bơm tiền + `sync()` | 200,000,000,000,000,000,000 | 1 | 0 | 200 | Sai (false) |
+| Bật `setup.victimDeposit()` | 300,000,000,000,000,000,000 | 1 | 0 | 300 | Sai (false) |
+| Hút cạn `redeem(1, me, me)` | 0 | 0 | 0 | 0 | Đúng (true) |
 
 ## Flag
-Dòng cuối của `CTF_PK=<private key trong GET /> node solve.mjs` (hàm `show()` in trạng thái sau mỗi transaction):
+Kết quả bắn ra từ dòng log cuối của công cụ tấn công (Kích hoạt lệnh `CTF_PK=<private_key_trên_web> node solve.mjs`):
 
-```
+```text
 drained    tok(vault)= 0.0000 reserve= 0 supply= 0 share(victim)= 0 share(me)= 0 tok(me)= 300.0000 solved= true
 ```
 
-`isSolved()` đã true nên instance trả cờ qua `GET /flag`:
+Chốt báo cáo `isSolved() = true`, máy chủ ngoan ngoãn dâng cờ thông qua cổng API `GET /flag`:
 
-```
+```text
 H7CTF{346df380-9ca8-41a7-8853-5a6f23c601ad}
 ```
 
-## Reproduce
+## Phục dựng (Reproduce)
 
-```
+```bash
 node solve.mjs
 ```
 
-Script đọc RPC, `SETUP` và private key của instance từ ba hằng ở đầu file; đổi ba giá trị đó là
-chạy được trên instance mới.
+Đoạn script này tự động đọc địa chỉ nút mạng (RPC), địa chỉ contract `SETUP` và khoá riêng tư (private key) từ 3 hằng số khai báo ở đầu file. Chỉ cần thay đổi 3 tham số đó là bạn có thể đánh sập bất kỳ instance mục tiêu mới nào.

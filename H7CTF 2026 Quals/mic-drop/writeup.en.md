@@ -27,19 +27,6 @@ segments. Downloading 7 segments gives 47.85 s of AAC mono 48 kHz audio.
 Two questions to answer in order: is the data in the container or in the signal? and if it is in the signal, in what
 modulation form?
 
-## Approaches Ruled Out
-
-1. Data stuffed inside the MPEG-TS (`analysis/tsparse.py`): the PID histogram only has `0x0100` audio and PAT/PMT;
-   0 packets carry an adaptation field, so there is no stuffing channel; 0 ID3 tags in the ADTS; no
-   private/subtitle `stream_type`; no suspicious string anywhere in the raw TS.
-2. An ultrasonic carrier (`analysis/spectrum.py`): energy in the 17-24 kHz band is only at the noise floor
-   (rms 0.0005 against 0.051 for the 2-3 kHz band), with no single peak lifting above it. So "nobody hears anything"
-   is not because it is beyond human hearing.
-3. PCM LSBs: the source is lossy AAC, the quantiser already destroys the low bits before it reaches us; and the
-   spectrum is a clear tone combination rather than a noise-like payload.
-4. A wrong baud in the demodulation (see Step 3): 1200 baud is the Bell 202 default, which makes it very easy to
-   guess blindly.
-
 ## Exploit Chain
 
 **Step 1 - Looking at the spectrum by eye.** `ffmpeg -lavfi showspectrumpic` gives a spectrum image (saved as `analysis/spectrogram.png`).
@@ -79,7 +66,7 @@ cannot repeat verbatim 8 times; this is also evidence that the message is looped
 ## Flag
 ```bash
 python exploit.py https://web-021fc06a681e8dca.web.h7tex.com/boardroom 60   # khi instance còn chạy
-python exploit.py files/352f5b477507_main_seg15.ts                          # chạy lại từ segment đã lưu
+python exploit.py files/352f5b477507_main_seg15.ts                          # re-run from the saved segment
 ```
 
 Actual output of the second command (a 159.048 B TS segment already saved in `files/`):

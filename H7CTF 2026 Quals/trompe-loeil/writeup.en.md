@@ -32,17 +32,17 @@ So all we need is one instant where the virtual price is inflated.
 uint256 ethOut   = address(this).balance * lp / totalSupply;
 uint256 tokenOut = token.balanceOf(address(this)) * lp / totalSupply;
 balanceOf[msg.sender] -= lp;
-totalSupply -= lp;                        // mẫu số đã giảm
-(bool ok, ) = msg.sender.call{value: ethOut}("");   // <- callback của đối tượng tấn công
+totalSupply -= lp;                        // denominator already decreased
+(bool ok, ) = msg.sender.call{value: ethOut}("");   // <- callback to the attacker contract
 require(token.transfer(msg.sender, tokenOut));      // tử số chưa trừ phần token
 ```
 
-Inside the callback, `get_virtual_price()` takes `(ETH already decreased + token NOT yet decreased) / (supply đã giảm)`. A pool balanced 50/50 still yields an approximately correct price, but a pool skewed towards the token magnifies the part that is counted twice.
+Inside the callback, `get_virtual_price()` takes `(ETH already decreased + token NOT yet decreased) / (supply already decreased)`. A pool balanced 50/50 still yields an approximately correct price, but a pool skewed towards the token magnifies the part that is counted twice.
 
 **Step 2 - Skewing the pool with a token-only deposit.** `addLiquidity` allows `msg.value = 0` and still computes a fair price, so nothing is lost:
 
 ```js
-pool.addLiquidity(100n * 10n ** 18n)   // không kèm ETH
+pool.addLiquidity(100n * 10n ** 18n)   // without sending ETH
 ```
 
 The pool becomes 10 ETH + 110 mUSD, `totalSupply = 120`, the price is still exactly `1e18`. We keep 100 LP.
@@ -66,7 +66,7 @@ Debt is 1.65 times the collateral value, and the difference cannot be called bac
 
 ## Flag
 ```bash
-CTF_PK=<private key trong GET /> node exploit.mjs
+CTF_PK=<private key from GET /> node exploit.mjs
 ```
 
 ```

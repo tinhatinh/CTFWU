@@ -27,19 +27,6 @@ The host has no `tshark`, `capinfos`, `btlejack`. Dumping each packet by hand sh
 
 So the parsing is done by hand: `payload = packet[11:-3]`.
 
-## Approaches Ruled Out
-
-1. Breaking BLE pairing and then decrypting. The capture contains no pairing PDU and no Start Encryption, so
-   there is no LTK to decrypt with. The keys of both characteristics are derived from data that already went over
-   the air. The real-crypto attack line is ruled out; what remains is a reassembly puzzle.
-2. Dissecting it with off-the-shelf tools as if it were an ordinary btle capture. The host has no
-   `tshark`/`btlejack`/`capinfos`, and 46/50 packets follow no LL framing at all: the DLT says 251 but the payload
-   is home-brew ATT.
-3. Treating every 2-byte payload as a handle-select request. `31 0a` reads as handle `0x0031`, but it is also the
-   last 2 bytes of the blob being read. In the first reassembly I put the `len >= 11` condition ahead of the handle
-   condition, so a 20-byte chunk was misread as "handle + data". Settled with a context check: a 2-byte payload is
-   only a request if the next packet is exactly 20 bytes long.
-
 ## Exploit Chain
 
 **Step 1 - Pinning down the transport format.** Three payload shapes are distinguishable by length and context:

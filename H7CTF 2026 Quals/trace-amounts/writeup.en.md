@@ -30,20 +30,6 @@ projected over the number of trials (16 bytes × 256 keys × 700 samples) the la
 That number is the yardstick for knowing when there is real signal - and it is exactly what makes this challenge
 interesting, because my first run gave precisely 0.21 everywhere.
 
-## Approaches Ruled Out
-
-1. Misaligned traces (jitter) - the most common hypothesis when CPA shows nothing. Checked by
-   cross-correlating each trace with the mean trace: the optimal shift is 0 for all 500 traces, std 0.0.
-2. The chip uses first-order masking - in that case there is no first-order leak and two samples must be combined. Probed
-   with the correlation of the trace against `HW(pt_i ^ pt_j)` for every byte pair: at most 0.195, still the noise floor.
-3. Wrong time instant - real, but not caused by misalignment; see Step 2.
-4. Wrong leakage model - tried `HW(pt^k)`, `pt^k`, `S[pt^k]`, `LSB`: all of them hug the 0.19-0.22 floor.
-
-The actual cause runs deeper: my code was wrong, not the data. The Hamming weight table was built as
-`hw = popcount(sbox[v])` and then indexed again as `hw[S-box[pt^k]]`, i.e. computing `popcount(S-box[S-box[pt^k]])` -
-the S-box twice. Such a prediction model correlates with nothing, so every byte returns exactly the noise floor level.
-This is a very easy trap to hit: |r| ~0.2 looks like "weak signal, need more traces", when in fact it is "meaningless model".
-
 ## Exploit Chain
 
 **Step 1 - Reading the trace's time structure.** The energy spectrum per sample (`mean trace` and `variance profile`)

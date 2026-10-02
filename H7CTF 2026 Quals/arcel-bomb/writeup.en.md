@@ -16,7 +16,7 @@ the running instance.
 $ node ~/.qoder/skills/ctf-solve/scripts/triage.cjs dispatch
 class=64-bit type=ET_EXEC (no PIE)  entry=0x401090  PIE=no RELRO=yes STACK=non-exec
 $ readelf --dyn-syms -W dispatch
-puts  read  setvbuf  __libc_start_main  stdout      # không có system/execve
+puts  read  setvbuf  __libc_start_main  stdout      # no system/execve
 ```
 
 `objdump -d -M intel` shows the whole program has only three functions worth caring about:

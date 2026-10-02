@@ -55,10 +55,10 @@ This grid does not give a single solution: `analysis/geometry_search_results.txt
 most of them truncated strings or missing the leading character. The assignment set left after step 3:
 
 ```
-U+2192 -> sang phải một cột
-U+2196 -> lên một hàng
-U+2198 -> xuống một hàng
-U+25A0 -> điểm dừng
+U+2192 -> one column right
+U+2196 -> one row up
+U+2198 -> one row down
+U+25A0 -> stopping point
 ```
 
 **Step 3 - the start point inferred from the graph.** With the geometry from step 2, count the keys

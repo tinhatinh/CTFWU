@@ -111,7 +111,7 @@ user/analyst
   │     -> chạy như ci-runner-role        -> cờ 2 (passrole)
   │        -> sts:AssumeRole(partner-admin-role, acct 999999999999)
   │                                        -> cờ 3 (admin)
-  │           -> s3:GetObject(flag-vault) đọc được external_id
+  │           -> s3:GetObject(flag-vault) reads external_id
   │              -> sts:AssumeRole(partner-secure-role, ExternalId=...)
   │                                        -> cờ 4 (externalid)
 ```

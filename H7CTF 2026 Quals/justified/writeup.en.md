@@ -34,17 +34,6 @@ Three decisive details:
 2. `\write18 enabled.` - shell escape is fully on, not in `restricted` mode.
 3. The entire log (stderr included) is echoed back to the sender.
 
-## Approaches Ruled Out
-
-1. Direct shell injection in the text fields (`$(id)`, backtick, `|id`, `;id` in `title`/`year`):
-   the log changes not at all. Ruled out - these fields never pass through a shell.
-2. Injection through `reference` (the field that "names the download", the likeliest place to be spliced into
-   `mv`/`-jobname`): every payload `ref1;id`, `ref1$(id)`, `ref1|id`, `ref1&&id`, `ref1\nid` produces the same jobname
-   `ref1id.pdf`. This field is whitelisted down to `[A-Za-z0-9_-]`. Ruled out - and this is the challenge's trap:
-   the field that looks most vulnerable is the most sanitised one.
-3. Needing `restricted \write18`: under restricted mode only commands on an allow list would run.
-   The string `\write18 enabled.` (with no "restricted") in the log's first line already refutes this.
-
 ## Exploit Chain
 
 **Step 1 - Proving `title` is a LaTeX injection.** plant a harmless but observable macro:

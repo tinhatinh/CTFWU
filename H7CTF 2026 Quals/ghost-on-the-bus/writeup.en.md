@@ -22,7 +22,7 @@ The VCD is text, so plain Python parses it; no sigrok needed. The first task was
 ```
 UART_TX   transitions=1685   gap hist: (8500,1043) (17000,376) (25500,124) ...   -> bit = 8500 ns
 SCL       transitions=795    gap hist: (5000,441) (7500,351)                     -> I2C 80 kHz
-SDA       transitions=197    gap hist: (12500,92) (25000,28) (37500,21)          -> bội số của SCL
+SDA       transitions=197    gap hist: (12500,92) (25000,28) (37500,21)          -> multiple of SCL
 SPI_CLK   transitions=753    gap hist: (1000,751)                                -> 500 kHz, idle low (CPOL=0)
 SPI_CS    transitions=3      low 22984000..23738000 ns = 754 us = 376 clock      -> 1 transaction, 47 byte
 AUX       transitions=1                                                                -> luôn mức 1, kênh chết

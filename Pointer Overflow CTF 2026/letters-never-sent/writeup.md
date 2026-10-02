@@ -1,14 +1,14 @@
 # Letters Never Sent - Crypto
 
-**Điểm:** 95 · **Solves khi làm:** 248 · **Cờ:** `POCTF{2.612.ORSMSQU6A7IQJGUC.PQ4FI6SPWLYJYQGBQK66AWTILP}`
+**Điểm:** 95 · **Lượt giải (Solves):** 248 
+**Cờ:** `POCTF{2.612.ORSMSQU6A7IQJGUC.PQ4FI6SPWLYJYQGBQK66AWTILP}`
 
-**File cho trước:** `files/letter.png` 1.150.873 byte, sha256 `907275df295c975e...`
+**File cung cấp:** `files/letter.png` (kích thước 1.150.873 byte, mã băm sha256 `907275df295c975e...`)
 
 ## Đề bài
 
-Thư thu được từ di sản của Dr. H. Aldous Whitmore, chưa từng được gửi. Kèm theo thư là
-một thông điệp lạ. Nhiệm vụ: tìm key mà bức thư giấu, rồi đọc nội dung Whitmore không
-dự định gửi. Ciphertext trên thẻ đề:
+Người chơi được cung cấp một bức thư viết tay thuộc về di sản của Tiến sĩ H. Aldous Whitmore, bức thư này được cho là chưa từng được gửi đi. Đi kèm với nó là một thông điệp vô cùng bí ẩn. Nhiệm vụ của bạn: Tìm ra chìa khoá (key) đang bị ẩn giấu trong bức thư, từ đó giải mã và đọc được những nội dung thầm kín mà Whitmore không bao giờ muốn gửi. 
+Chuỗi mã hoá (ciphertext) hiển thị trên hệ thống là:
 
 ```text
 PXYWN{2.612.QNTOXCK6E7DKGMKC.WK4KK6MPPPRJGOFZZI66EISSED}
@@ -16,91 +16,57 @@ PXYWN{2.612.QNTOXCK6E7DKGMKC.WK4KK6MPPPRJGOFZZI66EISSED}
 
 ## Phân tích ban đầu
 
-Bức thư viết tay gửi "Admiral Sir Francis Beaufort, K.C.B., Hydrographer to the Navy",
-ký tên Whitmore với chức danh Fellow của Liminal Society for Spectral Fellowship, đề
-November 1887. Câu chốt là đoạn nói về phương pháp của người nhận: "that reciprocal
-tableau which bears your name and which I have employed these many years in matters
-requiring discretion". Beaufort cipher đúng là một bảng tra tự nghịch đảo: mã hoá và
-giải mã dùng cùng một công thức `c = k - p (mod 26)`.
+Bức thư viết tay được gửi tới "Admiral Sir Francis Beaufort, K.C.B., Hydrographer to the Navy" và được ký tên Whitmore dưới danh nghĩa thành viên (Fellow) của hội Liminal Society for Spectral Fellowship, đề ngày tháng 11 năm 1887. 
+Điểm mấu chốt nằm ở câu chốt hạ của bức thư, trực tiếp nhắc đến phương pháp mật mã của chính người nhận: "that reciprocal tableau which bears your name and which I have employed these many years in matters requiring discretion" (tạm dịch: *bức bình phong nghịch đảo mang tên ngài mà tôi đã dùng ngần ấy năm trong những vấn đề cần sự kín kẽ*). "Bức bình phong mang tên Beaufort" chính là hệ mật mã Beaufort - một hệ mã tự nghịch đảo nổi tiếng, nơi mà cả hai quá trình mã hoá và giải mã đều sử dụng chung một công thức duy nhất: `c = k - p (mod 26)`.
 
-Kiểm chứng ngay bằng dữ liệu đã biết: cờ phải bắt đầu bằng `POCTF{`. Thử ba họ cipher
-dùng bảng tra trên alphabet 26 chữ:
+Có thể kiểm chứng ngay lập tức giả thuyết này bằng cách dựa vào một chân lý: cờ bắt buộc phải bắt đầu bằng chuỗi `POCTF{`. Nếu thử đảo ngược ba hệ mật mã phổ biến cùng dùng bảng chữ cái 26 ký tự:
 
-| Phép | Key suy ra từ `PXYWN` -> `POCTF` |
+| Phép toán | Khoá (Key) suy ngược từ `PXYWN` -> `POCTF` |
 | --- | --- |
-| Beaufort `p = k - c` | `ELAPS` |
-| Vigenère `p = c - k` | `AJWDI` |
-| Variant Beaufort `p = c + k` | `AREXS` |
+| Beaufort (`p = k - c`) | `ELAPS` |
+| Vigenère (`p = c - k`) | `AJWDI` |
+| Variant Beaufort (`p = c + k`) | `AREXS` |
 
-Chỉ `ELAPS` là mở đầu của một thứ có nghĩa, và nó trùng với key lấy từ khung viền (Bước 2).
-Porta bị loại sớm: với Porta, chữ mã ở nửa trên bảng không thể là `P` nếu chữ gốc cũng là `P`.
+Trong số đó, chỉ có chuỗi `ELAPS` mới trông giống như khởi đầu của một từ tiếng Anh có nghĩa, và tuyệt vời thay, nó trùng khớp hoàn hảo với chìa khoá lấy được từ đường viền khung tranh (sẽ phân tích ở Bước 2). Hệ mã Porta bị loại ngay từ vòng gửi xe, bởi theo luật của Porta, nếu ký tự gốc là `P` thì ký tự mã hoá ở nửa trên bảng không thể nào trả về đúng chữ `P` được.
 
-Khung viền của ảnh có 24 nhãn (6 mỗi cạnh) bằng tiếng Anh: tên hoa, tên chim và vật dụng.
-Sáu nhãn in màu đỏ sẫm và có ngôi sao đỏ kèm theo.
-
-## Các giả thuyết đã loại trừ
-
-- Ảnh chứa dữ liệu ẩn: không có byte sau IEND, không có chunk tEXt/zTXt/iTXt, IDAT giải
-  nén hết không dư byte nào, tỉ lệ bit thấp ba kênh 0.4933 / 0.5036 / 0.4921 tức nhiễu
-  chuẩn, `stegano.lsb.reveal` báo không thấy gì.
-- Running key là chính bức thư: Beaufort running key đòi hỏi chuỗi key bắt đầu bằng
-  `ELAPS`, mà văn bản thư (607 chữ cái, đã bỏ ký tự không phải chữ) không chứa `ELA`.
-- Autokey và progressive Beaufort với key `ELAPSE`: cả ba biến thể đều ra rác.
-- Lớp hoán vị sau khi giải mã: thân có đúng 36 chữ cái nên đã quét 720 hoán vị cột của
-  lưới 6x6 theo cả hai thứ tự, rail fence độ sâu 2 đến 12 cả encode lẫn decode, spiral
-  bốn biến thể, transpose lưới. Không ứng viên nào nhô lên về điểm quadgram.
-- Key từ các nhãn không có sao: 18 nhãn không sao bằng đúng 36 chữ cái thân chia đôi,
-  nhưng `RFSTPHWMDOVYCRLFST` không khớp prefix đã buộc ở trên.
-- Key Beaufort tuần hoàn dài hơn: quét exhaust toàn bộ key độ dài 6, 7, 8, 9 với 5 chữ
-  đầu cố định `ELAPS` (tổng 475k khoá, chấm điểm bằng quadgram dựng từ 370k từ tiếng
-  Anh) và hill-climb cho 10 đến 16. Không khoá nào cho ra tiếng Anh.
-
-Điểm cuối cùng này hoá ra không phải tín hiệu xấu, xem Bước 4.
+Quan sát đường viền khung tranh, ta thấy nó được trang trí bởi 24 nhãn dán (chia đều 6 nhãn mỗi cạnh) mang từ vựng tiếng Anh chủ đề tên loài hoa, tên loài chim và một số vật dụng. Nổi bật nhất là 6 nhãn dán được in màu đỏ sẫm, đi kèm với một biểu tượng ngôi sao màu đỏ.
 
 ## Chuỗi khai thác
 
-**Bước 1 - Cố định cipher.** Dùng prefix `POCTF{` đã biết để suy ra `key[0..4] = ELAPS`
-với Beaufort alphabet 26. Năm chữ cái khớp nhau giữa hai nguồn độc lập (prefix đã biết và
-khung viền) loại mọi họ cipher khác.
+**Bước 1 - Chốt chặn hệ mật mã.** 
+Sử dụng phần tiền tố `POCTF{` đã biết chắc chắn, ta dễ dàng suy ngược ra đoạn đầu của khoá là `key[0..4] = ELAPS` nhờ vào thuật toán Beaufort (trên hệ 26 chữ cái). Sự trùng khớp của 5 ký tự này từ hai nguồn dữ kiện hoàn toàn độc lập (phần tiền tố cờ và nhãn dán ở khung viền) là bằng chứng đanh thép loại bỏ mọi nghi ngờ về các hệ mật mã khác.
 
-**Bước 2 - Đọc key từ ảnh bằng pixel, không đọc bằng mắt.** Lọc theo độ lệch màu
-`R - (G+B)/2 >= 45` tách được đúng các thành phần đỏ (sao và nhãn được đánh dấu), còn
-màu giấy kem có điểm 39 nên bị loại. Gom cụm bằng `scipy.ndimage.label`, giữ cụm có
-diện tích >= 40 px, gán mỗi cụm vào một trong 6 slot của cạnh dựa trên tâm cụm. Nhãn
-không sao cao 6 đến 10 px; nhãn có sao cao 11 đến 22 px vì ngôi sao cộng thêm một khoảng
-đứng. Sáu slot vượt ngưỡng: top 1, top 4, right 1, bottom 4, bottom 0, left 1.
+**Bước 2 - Lục tìm chìa khoá qua phân tích điểm ảnh (Pixel Analysis).** 
+Thay vì căng mắt dò bằng tay, ta có thể tự động hoá việc đọc key. Bằng cách áp dụng bộ lọc độ lệch màu sắc theo công thức `R - (G+B)/2 >= 45`, ta tách được chính xác các vùng màu đỏ sẫm (gồm các ngôi sao và các nhãn được đánh dấu), đồng thời loại bỏ thành công phần nền giấy màu kem (chỉ đạt điểm 39). Kế tiếp, sử dụng hàm gom cụm `scipy.ndimage.label`, ta sàng lọc những cụm có diện tích >= 40 pixel và gán chúng vào 6 khe vị trí (slot) trên các cạnh dựa vào toạ độ tâm. 
+Một phát hiện thú vị là: các nhãn thường (không sao) chỉ cao từ 6 đến 10 pixel; trong khi nhãn có sao cao từ 11 đến 22 pixel do bị ngôi sao chiếm thêm không gian chiều dọc. Kết quả phân tích trả về 6 vị trí đắc địa: top 1, top 4, right 1, bottom 4, bottom 0, và left 1.
 
-**Bước 3 - Sắp theo chiều kim đồng hồ.** Đi từ góc trên-trái: top trái sang phải, right
-trên xuống dưới, bottom phải sang trái, left dưới lên trên. Sáu nhãn gặp được theo thứ tự
-đó là Elder, Lily, Anchor, Poppy, Swan, Elder, lấy chữ cái đầu cho `ELAPSE`.
+**Bước 3 - Quét theo chiều kim đồng hồ.** 
+Bắt đầu từ góc trên cùng bên trái: cạnh trên (top) quét từ trái sang phải, cạnh phải (right) quét từ trên xuống dưới, cạnh dưới (bottom) quét từ phải sang trái, và cạnh trái (left) quét từ dưới lên trên. Sáu nhãn được đánh dấu màu đỏ xuất hiện theo đúng trình tự là: **E**lder, **L**ily, **A**nchor, **P**oppy, **S**wan, **E**lder. Ráp các chữ cái đầu tiên lại, ta có chìa khoá hoàn chỉnh: `ELAPSE`.
 
-**Bước 4 - Chấp nhận thân cờ không đọc được.** Beaufort với `ELAPSE` và key chỉ tiến khi
-gặp chữ cái cho `POCTF{2.612.ORSMSQU6A7IQJGUC.PQ4FI6SPWLYJYQGBQK66AWTILP}`. Phần thân
-không phải tiếng Anh, và mọi cố gắng làm nó thành tiếng Anh (các giả thuyết đã loại trừ)
-đều thất bại. Bài read-me-my-fortune sau đó cho thấy lý do: `_build_marker()` trong source
-của service sinh cờ theo khuôn `POCTF{<cid>.<team_id>.<nonce>.<sig26>}`. Đối chiếu lại thì
-`2.612.ORSMSQU6A7IQJGUC.PQ4FI6SPWLYJYQGBQK66AWTILP` đúng là `cid=2`, `team_id=612`,
-nonce 16 ký tự, và 26 ký tự base32 của HMAC. Thân cờ vì thế là token theo team chứ không
-phải câu chữ, nên "không đọc được" là kết quả đúng chứ không phải bằng chứng sai key.
-Trong số các quy tắc advance key, chỉ quy tắc "chữ cái mới đếm" giữ được prefix `POCTF{`.
+**Bước 4 - Giải mã đoạn thân cờ (Token Decode).** 
+Chạy thuật toán Beaufort kết hợp khoá `ELAPSE` (lưu ý khoá chỉ dịch chuyển vị trí khi gặp chữ cái), đoạn mã hoá sẽ bung ra thành:
+`POCTF{2.612.ORSMSQU6A7IQJGUC.PQ4FI6SPWLYJYQGBQK66AWTILP}`
 
-## Cờ
+Phần thân cờ trông chẳng khác nào một mớ ký tự lộn xộn, hoàn toàn không phải là tiếng Anh. Mọi nỗ lực ép buộc nó thành một câu chữ có ý nghĩa (dựa trên các giả thuyết bị loại) đều chìm vào bế tắc. Mãi đến khi giải nghiệm bài tập `read-me-my-fortune` sau đó, bức màn bí ẩn mới được vén lên: hàm sinh cờ `_build_marker()` trong mã nguồn của hệ thống máy chủ đã ép cờ theo khuôn dạng tiêu chuẩn `POCTF{<cid>.<team_id>.<nonce>.<sig26>}`.
+Đối chiếu với kết quả thu được: `2.612.ORSMSQU6A7IQJGUC.PQ4FI6SPWLYJYQGBQK66AWTILP`, ta thấy nó khớp từng milimet: `cid=2`, `team_id=612`, theo sau là chuỗi ngẫu nhiên (nonce) 16 ký tự, và cuối cùng là 26 ký tự mã băm HMAC định dạng base32. 
+Hệ quả tất yếu: thân cờ thực chất là một chuỗi token cấp phát riêng cho từng đội chơi chứ không phải là một thông điệp ẩn. Việc ta "không thể đọc hiểu" nó không phải là do dùng sai khoá, mà đó chính là bản chất thực sự của lá cờ. Khớp với bộ quy tắc tịnh tiến khoá (advance key), chỉ có quy tắc "chữ cái mới đếm" mới bảo toàn được phần tiền tố `POCTF{`.
+
+## Flag
 
 ```text
 POCTF{2.612.ORSMSQU6A7IQJGUC.PQ4FI6SPWLYJYQGBQK66AWTILP}
 ```
 
-Đã nộp và được chấp nhận. Bản chữ thường không cần thử lại.
+Kết quả đã nộp và được hệ thống ghi nhận. Không cần thiết phải thử lại phiên bản chữ thường.
 
-## Chạy lại
+## Phục dựng (Reproduce)
 
 ```bash
 cd letters-never-sent
 python exploit.py
 ```
 
-Script tự đo ảnh để dựng lại key, in ra `key from border: ELAPSE` rồi in các ứng viên
-Beaufort, trong đó dòng `ELAPSE` mang prefix `POCTF{`. Muốn chạy với thẻ đề của team khác:
+Đoạn kịch bản (script) sẽ tự động đo đạc hình ảnh để dựng lại chìa khoá, hiển thị dòng thông báo `key from border: ELAPSE` và in ra danh sách các ứng viên được giải bằng mã Beaufort, trong đó phiên bản dùng `ELAPSE` sẽ mang tiền tố chuẩn `POCTF{`. Nếu muốn giải mã một đoạn ciphertext của đội khác, chỉ cần chạy:
 
 ```bash
 python exploit.py files/letter.png "PXYWN{...}"

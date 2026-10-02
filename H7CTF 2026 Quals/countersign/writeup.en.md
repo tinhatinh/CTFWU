@@ -11,9 +11,9 @@
 `note.txt` describes a 4-command protocol, one command per line:
 
 ```
-GET            stream image chương trình của instance này ra hex
-NONCE          nonce của instance
-MINT <hex>     stamp debug cho tối đa 16 byte
+GET            stream program image of this instance as hex
+NONCE          instance's nonce
+MINT <hex>     debug stamp for at most 16 bytes
 RUN <hex>      đưa vào core 24 byte input, in ra những gì core nhả ra
 ```
 
@@ -29,7 +29,7 @@ functions, no anti-debug and no self-decryption; the difficulty is that it is st
 invented by reading the bodies.
 
 Function map (re-read several times; the places I originally mislabelled are listed under
-"Approaches Ruled Out"):
+"Error Analysis"):
 
 | Address | Role |
 |---|---|
@@ -59,7 +59,7 @@ This is the part I read wrong for the longest time. Its real shape:
 15c7:  test eax,eax
 15c9:  jne  15ea                          ; ret == 1 -> "denied"
 15cb:  cmp BYTE PTR [rdi+0x208],0
-15d2:  je   15ea                          ; không edge nào -> "denied"
+15d2:  je   15ea                          ; no edges -> \"denied\"
 15d4:  ... call 1d50                      ; emit -> tag kế tiếp
 15e0:  sub r13d,1 ; jne 1553              ; tối đa 0x30d40 = 200000 bước
 ```
@@ -104,7 +104,7 @@ bpl = (rec->sel_reg == 0xff) ? 0xff
 for (i = 0; i < rec->k; i++) {
     if (e[i].sel != bpl) continue;
     if (stamp6(tag || target || bpl || tweak) != (e[i].sig_lo, e[i].sig_hi)) continue;
-    return e[i].target;                 // chỉ đi trên đường CHỨNG MINH được
+    return e[i].target;                 // only walks paths that can be PROVED
 }
 return rec->dflt;                       // luôn trỏ về "deny sink"
 ```
@@ -140,28 +140,6 @@ Boot `entry=30137`, 40 records, 129 edges. Classified by payload length:
 * The winning record: payload `0d 0e 0f` = GETFLAG, PRINT, HALT. Because `printflag` is checked before
   `ret`, the HALT does not matter.
 * The deny sink: payload `0f` = HALT. Every other record has a `dflt` pointing back to it.
-
-## Approaches Ruled Out
-
-Before settling, these channels were checked and eliminated (full log in `notes.md`). These are the places I
-read wrong, and every time the wrong conclusion looked very solid:
-
-1. `emit` prints the flag when `next == 0`, and no edge has `nx == 0`, so the challenge is unsatisfiable.
-   `emit` prints nothing at all; the print condition is opcode 14 in the payload. The entire "unsatisfiable"
-   conclusion was built on this misreading.
-2. Ops 3/4/5 take `rD = code[pc+2]`. It is `rD = code[pc+1]` for every op 2..8.
-3. `ROL`/`SHR` use a register index as the shift amount. The second operand is a constant.
-4. A 32-u32 register file, cleared on every step. It is 8 u32, cleared once before the loop
-   (the `rep stosd` is outside).
-5. There is a "node 31762" and a hidden `alt_id` at `rec+0x20a` that never reaches the wire. That
-   field is `dflt`, which sits on the wire at offset 4.
-6. The image is always 3076 bytes. The length varies per instance: 2998 / 3063 / 3076 / 3089.
-7. An instance restart loses state. There is no restart. State changes per
-   connection, and that is deliberate on the challenge's part.
-8. Unicorn was needed to get ground truth. More than an hour was poured into PLT trampolines, stack
-   canary, `FS_BASE`; afterwards a closer read of the disassembly turned out to be enough.
-9. The service answers `route N step M bad stampslot`, `ok <hex>`, `no route`, image 145 KB
-   (report from a sub-agent). None of those strings exists in the binary; a string `grep` rules them out immediately.
 
 ## Exploit Chain
 
@@ -231,7 +209,7 @@ $ python solve_live.py
 ```
 exploit.py            standalone: connect, GET, probe MINT, solve, RUN
 flag.txt
-analysis/core.py      mô hình VM + emit + run (đã đối chiếu tung lenh)
+analysis/core.py      VM model + emit + run (cross-checked every instruction)
 analysis/back.py      tim duong nguoc
 analysis/records.py   parse image
 analysis/session.py   client mot ket noi
@@ -241,3 +219,4 @@ analysis/img_live.bin, analysis/valid_live.json
 analysis/cs.asm       objdump -d
 analysis/unpacked/    binary goc (khong bao gio sua)
 ```
+

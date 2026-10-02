@@ -1,97 +1,93 @@
 # Kick the CAN — Hardware (Medium)
 
-**Flag:** `H7CTF{6360cbb3-73fc-4ba5-a9e6-0229a3b1a008}` · 125 pts · H7TEX 2026
-**Target:** `https://web-5c6688f7ad7feac6.web.h7tex.com` · Artifact: `/capture.log` (132 frame candump, 5248 byte)
+**Flag:** `H7CTF{6360cbb3-73fc-4ba5-a9e6-0229a3b1a008}`
+**Mục tiêu:** `https://web-5c6688f7ad7feac6.web.h7tex.com` 
+**File cung cấp:** `/capture.log` (File log 132 khung tin (frame) candump, dung lượng 5248 byte).
 
 ## Đề bài
 
-Một bản ghi CAN bus lấy từ cổng OBD-II của xe đang vào xưởng. Phần lớn là engine gossip, nhưng có hai
-thiết bị nói chuyện riêng với nhau và một bên nói quá nhiều. Việc phải làm: recover thứ mà ECU đã trả ra.
+Hệ thống cung cấp một bản ghi luồng dữ liệu mạng CAN bus được chọc xuất từ cổng OBD-II của một chiếc xe ô tô đang nằm trong xưởng dịch vụ. Phần lớn thông tin trong bản ghi chỉ là những tiếng "lầm bầm" vô nghĩa của động cơ (engine gossip). Nhưng lẫn trong mớ hỗn độn đó, có hai thiết bị (ECU) đang lén lút trò chuyện riêng với nhau, và một bên thì lắm mồm nói hơi nhiều. 
+Nhiệm vụ của người chơi là: Phục dựng lại thứ dữ liệu mà khối ECU đó đã phun ra.
 
 ## Phân tích ban đầu
 
-Trang chủ là `Python SimpleHTTP/0.6` chỉ liệt kê một file duy nhất:
+Mặt tiền trang chủ khá thô sơ (chạy bằng `Python SimpleHTTP/0.6`), chưng ra một file duy nhất:
 
-```
-file: capture.log (SocketCAN candump log: (timestamp) can0 ID#DATA)
-Read it with candump/can-utils, Wireshark (SocketCAN), or python-can.
-```
-
-Đếm tần suất CAN ID:
-
-```
-0C9 158 1A0 1F1 244 2C0 316 3B0   -> mỗi ID hàng chục frame, payload ngắn, vô cấu trúc
-7E0                               -> 4 frame
-7E8                               -> 8 frame
+```text
+file: capture.log (SocketCAN candump log: định dạng (timestamp) can0 ID#DATA)
+Gợi ý: Hãy đọc nó bằng công cụ candump/can-utils, Wireshark (chuẩn SocketCAN), hoặc thư viện python-can.
 ```
 
-`0x7E0`/`0x7E8` là cặp request/response chuẩn của diagnostic UDS trên nền CAN, chuyên chở bởi ISO-TP
-(ISO 15765-2). Tám ID còn lại là traffic định kỳ của động cơ, không có nhịp hỏi-đáp.
+Đo tần suất xuất hiện của các mã định danh CAN ID:
 
-## Các hướng đã loại
+```text
+Nhóm mã: 0C9, 158, 1A0, 1F1, 244, 2C0, 316, 3B0 -> Mỗi ID này xả ra hàng chục khung tin, payload (dữ liệu thịt) cực ngắn và lộn xộn, vô cấu trúc.
+Mã 7E0 -> Xả 4 khung tin.
+Mã 7E8 -> Xả 8 khung tin.
+```
 
-1. Cờ nằm trong đám traffic powertrain. `0C9 158 1A0 1F1 244 2C0 316 3B0` chiếm gần hết log, payload
-   ngắn và vô cấu trúc; chỉ `0x7E0`/`0x7E8` là có cặp request/response.
-2. Đọc log bằng `candump`/can-utils/Wireshark/python-can. Host không có công cụ nào trong số đó. Log
-   132 dòng nên tự viết bộ reassemble bằng Python chuẩn là nhanh nhất.
+Bắt bệnh lập tức: Cặp mã `0x7E0` / `0x7E8` chính là bộ mặt kinh điển của giao thức chẩn đoán lỗi xe hơi UDS (Unified Diagnostic Services) hoạt động trên nền mạng CAN. Luồng giao tiếp này được chuyên chở bởi giao thức ISO-TP (ISO 15765-2). Tám mã ID ồn ào còn lại chỉ là nhịp tim định kỳ của khối động cơ, không hề mang tính chất hỏi-đáp.
 
 ## Chuỗi khai thác
 
-**Bước 1 - Gộp lại các thông điệp ISO-TP.** 4 bit đầu của byte đầu tiên là PCI: `0` Single Frame,
-`1` First Frame, `2` Consecutive Frame. First Frame cho biết tổng độ dài (`0x102E` → 46 byte), mỗi CF
-đóng góp 7 byte.
+**Bước 1 - Khâu vá các thông điệp ISO-TP.** 
+Theo chuẩn ISO-TP, 4 bit đầu tiên của byte dữ liệu số 0 chính là cờ PCI (Protocol Control Information): 
+Cờ `0`: Gói tin đơn (Single Frame), cờ `1`: Gói tin mở màn (First Frame), cờ `2`: Gói tin nối tiếp (Consecutive Frame). 
+Gói tin mở màn (First Frame) sẽ gánh luôn trọng trách khai báo tổng độ dài khối thông điệp (ví dụ `0x102E` chỉ định khối dài 46 byte). Mỗi gói Consecutive Frame (CF) theo sau sẽ gùi thêm được 7 byte dữ liệu thịt.
 
-Chuỗi đáng chú ý nhất, tất cả trên `0x7E8`:
+Chuỗi giao tiếp đắt giá nhất, toàn bộ dội về từ mã `0x7E8`:
 
+```text
+7E8#102E 62 F1 A0 48 37 43   -> Cờ 1 (First Frame), khai báo độ dài total = 46 byte
+7E8#21 54 46 7B 36 33 36 30   -> Cờ 2 (CF 1)
+7E8#22 63 62 62 33 2D 37 33   -> Cờ 2 (CF 2)
+7E8#23 66 63 2D 34 62 61 35   -> Cờ 2 (CF 3)
+7E8#24 2D 61 39 65 36 2D 30   -> Cờ 2 (CF 4)
+7E8#25 32 32 39 61 33 62 31   -> Cờ 2 (CF 5)
+7E8#26 61 30 30 38 7D 00 00   -> Cờ 2 (CF 6 - 2 byte 00 cuối chỉ là byte đệm lấp chỗ trống padding)
 ```
-7E8#102E62F1A0483743   FF, total = 46
-7E8#2154467B36333630   CF 1
-7E8#22636262332D3733   CF 2
-7E8#2366632D34626135   CF 3
-7E8#242D613965362D30   CF 4
-7E8#2532323961336231   CF 5
-7E8#26613030387D0000   CF 6 (2 byte cuối là padding)
-```
 
-Ghép lại được `62 F1 A0` + 43 byte dữ liệu. `62` là positive response của dịch vụ `22`
-(ReadDataByIdentifier), `F1A0` là DID. 43 byte còn lại là ASCII thuần:
+Gọt bỏ các mốc cờ PCI và khâu lại, ta thu được chuỗi nguyên thuỷ: `62 F1 A0` nối theo sau là 43 byte dữ liệu. 
+Bóc tách: `62` là mã phản hồi chấp thuận (positive response) của dịch vụ `22` (ReadDataByIdentifier - Đọc dữ liệu theo ID). `F1A0` chính là mã định danh dữ liệu (DID). 43 byte đi kèm phía sau là một chuỗi văn bản ASCII thuần khiết:
 
-```
+```text
 H7CTF{6360cbb3-73fc-4ba5-a9e6-0229a3b1a008}
 ```
 
-**Bước 2 - Dựng lại toàn bộ phiên chẩn đoán,** để chắc chắn đây là chỗ leak chứ không phải một chuỗi
-ASCII tình cờ:
+**Bước 2 - Phục dựng và đối chiếu toàn cảnh phiên chẩn đoán.** 
+Để không trở thành kẻ điếc ăn mộng (nhằm đảm bảo đây thực sự là lỗ hổng lấy cờ chứ không phải một chuỗi ASCII tình cờ), ta rọi đèn vào toàn bộ cuộc trò chuyện:
 
-| Hướng | Message | Dịch |
+| Chiều | Khung tin (Message) | Lời dịch |
 | --- | --- | --- |
-| `7E0 →` | `10 03` | DiagnosticSessionControl: bật extended session |
-| `← 7E8` | `50 03 0032 01F4` | Positive, P2=50 ms, P2*=5000 ms |
-| `7E0 →` | `27 01` | SecurityAccess: xin seed |
-| `← 7E8` | `67 01 470C3712` | Positive, seed `47 0C 37 12` |
-| `7E0 →` | `27 02 1D566D48` | SecurityAccess: gửi key |
-| `← 7E8` | `67 02` | Positive: đã mở khoá |
-| `7E0 →` | `22 F1A0` | ReadDataByIdentifier DID 0xF1A0 |
-| `← 7E8` | `62 F1A0 <43 byte>` | Flag |
+| `7E0 →` | `10 03` | Máy quét gửi lệnh (DiagnosticSessionControl): Ép xe nhảy vào phiên chẩn đoán mở rộng (extended session). |
+| `← 7E8` | `50 03 0032 01F4` | Xe ngoan ngoãn chấp thuận (Positive), cài đặt hẹn giờ P2=50 ms, P2*=5000 ms. |
+| `7E0 →` | `27 01` | Máy quét gửi lệnh (SecurityAccess): "Ê, cho xin hạt giống (seed) bảo mật". |
+| `← 7E8` | `67 01 47 0C 37 12` | Xe nhả seed: `47 0C 37 12`. |
+| `7E0 →` | `27 02 1D 56 6D 48` | Máy quét giải seed, ném ngược chìa khoá (key): `1D 56 6D 48`. |
+| `← 7E8` | `67 02` | Xe báo Positive: "Ổ khoá đã bung". |
+| `7E0 →` | `22 F1 A0` | Máy quét ra lệnh: Cho đọc dữ liệu tại DID `0xF1A0`. |
+| `← 7E8` | `62 F1 A0 <43 byte>` | Xe ói ra cờ. |
 
-Bên hỏi vào extended session, vượt SecurityAccess bằng cặp seed/key `47 0C 37 12` / `1D566D48`, rồi
-mới đọc DID. `0xF1A0` thường là mã phần cứng của ECU; ở đây nó trả về cờ.
+Cuộc hội thoại quá rành mạch: Máy chẩn đoán ép xe vào phiên mở rộng, vượt ải SecurityAccess bằng chiêu giải bài toán seed/key (`47 0C 37 12` / `1D566D48`), sau đó đàng hoàng ra lệnh đọc bộ mã DID. Trong thế giới thực, DID `0xF1A0` thường dùng để cất giữ mã thông số phần cứng của ECU; còn ở cái xưởng xe chết tiệt này, nó nôn ra cờ.
 
-**Bước 3 - Chạy lại.** `solve.py` tải log, parse candump, reassemble ISO-TP theo từng CAN ID, tìm UDS
-`0x62` và regex `H7CTF\{[^}\n]*\}` trên chính byte đã ghép:
+**Bước 3 - Viết công cụ cày tự động.** 
+Kịch bản `solve.py` được lập trình để hút thẳng file log, mổ xẻ candump, vá ráp chuẩn xác giao thức ISO-TP theo từng ID, lùng sục mã UDS `0x62` và vớt cờ bằng biểu thức regex `H7CTF\{[^}\n]*\}` ngay trên khối byte thành phẩm:
 
-```
+```bash
 python solve.py --url https://web-5c6688f7ad7feac6.web.h7tex.com/capture.log
+```
 
-[*] 132 dòng log -> 132 frame hợp lệ
-[*] CAN 0x7E0: 4 thông điệp ISO-TP hoàn chỉnh
-[*] CAN 0x7E8: 4 thông điệp ISO-TP hoàn chỉnh
+Log thực thi:
+```text
+[*] Kéo 132 dòng log -> Khớp 132 khung tin hợp lệ
+[*] Nhóm CAN 0x7E0: Vá được 4 thông điệp ISO-TP hoàn chỉnh
+[*] Nhóm CAN 0x7E8: Vá được 4 thông điệp ISO-TP hoàn chỉnh
 
-[+] 0x7E8 msg#3: RDBT DID=0xF1A0, 43 byte dữ liệu
-    ascii: b'H7CTF{6360cbb3-73fc-4ba5-a9e6-0229a3b1a008}'
+[+] Ở dòng CAN 0x7E8 thông điệp số 3: RDBT (Đọc dữ liệu DID) tại mã 0xF1A0, túm được 43 byte dữ liệu
+    Dịch ra ASCII: b'H7CTF{6360cbb3-73fc-4ba5-a9e6-0229a3b1a008}'
 ```
 
 ## Flag
-```
+```text
 H7CTF{6360cbb3-73fc-4ba5-a9e6-0229a3b1a008}
 ```

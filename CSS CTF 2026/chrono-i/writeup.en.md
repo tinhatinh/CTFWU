@@ -32,21 +32,6 @@ message timestamp with the separators removed: `2026-09-21 14:35:07`. When the c
 time is always the key" it means it literally: the key is that timestamp, the cipher is a
 numeric Vigenère (Gronsfeld) with period 14.
 
-## Approaches Ruled Out
-
-Before settling on this, these channels were eliminated (full log in `notes.md`):
-
-1. **Single-alphabet substitution**: the `S` at position 2 and 3 encrypts to `U` then `I`, which
-   one alphabet cannot do. Ruled out.
-2. **Pure transposition**: the multiset of `ESUITO` differs from `CSSCTF`, and permuting never
-   changes a multiset. Ruled out.
-3. **Beaufort and its variant**: with the same crib, Beaufort needs key `6 10 12 10 12 19` and
-   the variant needs `24 0 24 20 0 17`; neither reads as anything time-related. Ruled out.
-4. **Other ways to derive a key from a timestamp**: epoch seconds (UTC, UTC+7, AEST, EDT),
-   cumulative digit sums, digit pairs, base 26, hex, each date/time field multiplied by its
-   index. 95 sources were tried and only the raw digit string of `20260921...` matches the crib.
-   All ruled out.
-
 ## Exploit Chain
 
 **Step 1 — Take the key from the message.** Drop every non-digit character:

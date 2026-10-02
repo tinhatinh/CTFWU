@@ -38,7 +38,7 @@ SELECT id FROM planets WHERE name = '<payload>'
   pg_policies, pg_foreign_*, pg_subscription, pg_largeobject, pg_statistic (stavalues 1..4) —
   quét bằng `position(chr(115)||chr(117)||chr(110)||chr(123) in ...)`, có control dương.
   `pg_db_role_setting`/`reloptions` từng "dương" chỉ vì array cast in ra `{...}`.
-* `pg_stat_activity` từng báo chứa `sun{` -> **positive giả**: query của chính mình. Phải
+* `pg_stat_activity` từng báo chứa `sun{` -> **positive giả**: query của chính user. Phải
   `pid<>pg_backend_pid()` + dựng pattern bằng `chr()`.
 * Không superuser, không `CREATE` trên schema public (PG15 revoke), `default_transaction_read_only=true`
   ở mức database, không cross-dump `postgres` db.
@@ -81,7 +81,7 @@ Bốn thứ đã làm hỏng các vòng đọc trước, đều là lỗi ở PH
   request timeout -> timeout đọc thành "không khớp" -> binary search sai im lặng (có lần nó báo
   cờ bắt đầu bằng `0` trong khi `^sun[{]` vẫn True).
 * Instance có nhiều replica: không được cache kết quả vào `/tmp` rồi đọc ở request sau (request
-  sau rơi container khác). Tệ hơn, `/tmp/.f` của chính mình chứa `sun{` nên `grep -rl` trả 2 kết
+  sau rơi container khác). Tệ hơn, `/tmp/.f` của chính user chứa `sun{` nên `grep -rl` trả 2 kết
   quả và mình có lúc đọc lại dữ liệu do mình viết ra. Hai path hợp lệ còn lại là **cùng một file**
   (`cmp -s` xác nhận true).
 * Suy case từ phủ định là sai: "`[d]` hoa-thường fail => chắc `D`" biến `d` thành `D` ngẫu nhiên

@@ -4,47 +4,40 @@
 
 ## Đề bài
 
-"VecNet makes use of AI embedding technologies to speed up your database needs. Get started
-today!" - `https://vec.web.2026.sunshinectf.games/`, không kèm file.
+> "VecNet makes use of AI embedding technologies to speed up your database needs. Get started today!" 
 
-Bài đi qua bốn lớp, mỗi lớp mở một khoá của lớp sau: `/.git` công khai trả lại một `config.php`
-đã bị revert, `config.php` cho credentials để đọc MailHog, MailHog cho tham số vec2text và đường
-dẫn tới `specs.7z`, còn Chroma trên cổng 8000 giữ ba record mà một trong số đó chỉ còn vector 768
-chiều. vec2text trả lại câu mô tả cấu trúc mật khẩu của archive, và mật khẩu được tìm bằng cách
-băm vào một hash có sẵn trong database.
+Mục tiêu tấn công là ứng dụng web tại `https://vec.web.2026.sunshinectf.games/`, không có bất kỳ file suorce nào được cung cấp.
 
-Phần còn lại của bề mặt bài (SQLi, SSRF, XSS) không có đường vào; các giả thuyết đã kiểm tra và
-loại nằm ở cuối bài.
+Thử thách này dẫn dắt người chơi qua một hành trình 4 lớp vỏ bọc, mỗi lớp lại mở ra chìa khoá cho lớp tiếp theo: Lỗ hổng rò rỉ thư mục `/.git` công khai giúp khôi phục tệp `config.php` đã bị tác giả revert (thu hồi). Từ `config.php`, ta có thông tin đăng nhập để tiếp cận hòm thư MailHog. Nội dung thư trong MailHog hé lộ thông số cấu hình model `vec2text` và đường link tải kho lưu trữ `specs.7z`. Cuối cùng, dịch vụ cơ sở dữ liệu vector Chroma chạy ngầm trên cổng 8000 chứa ba bản ghi (record), trong đó một bản ghi bị che giấu chữ nhưng lại để lộ nguyên vẹn vector 768 chiều. Công cụ `vec2text` sẽ giải mã vector này thành câu văn tiếng Anh mô tả luật tạo mật khẩu cho kho nén `specs.7z`. Mật khẩu thực sự được vét cạn siêu tốc nhờ việc đối chiếu mã băm (hash) SHA256 đã cho sẵn trong database.
+
+Đối với phần bề mặt còn lại (như SQLi, SSRF, XSS), không có bất kỳ ngõ ngách nào để khai thác. Danh sách các giả thuyết thất bại được tổng hợp ở cuối bài.
 
 ## Phân tích ban đầu
 
-```
-443   Apache/2.4.68 + PHP/8.2.33   docroot = repo Git, /.git public
-8025  MailHog web UI               chặn sau nginx Basic auth
-8000  GET /api/v2 -> {"nanosecond heartbeat": ...}   = Chroma
+Kiểm tra hạ tầng mạng cơ bản:
+```text
+443   Apache/2.4.68 + PHP/8.2.33   Thư mục gốc (docroot) chính là kho Git, hớ hênh phơi bày /.git
+8025  MailHog web UI               Bị chặn bởi cơ chế xác thực Basic Auth của nginx
+8000  GET /api/v2 -> {"nanosecond heartbeat": ...}   Đây chính là dịch vụ Chroma
 ```
 
-Cổng 8000 tìm được bằng cách quét cổng công khai của host. `paths.py` gọi thử `/api/v2` trên cả
-443/8025/8000; chỉ 8000 trả JSON heartbeat.
+Cổng 8000 được phát hiện thông qua kỹ thuật quét cổng (port scan) công khai. Công cụ `paths.py` gọi thử đường dẫn `/api/v2` đồng loạt trên cả ba cổng 443, 8025 và 8000; chỉ có duy nhất cổng 8000 phản hồi một chuỗi JSON nhịp tim (heartbeat) sống động.
 
 ## Chuỗi khai thác
 
-### Bước 1 - `/.git`: file đã revert vẫn còn object
+### Bước 1 - Phục hồi dữ liệu từ `/.git`
 
-Reflog (`/.git/logs/HEAD`) liệt kê đủ 5 SHA nên không phải đoán. `githist.py` là loose-object
-reader tối thiểu (zlib, `<type> <len>\0<content>`; tree entry `<mode> <name>\0<20-byte sha>`), đi
-lần lượt từng commit và in tree:
+Nhật ký reflog (`/.git/logs/HEAD`) điểm mặt gọi tên đầy đủ 5 mã băm SHA, loại bỏ yếu tố phải đoán mò. Sử dụng đoạn mã tự chế `githist.py` làm trình đọc đối tượng git thô (chạy zlib, áp dụng định dạng `<type> <len>\0<content>`; tree entry `<mode> <name>\0<20-byte sha>`), ta bóc tách từng commit và lần ra nhánh cấu trúc cây thư mục (tree):
 
-```
+```text
 3e02a92  initial site deploy
 517ac72  add embed preview endpoint
-c3cd120  add internal service config          <- config.php
-130e195  REVERT: do not commit secrets        <- xoá file, thêm .gitignore
-e6a0074  add htaccess                         <- HEAD
+c3cd120  add internal service config          <- Tệp config.php được tạo ở đây
+130e195  REVERT: do not commit secrets        <- Tác giả nhận ra sai lầm, xoá file và giấu vào .gitignore
+e6a0074  add htaccess                         <- HEAD hiện tại
 ```
 
-`git rm` chỉ xoá khỏi tree; blob cũ vẫn nằm ở `.git/objects/c3/...` và Apache phục vụ thư mục đó
-như file tĩnh:
+Lệnh `git rm` chỉ có tác dụng cắt bỏ tệp khỏi cây cấu trúc hiện hành; phần thân (blob) cũ vẫn an toạ tại đường dẫn `.git/objects/c3/...`. Máy chủ Apache hồn nhiên phục vụ phân vùng này như một tệp tĩnh:
 
 ```php
 define('MAIL_ADMIN_URL',  'http://127.0.0.1:8025');
@@ -53,142 +46,118 @@ define('MAIL_ADMIN_PASS', 'Emb3dPass2026!');
 define('INTERNAL_API_KEY', 'vsk_live_aX92kLmNpQrStUvWxYz');
 ```
 
-`INTERNAL_API_KEY` không dùng được việc gì. Chroma ở đây xác thực bằng HTTP Basic, và key này
-không làm thay đổi phản hồi của bất kỳ route nào trong 626 shape đã quét.
+Khoá `INTERNAL_API_KEY` hoàn toàn vô dụng. Dịch vụ Chroma tại đây xác thực trực tiếp thông qua HTTP Basic Auth, và khoá này không tạo ra bất kỳ khác biệt nào trong các phản hồi của hệ thống.
 
-### Bước 2 - MailHog cho tham số, không cho cờ
+### Bước 2 - Manh mối từ hòm thư MailHog
 
-`GET http://...:8025/api/v2/messages` với Basic auth `vecadmin:Emb3dPass2026!` trả hết mailbox.
-Ba thư, không có cờ, nhưng có hai chi tiết:
+Sử dụng cờ lê `vecadmin:Emb3dPass2026!`, gọi `GET http://...:8025/api/v2/messages` mở toang toàn bộ hòm thư. Trong 3 bức thư nội bộ, không có cờ nào lộ diện, nhưng hai bức thư lại chứa những "bản đồ kho báu":
 
-* Greg gửi Mike: "Here are the vec2text specifications you were asking for earlier:
-  num_steps=4, sequence_beam_width=5", kèm link `http://...:8025/files/specs.7z`.
-* Greg gửi Steve: "our ChromaDB database is not exposed to the open Internet, and is only
-  accessible on our local servers, served with proper authentication to our web interface". Câu
-  này đúng theo nghĩa đen, Chroma không expose ra Internet; nó nằm ở cổng 8000 của cùng host.
+* Greg gửi cho Mike: "Here are the vec2text specifications you were asking for earlier: `num_steps=4, sequence_beam_width=5`", đính kèm link tải `http://...:8025/files/specs.7z`.
+* Greg trấn an Steve: "our ChromaDB database is not exposed to the open Internet, and is only accessible on our local servers, served with proper authentication to our web interface". Lời khẳng định này mang nghĩa đen tuyệt đối: cơ sở dữ liệu Chroma không được mở ra ngoài internet, mà nó đang nằm chình ình ở cổng 8000 của chính máy chủ đó.
 
-### Bước 3 - `fetch.php` và `specs.7z`
+### Bước 3 - Lấy file `specs.7z` qua lỗ hổng Local Fetch
 
+Mã nguồn xử lý tệp:
 ```php
 const ALLOWED_URL = 'http://localhost/files/specs.7z';
 if (!isset($_GET['url']) || !hash_equals(ALLOWED_URL, $_GET['url'])) fail_request(403, ...);
 readfile('/var/www/html/files/specs.7z');
 ```
 
-Chỉ nhận GET, chỉ nhận đúng một giá trị `url`, và không phát request nào ra ngoài. Thứ lấy được là
-archive:
+Kịch bản rất bảo thủ: Chỉ chấp nhận GET request, ép cứng đúng một giá trị tham số `url`, và không gửi bất kỳ request nào ra ngoài (loại trừ SSRF). Thứ ta tải về được là một tệp nén mật mã:
 
+```text
+Method = LZMA2:12 7zAES     1 thành viên: flag.txt, kích thước 34 byte
 ```
-Method = LZMA2:12 7zAES     1 member: flag.txt, 34 byte
-```
 
-Danh sách file trong archive không bị mã hoá nên `7z l -slt` cho biết trước độ dài cờ. Toàn bộ
-credential có trong tay (`Emb3dPass2026!`, `vsk_live_...`, `sunshinectf8_`, sha256 có sẵn) đều trả
-"Wrong password".
+Bảng danh sách nội dung bên trong tệp nén không bị che lấp, nên lệnh `7z l -slt` tiết lộ chính xác chiều dài của cờ. Đáng tiếc là toàn bộ kho từ khoá thu thập được (`Emb3dPass2026!`, `vsk_live_...`, `sunshinectf8_`, và một chuỗi băm sha256) khi thử nghiệm đều va phải thông báo "Wrong password".
 
-### Bước 4 - Chroma: dựng lại đường đi của route
+### Bước 4 - Dò dẫm trong bóng tối Chroma
 
-`GET /api/v2/collections` trả
+Thử gọi `GET /api/v2/collections` nhận về thông báo cụt lủn:
 
 ```json
 {"error":"route not allowed"}
 ```
 
-giống hệt 625 route vô nghĩa khác, nên dễ đọc nhầm thành "cần authentication đặc biệt". Chroma
-1.x không có route đó; `/api/v2/collections` là shape của v1, còn bản 1.x theo tenant. Bảng route
-lấy từ wheel (`chromadb/server/fastapi/__init__.py`, tải bằng `pip download chromadb==1.0.0
---no-deps` chỉ để đọc):
+Phản ứng này y hệt 625 định dạng route rác khác, rất dễ gây ảo giác rằng "cần quyền authentication nâng cao". Sự thật là Chroma phiên bản 1.x không hề có route đó; `/api/v2/collections` thuộc về định dạng của bản Chroma v1 cũ, trong khi phiên bản 1.x đã chuyển sang mô hình tổ chức theo người dùng (tenant). Bảng danh sách route chuẩn được trích xuất thẳng từ tệp nguồn wheel của Chroma (`chromadb/server/fastapi/__init__.py`, lấy về qua lệnh `pip download chromadb==1.0.0 --no-deps`):
 
-```
+```text
 /api/v2/auth/identity
 /api/v2/tenants/{tenant}/databases/{database}/collections
 /api/v2/tenants/{tenant}/databases/{database}/collections/{uuid}/get     POST
 ```
 
-`auth/identity` nằm trong nhóm route được phép và trả luôn tên tenant với database:
+Endpoint `auth/identity` thuộc danh sách công khai, nó khai báo luôn tên tenant và tên cơ sở dữ liệu mặc định:
 
 ```json
 {"user_id":"","tenant":"default_tenant","databases":["default_database"]}
 ```
 
-Ghép lại:
+Ráp các mảnh lại với nhau:
 
-```
+```text
 GET  /api/v2/tenants/default_tenant/databases/default_database/collections
  -> [{"id":"455b419b-...","name":"VecNetDB","dimension":768,
       "configuration_json":{...,"embedding_function":null}, ...}]
 
-POST /api/v2/tenants/default_tenant/databases/default_database
-     /collections/455b419b-.../get
-     {"include":["metadatas","documents","embeddings","uris"]}
+POST /api/v2/tenants/default_tenant/databases/default_database/collections/455b419b-.../get
+      {"include":["metadatas","documents","embeddings","uris"]}
 ```
 
-Hai chỗ phải đúng: path dùng UUID (đặt tên `VecNetDB` vào vẫn bị `route not allowed`), và `include`
-chỉ nhận năm khoá; gọi sai thì server trả 422 liệt kê luôn các giá trị hợp lệ
-(`distances, documents, embeddings, metadatas, uris`).
+Hai nguyên tắc ngặt nghèo cần vượt qua: Đường dẫn bắt buộc phải dùng định danh UUID (nếu đưa thẳng tên `VecNetDB` vào sẽ ăn lỗi `route not allowed`), và tham số `include` chỉ duyệt qua 5 khoá giới hạn; nếu gọi sai tên khoá, server sẽ chửi mắng bằng mã lỗi 422 và đọc to luôn đáp án đúng (`distances, documents, embeddings, metadatas, uris`).
 
-Nội dung collection:
+Hàng về, cơ sở dữ liệu mở toang:
 
-| id | type | document |
+| ID | Thể loại | Nội dung Document |
 | --- | --- | --- |
 | `magic_string` | plaintext | `sunshinectf8_` |
 | `user_hash_sha256` | plaintext | `d8dd241199d2617765d7613fdd1df5358297b55f258647fe463de586bbfe3ebf` |
-| `user_password_requirements` | embedding_only | `null`, vector 768 chiều |
+| `user_password_requirements` | embedding_only | `null` (Bị xoá chữ), nhưng vẫn nguyên vẹn một vector 768 chiều |
 
-Hai record plaintext không mở được archive. Record bị giấu text có `embedding_fn` là
-`jxm/gtr__nq__32`, đúng checkpoint mà vec2text nạp cho đường `gtr-base`, nên bộ tham số trong thư
-của Greg dùng được ngay.
+Hai bản ghi chữ nổi (plaintext) không thể mở khoá archive. Điều may mắn là bản ghi ẩn chữ có mang thông tin `embedding_fn` là `jxm/gtr__nq__32` – khớp chính xác với checkpoint mô hình mà phần mềm vec2text cần dùng cho gốc `gtr-base`. Bộ tham số trong thư của Greg đã đến lúc toả sáng.
 
-### Bước 5 - vec2text
+### Bước 5 - Triệu hồi vec2text giải ngược mô hình
 
-`pip install vec2text sentence-transformers` trên Windows cần hai vá, cả hai do lệch phiên bản:
+Khâu chuẩn bị gian nan: Việc cài đặt `pip install vec2text sentence-transformers` trên Windows đòi hỏi hai bản vá dị biệt do xung đột thư viện:
 
-* `vec2text/__init__.py` import `experiments`, mà file này `import resource` (chỉ có trên POSIX).
-  Stub `sys.modules["resource"]` trước khi import.
-* vec2text pin `low_cpu_mem_usage=True`; transformers 5 khởi tạo model trong `init_empty_weights()`
-  nên default device thành `meta`, rồi `InversionModel.__init__` lại nạp một T5 thật từ trong
-  context đó và `check_and_set_device_map()` raise. Lùi về `transformers==4.53.2` +
-  `sentence-transformers<4`.
+* Code gốc `vec2text/__init__.py` vô tình nạp một file gọi thư viện `resource` (chỉ độc quyền trên nền tảng POSIX/Linux). Cách giải quyết: Dùng thủ thuật stub chặn `sys.modules["resource"]` trước khi import.
+* Công cụ `vec2text` bị ghim cứng cờ `low_cpu_mem_usage=True`; trong khi đó bản `transformers 5` khởi tạo đồ thị model bằng hàm `init_empty_weights()` ép thiết bị ảo (default device) thành `meta`. Oái oăm thay, class `InversionModel.__init__` lại hì hục nhồi một mô hình T5 thật vào bên trong bối cảnh đó, khiến hàm `check_and_set_device_map()` phát nổ (raise exception). Phải hạ cấp: `transformers==4.53.2` + `sentence-transformers<4`.
 
-Control chạy trên vector đã biết đáp án:
+Khi chạy rà soát đối chiếu lên vector đã biết trước đáp án:
 
-```
-inversion(vec(magic_string)) -> '   suncf8_ '      cos 0.85
+```text
+inversion(vec(magic_string)) -> '   suncf8_ '      (hệ số Cosine 0.85)
 ```
 
-Lệch đúng kiểu vec2text hay gặp (mất `shin`, `t`), tức harness hoạt động. Với
-`user_password_requirements`:
+Kiểu rơi rớt ký tự (`shin`, `t`) là đặc sản của vec2text, nhưng nó khẳng định cỗ máy đã vận hành. Giải mã tiếp vector mật mã `user_password_requirements`:
 
-```
+```text
 The user's first and last initials, three special characters followed by the magic string.
+(Hai chữ cái đầu tên người dùng, 3 ký tự đặc biệt, theo sau là magic string).
 ```
 
-Có thêm một cách kiểm tra không phụ thuộc chất lượng câu trả lời: dùng chính GTR frozen bên trong
-corrector nhúng lại hypothesis rồi so cosine với vector đã lưu. cos = 0.9956, cao hơn hẳn control,
-nên câu trên được lấy nguyên văn.
+Để củng cố niềm tin không phụ thuộc vào con người, ta đo đạc lại: Dùng chính mô hình GTR đóng băng (frozen) nhúng ngược câu tiếng Anh kia thành vector mới rồi đo hệ số cosine với vector ban đầu. Kết quả: cos = 0.9956, vượt bậc so với hệ đối chiếu, khẳng định đây chính là câu văn gốc nguyên bản không sai một dấu phẩy.
 
-### Bước 6 - Mật khẩu: băm vào sha256 thay vì vào 7z
+### Bước 6 - Sinh mật khẩu: Sức mạnh mã băm thay vì vét cạn file nén
 
-Câu đó cho cấu trúc, không cho chữ:
+Câu văn giải mã không trao tận tay mật khẩu, mà nó trao công thức:
 
-```
-<initials><3 special characters>sunshinectf8_
+```text
+<2 chữ cái tên><3 ký tự đặc biệt>sunshinectf8_
 ```
 
-Không gian là `26*26` cặp chữ cái × 4 dạng hoa/thường × `32^3` ký tự đặc biệt = 88.6M tổ hợp. Thử
-trực tiếp lên archive thì mỗi lần hết ~0.2s, tức hơn 200 giờ. Nhưng collection đã cho sẵn
-`user_hash_sha256`, và một lần sha256 hết ~1µs: toàn bộ không gian chạy trong ~35 giây với 8
-process (`crack2.py`), chỉ ứng viên khớp digest mới được đưa sang 7z.
+Không gian vét cạn ước tính: `26*26` (cặp chữ cái) × 4 (kiểu viết hoa/thường) × `32^3` (ký tự đặc biệt) = 88.6 triệu tổ hợp. Nếu tấn công thô bạo thẳng vào file nén 7z, mỗi lượt cần tốn ~0.2 giây, tính ra mất hơn 200 giờ ròng rã. Tuy nhiên, nhờ cơ sở dữ liệu ban nãy đã hào phóng để lại chuỗi `user_hash_sha256`, và thời gian sinh một mã sha256 chỉ mất cỡ ~1µs, toàn bộ không gian tổ hợp khổng lồ này bị phá tan tành chỉ trong ~35 giây nhờ chia tải (multiprocessing) 8 luồng (`crack2.py`).
 
-```
-[+] GR$*#sunshinectf8_
+```text
+[+] Mật khẩu trùng khớp: GR$*#sunshinectf8_
 ```
 
-`GR` là tên viết tắt của Greg Roberts, ba ký tự đặc biệt là `$*#`.
+`GR` hiển nhiên là cụm viết tắt tên của anh chàng Greg Roberts trong nhóm. Ba ký tự đặc biệt đi kèm là `$*#`.
 
-### Bước 7 - Mở archive
+### Bước 7 - Mở kho báu
 
-```
+```bash
 $ python -c "subprocess.run(['7z','x','-y','-pGR$*#sunshinectf8_','-oanalysis/unpacked','files/specs.7z'])"
 Everything is Ok
 Size: 34
@@ -202,23 +171,23 @@ sun{k33p_your_emb3ddings_secur3!}
 sun{k33p_your_emb3ddings_secur3!}
 ```
 
-## Các hướng đã loại
+## Khám nghiệm các giả thuyết đã chết (Rabbit Holes)
 
-| Hướng | Bằng chứng loại |
+| Giả thuyết | Nguyên nhân tử vong |
 | --- | --- |
-| SSRF qua `fetch.php` | `hash_equals` với một chuỗi cố định, GET-only, chỉ `readfile` file cục bộ |
-| IMAP/SMTP mailstore | có nhắc trong `index.html` nhưng cổng không mở ra ngoài |
-| Token auth cho Chroma | `INTERNAL_API_KEY` không đổi phản hồi của bất kỳ route nào trong 626 shape đã quét |
-| Đường `/api/v2/collections` | route của v1; 1.x trả `route not allowed` vì route không tồn tại |
-| Cờ nằm trong MailHog | đọc hết 3 thư, không có chuỗi `sun{` |
-| Mật khẩu là một credential có sẵn | 7z trả "Wrong password" với mọi ứng viên |
-| sentence-transformers để tạo vector đối chiếu | `jxm/gtr__nq__32` trên HF là checkpoint của vec2text chứ không phải ST model; đường này chết, nhưng corrector đã có sẵn embedder nên vẫn có oracle cosine |
+| Lỗi SSRF qua cổng `fetch.php` | Hệ thống kiểm tra chặt chẽ `hash_equals` với một chuỗi cố định tĩnh, chỉ nhận GET, và chỉ đọc tệp tin cục bộ qua lệnh `readfile` |
+| Hòm thư IMAP/SMTP mailstore | Có dấu hiệu chỉ điểm trong tệp `index.html` nhưng cổng không cho phép kết nối ngoại mạng |
+| Token uỷ quyền cho Chroma | Biến `INTERNAL_API_KEY` hoàn toàn vô dụng, không thay đổi phản ứng của 626 route API đã bị rà quét |
+| Route `/api/v2/collections` | Đây là bóng ma của phiên bản v1; bản Chroma 1.x thẳng thừng báo `route not allowed` vì endpoint này đã bị khai tử |
+| Cờ nằm rải rác trong MailHog | Đã cày xới nát 3 bức thư nội bộ, hoàn toàn vắng bóng từ khoá `sun{` |
+| Mật khẩu nằm trong số các mật khẩu nhặt được | Mọi ứng viên đều bị tiện ích 7z từ chối với thông báo "Wrong password" |
+| Sử dụng thư viện sentence-transformers để sinh vector đối chiếu | Mô hình `jxm/gtr__nq__32` trên HuggingFace là điểm neo dành riêng cho phần mềm vec2text chứ không phải là mô hình của ST (sentence-transformers); hướng đi này cụt lủn. May thay, khối sửa lỗi (corrector) đã tích hợp sẵn cơ chế nhúng (embedder) nội bộ nên ta vẫn tính toán được chỉ số cosine oracle |
 
-## Reproduce
+## Phục dựng (Reproduce)
 
+```bash
+python exploit.py            # Quét mã băm, thời gian ~40 giây, không đòi hỏi PyTorch
+python exploit.py --invert   # Buộc khởi chạy cỗ máy vec2text giải mã ngược, mất ~3 phút (do mô hình đã lưu vào bộ đệm cache)
 ```
-python exploit.py            # ~40s, không cần torch
-python exploit.py --invert   # chạy cả vec2text, ~3 phút (model đã cache)
-```
 
-Cả hai đường đều đã chạy lại trên instance sống sau khi lấy cờ và cho ra đúng cờ ở trên.
+Cả hai kịch bản đều đã được thử lửa trên môi trường máy chủ (instance) thật sau thời điểm thu được cờ, và đều tự động khôi phục hoàn hảo lá cờ được trình bày ở trên.

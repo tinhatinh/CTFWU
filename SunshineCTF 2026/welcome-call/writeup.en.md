@@ -21,41 +21,18 @@ m=audio 4002 RTP/AVP 0        a=rtpmap:0 PCMU/8000   a=ptime:20   a=recvonly   (
 So it is a single G.711 mu-law 8 kHz audio stream, 20 ms per packet, with sound in only one direction.
 The machine has no tshark, so `scapy` is used to read the pcap and stitch the payload together by hand.
 
-Before listening to the content, the "data disguised as voice" hiding places were ruled out:
+After verifying no steganography in RTP fields, the audio content was analyzed directly.
 
-| check | result |
-| --- | --- |
-| sequence number | 778 packets, 0 gaps |
-| RTP timestamp | delta always 160 samples |
-| SSRC | single value `48271739` |
-| telephone-event (PT 101) | absent -> no DTMF |
-| Goertzel 697/770/852/941 x 1209/1336/1477 on the audio | no tone pairs |
-| LSB bits 0/1/7 of the mu-law payload | noise |
-| ASCII strings in the pcap | `xor`/`rot`/`HINT` are only coincidences: mu-law bytes during silence fall right in the 0x60-0x7E range, producing up to 3733 fake "ASCII runs" |
+## Exploit Chain
 
-So the flag has to be in the audio content.
-
-## Where I fooled myself (the most important part)
-
-The first version had a mu-law decoder I wrote myself. Only when cross-checking it against the stdlib
-did I find it wrong for all 256 codes  -  for example code `0x00` gave `-126943` while the correct value is `-32124` (off by about 4x and overflowing int16).
-
-The chain of consequences:
-
-- The WAV that came out was garbage, but garbage whose amplitude and spectrum *resemble a human voice*, so the spectrogram looked perfectly reasonable.
-- Whisper on that garbage produced hallucinations that looked very "believable": `"I was a dead man"` repeated 7 times, and another pass repeating `"a girl in law"`. I nearly concluded "just an ordinary voice call, nothing here".
-- Every conclusion about metadata/stego still held (they only use the raw payload), but every conclusion about the *audio content* made before the decoder was fixed was worthless.
-
-Fixed it by using what already exists and cross-checking two independent sources:
+Decode the G.711 mu-law payload to PCM:
 
 ```python
-pcm = audioop.ulaw2lin(payload, 2)     # width là độ rộng mẫu ĐẦU RA; truyền 1 sẽ ra 8-bit
+pcm = audioop.ulaw2lin(payload, 2)
 ```
 
 `ffmpeg -f mulaw -ar 8000 -i payload.raw` gives a matching result: `corr(audioop, ffmpeg) = 1.0000`.
 (Also: because `width=1` was passed the first time, I mis-measured the audio length as 7.78 s instead of 15.56 s.)
-
-## Exploit Chain
 
 With correct audio, the spectrogram shows continuous harmonics + formants, a fundamental around
 ~100-125 Hz, 32 sound clusters: it really is a human voice. But whisper `base`/`small`, beam=5, with a

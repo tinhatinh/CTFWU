@@ -33,13 +33,13 @@
 ```
 
 - `user(id:"admin_612")` vẫn trả `null` dù admin đó **cùng team** với mình -> bộ kiểm tra quyền nằm ở resolver của `Query.user` (so khớp id của người gọi), còn `Team.members` không hề gọi lại phép kiểm tra đó khi chọn field.
-- Nonce trong cờ (`EB7ZOZUZT7FJHWR2`) trùng nonce trong session token của chính trang challenge -> đúng là cờ của team mình, không phải dữ liệu team khác.
+- Nonce trong cờ (`EB7ZOZUZT7FJHWR2`) trùng nonce trong session token của chính trang challenge -> đúng là cờ của team đó, không phải dữ liệu team khác.
 
 ## Root cause (ghi lại để dùng về sau)
 
-Với GraphQL, "shape of query" nghĩa là: quyền có thể được cài ở **resolver của một field gốc** (`Query.user`) và hoàn toàn vắng mặt trên **đường lồng** (`Query.me -> Team -> [User] -> privateNotes`). Vì vậy khi gặp mô hình "chỉ được xem chính mình", hãy liệt kê mọi đường đi tới cùng một field trong schema (đồ thị type graph) rồi thử từng đường, thay vì chỉ thử đúng endpoint mà mô tả field gợi ý. Kiểm tra theo field (graph-level) đáng tin hơn kiểm tra theo route.
+Với GraphQL, "shape of query" nghĩa là: quyền có thể được cài ở **resolver của một field gốc** (`Query.user`) và hoàn toàn vắng mặt trên **đường lồng** (`Query.me -> Team -> [User] -> privateNotes`). Vì vậy khi gặp mô hình "chỉ được xem chính user", hãy liệt kê mọi đường đi tới cùng một field trong schema (đồ thị type graph) rồi thử từng đường, thay vì chỉ thử đúng endpoint mà mô tả field gợi ý. Kiểm tra theo field (graph-level) đáng tin hơn kiểm tra theo route.
 
-Chi tiết gây nhiễu: đề đánh lạc hướng bằng "researchers meddling with each others' stuff" (gợi cross-team IDOR), nhưng cờ thật nằm ở tài khoản admin **của chính team mình**; cross-team vẫn bị chặn.
+Chi tiết gây nhiễu: đề đánh lạc hướng bằng "researchers meddling with each others' stuff" (gợi cross-team IDOR), nhưng cờ thật nằm ở tài khoản admin **của chính team đó**; cross-team vẫn bị chặn.
 
 ## Nộp flag
 

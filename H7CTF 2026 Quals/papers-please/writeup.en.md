@@ -40,12 +40,6 @@ The break is in `checkpoint`:
 
 `read(0, buf, 0x100)` with a `buf` of only 64 bytes and no canary: a plain stack overflow.
 
-## Approaches Ruled Out
-
-1. Format string through the name. The format string `"Access denied, %s. Turn back."` lives in `.rodata` and is `printf`'s fixed argument; the name typed by the user only feeds `%s`. Sending `%p`/`%n` gets printed verbatim, and neither reads nor writes the stack.
-2. Shellcode on the stack. NX is on.
-3. Leaking the base before attacking. `ET_EXEC`, no PIE: function addresses are absolute constants, there is nothing to leak.
-
 ## Exploit Chain
 
 **Step 1 - offset to the return address.** The buffer sits at `[rbp-0x40]` (64 bytes), the saved rbp at `[rbp]` (8 bytes), the return address at `[rbp+8]`. Offset = 64 + 8 = 72 bytes. `read` allows sending up to 256 bytes, so there is more than enough room.

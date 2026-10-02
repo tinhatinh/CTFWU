@@ -18,16 +18,6 @@ is purely to read the graph and find the shortest path.
 13 nodes, 20 edges, real weights. Small enough that reading it by eye and re-checking in code is
 enough.
 
-## Approaches Ruled Out
-
-1. **Stego in the PNG**: no surplus data, no embedded archive. Ruled out.
-2. **Inferring edges geometrically** (each weight label sits at the middle of its edge, so try every
-   node pair): noisy, and the two labels `7.5` and `8.5` matched no pair because the coordinates are
-   only estimates. Ruled out, switched to reading them directly.
-3. **A bend at the corner of the Earth**: at first glance `5.0` and `10.7` look like one polyline
-   BACONITE→PALLUS-XA. Zooming in shows they meet exactly on Earth's rim, i.e. they are two separate
-   edges, BACONITE-EARTH and EARTH-PALLUS-XA. Re-checked.
-
 ## Exploit Chain
 
 **Step 1 — Read all 20 edges.** The image was cut into four overlapping bands so that each dashed

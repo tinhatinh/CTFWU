@@ -1,24 +1,24 @@
 # Chrono I — Crypto (Beginner)
 
-**Flag:** `CSSCTF{every_second_hides_a_secret}` · **Files:** không có artifact, dữ kiện nằm trong thẻ đề
+**Flag:** `CSSCTF{every_second_hides_a_secret}`
+**Tài nguyên:** Không có tệp đính kèm. Dữ kiện phân tích được cung cấp trực tiếp trong văn bản mô tả của đề bài.
 
 ## Đề bài
 
-Đề cho một message và một ciphertext:
+Hệ thống cung cấp một thông điệp văn bản (message) và một bản mã (ciphertext) tương ứng:
 
 ```text
 Message:    2026-09-21 14:35:07 - "As always, The time is always the key to unlock it"
 Ciphertext: ESUITO{gwfvb_xejqnf_nimgt_b_whhrlv}
 ```
 
-Cờ có dạng `CSSCTF{...}`, nên sáu ký tự đầu của ciphertext tương ứng với `CSSCTF`.
-Đó là crib sẵn, không cần đoán.
+Dựa trên cấu trúc chuẩn của hệ thống, cờ (flag) luôn bắt đầu bằng định dạng `CSSCTF{...}`. Theo đó, sáu ký tự đầu tiên của ciphertext chắc chắn ánh xạ tương ứng với chuỗi `CSSCTF`. Thông tin này là một manh mối (crib) tường minh, không yêu cầu các kỹ thuật phán đoán.
 
 ## Phân tích ban đầu
 
-So crib theo từng vị trí:
+Thực hiện việc đối chiếu giá trị chênh lệch (shift) modulo 26 cho từng vị trí dựa trên manh mối đã có:
 
-| vị trí | plain | cipher | shift mod 26 |
+| Vị trí | Bản rõ (Plain) | Bản mã (Cipher) | Độ dịch (Shift) Modulo 26 |
 |---|---|---|---|
 | 1 | C | E | 2 |
 | 2 | S | U | 0 |
@@ -27,60 +27,48 @@ So crib theo từng vị trí:
 | 5 | T | O | 0 |
 | 6 | F | O | 9 |
 
-Dãy shift `2 0 2 6 0 9` chính là sáu chữ số đầu của `20260921143507`, tức cái
-message bỏ dấu phân cách: `2026-09-21 14:35:07`. Đề nói "the time is always the key"
-là nói đúng nghĩa đen: key là mốc thời gian, mã là Vigenère số (Gronsfeld), chu kỳ 14.
-
-## Các hướng đã loại
-
-Trước khi chốt đã loại các kênh sau (log đầy đủ ở `notes.md`):
-
-1. **Thay thế một bảng chữ**: chữ `S` ở vị trí 2 và 3 cho ra `U` rồi `I`, một bảng chữ
-   không làm được. Loại.
-2. **Hoán vị thuần**: đa thức của `ESUITO` khác hẳn `CSSCTF`, transpose không đổi đa thức. Loại.
-3. **Beaufort và variant**: với cùng crib, Beaufort đòi key `6 10 12 10 12 19`, variant đòi
-   `24 0 24 20 0 17`; không dãy nào đọc ra dữ kiện thời gian. Loại.
-4. **Các cách sinh key thời gian khác**: epoch giây (UTC, UTC+7, AEST, EDT), tổng chữ số
-   lũy tiến, ghép từng cặp chữ số, cơ số 26, hex, từng trường ngày-giờ nhân chỉ số.
-   95 nguồn được thử, chỉ dãy chữ số thô của `20260921...` khớp crib. Loại hết.
+Dãy độ dịch thu được là `2 0 2 6 0 9`. Đối chiếu chuỗi số này với dữ liệu đầu vào, có thể nhận thấy nó trùng khớp hoàn toàn với sáu chữ số đầu tiên của mốc thời gian trong message: `20260921143507` (loại bỏ các ký tự phân cách từ `2026-09-21 14:35:07`). Câu hướng dẫn "the time is always the key" có giá trị tham chiếu trực tiếp: khóa giải mã chính là chuỗi ký tự số của mốc thời gian, áp dụng trên hệ mã Vigenère dạng số (Mật mã Gronsfeld) với chu kỳ là 14.
 
 ## Chuỗi khai thác
 
-**Bước 1 - Lấy key từ message.** Bỏ mọi ký tự không phải số:
+**Bước 1 - Trích xuất khóa (Key) từ thông điệp.** 
+Sử dụng biểu thức chính quy để loại bỏ tất cả các ký tự phi số, giữ lại chuỗi số thuần túy làm khóa:
 
 ```python
-key = re.sub(r"\D", "", "2026-09-21 14:35:07")   # '20260921143507'
+key = re.sub(r"\D", "", "2026-09-21 14:35:07")   # Kết quả: '20260921143507'
 ```
 
-**Bước 2 - Xác nhận crib.** Dịch sáu ký tự đầu của ciphertext bằng sáu chữ số đầu:
+**Bước 2 - Xác thực bằng manh mối ban đầu (Crib).** 
+Thực hiện mã hóa thử sáu ký tự đầu tiên của bản rõ bằng sáu chữ số đầu của khóa để kiểm chứng mô hình:
 
-```
-CSSCTF -> ESUITO : shift [2, 0, 2, 6, 0, 9]   # khop key[0:6]
+```text
+CSSCTF -> ESUITO : Áp dụng độ dịch (shift) [2, 0, 2, 6, 0, 9]   # Khớp hoàn toàn với key[0:6]
 ```
 
-**Bước 3 - Giai ma phần thân, bộ đếm chỉ tiến trên chữ cái.** Nếu đếm cả `{` và `_`
-thì kết quả là rác, nên key chạy theo thứ tự chữ cái còn ký tự giữ nguyên:
+**Bước 3 - Giải mã toàn bộ bản mã.** 
+Thiết kế logic giải mã: Hệ số đếm (index) của khóa chỉ tiến lên khi gặp các ký tự thuộc bảng chữ cái. Các ký tự đặc biệt như `{`, `}`, và `_` sẽ được bỏ qua trong bước tính độ dịch và giữ nguyên trong kết quả cuối cùng. Việc áp dụng sai bộ đếm (bao gồm cả ký tự đặc biệt) sẽ dẫn đến giải mã lỗi.
 
 ```python
 for ch in text:
     if not ch.isalpha():
-        out.append(ch)          # giu nguyên '{', '}', '_'
+        out.append(ch)          # Bảo lưu nguyên vẹn các ký tự '{', '}', '_'
         continue
-    k = int(key[i % len(key)]); i += 1
+    k = int(key[i % len(key)])
+    i += 1
     base = 65 if ch.isupper() else 97
     out.append(chr((ord(ch) - base - k) % 26 + base))
 ```
 
-Ra `CSSCTF{every_second_hides_a_secret}`, đúng câu gợi ý của đề.
+Chạy toàn bộ bản mã qua kịch bản, hệ thống xuất ra chuỗi: `CSSCTF{every_second_hides_a_secret}`. Chuỗi kết quả có ngữ nghĩa hoàn chỉnh, phù hợp với gợi ý tổng thể của thử thách.
 
-**Bước 4 - Kiểm chứng.** Hai chiều đều khớp: mã hoá lại bản rõ bằng cùng key trả về
-đúng ciphertext gốc, và phần thân thuần `[a-z0-9_]*`. Thử phá ba chỗ (đổi một chữ cái
-cuối thành in hoa, sửa giờ trong message thành `15:35:07`, sửa `ESUITO` thành `XSUITO`)
-thì script dừng ở bước kiểm tra tương ứng, không còn là vòng lặp tự khẳng định.
+**Bước 4 - Khâu tự kiểm chứng (Verification).** 
+Quá trình thực thi có tính hai chiều đồng nhất: nếu thực hiện mã hóa lại bản rõ bằng chính khóa đó, hệ thống sẽ trả về đúng bản mã gốc ban đầu. Ngoài ra, phần thân của bản rõ tuân thủ chặt chẽ cấu trúc `[a-z0-9_]*`. Để khẳng định độ tin cậy của mã kịch bản, việc đưa vào các lỗi nhân tạo (như thay đổi một chữ cái thành in hoa, sửa đổi thông số giờ thành `15:35:07`, hoặc thay đổi manh mối `ESUITO` thành `XSUITO`) đều kích hoạt cơ chế báo lỗi của kịch bản, xác nhận rằng quy trình không hoạt động dựa trên cơ chế tự khớp mù quáng.
 
 ## Flag
 
-```
+Quá trình thực thi mã kịch bản tự động hóa:
+
+```bash
 $ python exploit.py
 1) key = chu so cua message : 20260921143507 (14 chu so)
 2) crib CSSCTF -> ESUITO : shift [2, 0, 2, 6, 0, 9]
@@ -92,8 +80,7 @@ $ python exploit.py
 FLAG: CSSCTF{every_second_hides_a_secret}
 ```
 
-## Reproduce
-
-```bash
-python exploit.py
+Kết quả:
+```text
+CSSCTF{every_second_hides_a_secret}
 ```

@@ -1,69 +1,53 @@
 # Suntrail — Misc (Medium)
 
-**Flag:** `sun{qwerty_sucks}` · **Files:** `files/suntrail.klc`, 419 byte ASCII, sha256 `abe7590751412fe5607bacd7bfc4a3131e5c108bf2eedbbe78d438e96dc8c6ff`
+**Flag:** `sun{qwerty_sucks}`
+**Files:** `files/suntrail.klc` (419 byte ASCII, sha256 `abe7590751412fe5607bacd7bfc4a3131e5c108bf2eedbbe78d438e96dc8c6ff`)
 
 ## Đề bài
 
-`im lost, but you can find the way!`
+> `im lost, but you can find the way!`
 
-Một file duy nhất, không có instance từ xa, không có hint cần mở. Tác giả oatzs.
+Đề bài chỉ cung cấp duy nhất một file mồ côi, không kèm theo dịch vụ (instance) từ xa nào để kết nối, và cũng không có bất kỳ gợi ý (hint) nào cần phải mở khoá. Bài do tác giả `oatzs` biên soạn.
 
 ## Phân tích ban đầu
 
-`.klc` là file nguồn của Microsoft Keyboard Layout Creator, không phải file license Kaspersky như
-tên gọi dễ gây nhầm. Đầu file là `KBD kbdusx "US"`, rồi khối `SHIFTSTATE`, rồi `ENDKBD`.
+Đừng để cái đuôi mở rộng đánh lừa, `.klc` không phải là tập tin bản quyền của phần mềm diệt virus Kaspersky như lầm tưởng. Nó thực chất là mã nguồn cấu hình của công cụ Microsoft Keyboard Layout Creator. Mở đầu tệp tin là dòng khai báo quen thuộc `KBD kbdusx "US"`, tiếp theo là khối định nghĩa `SHIFTSTATE` (trạng thái phím Shift), và chốt lại bằng từ khoá `ENDKBD`.
 
-Khối `LAYOUT` có 18 dòng tab-separated, mỗi dòng là một phím:
+Tâm điểm của file nằm ở khối `LAYOUT` với 18 dòng dữ liệu được phân cách bằng tab, mỗi dòng đại diện cho cấu hình của một phím bấm. Ví dụ:
 
-```
+```text
 10  Q  0  2192  0073  -1
 ```
 
-Theo thứ tự: mã scan, nhãn phím, trạng thái shift, ký tự unicode ở state 0, ký tự unicode ở state 1,
-và `-1`. Hai state không đối xứng:
+Thứ tự các cột mang ý nghĩa lần lượt là: mã quét phần cứng (scan code), nhãn hiệu phím (key label), trạng thái shift, ký tự mã hoá unicode khi ở trạng thái bình thường (state 0), ký tự unicode khi nhấn cùng shift (state 1), và một mã kết thúc `-1`. Điểm dị thường là hai trạng thái (state) này được thiết kế không hề đối xứng nhau:
 
-- state 0 chỉ dùng bốn giá trị: `U+2192` (mũi tên phải, 4 phím), `U+2196` (chéo lên, 4 phím),
-  `U+2198` (chéo xuống, 6 phím), `U+25A0` (ô đen, 1 phím ở H);
-- state 1 chỉ là chữ thường cùng `{`, `}`, `_`; `U+007B` nằm trên X, `U+007D` nằm trên H.
+- **State 0 (không nhấn phím bổ trợ):** Chỉ xoay quanh vỏn vẹn bốn giá trị điều hướng: `U+2192` (mũi tên hướng sang phải, xuất hiện trên 4 phím), `U+2196` (mũi tên chéo lên trên, trên 4 phím), `U+2198` (mũi tên chéo xuống dưới, trên 6 phím), và cuối cùng là `U+25A0` (biểu tượng một ô vuông đen huyền bí, chỉ cắm chốt duy nhất trên phím `H`).
+- **State 1 (nhấn phím bổ trợ):** Cung cấp các chữ cái in thường cùng với ba ký tự đặc biệt là dấu `{`, dấu `}`, và dấu gạch dưới `_`. Đáng chú ý, dấu mở ngoặc `U+007B` nằm gọn trên phím `X`, trong khi dấu đóng ngoặc `U+007D` lại chung nhà với biểu tượng ô đen trên phím `H`.
 
-Ô đen và dấu `}` cùng nằm trên H, nên H là đích. Mỗi phím do đó mang hai lớp: một hướng đi và một
-ký tự thu thập được.
-
-## Các hướng đã loại
-
-1. `.klc` là license key của Kaspersky: nội dung là ASCII theo đúng khuôn `KBD` / `SHIFTSTATE` /
-   `LAYOUT` / `ENDKBD`. Loại.
-2. Dữ liệu ẩn ở byte thừa hoặc khoảng trắng cuối dòng: file kết thúc bằng `ENDKBD\n`, LF thuần,
-   không dòng nào có trailing space hay tab, không có byte sau EOF. Loại.
-3. Cờ nằm thẳng trong file: triage báo 0 hit mẫu cờ; ký tự trong file chỉ là chữ thường và mũi tên.
-   Loại.
-
-Log từng nhánh ở `notes.md`.
+Vì ô vuông đen và dấu đóng ngoặc `}` cùng đóng đô trên phím `H`, logic chỉ ra rằng `H` chính là đích đến cuối cùng của mê cung. Cấu trúc này biến mỗi phím bấm thành một điểm nút chứa hai lớp thông tin xếp chồng: lớp thứ nhất là kim chỉ nam (hướng đi tiếp theo), và lớp thứ hai là viên gạch dữ liệu (ký tự thu thập được dọc đường).
 
 ## Chuỗi khai thác
 
-**Bước 1 - tách dữ liệu.** Parse 18 dòng `LAYOUT`, bỏ `SPACE` (mã scan `0x39`, hai state đều là dấu
-cách nên không mang gì). Xếp 17 phím còn lại thành ba hàng vật lý theo mã scan: top `Q W E R T`,
-home `A S D F G H`, bottom `Z X C V B N`.
+**Bước 1 - Lọc và cấu trúc dữ liệu.** 
+Việc đầu tiên là phân tích (parse) 18 dòng dữ liệu trong khối `LAYOUT`. Phím `SPACE` (mã quét `0x39`) bị loại bỏ không thương tiếc vì cả hai trạng thái của nó đều chỉ trả về dấu cách vô nghĩa. 17 phím còn lại được xếp ngay ngắn thành ba hàng vật lý theo đúng vị trí của chúng trên bàn phím QWERTY thông qua hệ thống mã quét: 
+- Hàng trên cùng (top): `Q W E R T`
+- Hàng giữa (home): `A S D F G H`
+- Hàng dưới (bottom): `Z X C V B N`
 
-**Bước 2 - xác định hình học bằng quét không gian nhỏ.** Bàn phím thật so le nên không đoán được
-mũi tên chéo tương ứng ô nào. `analysis/search_geometry.py` quét toàn bộ 8³ cách gán ba ký tự hướng
-vào tám ô láng giềng, đi thử từ mọi phím với mỗi cách gán, và giữ lại các đường cho ra chuỗi chứa cả
-`{` lẫn `}`. Lưới này không cho một nghiệm duy nhất: `analysis/geometry_search_results.txt` lưu 21
-đường, phần lớn là chuỗi cụt hoặc thiếu ký tự đầu. Bộ gán còn lại sau bước 3:
+**Bước 2 - Vẽ lại hình học không gian bằng sức mạnh cày cuốc (brute-force).** 
+Trên thực tế, các hàng phím cơ học được xếp sole với nhau chứ không thẳng hàng, khiến ta không thể đoán mò được "mũi tên chéo" sẽ chỉ chính xác vào phím nào. Để giải quyết, đoạn script `analysis/search_geometry.py` được tung vào cuộc. Nó quét cạn toàn bộ không gian tổ hợp 8³ (tương đương với các cách gán ba loại mũi tên hướng vào 8 ô liền kề xung quanh một phím). Với mỗi cách gán (bản đồ hình học), script sẽ xuất phát thử từ mọi phím, đi dọc theo các mũi tên chỉ dẫn, và ghi nhận lại những lộ trình sinh ra được một chuỗi ký tự chứa đủ cả dấu `{` lẫn dấu `}`. Tuy nhiên, hệ thống lưới toạ độ này không nhả ra một đáp án duy nhất: tệp `analysis/geometry_search_results.txt` hứng được tới 21 đường đi khác nhau, nhưng phần lớn đều là những chuỗi bị cụt ngủn hoặc rụng mất các ký tự mở đầu quan trọng. Bộ quy tắc ánh xạ toạ độ hợp lý nhất còn trụ lại sau vòng tinh tuyển này là:
 
+```text
+U+2192 -> Dịch sang phải một cột
+U+2196 -> Trườn lên trên một hàng
+U+2198 -> Trượt xuống dưới một hàng
+U+25A0 -> Điểm dừng chân tuyệt đối (Stop)
 ```
-U+2192 -> sang phải một cột
-U+2196 -> lên một hàng
-U+2198 -> xuống một hàng
-U+25A0 -> điểm dừng
-```
 
-**Bước 3 - điểm khởi động suy ra từ đồ thị.** Với hình học ở bước 2, đếm phím không bị mũi tên nào
-trỏ vào: chỉ còn `Q`. Đi từ `Q` theo mũi tên đến khi gặp ô đen, đường đó đi qua đúng 17/17 phím, mỗi
-phím một lần, và là đường duy nhất trong 21 đường đọc được một chuỗi trọn ven.
+**Bước 3 - Truy vết điểm khởi nguồn từ đồ thị.** 
+Áp dụng bộ hình học không gian vừa chốt được ở bước 2, ta đếm ngược số lượng phím KHÔNG BỊ bất kỳ mũi tên nào trỏ tới. Kết quả thật hoàn hảo: chỉ còn sót lại duy nhất phím `Q`. Bắt đầu hành trình từ `Q` và đi xuôi theo các mũi tên cho đến khi đụng phải ô vuông đen, lộ trình này càn quét qua chính xác 17/17 phím, không bỏ sót hay giẫm chân lên bất kỳ phím nào hai lần. Hơn thế nữa, đây là con đường duy nhất trong số 21 ứng viên nhả ra được một chuỗi văn bản có nghĩa trọn vẹn.
 
-```
+```text
 Q A Z X S W E D C V F R T G B N H
 s u n { q w e r t y _ s u c k s }
 ```
@@ -73,7 +57,7 @@ s u n { q w e r t y _ s u c k s }
 python exploit.py files/suntrail.klc
 ```
 
-```
+```text
 keys with no incoming arrow (candidate starts): ['Q']
   start=Q path=QAZXSWEDCVFRTGBNH -> 'sun{qwerty_sucks}'
 start key : Q
@@ -82,8 +66,6 @@ keys used : 17/17
 flag      : sun{qwerty_sucks}
 ```
 
-## Reproduce
+## Tổ chức mã nguồn
 
-`exploit.py` chỉ dùng stdlib, đọc đường dẫn artifact từ argv, thoát mã 0 khi tìm được đường đi trọn
-ven tới ô đích và in ra chuỗi cờ. `analysis/search_geometry.py` là bước dò hình học, kết quả ở
-`analysis/geometry_search_results.txt`.
+Kịch bản khai thác `exploit.py` được thiết kế tối giản, chỉ vận dụng thư viện chuẩn của Python (stdlib). Nó tiếp nhận đường dẫn của tệp cấu hình (artifact) từ tham số dòng lệnh `argv`, tự động dò tìm đường đi. Khi phát hiện được một lộ trình trọn vẹn không tì vết tiến thẳng tới ô đích, script sẽ thoát với mã trạng thái 0 và rực rỡ in ra chuỗi cờ. Tập tin `analysis/search_geometry.py` là bộ công cụ cày cuốc thô bạo dùng ở khâu dò tìm hình học, mọi kết quả trung gian của nó được lưu trữ vĩnh viễn trong `analysis/geometry_search_results.txt`.

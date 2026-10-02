@@ -51,21 +51,6 @@ payload 01 01 0E, điều chế carrier-hiệu  -> PROFILE SELECTED: region 0x0e
 
 The problem reduces to a single question: make the guard decode something different from the real decoder.
 
-## Approaches Ruled Out
-
-Before settling, these channels were checked and eliminated (full log in `notes.md`):
-
-1. The defence being a 300 - 3400 Hz spectral filter as the challenge hints. `0x2550` contains no bins,
-   windows or thresholds at all; it only calls `0x1e30` + `0x2070` again, walks the TLV chain and returns 1
-   on a record of type `0x01`/`0x02` (live verification in the section above).
-2. Having to compute `base` and add the offset yourself to get the `show_flag` address. The low 12 bits are
-   always `0x580` across all 6 sessions, and `base` is page-aligned, but that route never had to be used: read
-   the full 8-byte value out of `CAL ECHO` and write it straight into `desc.fn`.
-3. Partial overwrite of the low byte following the zip build (`0xa0,0x26`). The deployed build is `0x120` off
-   from the one in the zip (`inc32` 0x2690→0x2570, `show_flag` 0x26a0→0x2580), so this hypothesis jumped to
-   `base+0x26a0` and died silently. I kept it for three sessions and only dropped it once I took the number
-   directly from the leak.
-
 ## Exploit Chain
 
 **Step 1 - Difference tones.** The guard reads `x`; the real decoder reads `P(x)`. The `0.05u²` term
@@ -105,7 +90,7 @@ memcpy(g_cal, value + 1, 2 * value[0]);   /* value[0] do ta chọn, chỉ bị c
 
 ```c
 if (g_cal_desc->fn == &inc32) g_hits += 2;
-else { rdi = &g_hits; jmp g_cal_desc->fn; }     /* nhảy, không gọi */
+else { rdi = &g_hits; jmp g_cal_desc->fn; }     /* jumps, does not call */
 ```
 
 Patching `desc.fn` alone buys a function call with an argument we do not have to care about.
@@ -115,7 +100,7 @@ The first 8 bytes are exactly the address of the show_flag function pointer:
 
 ```
 CAL ECHO: 80 25 53 df bc 55 00 00 | d0 62 53 df bc 55 00 00
-           ^ base+0x2580            ^ base+0x62d0 = g_cal+0x30 (chính là desc)
+           ^ base+0x2580            ^ base+0x62d0 = g_cal+0x30 (which is the desc)
 ```
 
 **Step 4 - three shots on the socket.** `exploit.py` (stdlib only + `analysis/enc.py`):
@@ -152,7 +137,7 @@ analysis/
   frontend_notes.md    0x1940 / 0x1e30 / 0x1f70 / 0x2550 viết lại thành công thức
   enc.py               khung MFSK + generator carrier-hiệu (96 kHz, 1200 sample/symbol)
   client.py            socket event-driven, đọc tới dấu '----'
-  exploit.py           3 bước ở trên, in cờ hoặc exit khác 0
+  exploit.py           the 3 steps above, prints flag or exits non-zero
   wav_ref.py           decode + kiểm chứng reference_ping.wav
   probe1-3.py sweep.py dẫn dò layout heap; tries/ phản hồi đầy đủ từng biến thể
   live1-8.txt          nhật ký phiên đích

@@ -30,9 +30,9 @@ two pink feet, which also fall inside that red threshold:
 
 ```text
 nét north : (544, 3103) -> (2386, 3864)   dài 2029 px, dày ~15 px
-hướng đơn vị (x phải, y lên): (-0.92429, +0.38169)   góc 157,561°
-nhãn "N"  : thành phần tại (434, 3015) 84x110, nằm ở đầu trên-trái -> đầu mũi tên hướng lên-trái
-mắt chim  : (1048, 1784)      chân đặt: bbox (1207,2559) 179x146 -> điểm thấp nhất y = 2705
+unit direction (x right, y up): (-0.92429, +0.38169)   góc 157,561°
+label \"N\" : component at (434, 3015) 84x110, located at top-left -> arrowhead pointing up-left
+bird eye : (1048, 1784)      standing foot: bbox (1207,2559) 179x146 -> lowest point y = 2705
 ```
 
 The bird's shadow, measured from the point where the foot touches the ground to the tip of the shadow, is
@@ -106,7 +106,7 @@ while (b.q.length) {
       body: JSON.stringify({city:c})});
   const d = await r.json();
   if (d.correct) { b.found = c; b.flag = d.flag; return; }
-  await new Promise(z => setTimeout(z, b.delay));   // delay khởi điểm 250 ms
+  await new Promise(z => setTimeout(z, b.delay));   // initial delay 250 ms
 }
 ```
 

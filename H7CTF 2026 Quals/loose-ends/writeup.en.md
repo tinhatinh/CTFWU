@@ -11,8 +11,8 @@ that reads out the day's pass code which nobody has ever called. Tie the loose e
 ## Initial Analysis
 
 ```
-ET_EXEC no PIE | NX on | canary có (menu/idx/audit)
-GNU_RELRO 0x403df8..0x404000  ->  mọi JUMP_SLOT hàm ở 0x404000..0x404060 vẫn ghi được
+ET_EXEC no PIE | NX on | canary present (menu/idx/audit)
+GNU_RELRO 0x403df8..0x404000  ->  all function JUMP_SLOTs at 0x404000..0x404060 are still writable
 ```
 
 `main` is a 4-choice menu over a global array of pointers:
@@ -20,7 +20,7 @@ GNU_RELRO 0x403df8..0x404000  ->  mọi JUMP_SLOT hàm ở 0x404000..0x404060 v�
 ```
 notes[16] @ 0x4040a0
 add    : notes[i] = malloc(0x50); read(0, notes[i], 0x50)
-delete : free(notes[i])                      <- không notes[i] = NULL
+delete : free(notes[i])                      <- notes[i] is NOT set to NULL
 edit   : if (notes[i]) read(0, notes[i], 0x50)
 view   : if (notes[i]) write(1, notes[i], 0x50)
 ```
@@ -34,18 +34,6 @@ table, so the only way to reach it is by jumping.
 Two details make the challenge easier than expected. The heap is not randomised: the first allocation sits at
 `0x4062b0`, right after BSS. RELRO ends at `0x404000`: the whole PLT GOT is writable, and with no PIE there is nothing
 to leak at all.
-
-## Approaches Ruled Out
-
-1. Calling `audit` with input. No branch of the menu points at it, so no combination of choices can invoke it. Only
-   the direction of overwriting a live GOT slot and letting the program jump on its own remains.
-2. Having to leak libc before computing anything else. `audit` and every GOT slot are fixed addresses because the
-   binary is `ET_EXEC` without PIE, and the heap is fixed too because the first chunk is at `0x4062b0`. The only
-   thing that has to be obtained is `heap >> 12`, and it sits right inside the tcache (Step 1).
-3. Targeting `free@GOT` at `0x404000`. When an entry is popped, glibc writes `next`/`key` back into the chunk that
-   was just allocated. Aiming at `0x404000` makes that surplus write touch `puts@GOT` at `0x404008`, and the menu calls
-   `puts` on the very next loop iteration. `exit@GOT` (`0x404060`) pushes the surplus write down to `0x404060+8`, which
-   is in `.data` and harmless. So the target slot is `0x404060`.
 
 ## Exploit Chain
 
@@ -74,7 +62,7 @@ B and A are on the same page, so `B >> 12 == t`, and when `tcache_get` unmangles
 **Step 4 - Write `audit` into `exit@GOT`, then trigger it.**
 
 ```python
-edit(3, p64(0x4012b6))     # read() chỉ lấy đúng số byte gửi lên -> chỉ 8 byte bị ghi
+edit(3, p64(0x4012b6))     # read() only takes exactly the bytes sent -> only 8 bytes are written
 shutdown(SHUT_WR)          # menu: fgets(stdin) trả NULL -> exit(0) -> jmp audit
 ```
 

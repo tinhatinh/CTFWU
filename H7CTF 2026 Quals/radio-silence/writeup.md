@@ -1,72 +1,75 @@
 # Radio Silence — Hardware (Medium)
 
 **Flag:** `H7CTF{6780856d-db42-4cfa-8b56-c62109d8417c}`
-**Instance:** `https://web-0350e37b217a0cbc.web.h7tex.com`
-**Files:** `capture.cf32` (393544 B, sha256 `167a70fa…`) - interleaved float32 LE I/Q, 1 Msps
+**Máy chủ mục tiêu:** `https://web-0350e37b217a0cbc.web.h7tex.com`
+**Tệp đồ nghề:** `capture.cf32` (kích thước 393544 B, mã băm sha256 `167a70fa…`) - Luồng dữ liệu giải mã băng gốc (interleaved float32 LE I/Q), tốc độ mẫu 1 Msps.
 
 ## Đề bài
 
-Một burst vô tuyến phát ra cạnh một thiết bị không ai biết tên: không datasheet, không protocol notes, không nhãn. Đề chỉ cho một file baseband và nói "Read it back", tức toàn bộ tham số của giao thức phải tự đo từ tín hiệu.
+Hệ thống ghi nhận được một đợt sóng vô tuyến (burst) bùng phát ngay sát một thiết bị lậu mà không ai biết tên: sạch bong không giấy tờ kỹ thuật (datasheet), không một dòng chú thích giao thức (protocol notes), thậm chí nhãn mác cũng trống trơn. 
+Đề bài chỉ quăng cho ta một đoạn ghi baseband trần trụi kèm lời thách thức ngắn gọn: "Read it back" (Đọc nó đi). Điều này đồng nghĩa với việc ta phải trầy da tróc vẩy đi lùng sục, đo đạc bằng tay toàn bộ thông số của một giao thức truyền tin ma quái chỉ từ đống tín hiệu thô.
 
 ## Phân tích ban đầu
 
-```
+Móc ngoéo với máy chủ:
+```bash
 $ curl -sS https://web-0350e37b217a0cbc.web.h7tex.com
-file: capture.cf32 (complex baseband, interleaved float32 I/Q, little-endian: I0 Q0 I1 Q1 ...)
-sample rate: 1000000 Hz
+file: capture.cf32 (chuẩn complex baseband, đan xen dữ liệu interleaved float32 I/Q, little-endian theo định dạng: I0 Q0 I1 Q1 ...)
+sample rate (tốc độ lấy mẫu): 1000000 Hz
 ```
 
+Khai nòng đạn bằng Python:
 ```python
-raw = np.fromfile('files/capture.cf32', dtype='<f4')   # 49193 mẫu, 49.193 ms
+raw = np.fromfile('files/capture.cf32', dtype='<f4')   # Vớt được 49193 vạch mẫu, kéo dài 49.193 mili-giây
 iq  = raw[0::2] + 1j*raw[1::2]
 ```
 
-Việc đầu tiên là quyết định điều chế biên độ hay điều chế tần số. Histogram của `abs(iq)` hai phong: một cụm quanh 0 và một cụm quanh 1.0, trông rất giống OOK (đề trước trong cùng event là 433 MHz OOK/Manchester). Run-length của cổng `abs > 0.35` bác bỏ ngay giả thuyết đó:
+Nút thắt đầu tiên phải gỡ là xác định danh tính kẻ thù: Điều chế biên độ (AM) hay Điều chế tần số (FM). Nhìn qua biểu đồ phân bố (histogram) của `abs(iq)` thấy nổi lên hai rặng phong trào: một cụm xúm xít quanh mốc 0 và một đám xúm quanh mốc 1.0. Hình thái này bốc mùi sặc sụa của chiêu bài OOK (Chính một bài khác trong giải này cũng xài trò 433 MHz OOK/Manchester). Nhưng khoan, mổ băng kiểm tra độ dài chuỗi chạy (run-length) lọt qua khe cổng `abs > 0.35` thì cái giả thuyết lôm côm đó bị tát thẳng mặt:
 
-```
-total runs 5
-   0  2909 0      im lặng đầu burst (noise floor)
-2909 43200 1      burst liên tục, envelope không đổi
-46109   151 0
-46260     1 1     blip đơn lẻ
-46261  2932 0     im lặng cuối
-```
-
-Envelope phẳng suốt 43200 mẫu nên phần "0" chỉ là khoảng trắng trước/sau phát xạ. Envelope không đổi + có sóng mang = 2-FSK.
-
-FFT trên riêng burst (Hanning, độ phân giải 23.1 Hz) cho đúng hai đỉnh:
-
-```
-+35.00 kHz   0.00 dB
-+84.99 kHz  -2.68 dB
+```text
+Tổng số mảng chạy (runs) bắt được: 5
+Mảng từ      0 đến  2909: Nhóm 0      - Khoảng im lặng chết chóc đầu burst (mức nhiễu nền noise floor)
+Mảng từ   2909 đến 43200: Nhóm 1      - Khối burst liên hồi cắn chặt, đường bao biên độ (envelope) lì lợm không đổi
+Mảng từ  46109 đến   151: Nhóm 0
+Mảng từ  46260 đến     1: Nhóm 1      - Dấu vết (blip) đơn độc mồ côi
+Mảng từ  46261 đến  2932: Nhóm 0      - Vệt tĩnh lặng chốt đuôi
 ```
 
-cả hai nằm chính giữa bin, tức tone thật là 35 kHz và 85 kHz: sóng mang cực 60 kHz, độ lệch ±25 kHz.
+Đường bao biên độ (envelope) bám dính nằm lì phẳng lì suốt một dải 43200 mẫu, đồng nghĩa phần vạch "0" chẳng qua là màn đen im lặng hụt hơi trước và sau luồng phát xạ. Một khi đường bao nằm im không nhúc nhích + kèm theo sóng mang = Đó đích thị là trò biến tấu tần số 2-FSK.
+
+Quăng khối burst thuần khiết đó qua lăng kính phân tích FFT (sử dụng cửa sổ Hanning, độ phân giải sắc bén 23.1 Hz), chồi lên hai ngọn núi đơn côi:
+
+```text
+Điểm +35.00 kHz  neo ở mức  0.00 dB
+Điểm +84.99 kHz  neo ở mức -2.68 dB
+```
+
+Điều kỳ diệu là cả hai ngọn núi đâm chọc vào chính giữa khoang chứa (bin). Lật ngửa quân bài: Dải tone thực tế mang tần số 35 kHz và 85 kHz. Hệ quả tất yếu: sóng mang (carrier) ngự ở điểm cực 60 kHz, với độ lệch pha đung đưa (deviation) là ±25 kHz.
 
 ## Chuỗi khai thác
 
-### Bước 1: định thời symbol từ chính tín hiệu
+### Bước 1: Bắt mạch thời gian symbol từ bụng tín hiệu
 
-Lấy discriminators `diff(unwrap(angle(burst))) * fs / 2π`, làm trơn cửa sổ 8 mẫu. Histogram chỉ còn hai cụm (quanh 35 và 85 kHz) chứng tỏ 2 mức tần số thực, phần trải ra giữa hai cụm là mẫu chuyển mức.
+Bơm bộ phát hiện biên (discriminators) chạy bằng thuật toán `diff(unwrap(angle(burst))) * fs / 2π`, phủ thêm màng bọc làm trơn với cửa sổ rộng 8 mẫu. Trải mớ đó lên histogram, giờ đây chỉ còn tóm được hai cụm (vây quanh biên 35 và 85 kHz) - đây là bảo chứng sắt đá cho 2 mức tần số thực. Đám râu ria dạt ra ở khoảng trống giữa hai cụm chính là đám mẫu đang cọ quậy đổi mức chuyển trạng thái (transition).
 
-Đếm vị trí transition rồi xét modulo chu kỳ ứng viên:
+Thống kê tần suất vị trí chuyển trạng thái (transition) rồi đem đi xoay chia lấy phần dư (modulo) để rà tìm chu kỳ ứng cử viên:
 
+```text
+Danh sách các ứng viên đoạt giải chu kỳ symbol mượt nhất (best symbol-period candidates):
+Trị số 0.552  ứng với S=100  kéo 100.0 us  chạy 10000.0 baud
+Trị số 0.552  ứng với S= 50   kéo 50.0 us  chạy 20000.0 baud      (Đây chỉ là cái bóng đổ hoà âm ảo của S=100)
+Trị số 0.552  ứng với S= 25   kéo 25.0 us  chạy 40000.0 baud
+...
+Đỉnh phổ của chuỗi tín hiệu lật mạch (top transition-train lines đo bằng Hz): [10001.9, 20003.7, ...]
 ```
-best symbol-period candidates:
-   0.552  S=100  100.0 us  10000.0 baud
-   0.552  S= 50   50.0 us  20000.0 baud      (hoà âm của S=100)
-   0.552  S= 25   25.0 us  40000.0 baud
-   ...
-top transition-train lines (Hz): [10001.9, 20003.7, ...]
-```
 
-S=100 là chu kỳ cơ bản (50/25/10 chỉ là hài hoạ của cùng một lưới pha) và chuỗi xung transition có line phổ đúng 10 kHz. 10 kBaud, nên burst 43200 mẫu mang `43200/100 = 432 symbol = 54 byte` chẵn.
+Khoá mục tiêu: S=100 chính là hạt nhân chu kỳ cơ bản (đám 50/25/10 chỉ là những tiếng vọng hài hoà phái sinh từ một cái lưới pha duy nhất). Kèm theo đó, chuỗi xung transition khạc ra vạch phổ đóng đinh ở đúng mốc 10 kHz. Với con số 10 kBaud này, khối burst dài 43200 mẫu sẽ tải được lượng hàng hoá `43200/100 = 432 symbol = 54 byte` (chẵn như vắt chanh).
 
-Cũng từ đây loại được Manchester: Manchester bán kỳ 100 mẫu sẽ buộc có transition mỗi 100 mẫu (≥431 cái), trong khi discriminators chỉ đổi mức 248 lần trên 431 biên giới symbol, tức xấp xỉ 50% mật độ transition của dữ liệu ngẫu nhiên ở 10 kBaud.
+Dữ kiện này như một nhát búa đập vỡ cái giả thuyết xài mã Manchester: Phân nửa chu kỳ Manchester gánh 100 mẫu thì ép buộc hệ thống cứ chọc vào biên 100 mẫu là PHẢI nhảy chuyển mạch một phát (tức là gom hụi tối thiểu ≥431 phát). Trong khi đó, bộ dò discriminators lười biếng chỉ chịu nhảy nhót đổi mức có 248 phát chạy trên 431 cái đường biên symbol (chỉ ngang ngửa 50% mật độ nhảy của một chuỗi dữ liệu rác ngẫu nhiên chạy ở 10 kBaud).
 
-### Bước 2: quyết định từng symbol
+### Bước 2: Ép cung từng symbol một
 
-Majority vote trên 80 mẫu giữa mỗi slot 100 mẫu, tone 85 kHz = 1, gói MSB-first:
+Xài chiêu bài dân chủ (Majority vote) bóc lột trên 80 mẫu nằm giữa mỗi khoang 100 mẫu, áp luật: hễ dính tone 85 kHz = chốt là số 1, ưu tiên nạp theo MSB-first:
 
 ```python
 states = (sm > 60e3).astype(np.int8)
@@ -75,40 +78,39 @@ bits   = np.array([s.mean() > 0.5 for s in slots], dtype=np.uint8)
 frame  = np.packbits(bits).tobytes()
 ```
 
-```
-[*] decisions   min margin 0.500, 0/432 slots below 0.05 margin
-[*] raw frame   aaaaaaaaaaaa2dd42b48374354467b36373830383536642d646234322d
-                346366612d386235362d6336323130396438343137637d7a65
-[*] as ascii    b'\xaa\xaa\xaa\xaa\xaa\xaa-\xd4+H7CTF{6780856d-db42-4cfa-8b56-c62109d8417c}ze'
-[*] leftover    0 bits after the last whole byte
-```
-
-`min margin 0.500` nghĩa là mọi symbol đều đồng thuận tuyệt đối: không có slot nào hai tone tranh chấp nhau, nên không có bit nào phải đoán.
-
-### Bước 3: loại 3 cách gán bit còn lại
-
-Bốn tổ hợp (tone cao/thấp = 1, MSB/LSB) chỉ cho một kết quả có nghĩa:
-
-```
-t85=1 MSB   printable 46/54  b'\xaa\xaa...H7CTF{6780856d-db42-...'
-t85=1 LSB   printable 25/54  rác
-t35=1 MSB   printable  7/54  rác
-t35=1 LSB   printable 18/54  rác
+```text
+[*] Soi phiếu (decisions)   mức margin hẹp nhất (min margin) đạt 0.500, tuyệt nhiên 0/432 khoang nào dính margin hạ xuống dưới 0.05
+[*] Giải khung thô (raw frame) lòi ra: aaaaaaaaaaaa2dd42b48374354467b36373830383536642d646234322d346366612d386235362d6336323130396438343137637d7a65
+[*] Quy chiếu hệ chữ (as ascii)    thành: b'\xaa\xaa\xaa\xaa\xaa\xaa-\xd4+H7CTF{6780856d-db42-4cfa-8b56-c62109d8417c}ze'
+[*] Tàn dư thừa thãi (leftover)    0 bit vứt đi sau cái byte tròn vành rõ chữ cuối cùng
 ```
 
-## Cấu trúc frame đo được
+Con số `min margin 0.500` chứng minh một sự thống trị áp đảo tuyệt đối: không có bất kỳ khoang (slot) nào mà bị hai phe tone đánh lộn giành giật, nên ta chẳng phải đoán mò (guess) số phận của bất kỳ bit nào.
 
-| vùng | byte | nhận xét |
+### Bước 3: Đạp đổ 3 phe phân cực bit giả
+
+Thế trận có 4 khả năng nạp bit (ghép chéo: dải tone cao/thấp gán làm 1, đi kèm thứ tự nạp MSB/LSB). Tuy nhiên chỉ có một cấu hình duy nhất tạo ra hình thù văn bản có não:
+
+```text
+Phe t85=1 nạp MSB   : Lòi ra chữ in được (printable) 46/54  -> Đích là b'\xaa\xaa...H7CTF{6780856d-db42-...'
+Phe t85=1 nạp LSB   : Chữ in được 25/54  -> Rác rưởi
+Phe t35=1 nạp MSB   : Chữ in được  7/54  -> Rác rưởi
+Phe t35=1 nạp LSB   : Chữ in được 18/54  -> Rác rưởi
+```
+
+## Giải phẫu Cấu trúc frame thu được
+
+| Khoang (vùng) | Số hex (byte) | Lời bình phẩm |
 | --- | --- | --- |
-| preamble | `aa aa aa aa aa aa` | `0b10101010`, chuỗi alternation dùng cho bit sync |
-| header | `2d d4 2b` | không định danh được, có thể device id + loại lệnh |
-| message | `48 37 43 54 46 7b … 7d` | `H7CTF{6780856d-db42-4cfa-8b56-c62109d8417c}` (43 B) |
-| trailer | `7a 65` | chưa giải thích được: `sum8=0x9f`, `xor8=0xf7`, CRC16-CCITT init 0/FFFF = `0xdeea`/`0xd655`, CRC16 reflected 0x8005/0xA001 = `0x2d08`/`0x9657` đều không ra `0x7a65`. Nhiều khả năng là nonce/serial. |
+| Dạo đầu (preamble) | `aa aa aa aa aa aa` | Hình bóng của chuỗi `0b10101010`, dạng chuỗi sóng nhịp điệu luân phiên (alternation) dọn cỗ để đồng bộ nhịp bit (bit sync). |
+| Trán khung (header) | `2d d4 2b` | Lai lịch mờ mịt không xác định, có thể là danh xưng thiết bị (device id) kẹp chung với mã nhóm lệnh. |
+| Dữ liệu thịt (message) | `48 37 43 54 46 7b … 7d` | Hiện nguyên hình cờ `H7CTF{6780856d-db42-4cfa-8b56-c62109d8417c}` (chiếm 43 B) |
+| Đuôi (trailer) | `7a 65` | Đoạn này bị câm điếc không thể giải nghĩa: Đem ra đấu `sum8=0x9f`, dập `xor8=0xf7`, thử trò CRC16-CCITT có nhân init 0/FFFF ra = `0xdeea`/`0xd655`, đè CRC16 reflected nhân 0x8005/0xA001 = `0x2d08`/`0x9657`. Tất cả mớ bòng bong đó đều không tài nào nặn ra nổi mã `0x7a65`. Khả năng cao đây chỉ là một cái hằng số nhiễu (nonce) hoặc số thứ tự (serial) rác. |
 
-Không nộp bài qua HTTP: instance chỉ phục vụ đúng một file tĩnh (`Server: SimpleHTTP/0.6`), không có `<pre>` hợp đồng nộp như mấy bài web/hardware khác của cùng event, nên cờ được dán lên scoreboard.
+Lưu ý là bài này không vác cờ đi nộp dạo qua HTTP: Hệ thống máy chủ ngu ngốc này chỉ có vai trò rặn ra duy nhất một con tệp rác tĩnh (`Server: SimpleHTTP/0.6`), hoàn toàn vắng bóng cái cấu trúc hợp đồng điền biểu mẫu nộp đồ `<pre>` như các bài web/hardware anh em khác. Cách duy nhất là bê cái cờ vớt được đem đính trực tiếp lên bảng xếp hạng (scoreboard).
 
 ## Flag
-```
+```bash
 $ python solve_rf.py files/capture.cf32
 [+] FLAG: H7CTF{6780856d-db42-4cfa-8b56-c62109d8417c}
 ```

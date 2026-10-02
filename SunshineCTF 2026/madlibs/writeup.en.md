@@ -69,9 +69,7 @@ Layout of the read string: the prefix must be exactly 8 bytes long so the addres
 `%9$s` prints the 6 bytes of the pointer and then stops (the top 2 bytes are NUL).
 `libc_base = ptr - 0x600f0`.
 
-Before trusting that number, I planted a known answer as a check: read on from `libc_base + 0x1cb42f`
-and require it to print exactly the string `/bin/sh`. If the base were wrong this step fails and the
-exploit stops, instead of escalating on a meaningless address.
+To verify this address, read on from `libc_base + 0x1cb42f` and require it to print exactly the string `/bin/sh`. If the base is wrong, this step fails and the exploit stops, avoiding a blind jump.
 
 ### Step 3, writing the GOT
 
@@ -80,13 +78,12 @@ bytes of the two addresses are identical, and the GOT already contains exactly t
 So only the low 3 bytes need to be written, not all 8:
 
 ```
-%hhn vào base+0x4010, +1, +2 với giá trị = 3 byte thấp của system
+%hhn into base+0x4010, +1, +2 with value = lower 3 bytes of system
 ```
 
 The format-string builder computes the delta for each byte (`d = (wanted - already printed) mod 256`), sorts the
 targets by increasing value so it never has to wrap around, then pads to exactly 40 bytes so the three
-addresses land precisely in slots 13, 14, 15. I validated this builder by simulating printf against
-500 random byte triples: all 500 wrote correctly (`analysis/selftest_fmt.py`).
+addresses land precisely in slots 13, 14, 15.
 
 ### Step 4, shell
 
@@ -104,9 +101,8 @@ sun{f1ll_iN_th3_g0T_eNtry}
 ```
 
 ```bash
-python exploit.py                  # mặc định: ls -l /ctf; cat /ctf/*; env | grep -i flag
+python exploit.py                  # default: ls -l /ctf; cat /ctf/*; env | grep -i flag
 python exploit.py 'cat /ctf/flag.txt'
-python analysis/selftest_fmt.py    # mô phỏng printf, kiểm bộ dựng chuỗi %hhn
 ```
 
 The flag lives at `/ctf/flag.txt` (27 bytes, owner `root:mad_libs`, mode `-rw-r-----`). The script

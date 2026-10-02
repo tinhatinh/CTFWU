@@ -22,13 +22,6 @@ There is no days-per-route field like in the first version, so the only measurab
 coordinates. The graph is also clean: 59944 directed edges collapse to exactly 29972 undirected ones
 (linking is perfectly symmetric), no dangling links, average degree 5.99.
 
-## Approaches Ruled Out
-
-1. **BFS with fewest hops**: gives 13 hops but a total distance of 199.95, far worse than the 144.93
-   of the coordinate-based path; with degree ~6, 13 hops is not enough to make a path unique. Ruled
-   out.
-2. **Using a supplied weight**: none exists, every line was counted. Ruled out.
-
 ## Exploit Chain
 
 **Step 1 - Build the graph from the zip** without extracting it: read each `map/<ID>.md` through
@@ -68,7 +61,7 @@ $ python exploit.py files/map.zip
 1) do thi: 10000 nut, 59944 canh chieu, 29972 canh vo huong
 2) Dijkstra theo toa do: 135 chan, tong quang duong 144.9333, so duong toi uu = 1
 3) duong thang lien nut dau-cuoi = 138.6231 -> lo trinh 4.55% dai hon
-4) ca 135 canh deu la wikilink that trong map
+4) all 135 edges are actual wikilinks in the map
 5) cach hieu 'it chan nhat': 13 chan nhung dai 199.9478 (ngan nhat la 144.9333) -> khong trung
 6) duong di (136 nut):
    S0jRxc -> 1T5eN4 -> hmANsv -> XGnRvX -> CZqgmf -> HFtEqa -> PNHmEq -> zdQEDJ -> PqE5LH -> 7GwlrF ->

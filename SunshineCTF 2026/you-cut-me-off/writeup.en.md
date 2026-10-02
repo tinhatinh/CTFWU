@@ -8,13 +8,7 @@ The challenge description is only: "Here's a flag! It's uhhh ...... ............
 
 ## Initial Analysis
 
-The stego route was followed first, because the description suggests "the flag is inside the image". All three directions died:
-
-1. Appended data / hidden chunks. Every chunk walked: `IHDR sRGB gAMA pHYs IDAT IEND`, exactly 0 bytes after `IEND`, no `tEXt`/`iTXt`/`zTXt`.
-2. LSB and the alpha channel. Alpha is 255 across the whole image. The blue channel's LSB has up to 96% odd values, which looks very suspicious, but the Discord background color is `(50,23,23)` - even/odd/odd - so that skew belongs to the palette, not to embedded data.
-3. Text in a color close to the background (contrast stego). Counting the distance to the background color and amplifying it 24 times: no text layer shows up.
-
-The only notable thing left is a disproportionate compressed size: an IDAT of 38652 bytes for a 492x382 RGBA image is rather large for a low-color screenshot.
+The only notable thing is a disproportionate compressed size: an IDAT of 38652 bytes for a 492x382 RGBA image is rather large for a low-color screenshot.
 
 ## Exploit Chain
 
@@ -48,7 +42,7 @@ python solve.py
 ```
 IHDR: 492x382  stride=1969  IDAT giải nén=823042 byte -> thực tế 418 dòng
 số dòng bị ẩn: 36
-đã ghi analysis/full.png và analysis/hidden.png
+wrote analysis/full.png and analysis/hidden.png
 ```
 
 ```

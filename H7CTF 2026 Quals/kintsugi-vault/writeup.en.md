@@ -30,16 +30,16 @@ serves its own copy at `GET /handout.tar.gz`.
 ```
 0x000  4   'KSHD'
 0x004  1   version = 01
-0x005  1   flags;  bit0 == 1  -> bảng decode nằm trong file (guardian khởi đầu)
+0x005  1   flags;  bit0 == 1  -> decode table is inside the file (starting guardian)
                           == 0 -> BẮT BUỘC đưa file bảng ở tham số thứ 3
 0x007  1   keylen = 08
 0x008  2   u16 tablelen = 0x100
 0x00a  2   u16 proglen  = 0x289 = 649
-0x00e 16   content id (= tên file)      <- vmrun KHÔNG bao giờ kiểm tra
-0x01e  4   (không dùng)                 <- vmrun KHÔNG bao giờ kiểm tra
-0x022 16   "next" id đã bị làm nhiễu    <- vmrun KHÔNG bao giờ kiểm tra
+0x00e 16   content id (= tên file)      <- vmrun NEVER checks this
+0x01e  4   (unused)                 <- vmrun NEVER checks this
+0x022 16   \"next\" id is obfuscated    <- vmrun NEVER checks this
 0x032 256  decode table: raw opcode -> số thứ tự handler
-0x132 256  sbox (LUT), luôn là hoán vị, luôn trong suốt
+0x132 256  sbox (LUT), always a permutation, always transparent
 0x232 649  chương trình
 ```
 
@@ -193,7 +193,7 @@ Re-running the exact pipeline (`analysis/live_solve.py <thu_muc>`) on the real a
 
 ```
 seed  = 185087fcdd31641e58f77177f104cdedf29bb38be31bf7828dd0b1fab65c4746
-sig   = Ed25519_sign(seed, bytes.fromhex(nonce))        # 24 byte thô, KHÔNG phải chuỗi hex
+sig   = Ed25519_sign(seed, bytes.fromhex(nonce))        # 24 raw bytes, NOT a hex string
 POST /attest  nonce=...&sig=...  ->  200
 H7CTF{9df8f215-6ef3-4ee2-a336-42d628680738}
 ```

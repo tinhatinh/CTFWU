@@ -43,16 +43,6 @@ are varargs 1-5), and vararg 6 onward is read from the stack immediately above t
 - `buf+0` is argument number 6 (`%6$`)
 - `buf+8` is argument number 7 (`%7$`)
 
-## Approaches Ruled Out
-
-1. Needing a libc leak / doing ROP. No: no shell ever gets called, and `view_manifest` only needs one variable to be
-   non-zero. This direction was dropped after seeing `is_admin` at a fixed address.
-2. A linear overflow from the 208-byte buf. `read` is limited to 0xc7 = 199 < 208, so nothing reaches the saved
-   rbp/return address. The only bug is the format string.
-3. The instance's old port (`41903`). It connects but the server returns nothing (0 bytes) -
-   that was a dead session, not a broken binary; the challenge states "the service may take a few seconds to start".
-   Moving to the new port `42506` was the right flow.
-
 ## Exploit Chain
 
 **Step 1 - Confirming the buffer position with a leak.** Send `MARKER-%6$p-%7$p-...`:

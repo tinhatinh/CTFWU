@@ -1,50 +1,45 @@
-# invisible-text — STEG (200 pts)
+# Invisible Text — STEG (200 pts)
 
-**Flag:** `POCTF{PIEMPAOSMHDLEGRT}` · **Files:** `invisible_text.py`, 4245 B, sha256 `f027442b37a521f4a775ec56d37336df446d83e7acd641042e28af030f745320`
+**Flag:** `POCTF{PIEMPAOSMHDLEGRT}`
+**Files:** `invisible_text.py` (4245 B, sha256 `f027442b37a521f4a775ec56d37336df446d83e7acd641042e28af030f745320`)
 
 ## Đề bài
 
-Tác giả nói trong file có một thông điệp bí mật, và "nhìn đúng chỗ" thì sẽ thấy. Đề cho duy nhất `invisible_text.py` sinh riêng cho team (server phát tệp dưới tên `invisible_text_612.py`), không có tệp nhị phân, không có dịch vụ từ xa. Việc phải làm: đọc ra thông điệp cất trong chính file nguồn rồi nộp nó.
+Tác giả úp mở rằng có một thông điệp bí mật được cất giấu ngay bên trong tệp tin, và chỉ cần "nhìn đúng chỗ" là sẽ thấy. Thử thách cung cấp duy nhất một tệp mã nguồn `invisible_text.py` (tệp này được sinh riêng biệt cho từng đội, máy chủ phát tệp dưới tên `invisible_text_612.py`). Không có bất kỳ tệp nhị phân nào đi kèm, cũng không có hệ thống hay dịch vụ từ xa nào để kết nối. Nhiệm vụ duy nhất là trích xuất thông điệp ẩn bên trong mã nguồn và nộp nó.
 
 ## Phân tích ban đầu
 
-File là Python thuần, 4245 byte, 81 dòng, UTF-8. Kiểm kê byte cho thấy cả file chỉ có một ký tự ngoài dải ASCII, là dấu `—` trong một comment. Không có Zero Width Space, không có BOM, không có NBSP, không có ký tự đồng dạng.
+Tệp tin hoàn toàn là mã Python thuần tuý, nặng 4245 byte, gồm 81 dòng văn bản được mã hoá ở chuẩn UTF-8. Khi kiểm kê từng byte một, ta nhận thấy cả tệp chỉ chứa duy nhất một ký tự nằm ngoài dải ASCII chuẩn, đó là dấu gạch ngang `—` vô thưởng vô phạt nằm gọn trong một dòng comment. Hoàn toàn không có sự xuất hiện của các kỹ thuật giấu tin tàng hình kinh điển như Zero Width Space, không có dấu định dạng BOM, không có NBSP (khoảng trắng không ngắt), và cũng không có bất kỳ ký tự đồng dạng (homoglyph) nào.
 
-Điểm bất thường duy nhất còn lại: **47/81 dòng kết thúc bằng whitespace**. Cụ thể:
+Man mối duy nhất còn sót lại lại là một sự bất thường cực kỳ tinh tế: **47 trên tổng số 81 dòng mã đều kết thúc bằng một khoảng trắng (whitespace) thừa thãi**. Cụ thể hơn:
 
-```
-dòng 1   SSSTSTSSSS        (10 ký tự)
-dòng 2   T                 (1 tab)
-dòng 3   SSSSSTSSTTTT      (12 ký tự)
+```text
+dòng 1   SSSTSTSSSS        (chứa 10 ký tự khoảng trắng/tab)
+dòng 2   T                 (chứa đúng 1 ký tự tab)
+dòng 3   SSSSSTSSTTTT      (chứa 12 ký tự)
 dòng 4   T
 dòng 5   SSSSSTSSSSTT
 ...
 dòng 45  SSSSSTTTTTST
 dòng 46  T
-dòng 47  SS                (2 ký tự)
+dòng 47  SS                (chứa 2 ký tự)
 ```
+*(Trong đó `S` đại diện cho Space, `T` đại diện cho Tab).*
 
-Dòng lẻ dài 12 ký tự (riêng dòng đầu chỉ 10), dòng chẵn chỉ đúng một tab. Câu "look closely" trong đề trỏ thẳng vào chuỗi này.
+Điểm thú vị là các dòng số lẻ luôn có độ dài cố định là 12 ký tự (ngoại trừ dòng đầu tiên bị lẹm còn 10), trong khi các dòng chẵn chỉ chứa duy nhất một phím tab. Chắc chắn lời gợi ý "look closely" của tác giả đang ám chỉ thẳng vào vùng dữ liệu vô hình này.
 
-Nội dung hiển nhiên của file: `diary_reader.py` nối 46 chunk base64 thành một xâu, `b64decode` rồi `zlib.decompress`, in kết quả ra. Chạy thử (phải ghi ra tệp UTF-8 vì console Windows là cp1252, `print` sẽ raise `UnicodeEncodeError`) thì thấy 2145 ký tự braille, 33 dòng.
-
-## Các hướng đã loại
-
-Log đầy đủ ở `notes.md`. Tóm tắt:
-
-1. **Unicode vô hình cất trong chuỗi**: đếm tần suất U+200B-U+200F, U+FEFF, U+00A0 -> không bắt được ký tự nào. Loại.
-2. **Payload base64 + zlib là nơi cất flag**: giải mã ra tranh braille, không ra chữ. Loại.
-3. **Braille giấu dữ liệu ở số chấm từng ô**: histogram cho 115 ô tròn 8 chấm (255), 85 ô 251, 79 ô 253 -> đó là vùng tô đặc của một bức tranh, không phải mã. Loại.
-4. **Whitespace cuối dòng là nhị phân 8 bit nối liền**: ghép 299 ký tự rồi cắt theo 8 bit, thử cả `space=0/tab=1`, `space=1/tab=0` và đảo ngược bit -> bốn biến thể đều ra byte rác, không có `POCTF`. Loại.
-5. **Ngôn ngữ Whitespace (esolang)**: Whitespace cần LF để kết thúc một số, ở đây trong mỗi nhóm không có LF và độ dài nhóm cố định 12. Loại.
+Nội dung bề nổi của file là một công cụ `diary_reader.py` thực hiện nhiệm vụ nối 46 khối base64 thành một chuỗi duy nhất, giải mã bằng `b64decode`, bung nén bằng `zlib.decompress`, rồi in kết quả ra màn hình. Khi chạy thử script này (cần lưu ý phải ghi kết quả ra tệp UTF-8 vì giao diện console của Windows dùng bảng mã cp1252, nếu dùng lệnh `print` thẳng ra sẽ bị văng lỗi `UnicodeEncodeError`), thứ ta nhận được là một văn bản gồm 2145 ký tự braille (chữ nổi) trải dài trên 33 dòng. Đó chỉ là một lớp mồi nhử.
 
 ## Chuỗi khai thác
 
-**Bước 1 — Nhận ra độ dài nhóm cố định.** Mỗi dòng dữ liệu có 12 ký tự whitespace, trong đó vị trí thứ sáu **luôn luôn là tab**. Đó là dấu hiệu của mô hình 7 bit: năm space đầu là padding căn cột, bảy ký tự cuối là mã.
+**Bước 1 — Nhận diện khuôn mẫu dữ liệu (Fixed-length groups).** 
+Quan sát kỹ, mỗi dòng dữ liệu chính đều chứa chính xác 12 ký tự khoảng trắng, trong đó vị trí thứ sáu **luôn luôn là một dấu tab**. Đây là một dấu ấn kinh điển của mô hình mã hoá 7-bit: năm dấu cách đầu tiên chỉ đóng vai trò đệm (padding) để căn lề, còn bảy ký tự cuối cùng mới thực sự mang dữ liệu mã hoá.
 
-**Bước 2 — Cắt bảy ký tự cuối, `tab = 1`, `space = 0`.** Ký tự ASCII in được luôn có MSB bằng 1, nên nhóm 7 bit bắt đầu bằng 1 chính là vùng chứa tên của nó - đây là điểm định vị:
+**Bước 2 — Trích xuất dữ liệu, quy ước `tab = 1`, `space = 0`.** 
+Theo tiêu chuẩn, các ký tự ASCII in được luôn có bit cao nhất (MSB) bằng 1. Vì thế, việc nhóm 7 bit luôn bắt đầu bằng một phím tab (tương đương với số 1) chính là cọc tiêu định vị hoàn hảo.
 
 ```python
+flag = ""
 for line in src.split("\n"):
     tail = line[len(line.rstrip()):]
     if len(tail) < 7:
@@ -53,30 +48,36 @@ for line in src.split("\n"):
     flag += chr(int(bits, 2))
 ```
 
-Output thật:
+Chạy đoạn mã trên, ta giải mã thành công:
 
-```
-  line   1  TSTSSSS  =  80  'P'
-  line   3  TSSTTTT  =  79  'O'
-  line   5  TSSSSTT  =  67  'C'
-  line   7  TSTSTSS  =  84  'T'
-  line   9  TSSSTTS  =  70  'F'
-  line  11  TTTTSTT  = 123  '{'
+```text
+  dòng   1  TSTSSSS  =  80  'P'
+  dòng   3  TSSTTTT  =  79  'O'
+  dòng   5  TSSSSTT  =  67  'C'
+  dòng   7  TSTSTSS  =  84  'T'
+  dòng   9  TSSSTTS  =  70  'F'
+  dòng  11  TTTTSTT  = 123  '{'
   ...
-  line  45  TTTTTST  = 125  '}'
+  dòng  45  TTTTTST  = 125  '}'
 MESSAGE: POCTF{PIEMPAOSMHDLEGRT}
 ```
 
-**Bước 3 — Kiểm chứng không trùng hợp.** Ba mối khớp: (a) 22/22 nhóm 12 ký tự đều có tab ở đúng một vị trí (bit đầu của nhóm), (b) số dòng dữ liệu = 23 = độ dài `POCTF{` + 16 + `}`, (c) thân flag 16 ký tự hoa khớp định dạng flag của event. Phần space thừa phía trước (5 space, riêng dòng 1 còn 3 vì dòng đó bắt đầu sớm hơn) chỉ là căn cột, không mang thông tin.
+**Bước 3 — Khẳng định tính lô-gíc.** 
+Có ba mảnh ghép xác nhận độ chuẩn xác của phương pháp này, loại trừ hoàn toàn yếu tố ăn may: 
+(a) Trọn vẹn 22/22 nhóm 12 ký tự đều có dấu tab nằm ở đúng một vị trí cố định (bit đầu tiên của nhóm).
+(b) Tổng số dòng dữ liệu mang thông điệp là 23, khớp hoàn hảo với công thức độ dài cờ: `POCTF{` (6 ký tự) + thân cờ (16 ký tự) + `}` (1 ký tự).
+(c) Chuỗi 16 ký tự viết hoa ở phần thân hoàn toàn phù hợp với định dạng cờ truyền thống của giải. 
+Những dấu cách thừa thãi ở phần đầu (5 dấu cách, riêng dòng đầu chỉ có 3 do dòng đó được bắt đầu sớm hơn) thực chất chỉ dùng để căn dòng và không hề mang thông tin.
 
-**Bước 4 — Nộp.**
+**Bước 4 — Nộp cờ.**
 
-```
+```http
 POST /challenges/invisible-text/submit
 {"flag":"POCTF{PIEMPAOSMHDLEGRT}"}
 ```
 
-```
+Hệ thống ghi nhận:
+```json
 HTTP 200 :: {"correct":true,"message":"Correct."}
 ```
 
@@ -86,9 +87,9 @@ HTTP 200 :: {"correct":true,"message":"Correct."}
 POCTF{PIEMPAOSMHDLEGRT}
 ```
 
-Server xác nhận đúng và không trả về xâu flag nào khác, nên đây là toàn bộ giá trị thu được. Ý tưởng quyết định: thông điệp nằm ở **whitespace cuối dòng** của file nguồn, không nằm ở output của script; và toàn bộ lớp base64 + zlib + braille chỉ là mồi hướng.
+Máy chủ đã xác nhận tính chính xác và không trả về thêm bất kỳ chuỗi cờ nào khác. Ý tưởng cốt lõi của thử thách nằm ở chỗ: thông điệp bí mật không nằm ở output sinh ra khi chạy script, mà lại cư ngụ ở vùng **khoảng trắng cuối dòng** của tệp mã nguồn. Toàn bộ lớp vỏ bọc base64 + zlib + braille chỉ là một hệ thống mồi nhử tinh vi để đánh lạc hướng người chơi.
 
-## Reproduce
+## Phục dựng (Reproduce)
 
 ```bash
 python exploit.py files/invisible_text.py

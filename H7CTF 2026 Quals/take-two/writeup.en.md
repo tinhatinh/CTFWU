@@ -18,7 +18,7 @@ The scheme is WOTS+ sealed inside a Merkle tree of 16 leaves:
 ```python
 msg_digits(msg):  d = sha256(msg) -> 64 nibble + 3 nibble checksum   # LEN = 67
 wots_sign(sk,msg): sig[i] = chain(sk[i], d[i])                       # chain = hash tới trước
-verify:  leaf = H(0x00 || H(chain(sig[i], 15-d_i))) so với root qua auth path
+verify:  leaf = H(0x00 || H(chain(sig[i], 15-d_i))) compared to root via auth path
 ```
 
 Two properties decide everything:

@@ -19,14 +19,14 @@ In `ckks.py`:
 
 ```python
 def small(bound=1): return [secrets.randbelow(2*bound+1) - bound for _ in range(N)]
-def keygen(): return small(1)                    # mỗi hệ số chỉ là -1/0/+1
+def keygen(): return small(1)                    # each coefficient is only -1/0/+1
 def encrypt(values, s):
     m = encode(values); a = rand_poly(); e = small(3)
     b = ring_add(ring_sub([0]*N, ring_mul(a, s)), ring_add(m, e))   # b = -a*s + m + e
     return b, a
 def decrypt(ct, s, smudge=0):
     d = ring_add(b, ring_mul(a, s))              # b + a*s = m + e
-    if smudge: d = ring_add(d, small(smudge))    # "noise flooding" của v2
+    if smudge: d = ring_add(d, small(smudge))    # \"noise flooding\" of v2
     return decode(d)
 ```
 

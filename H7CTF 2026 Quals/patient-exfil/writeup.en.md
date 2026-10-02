@@ -33,16 +33,6 @@ Triage with `node ~/.qoder/skills/ctf-solve/scripts/triage.cjs`:
 Suspicion: DNS tunneling. The domain `cdn-telemetry-lab.net` impersonates a telemetry service, the `00/01/02`
 prefixes are fragment indices, and this is the classic way to slip past a dashboard because each query is just a DNS lookup.
 
-## Approaches Ruled Out
-
-Before settling, three other channels were checked and ruled out (details in `notes.md`):
-
-1. Data hidden in DNS responses: the exfil queries have `ancount=0, nscount=0, arcount=0`. The 84 answer records in
-   the file belong to the innocuous names and are only random A records meant as noise.
-2. HTTP headers/body: no varying header, no body other than `ok`, no rare endpoint.
-3. Packet-length / time-spacing channel: payloads only take 6 discrete values `{40,45,50,53,66,87}`,
-   all 19 checkin requests are the same 87 bytes long.
-
 ## Exploit Chain
 
 **Step 1 - Counting queries by parent domain.** Filter every DNS query whose `qname` ends in `.sync.cdn-telemetry-lab.net.`.

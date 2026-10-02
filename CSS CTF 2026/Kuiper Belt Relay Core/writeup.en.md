@@ -52,16 +52,6 @@ int main() {
 - Return address located at **offset 72** (64 byte buffer + 8 byte saved RBP).
 - Binary is x86-64 non-PIE (address scan successful in range 0x40xxxx).
 
-## Approaches Eliminated
-
-### Stack leak via printf format string
-
-Experiment: send payload like `b"A"*n + b"%s%s%s..."` to read memory after buffer.
-
-Result: No meaningful addresses observed. Investigation revealed that `gets()` automatically writes `\x00` terminator immediately after user input. With 64-bit addresses starting at 0x40, the lowest byte (e.g., 0x16 for example) occupies position 72. Writing this byte first causes `gets()` to inject NUL exactly at LSB(ret), truncating the string there.
-
-Conclusion: stack leak impossible. Required oracle-based scanning directly on live service.
-
 ## Exploitation Chain
 
 **Step 1 — Identify return address boundary.**
@@ -128,3 +118,4 @@ CSSCTF{s1gn4l_r3c0v3r3d_fr0m_th3_v01d}
 - **exploit.py**: Main exploitation script
 - **files/echo.c**: Source code artifact
 - **analysis/**: Phase-by-phase exploration scripts
+

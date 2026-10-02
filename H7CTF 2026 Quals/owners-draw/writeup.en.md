@@ -63,7 +63,7 @@ is what we have to carry into the new body:
 pad  = b"\x80" + b"\x00" * ((55 - L) % 64) + struct.pack(">Q", L * 8)
 new  = pad + b"&role=owner"
 tag  = struct.unpack(">8I", bytes.fromhex(sig))      # = trạng thái sau pad
-# chạy tiếp từ tag trên (new + padding của chính nó)
+# run continuing from the tag above (new + its own padding)
 ```
 
 ### Step 3: probing the secret length, the server as an oracle

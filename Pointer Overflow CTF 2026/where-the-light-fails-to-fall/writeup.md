@@ -1,153 +1,109 @@
 # Where the Light Fails to Fall - OSINT
 
-**Điểm:** 400 · **Wave:** 1 · **Cờ:** `POCTF{99.612.WTT7UHE5X3JIJMKQ.TO6LBQYYORFL6LLPF6Q22SRR2P}`
+**Điểm:** 400 · **Wave:** 1
+**Cờ:** `POCTF{99.612.WTT7UHE5X3JIJMKQ.TO6LBQYYORFL6LLPF6Q22SRR2P}`
 
-**Artifact:** `files/PXL_20260621_181159681.jpg` (3.940.516 B, sha256 `42b362b6…520a14a`) và bản
-PNG đã giải mã `files/photo.png` (3000x4000, sha256 `2a25a576…a40339`). Ảnh là một con bồ câu
-đứng trên nền đá khối, bóng đổ sang phải, kèm một nét đỏ chỉ hướng bắc thật.
+**Artifact:** 
+Tệp gốc: `files/PXL_20260621_181159681.jpg` (kích thước 3.940.516 B, mã băm sha256 `42b362b6…520a14a`) 
+Bản sao PNG: `files/photo.png` (độ phân giải 3000x4000, mã băm sha256 `2a25a576…a40339`). 
+Nội dung bức ảnh chụp một con chim bồ câu đứng kiêu hãnh trên nền đá khối, vệt bóng của nó đổ dài sang phía bên phải, và bức ảnh được tác giả cố ý chèn thêm một vạch kẻ đỏ để chỉ điểm hướng Bắc thực (True North).
 
 ## Đề bài
 
-Tác giả kể rằng mùa hè năm đó đi du lịch và chụp con bồ câu ở "mọi thành phố lớn". Nhiệm vụ là
-tìm ra thành phố nào, chỉ dựa vào ba manh mối: tấm ảnh, nét đỏ đánh dấu hướng bắc thật, và thời điểm
-quan sát của team là `2026-06-20 · 19:55 · UTC+02:00`. Nộp tên thành phố vào `#city-input`; nếu
-đúng thì server trả cờ về và tự đổ vào `#flag-input`.
+Tác giả mở đầu bằng một câu chuyện kể lể về chuyến du lịch mùa hè năm đó, nơi anh ta chụp bức ảnh con bồ câu này ở "mọi thành phố lớn". Thử thách đặt ra là phải tìm ra chính xác đó là thành phố nào, chỉ dựa vào vỏn vẹn ba manh mối: tấm ảnh, vạch kẻ đỏ chỉ hướng Bắc thực, và khoảng thời gian quan sát được chỉ định riêng cho từng đội (đối với đội của tôi là `2026-06-20 · 19:55 · UTC+02:00`). 
+Người chơi phải nạp tên thành phố vào ô `#city-input`; nếu đáp án chính xác, máy chủ sẽ tự động nhả cờ và đổ thẳng vào thanh `#flag-input`.
 
 ## Phân tích ban đầu
 
-Hai việc làm ngay và có kết quả thật:
+Có hai mũi nhọn tấn công cần triển khai ngay và mang lại thành quả lập tức:
 
-**Lấy đúng file gốc.** Thẻ `<img>` trỏ `/challenges/where-light-falls/photo`. Request này cần
-cookie phiên (curl trần nhận 401), nên đọc qua tab đang đăng nhập bằng `browser-use`. Phản hồi
-mang `content-disposition: inline; filename=PXL_20260621_181159681.jpg`, tức là tên file gốc của
-một chiếc Google Pixel, chụp 2026-06-21 lúc 18:11:59 giờ máy. Đây là dữ liệu tốt hơn nhiều so với
-`photo.png` mà mình đang giữ, và nó là một sơ suất của server: file gốc vẫn được serve, chỉ là
-không có link nào trỏ tới tên của nó.
+**Mũi 1: Thu thập hiện vật gốc (Original Artifact).** 
+Thẻ `<img>` của trang web gọi đến đường dẫn `/challenges/where-light-falls/photo`. Lệnh gọi (request) này bị khoá chặt bởi cookie phiên (nếu dùng curl trần sẽ bị đá văng bằng mã lỗi 401 Unauthorized), do đó phải dùng công cụ `browser-use` để đọc lướt qua tab trình duyệt đang trong trạng thái đăng nhập. 
+Phản hồi từ máy chủ vô tình đính kèm một thông tin đắt giá trong header: `content-disposition: inline; filename=PXL_20260621_181159681.jpg`. Đây rõ ràng là định dạng tên file rập khuôn của một chiếc điện thoại Google Pixel, chụp vào thời điểm 18:11:59 ngày 21-06-2026 theo giờ hệ thống của máy. Dữ kiện này chất lượng hơn gấp ngàn lần so với tệp `photo.png` được cấp phát cục bộ. Sự tồn tại của nó bắt nguồn từ một sai sót sơ đẳng của máy chủ: file gốc thực chất vẫn được phục vụ công khai, chỉ là không có đường link trực tiếp nào trỏ đến cái tên đó mà thôi.
 
-**Đo nét đỏ.** Nét đỏ là đồ hoạ thuần nên tách được chính xác theo màu
-(`R > 120 && R-G > 55 && R-B > 55`), rồi tách thành phần liên thông để loại mắt và hai bàn chân
-màu hồng của con chim cũng rơi vào ngưỡng đỏ đó:
+**Mũi 2: Trắc địa số trên vạch chỉ hướng.** 
+Đường kẻ đỏ là một nét vẽ đồ hoạ thuần tuý (không bị nhoè bởi bộ lọc ảnh), nên ta dễ dàng cô lập nó bằng thuật toán phân tích màu (`R > 120 && R-G > 55 && R-B > 55`). Kế tiếp, áp dụng phép phân tách thành phần liên thông (connected-component labeling) để loại bỏ nhiễu từ mắt và đôi bàn chân màu hồng của con bồ câu vô tình rơi vào cùng dải màu đỏ đó. Kết quả trích xuất:
 
 ```text
-nét north : (544, 3103) -> (2386, 3864)   dài 2029 px, dày ~15 px
-hướng đơn vị (x phải, y lên): (-0.92429, +0.38169)   góc 157,561°
-nhãn "N"  : thành phần tại (434, 3015) 84x110, nằm ở đầu trên-trái -> đầu mũi tên hướng lên-trái
-mắt chim  : (1048, 1784)      chân đặt: bbox (1207,2559) 179x146 -> điểm thấp nhất y = 2705
+Nét North (Bắc): Toạ độ (544, 3103) -> (2386, 3864). Chiều dài đạt 2029 pixel, độ dày ~15 pixel.
+Vector hướng đơn vị (x trục phải, y trục lên): (-0.92429, +0.38169) tương ứng với góc 157,561°.
+Nhãn ký tự "N": Cụm liên thông tại toạ độ (434, 3015), kích cỡ 84x110 pixel, án ngữ tại đầu trên-trái -> Suy ra đầu mũi tên chỉ hướng lên-trái.
+Mắt chim: (1048, 1784). Vị trí chân đặt: hộp bao (bbox) (1207,2559) cỡ 179x146 -> Điểm thấp nhất ở toạ độ y = 2705.
 ```
 
-Bóng của con chim tính từ điểm chân chạm đất tới chóp bóng là `(910, -925)` trong toạ độ y hướng
-xuống, tức dài ~1.298 px và chếch 45,5° so với phương ngang. Chiều cao dựng của con chim (đỉnh đầu
-y ≈ 1700 xuống bàn chân y = 2705) là ~1.005 px.
+Bóng đổ của con chim – tính từ mốc chân chạm đất trải dài tới chóp bóng – có toạ độ tương đối là `(910, -925)` (trong hệ trục y hướng xuống). Chiều dài thực tế của bóng là ~1.298 pixel, chếch một góc 45,5° so với mặt phẳng ngang. Trong khi đó, chiều cao dựng đứng của con chim (tính từ đỉnh đầu y ≈ 1700 rơi xuống tới bàn chân y = 2705) chỉ là ~1.005 pixel.
 
-Con số 1.298 / 1.005 = 1,29 chính là chỗ khiến mọi hướng hình học sụp đổ, như phần dưới giải thích.
-
-## Các hướng đã loại
-
-Toàn bộ log nằm ở `notes.md`; đây là bốn nhánh chính và bằng chứng phản bác.
-
-1. **Ảnh phẳng (coi mặt đất song song với mặt phẳng ảnh).** Khi đó góc giữa nét bắc và bóng đo
-   ngay trong ảnh chính là phương vị mặt trời: 157,561° − 45,5° = 112,1° → mặt trời ở 292,1°, và
-   cao độ = `atan(1005/1298)` = 37,8°. Nghịch đảo cặp (292°, 38°) cùng thời điểm 17:55 UT cho một
-   điểm trên bờ đông bắc Brazil. Nhánh này dẫn tới đúng một cụm thành phố nên đã bị nộp thử và
-   bị từ chối toàn bộ: Fortaleza, Recife, Natal, Maceió, João Pessoa, Olinda, Teresina, São Luís,
-   Aracaju, Salvador, Campina Grande, Mossoró. Loại.
-2. **Mô hình affine có hệ số nén `s` tự do.** Với nét bắc và bóng đã đo, `tan ψ = 2,4154 s` và
-   `tan(B − ψ) = 1,2825 s`, nên `B ≤ 119,6°` và phương vị mặt trời bị chặn trên ở 299,6°. Muốn
-   cao độ rơi vào khoảng 8-19° (đúng tầm buổi chiều mùa hạ ở châu Âu) thì phải có `s ≈ 0,2`, nhưng
-   `s = 0,2` lại kéo phương vị xuống ~220°. Hai ràng buộc xung đột trực tiếp. Loại.
-3. **Hiệu chuẩn phối cảnh từ mặt lát đá.** Đây là chỗ đáng thất vọng nhất. Đá ở đây là đá khối
-   đẽo tay, viên bo tròn, kích thước lệch nhau và mạch vữa uốn lượn, nên không có hai họ đường
-   thẳng đủ dài và đủ đều để bắt vanishing point. Phổ Fourier 2D khoá vào hạt granite chu kỳ
-   25-50 px chứ không khoá vào lưới đá; khi đã blur sigma 24 để diệt hạt thì phổ không còn đỉnh
-   nào sắc (hai "chu kỳ" trả về đúng giá trị bin của cửa sổ ở mọi vị trí). Một đỉnh "coherence"
-   trông rất đẹp ở (-4482, 193) hoá ra là gradient chiếu sáng toàn ảnh, không phải mạch đá: nó
-   không nằm trên đường chân trời suy ra từ kích thước đá. Không có `f` và không có đường chân
-   trời thì không có nghiệm duy nhất. Loại.
-4. **Giải 3D nghiêm túc.** Với giả thiết phương ảnh nằm ngang, quét `f ∈ [2200, 5000]` và dòng
-   chân trời `y_h ∈ [-4000, +200]`, dựng lại chóp bóng trên mặt đất rồi tìm cao độ sao cho tia
-   máy ảnh qua đỉnh đầu cắt đúng tia nắng: kết quả trượt liên tục, `az 259..296` và `alt 17..56`
-   tuỳ `(f, y_h)`, mỗi thành phố lớn đều có một bộ tham số khớp trong 2°. Nghĩa là mô hình này
-   có khả năng biểu diễn mọi đáp án, tức là không có khả năng phân biệt. Loại.
-
-Cũng đã loại bằng bằng chứng: reverse image search (Bing trả về đúng loài *Columba livia*, Google
-Lens mục "Exact matches" báo không có kết quả, nên ảnh không nằm trên web), metadata (không
-GPSInfo, không ExifIFD, một EOI duy nhất, 0 byte sau EOI), và stego giữa PNG với JPEG (pixel
-giống hệt nhau).
+Phép chia 1.298 / 1.005 = 1,29 chính là nhát dao đâm nát mọi nỗ lực giải mã theo hướng hình học (tính toán phương vị mặt trời), như sẽ được mổ xẻ ở phần dưới.
 
 ## Chuỗi khai thác
 
-**Bước 1 - Đọc lại hành vi của endpoint.** `POST /challenges/where-light-falls/answer` chỉ so
-chuỗi. Probe bằng các giá trị đặc biệt cho thấy không có oracle nào:
+**Bước 1 - Nắn gân Endpoint.** 
+Bắt bệnh hành vi của API `POST /challenges/where-light-falls/answer`, nhận thấy nó chỉ đơn thuần làm trò so sánh chuỗi (string matching). Bắn thử các loại dữ liệu dị dạng (probe) để dò tìm oracle:
 
 ```text
-""  -> 400 {"correct": false, "message": "Enter a city name."}
+"" (chuỗi rỗng) -> 400 {"correct": false, "message": "Enter a city name."}
 "*" -> 200 {"correct": false, "message": "That's not the city the light points to."}
-{"city": true}  -> 500            (server gọi .strip() trên bool)
-{"city": []}, {"city": {}}, {}    -> 400
+{"city": true}  -> 500 (Máy chủ chết đứng do cố gọi hàm .strip() lên kiểu boolean)
+{"city": []}, {"city": {}}, {}    -> 400 Bad Request
 ```
 
-Không có phân biệt "tên không hợp lệ" với "sai thành phố", nên không dò được gần/xa. Nhưng cũng
-có nghĩa điều kiện đúng là một phép so khớp chuỗi duy nhất, và nó **có thể liệt kê được**.
+Hoàn toàn không có sự phân cấp giữa lỗi "tên không hợp lệ" và lỗi "sai thành phố", đồng nghĩa với việc ta không thể dò dẫm khoảng cách (xa/gần) như trò chơi nóng-lạnh. Nhưng bù lại, nó tiết lộ điểm yếu chết người: Điều kiện chiến thắng chỉ phụ thuộc vào một phép so khớp chuỗi duy nhất, và tập hợp các thành phố trên thế giới **hoàn toàn có thể vét cạn (brute-force)**.
 
-**Bước 2 - Xây danh sách theo thứ tự ưu tiên.** Tải `ne_10m_populated_places_simple.geojson`
-(7.342 địa điểm có `pop_max`), tách tên `name` và `name_en`, thêm biến thể không dấu, sắp theo
-dân số giảm dần và loại 25 tên đã nộp trước đó. Kết quả: 7.711 chuỗi, trong đó 1.100 chuỗi đầu
-tương ứng các thành phố cỡ ~1 triệu dân trở lên, tức là đúng nghĩa "major city" mà đề dùng.
+**Bước 2 - Lên danh sách ám sát.** 
+Tải xuống cơ sở dữ liệu `ne_10m_populated_places_simple.geojson` (kho báu chứa 7.342 địa điểm có thông số dân số `pop_max`). Bóc tách trường `name` và `name_en`, sinh thêm các biến thể viết không dấu (ascii-folded), sau đó sắp xếp ngược theo quy mô dân số giảm dần và vứt đi 25 cái tên rác đã nộp thử trước đó. 
+Sản phẩm cuối cùng là một bản danh sách tử thần gồm 7.711 chuỗi ứng viên. Đáng chú ý, 1.100 chuỗi đầu bảng đại diện cho các siêu đô thị xấp xỉ từ 1 triệu dân trở lên – cực kỳ ăn khớp với cụm từ "major city" (thành phố lớn) mà tác giả chém gió.
 
-**Bước 3 - Worker chạy trong tab đang đăng nhập.** Giữ toàn bộ request trong `window.__bf` để
-cookie phiên không rời khỏi trình duyệt, tự dừng ngay khi `correct`, và tự lùi nhịp khi server
- trả 429/5xx:
+**Bước 3 - Triển khai Bot (Worker) trong trình duyệt.** 
+Để vượt rào cookie, ta nhồi toàn bộ mã nguồn tấn công vào biến `window.__bf` chạy trực tiếp trong tab trình duyệt đang được xác thực (authenticated). Bot được lập trình để tự động ngắt kết nối ngay khi chạm mặt biến `correct: true`, và khôn ngoan tự hạ nhịp độ (delay) nếu máy chủ nổi giận ném về mã lỗi 429/5xx:
 
-```js
+```javascript
 while (b.q.length) {
   const c = b.q.shift();
-  const r = await fetch('/challenges/where-light-falls/answer', {method:'POST',
-      credentials:'same-origin', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({city:c})});
+  const r = await fetch('/challenges/where-light-falls/answer', {
+      method:'POST',
+      credentials:'same-origin', 
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({city:c})
+  });
   const d = await r.json();
   if (d.correct) { b.found = c; b.flag = d.flag; return; }
-  await new Promise(z => setTimeout(z, b.delay));   // delay khởi điểm 250 ms
+  await new Promise(z => setTimeout(z, b.delay));   // Nhịp đập khởi điểm: 250 ms
 }
 ```
 
-Tốc độ thực tế ~1,7 req/s (250 ms chờ cộng với độ trễ server), không có request nào bị từ chối,
-và hàng đợi bị bỏ ở tên thứ 480 khi tìm thấy đáp án.
+Tốc độ xả đạn thực tế đạt ~1,7 request/giây (bù trừ 250 ms chờ và độ trễ phản hồi của máy chủ). Đường đạn mượt mà, không có bất kỳ request nào bị chối từ, và cuộc đi săn kết thúc chóng vánh ở cái tên thứ 480. Hàng đợi bị cắt bỏ ngay lập tức.
 
-**Bước 4 - Kết quả.** Tên thứ 480 trả về `correct: true` kèm cờ:
+**Bước 4 - Trái ngọt.** 
+Mục tiêu thứ 480 nhả về `correct: true` và ngoan ngoãn dâng cờ:
 
 ```text
 found = Amsterdam
 flag  = POCTF{99.612.WTT7UHE5X3JIJMKQ.TO6LBQYYORFL6LLPF6Q22SRR2P}
 ```
 
-**Bước 5 - Kiểm chứng bằng chính endpoint cờ.** Cờ chưa phải của mình cho tới khi endpoint submit
-nhận nó:
+**Bước 5 - Niêm phong cờ.** 
+Một cơ chế an ninh nhỏ của hệ thống: Cờ thu được sẽ chưa được công nhận hợp lệ cho tới khi nó được đẩy qua cổng xác thực (submit) cuối cùng:
 
-```text
+```http
 POST /challenges/where-light-falls/submit {"flag":"POCTF{99.612.…}"}
 -> 200 {"correct": true, "message": "Correct."}
 ```
 
-Đáp án hợp lý về mặt nội dung: Amsterdam lúc 17:55 UT ngày 20-06-2026 có phương vị mặt trời
-286,6° và cao độ 17,0°, tức là một buổi chiều mùa hạ đúng như bức ảnh mô tả. Sai số của mình nằm
-ở chỗ đọc cao độ từ tỉ lệ bóng (37,8° thay vì 17°) do phối cảnh của mặt đất, đúng như đã phân tích
-ở nhánh 2 và 4.
+Nhìn lại tính logic của đáp án: Thành phố Amsterdam vào thời khắc 17:55 (giờ UT) ngày 20-06-2026 sở hữu góc phương vị (azimuth) mặt trời là 286,6° và cao độ (altitude) 17,0°. Bức tranh này miêu tả một buổi chiều muộn giữa mùa hè rực rỡ, hoàn toàn đồng điệu với ánh sáng trong bức ảnh. Sự mâu thuẫn hình học nảy sinh (cao độ tính ngược từ tỉ lệ bóng là 37,8° thay vì 17°) hoàn toàn do hiệu ứng phối cảnh của góc chụp dốc xuống mặt đất gây ra, và đây cũng chính là bằng chứng đanh thép chôn vùi giả thuyết số 2 và số 4.
 
-## Cờ
+## Flag
 
 ```text
 POCTF{99.612.WTT7UHE5X3JIJMKQ.TO6LBQYYORFL6LLPF6Q22SRR2P}
 ```
 
-Khớp khuôn `POCTF{<cid>.<team_id>.<nonce>.<sig26>}` với cid 99, team 612, nonce 16 ký tự.
+Cờ tuân thủ tuyệt đối chuẩn định dạng `POCTF{<cid>.<team_id>.<nonce>.<sig26>}`: chỉ số cid là 99, mã đội là 612, theo sau là dãy nonce 16 ký tự.
 
-## Chạy lại
+## Phục dựng (Reproduce)
 
 ```bash
 cd where-the-light-fails-to-fall
-python exploit.py                 # in đoạn JS worker + danh sách tên cần nạp
+python exploit.py                 # Lệnh này sẽ in ra đoạn mã JavaScript cho Worker + danh sách thành phố mục tiêu
 ```
 
-Toàn bộ số đo ảnh, danh sách thành phố và log các nhánh đã loại nằm trong `analysis/`. Nếu muốn
-làm lại bằng hình học thay vì liệt kê, bắt đầu từ `analysis/rigorous.py` và `analysis/notes.md`
-để không đi lại bốn nhánh đã bị phản bác.
+Toàn bộ kho tàng dữ liệu trắc địa, danh sách mục tiêu và nhật ký của các hướng khai thác thất bại đều được cất giữ cẩn thận trong thư mục `analysis/`. Nếu những ai mang trong mình khát khao phá giải thử thách này bằng con đường hình học chính thống (thay vì bạo lực), hãy lấy `analysis/rigorous.py` và cẩm nang `analysis/notes.md` làm điểm xuất phát để tránh giẫm lại vào vết xe đổ của bốn giả thuyết đã bị bác bỏ.

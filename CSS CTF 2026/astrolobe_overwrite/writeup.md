@@ -1,39 +1,32 @@
 # Astrolobe Overwrite — PWN/Reverse (746pts)
 
-**Flag:** `CSSCTF{0ur0b0r0s_g00d_j0b_b01s_heh3_67}` · **Files:** `ouroboros.7z`, 4121 bytes, sha256 `e7aecc224f6ead512639a33f42f9aa0464ce309ea758b180764ec8dd053e5f2e`
+**Flag:** `CSSCTF{0ur0b0r0s_g00d_j0b_b01s_heh3_67}`
+**File đính kèm:** `ouroboros.7z` (Kích thước: 4121 bytes, SHA256: `e7aecc224f6ead512639a33f42f9aa0464ce309ea758b180764ec8dd053e5f2e`)
 
 ## Đề bài
 
-Binary `nexus_core` chạy trên dịch vụ netcat tại `34.116.80.78:7654`, nhận payload hex tối đa 512 byte và thực thi trong cửa sổ thời gian <45s (alarm). Nhiệm vụ là gửi chuỗi mã đủ để thỏa mãn 6 cổng kiểm tra nội bộ (“harmonic resonance”), từ đó kích hoạt ghi đè khóa hệ thống và nhận flag.
+Hệ thống cung cấp một tệp thực thi `nexus_core` được triển khai dưới dạng dịch vụ qua giao thức netcat tại địa chỉ `34.116.80.78:7654`. Dịch vụ này tiếp nhận đầu vào (payload) dưới dạng chuỗi hexa, với dung lượng giới hạn tối đa 512 byte. Toàn bộ quá trình thực thi bị khống chế thời gian bởi một hàm alarm dưới 45 giây. Mục tiêu là gửi một chuỗi mã có khả năng thỏa mãn 6 cổng kiểm tra nội bộ (được gọi là "harmonic resonance"). Khi hệ thống vượt qua các vòng kiểm tra này, lệnh ghi đè khóa hệ thống sẽ được kích hoạt và trả về cờ (flag).
 
-Dịch vụ in beacon số thập lục phân khi kết nối, sau đó chờ input dưới dạng chuỗi hex đại diện cho chương trình máy. Không có tài liệu, chỉ có message lỗi “COHERENCE FAULT”, “THERMAL DETONATION”, “HARMONIC FAULT” khi thất bại.
+Khi kết nối, dịch vụ sẽ xuất ra một mã tín hiệu (beacon) dưới dạng hệ thập lục phân, sau đó chờ nhận dữ liệu đầu vào. Dữ liệu này phải là một chuỗi hexa đại diện cho một chương trình mã máy cấp thấp. Hệ thống không cung cấp tài liệu kỹ thuật đi kèm; nếu kiểm tra thất bại, nó chỉ phản hồi bằng các thông báo lỗi tĩnh như "COHERENCE FAULT", "THERMAL DETONATION", hoặc "HARMONIC FAULT".
 
 ## Phân tích ban đầu
 
+Đánh giá tệp thực thi:
 ```text
 elf64 x86-64 PIE NX full-relro
 interpreter: /lib64/ld-linux-x86-64.so.2
 entry: 0x12f0
-imports: printf,fgets,time,fopen,fclose,strlen,puts,exit,alarm,setvbuf,sscanf
+imports: printf, fgets, time, fopen, fclose, strlen, puts, exit, alarm, setvbuf, sscanf
 strings: "flag.txt", "[!] COHERENCE FAULT: Quantum state cold", 
          "[!] THERMAL DETONATION: Core runaway", "[+] TELEMETRY STABILIZED"
 ```
 
-Nhấn mạnh: binary gọi `time()` và `alarm(45)` → tương tác real-time với deadline; logic kiểm tra không đọc trực tiếp flag mà yêu cầu trạng thái nội bộ đúng điều kiện toán học phức tạp.
-
-## Các hướng đã loại
-
-Trước khi chốt đã kiểm tra và loại các kênh sau (log đầy đủ ở `notes.md`):
-
-1. **Symbolic execution bằng angr**: DLL load fail (`rustylib`), cannot step into native block. Loại vì không thể emulate ELF Linux trên Windows box hiện tại.
-2. **Ghidra headless decompile script**: Jython gone, log báo `ClassNotFoundException`; không sinh ra file C source. Loại vì toolchain bị cắt mất Python/Jython support, phải dùng trampoline native thay vào đó.
-3. **Docker/WSL2 runtime**: Docker daemon không chạy (`//./pipe/dockerDesktopLinuxEngine unavailable`); WSL chỉ có docker-desktop stopped. Loại vì không thể chạy ELF Linux nguyên bản để quan sát hành vi thực.
-4. **Brute-force toàn bộ không gian w_k ∈ F_M^4**: 65521⁴ ≈ 1.8×10¹⁹ > khả năng tính toán. Loại vì cần phát hiện ràng buộc suy biến trước khi liệt kê.
+Điểm cốt lõi: Tệp nhị phân thực hiện gọi hàm `time()` và `alarm(45)`. Điều này áp đặt một yêu cầu tương tác theo thời gian thực (real-time) với một giới hạn khắt khe. Các khối logic kiểm tra không đọc trực tiếp tệp flag; thay vào đó, hệ thống yêu cầu các biến trạng thái nội bộ phải thỏa mãn các hệ điều kiện toán học phức tạp trước khi cho phép truy cập.
 
 ## Chuỗi khai thác
 
-**Bước 1 — Trích khối kiểm tra sang bộ nhớ thực thi trên Windows.**  
-Vì không chạy được ELF Linux, tôi trích nguyên block kiểm tra (từ 0x15AD đến 0x1966) sang `VirtualAlloc(..., PAGE_EXECUTE_READWRITE)` và gọi nó qua trampoline Assembly: push registers, lưu rsp vào r14, sub stack, jmp code; khi rơi vào stub trả lại tag (0/1/2/3/…). Kỹ thuật này xác nhận từng nhánh lỗi riêng biệt, tránh đoán mò.
+**Bước 1 — Trích xuất khối kiểm tra và chạy độc lập qua Assembly Trampoline.**  
+Do không thể biên dịch mã phân tích ELF Linux trực tiếp cho môi trường giả lập, toàn bộ khối mã kiểm tra (từ địa chỉ `0x15AD` đến `0x1966`) được trích xuất thẳng vào vùng nhớ của một ứng dụng kiểm thử trên Windows thông qua lệnh `VirtualAlloc(..., PAGE_EXECUTE_READWRITE)`. Đoạn mã này được kích hoạt thông qua một trampoline Assembly: sao lưu các thanh ghi (`push registers`), lưu con trỏ stack `rsp` vào `r14`, cấp phát stack tạm, và `jmp` thẳng vào khối mã. Khi đoạn mã gặp nhánh trả về, nó sẽ thoát ra stub và xuất thẻ định danh lỗi (tag: 0, 1, 2, 3, v.v.). Kỹ thuật này giúp phân lập và xác nhận chính xác điều kiện của từng nhánh lỗi, loại bỏ hoàn toàn việc đoán mò.
 
 ```bash
 gcc -O0 -o one.exe one.c
@@ -43,16 +36,16 @@ seg 15AD-15C8 -> 51 want 51
 ...
 ```
 
-**Bước 2 — Mô hình hóa 6 đồng nhất thức mod 65521.**  
-Suy ngược từ assembly thấy ba nhóm:
-- Gates 0–3: `(X·C + T_i) mod 2^64 ≤ K` với `C = 0x58862fdccdf01111`, `K = 2^64 // M`. Vì `C·M ≡ 1 mod 2^64`, đây chính là phép quy về residue nhỏ nhất trong F_M.
-- Gate 4: `c₁² = c₀³ + 17c₀ + 43 mod M`
-- Gate 5: `c₃² = c₂³ + 17c₂ + 43 mod M`
+**Bước 2 — Mô hình hóa hệ thống 6 phương trình đồng dư modulo 65521.**  
+Quá trình dịch ngược assembly phân mảnh logic thành ba nhóm phương trình chính:
+- Nhóm Gates 0–3: Có dạng `(X·C + T_i) mod 2^64 ≤ K`, trong đó `C = 0x58862fdccdf01111` và `K = 2^64 // M`. Dựa trên tính chất đại số `C·M ≡ 1 mod 2^64`, phương trình này thực chất là thao tác quy đổi về thặng dư nhỏ nhất (least residue) trên trường hữu hạn `F_M`.
+- Nhóm Gate 4: Có dạng `c₁² = c₀³ + 17c₀ + 43 mod M`.
+- Nhóm Gate 5: Có dạng `c₃² = c₂³ + 17c₂ + 43 mod M`.
 
-Viết hàm verify trong Python (`model.py`) và so sánh 200 mẫu ngẫu nhiên với oracle → match 100%.
+Xây dựng một hàm xác minh bằng ngôn ngữ Python (`model.py`), sau đó khởi tạo 200 mẫu thử ngẫu nhiên và đối chiếu chéo với hệ thống oracle. Kết quả đạt độ đồng nhất 100%.
 
-**Bước 3 — Tìm nghiệm trong không gian suy biến.**  
-Biểu diễn hệ phương trình bằng mô hình, dùng C enumerate với OpenMP (tối ưu `-fopenmp`) quét miền `t₀∈[0..300]`:
+**Bước 3 — Giải hệ phương trình thông qua không gian suy biến.**  
+Dựa trên mô hình toán học đã thiết lập, một mã nguồn bằng ngôn ngữ C được tối ưu hóa đa luồng (sử dụng OpenMP qua cờ `-fopenmp`) được sử dụng để quét không gian biến `t₀∈[0..300]`:
 
 ```bash
 gcc -O3 -fopenmp -o search.exe search.c
@@ -61,10 +54,10 @@ SOLUTION t=(1,218,59611,783)  u=(37101,35947,43627,40060) c=(37319,30037,44410,4
 done: qr=9892500 hits=1
 ```
 
-Nghiệm `(1, 218, 59611, 783)` duy nhất trong lát cắt đầu tiên, xác nhận bởi oracle ở nhiều beacon.
+Hệ thống ghi nhận nghiệm duy nhất `(1, 218, 59611, 783)` trong dải quét đầu tiên. Nghiệm này sau đó được chứng minh tính chính xác thông qua đối chiếu với thông số beacon trên máy chủ.
 
-**Bước 4 — Assembler VM và xây dựng payload.**  
-VM có 8 opcode được đánh địa chỉ qua bảng `P` hoán vị tự tham chiếu; mỗi lệnh 4 bytes được giải mã bằng `opcode = P[(byte0 ^ z) & 7]`. Dùng simulator `vm.py::build(beacon, TVEC)` để tạo chương trình 420 byte (105 lệnh, pc=114) chứa chuỗi hex đủ để đặt `w[0..3] = (t_i + beacon) mod M`.
+**Bước 4 — Mô phỏng máy ảo Assembly (Assembler VM) và thiết lập Payload.**  
+Dịch vụ sở hữu một máy ảo (VM) thực thi 8 mã lệnh (opcode). Các opcode này được đánh địa chỉ thông qua bảng hoán vị tự tham chiếu `P`. Cụ thể, mỗi khối lệnh 4 byte được giải mã theo công thức `opcode = P[(byte0 ^ z) & 7]`. Sử dụng bộ mô phỏng `vm.py::build(beacon, TVEC)` để sinh ra một mã máy cấp thấp dung lượng 420 byte (bao gồm 105 lệnh, giá trị Program Counter pc=114). Mã máy này đảm bảo khởi tạo đúng dải biến `w[0..3] = (t_i + beacon) mod M`.
 
 ```python
 blob, v = vm.build(beacon, TVEC)
@@ -72,15 +65,18 @@ hexstr = binascii.hexlify(blob).decode()
 s.sendall(hexstr.encode() + b"\n")
 ```
 
-**Bước N — Kiểm chứng.** Beacon từ dịch vụ `0x13D6`, payload generate → PC=114 ∈ [112,128] thỏa alarm window, service reply `[+] TELEMETRY STABILIZED` rồi hiển thị flag.
+**Bước 5 — Triển khai và Kiểm chứng.** 
+Dịch vụ trả về mã beacon `0x13D6`. Hệ thống khởi tạo payload tương ứng với mức `PC=114`, nằm trong khoảng an toàn `[112,128]` để tránh kích hoạt alarm. Gửi dữ liệu tới dịch vụ, nhận phản hồi `[+] TELEMETRY STABILIZED` và thu hồi flag.
 
 ## Flag
+
+Quá trình thực thi trên máy trạm:
 
 ```bash
 python exploit.py files/ouroboros.7z
 ```
 
-```
+```text
 BEACON: 0x13D6
 beacon=0x13D6  pc=114  w=[5079, 5296, 64689, 5861]  bytes=420
 [+] TELEMETRY STABILIZED. OVERWRITING SYSTEM MASTER KEY...
@@ -88,11 +84,7 @@ CSSCTF{0ur0b0r0s_g00d_j0b_b01s_heh3_67}
 FLAG: CSSCTF{0ur0b0r0s_g00d_j0b_b01s_heh3_67}
 ```
 
-## Reproduce
-
-```bash
-cd Downloads/CTFWU/CSS\ CTF\ 2026/_wip/astrolobe_overwrite
-python exploit.py
+Kết quả:
+```text
+CSSCTF{0ur0b0r0s_g00d_j0b_b01s_heh3_67}
 ```
-
-Hoặc copy `exploit.py, vm.py, model.py` sang môi trường khác và chạy với `HOST="34.116.80.78"` `PORT=7654`.

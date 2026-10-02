@@ -27,13 +27,6 @@ Counting the frequency of CAN IDs:
 `0x7E0`/`0x7E8` are the standard request/response pair of UDS diagnostics over CAN, carried by ISO-TP
 (ISO 15765-2). The other eight IDs are periodic engine traffic, with no question-answer cadence.
 
-## Approaches Ruled Out
-
-1. The flag sitting in the powertrain traffic. `0C9 158 1A0 1F1 244 2C0 316 3B0` account for nearly the whole log,
-   with short unstructured payloads; only `0x7E0`/`0x7E8` form a request/response pair.
-2. Reading the log with `candump`/can-utils/Wireshark/python-can. The host has none of those tools. The log is 132
-   lines, so writing a reassembler in standard Python was the fastest route.
-
 ## Exploit Chain
 
 **Step 1 - Reassembling the ISO-TP messages.** The first 4 bits of the first byte are the PCI: `0` Single Frame,
@@ -49,7 +42,7 @@ The most notable sequence, all on `0x7E8`:
 7E8#2366632D34626135   CF 3
 7E8#242D613965362D30   CF 4
 7E8#2532323961336231   CF 5
-7E8#26613030387D0000   CF 6 (2 byte cuối là padding)
+7E8#26613030387D0000   CF 6 (last 2 bytes are padding)
 ```
 
 Glued back together this is `62 F1 A0` + 43 bytes of data. `62` is the positive response of service `22`

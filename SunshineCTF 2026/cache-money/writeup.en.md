@@ -23,11 +23,11 @@ fixed). Three primitives, exactly as the hint "the books haven't been audited" s
 `transfer(src, dst)` frees src's ledger and then assigns that same freed pointer to dst:
 
 ```asm
-401ac9: rdi = [src+0x18]      ; ledger cũ của src
+401ac9: rdi = [src+0x18]      ; old ledger of src
 401acd: call free
 401ad2: rax = [src+0x18]
-401ae8: [dst+0x18] = rax      ; dst nhận con trỏ đã free
-401b1a: [src+0x28] = 0        ; src chỉ bị đánh dấu inactive, vẫn nằm trong mảng
+401ae8: [dst+0x18] = rax      ; dst receives the freed pointer
+401b1a: [src+0x28] = 0        ; src is only marked inactive, still in the array
 ```
 
 This yields a use-after-free on the heap: reading from and writing to a chunk that is sitting in

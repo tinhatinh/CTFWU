@@ -22,7 +22,7 @@ Counting them: 17 `DEADKEY` blocks, one entry point (`0060`, because it is never
 
 ```
 DEADKEY 02b0
-007d    2600          <- không có @  =>  U+2600 BLACK SUN WITH RAYS  =  ☀
+007d    2600          <- no @  =>  U+2600 BLACK SUN WITH RAYS  =  ☀
 ```
 
 "he put the sun in his keyboard" taken completely literally: this layout can emit the sun ☀ through a dead-key sequence, and "my eyes burn" is the reaction to seeing it.

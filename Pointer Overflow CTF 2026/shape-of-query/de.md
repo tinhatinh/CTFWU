@@ -48,7 +48,7 @@ enum UserRoleEnum { ADMIN MEMBER }
 
 ## Approach Summary
 
-`user(id:)` chặn đúng (chỉ trả về chính mình, kể cả `admin_612` cùng team), nhưng **field resolver của `privateNotes` chỉ được gắn kiểm tra quyền trên đường `Query.user`, còn đường `Query.me -> Team.members -> User` thì không**. Chỉ cần đi theo shape lồng nhau là `privateNotes` của admin team mình bị trả về thô, và cờ nằm trong đó.
+`user(id:)` chặn đúng (chỉ trả về chính user, kể cả `admin_612` cùng team), nhưng **field resolver của `privateNotes` chỉ được gắn kiểm tra quyền trên đường `Query.user`, còn đường `Query.me -> Team.members -> User` thì không**. Chỉ cần đi theo shape lồng nhau là `privateNotes` của admin team đó bị trả về thô, và cờ nằm trong đó.
 
 ## Reproduce
 

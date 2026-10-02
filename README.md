@@ -135,13 +135,6 @@ Each challenge directory follows a consistent layout:
 
 </details>
 
-## Tools Used
-
-Solves are built with minimal dependencies - most use only Python stdlib (`socket`, `struct`, `hashlib`) or Node.js with `ethers.js` for Web3 challenges. No `pwntools` - all exploit scripts run on any OS including Windows.
-
-## License
-
-Educational use. Challenge descriptions and flag strings remain the property of their respective CTF organizers.
 <details>
 <summary><b>CSS CTF 2026 - 17 solved challenges</b></summary>
 
@@ -182,3 +175,11 @@ Educational use. Challenge descriptions and flag strings remain the property of 
 | [where-the-light-fails-to-fall](Pointer%20Overflow%20CTF%202026/where-the-light-fails-to-fall/) | OSINT | Hard | `POCTF{99.612.encrypted_token_sig}` |
 
 </details>
+
+## Tools Used
+
+Solves are built with minimal dependencies - most use only Python stdlib (`socket`, `struct`, `hashlib`) or Node.js with `ethers.js` for Web3 challenges. No `pwntools` - all exploit scripts run on any OS including Windows.
+
+## License
+
+Educational use. Challenge descriptions and flag strings remain the property of their respective CTF organizers.

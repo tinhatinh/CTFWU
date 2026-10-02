@@ -21,7 +21,7 @@ How am I supposed to know? Give it a try!
 TIME OF OBSERVATION (YOUR TEAM)
 2026-06-20 · 19:55 · UTC+02:00
 
-NOTES            (khối này rỗng trên trang của team mình)
+NOTES            (khối này rỗng trên trang của team đó)
 YOUR ANSWER (CITY NAME)   [ input#city-input ]  Submit city
 SUBMIT FLAG               [ input#flag-input ]  Submit flag
 ```

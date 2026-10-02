@@ -45,24 +45,6 @@ Baseline: upload a self-generated 2 second WAV, render with `slug=audiogram`:
 {"ok": true, "outputs": [{"file": "audiogram.png", "url": "/m/b9f13764512c81b7/audiogram.png"}], "errors": null}
 ```
 
-## Approaches Ruled Out
-
-Before settling, the following channels were checked and ruled out (full log in `notes.md`). Probing `slug` with
-shell characters:
-
-| slug | response |
-| --- | --- |
-| `aa;id` | a real file `aa;id.png` gets created |
-| `aa$(id)`, `` aa`id` ``, `aa\|id` | all end up verbatim as filenames |
-| `x' && id && 'y` | ffmpeg: `Unable to find a suitable output format for 'x''` |
-
-1. `slug` is passed through a shell. Table above: `;`, `$( )`, backtick and `|` all only become characters
-   in a filename. There is no shell standing behind it.
-2. argv is safely quoted before it reaches ffmpeg. Last row of the table: the payload `x' && id && 'y`
-   lets a `'` through to ffmpeg, giving `Unable to find a suitable output format for 'x''`.
-3. That one must render an image and then OCR it, or write the target file into the workspace to read it. `errors` carries
-   ffmpeg's stderr in full, so the target file's contents come back in the response's own JSON.
-
 ## Exploit Chain
 
 **Step 1 - Locating the command splice.** There is no shell, but there is argv:

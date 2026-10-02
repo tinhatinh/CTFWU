@@ -190,7 +190,7 @@ H51. Key JWT ngắn nên có thể vét cạn.
 H52. Cờ cố định theo instance.
 `result: SAI, và là phát hiện quan trọng nhất phiên` bộ cờ đổi giữa hai lần đo trên cùng một URL, khoảng 2,5 giờ: ledger `71dc7efd...` rồi `9404f65a...`. Trong vài phút liên tiếp thì ổn định (3 lần chạy exploit.py cho cùng 3 UUID). Vậy cờ sinh lại khi container khởi động lại, còn key JWT thì không đổi (token cũ vẫn verify được, H30). Hệ quả thực chiến: phải lấy cờ và nộp ngay trong cùng lần chạy, không tin vào UUID ghi ở phiên trước.
 
-## Phiên 5, tự kiểm lỗ hổng đo lường của chính mình
+## Phiên 5, tự kiểm lỗ hổng đo lường của chính user
 
 Người dùng phản hồi rằng tôi bị tunnel vision. Kiểm lại quy trình, tìm ra ba lỗi trong cách đo của chính tôi, cả ba đều là lỗ hổng thật chứ không phải nghi thức:
 

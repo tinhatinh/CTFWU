@@ -88,20 +88,6 @@ The backend had already summarised and restructured the submission into exactly 
 engine looks for: `affected_component` / `affected_version` / `primary_claim`. The intake door is a write
 port into the RAG index, and it normalises the data for us.
 
-## Approaches Ruled Out
-
-Before settling, these channels were checked and eliminated (full log in `notes.md`):
-
-1. The root cause already being in the corpus, needing only retrieval to bring it to light. The 32 KB
-   records actively refute it (the key-line table above) and `analyze` on the clean state only gives
-   `mentions / 0.5 / 0/10`. There is no record to "bring to light".
-2. Reading the published schema to get the routes. `openapi.json`, `docs`, `redoc` are all 404; the routes
-   have to be taken from the 5 modules in `static/js/`.
-3. `content` having to contain an injection string. The submission keeps the corpus's prose voice, contains
-   no word "ignore", and still reaches `supports 5/10`.
-4. "Completely convinced" meaning `confidence` 1.0. `relation=supports
-   confidence=0.9 supporting=5/10` was already enough to flip both gates. No absolute level to chase.
-
 ## Exploit Chain
 
 **Step 1 - Submit a decent technical document through intake.** `POST /api/research/submissions`

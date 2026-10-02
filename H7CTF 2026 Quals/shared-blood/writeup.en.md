@@ -54,7 +54,7 @@ The decrypted block is 128 bytes long:
 
 ```
 0002 81c2c61e...415d5d 00 766c745f343832353238633831343263613962316665353763666533
-└type 2┘└── 97 byte padding, không có byte 0 ──┘└┘└──── message: "vlt_482528c8142ca9b1fe57cfe3" ────┘
+└type 2┘└── 97 byte padding, no null bytes ──┘└┘└──── message: "vlt_482528c8142ca9b1fe57cfe3" ────┘
 ```
 
 The `00 02 PS 00 M` structure with a PS containing no zero byte confirms that the private key found is correct (a

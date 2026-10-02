@@ -13,9 +13,9 @@ script. Every conclusion below is drawn from the binary itself.
 ## Initial Analysis
 
 ```
-Type: EXEC (không PIE), statically linked, stripped, entry 0x401000
+Type: EXEC (no PIE), statically linked, stripped, entry 0x401000
 phnum = 2: LOAD 0x400000 R (0xb0) | LOAD 0x401000 R+X (0x6c)
-không có PT_GNU_STACK
+no PT_GNU_STACK
 ```
 
 `Type: EXEC` means no PIE, so every code address is a constant and the code segment does not need
@@ -123,7 +123,7 @@ by the two `read` calls so it is left empty:
 0x401017 -> 8 byte    (rsi = rsp)
 0x401021 -> 8 byte    (thêm rdi, rsi từ frame)
 0x401028 -> 24 byte   (thêm rdx từ frame)
-0x401069 -> 24 byte   (thêm rax từ frame)  <== toàn quyền với một syscall tùy chọn
+0x401069 -> 24 byte   (plus rax from frame)  <== full control with an arbitrary syscall
 ```
 
 The whole ladder matches, so the frame is loaded in full. `analysis/probe_syscall_allow.py` then uses
@@ -142,7 +142,7 @@ the shell that is gained has read permission on this file.
 ```bash
 python exploit.py                              # mặc định: cat /ctf/flag.txt + ls -la /ctf /home
 python exploit.py 'id' 'cat /ctf/flag.txt'     # mỗi argv một lệnh, gửi lần lượt
-python analysis/probe_args.py                  # bậc thang đo từng thanh ghi của sigframe
+python analysis/probe_args.py                  # stepwise measurement of each sigframe register
 python analysis/measure_rsp.py                 # đo lại delta buf = L - 0x80
 ```
 

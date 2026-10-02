@@ -2,105 +2,75 @@
 
 **Flag:** `sun{you_must_be_some_sort_of_nimble_space_navigator}`
 
-## 1. Loại trừ trước khi tìm đúng
+## Phân tích ban đầu
 
-Binary là PIE, NX, Partial RELRO, có bảng symbol đầy đủ. Quét toàn file:
+Tệp thực thi được bảo vệ bằng hàng loạt cơ chế bảo mật: PIE, NX, Partial RELRO và vẫn còn giữ nguyên bảng symbol. Đặc biệt, tệp không hề chứa bất kỳ gadget dạng `pop reg; ret` nào (`5f c3`, `5e c3`, `5a c3`), bảng PLT cũng hoàn toàn vắng bóng các hàm thực thi shell như `system` hay `execve`. Không những thế, mọi bộ đệm tiếp nhận dữ liệu đầu vào đều được kiểm soát kích thước cực kỳ chặt chẽ.
 
-- không có một `pop reg; ret` nào (chuỗi `5f c3`, `5e c3`, `5a c3` đều 0 kết quả),
-- không có `system`/`execve` trong PLT,
-- mọi buffer input đều được chặn đúng kích thước.
+Cụ thể, hàm `raw_readline(buf, len)` giới hạn khắt khe số lượng byte được đọc và luôn tự động chốt hạ bằng ký tự null `\0` tại vị trí `buf[len-1]`. Áp dụng với cấu trúc `buf = rbp-0x100, len = 0x100`, byte cuối cùng ghi được sẽ dừng lại ở `rbp-0x01`. Vì con trỏ rbp lưu trữ (Saved RBP) nằm ngay tại vị trí `[rbp]`, cách vùng ghi tối đa đúng 1 byte, lỗ hổng tràn bộ đệm (buffer overflow) hay khai thác ROP truyền thống là hoàn toàn vô vọng.
 
-`raw_readline(buf, len)` đọc từng byte và dừng ở `count = len-1`, rồi ghi NUL tại
-`buf[len-1]`. Với `buf = rbp-0x100, len = 0x100` thì byte cuối cùng ghi được là
-`rbp-0x01`. Saved RBP nằm tại `[rbp]`, không phải `[rbp-8]`, nên nó nằm ngay sau
-vùng ghi đúng 1 byte. Kiểm chứng động: gửi 255 byte 'A' vào prompt cuối của
-`payment_info`, chương trình vẫn in tiếp các dòng sau đó, nghĩa là không có gì bị đè.
+## Lỗ hổng đọc bộ nhớ
 
-Kết luận: không có overflow, không có ROP. Vậy "navigate this stack" nghĩa là gì?
-
-## 2. Bug thật: một ô stack không bao giờ được ghi
+Mấu chốt của bài toán lại nằm ở một lỗi sơ đẳng: sử dụng biến trên stack mà không khởi tạo giá trị ban đầu.
 
 ```asm
 raw_parse_int(rdi=str, rsi=out):
-  14c6:  cmp    al,0x2f          ; ký tự đầu không phải chữ số
+  14c6:  cmp    al,0x2f          ; kiểm tra nếu ký tự đầu tiên không phải là chữ số
   14c8:  jle    14de
   14de:  mov    eax,0x0
-  14e3:  jmp    156a             ; return 0  -> KHÔNG ghi *out
+  14e3:  jmp    156a             ; trả về 0 -> KHÔNG hề ghi giá trị vào biến con trỏ *out
 ```
 
-Nhánh trả về sớm bỏ qua việc ghi `*out`. Mọi nơi gọi đều truyền một biến local chưa khởi
-tạo (chỉ `main`, `start_position`, `initial_call` là tự gán 0 ở đầu hàm). Và `cancel_plan`
-thì in biến đó ra:
+Nhánh thoát sớm này đã vô tình bỏ qua việc gán giá trị cho con trỏ `*out`. Khi các hàm gọi tới nó truyền vào địa chỉ của một biến cục bộ chưa được khởi tạo, biến đó sẽ giữ nguyên giá trị rác sẵn có trên stack. Cụ thể, trong hàm `cancel_plan`, giá trị rác này sau đó lại được in thẳng ra màn hình:
 
 ```asm
 2f34:  print "You've entered \""
-2f4b:  raw_print_int([rbp-0x204])      ; ô chưa được ghi
+2f4b:  raw_print_int([rbp-0x204])      ; in ra ô nhớ chưa hề được ghi
 2f50:  print "\", are you sure?"
 ```
 
-Chỉ cần trả lời không phải số là chương trình in ra 4 byte rác của stack dưới dạng một
-số nguyên có dấu. Đó là primitive đọc bộ nhớ.
+Chính vì thế, nếu người dùng cố ý nhập vào một chuỗi không phải là số nguyên, chương trình sẽ in ra 4 byte dữ liệu rác trên stack dưới dạng số nguyên có dấu. Đây chính là primitive đọc bộ nhớ (memory leak) hoàn hảo để giải quyết thử thách.
 
-## 3. Cờ được rải trên stack
+## Khai thác
 
-`place_flag()` chạy trước menu:
+**Bước 1 - Truy tìm vị trí cờ trên stack.** 
+Cờ không nằm gọn một chỗ mà đã bị xé lẻ trên stack bởi hàm `place_flag()` (hàm này được thực thi trước khi hiển thị menu):
 
 ```asm
 18f8:  open("flag.txt", 0)
-1938:  read(fd, rbp-0x2060, 0x3c)          ; 60 byte
+1938:  read(fd, rbp-0x2060, 0x3c)          ; đọc 60 byte
 loop i = 0..12:
-  d    = CHUNK_DEPTH[i]                   ; bảng u32 tại 0x4020
-  dest = rbp-0x2020 + (0x19dc - d)        ; = rbp - 0x644 - d
-  sao chép 4 byte flag[i*4 .. i*4+3] vào dest
+  d    = CHUNK_DEPTH[i]                   ; tham chiếu từ bảng số nguyên u32 tại 0x4020
+  dest = rbp-0x2020 + (0x19dc - d)        ; công thức: rbp - 0x644 - d
+  sao chép 4 byte flag[i*4 .. i*4+3] vào địa chỉ dest
 ```
 
-place_flag dùng frame 0x2060 byte (probe 2 lần 0x1000), rồi return mà không in gì. Tính
-theo rbp của main, 13 mẩu cờ nằm tại:
+Hàm sử dụng một khung stack (frame) khổng lồ lên tới 0x2060 byte, sau đó giải phóng và return. Dựa vào vị trí con trỏ `rbp` của hàm `main`, 13 mảnh cờ 4-byte được rải rác tại các vị trí:
+`rbp_main - {0xb64,0xbe4,0xc84,0xcd4,0xd04,0xda4,0xdf4,0xe24,0xec4,0xf14,0xf44,0xf64,0xfe4}`. Điều đáng nói là toàn bộ các mảnh này đều nằm chìm sâu trong vùng stack cũ – nơi mà các menu gọi tiếp theo sẽ sử dụng và ghi đè lên.
 
-```
-rbp_main - {0xb64,0xbe4,0xc84,0xcd4,0xd04,0xda4,0xdf4,0xe24,0xec4,0xf14,0xf44,0xf64,0xfe4}
-```
+**Bước 2 - Điều hướng ngăn xếp (Stack Navigation).** 
+Độ sâu của ô nhớ bị rò rỉ (`rbp_cancel_plan - 0x204`) hoàn toàn phụ thuộc vào đường đi (path) của người dùng xuyên qua cấu trúc cây menu. Nguyên lý là `rbp_callee = rbp_caller - (frame_size + 16)` và kích thước của mọi frame luôn là bội số của 0x10. 
 
-Toàn bộ đều nằm trong vùng mà các frame của cây menu dùng lại về sau.
-
-## 4. "Điều hướng stack"
-
-Vì `rbp_callee = rbp_caller - (frame_size + 16)` và mọi frame là bội số của 0x10, độ sâu
-của ô leak `rbp_cancel_plan - 0x204` chỉ phụ thuộc vào chuỗi menu đã bấm. Bảng frame:
-
+Khảo sát bảng kích thước frame:
 ```
 start_position 0x110  initial_call 0x170  report_outage 0x150
 technical_support 0x160  other_inquiries 0x190  cancel_plan 0x430
 ```
 
-Đường ngắn nhất tới cancel_plan là `1 -> 6 -> 2` (gọi điện -> vấn đề khác -> huỷ), cho ô
-leak ở `rbp_main - 0x764`. Mỗi lần lồng thêm một cấp sẽ dịch ô đó xuống thêm đúng kích
-thước frame. BFS trên đồ thị menu (`analysis/paths.py`) tìm ra đường đi chạm cả 13 offset;
-kết quả được mã hoá trong `EDGES`/`plan()` của `solve.py`.
+Mỗi lần di chuyển sâu xuống một cấp menu, ô nhớ bị rò rỉ sẽ bị đẩy lùi xuống tương ứng với kích thước frame. Giao thức khai thác sẽ triển khai thuật toán Duyệt theo chiều rộng (BFS) để dò tìm những tổ hợp đường đi cụ thể có khả năng quét trúng 13 vị trí cờ.
 
-Ví dụ hai đường thực dụng:
-
-| mẩu | chuỗi lựa chọn |
+Ví dụ:
+| Số thứ tự mảnh | Tổ hợp đường đi |
 |---|---|
-| 0 (`sun{`) | `1 6 2` |
-| 12 (`tor}`) | `1 6 2` rồi cancel_plan tự gọi nó 2 lần (lý do huỷ = 4) |
+| Mảnh 0 (`sun{`) | Nhấn `1 -> 6 -> 2` (gọi điện -> vấn đề khác -> huỷ), rò rỉ tại `rbp_main - 0x764` |
+| Mảnh 12 (`tor}`) | Nhấn `1 -> 6 -> 2`, sau đó kích hoạt đệ quy gọi `cancel_plan` 2 lần liên tiếp (bằng cách chọn lý do huỷ = 4) |
 
-Giao thức trong một cancel_plan:
+**Bước 3 - Quá trình trích xuất.** 
+Kịch bản thực thi một lượt gọi `cancel_plan` diễn ra như sau:
+- Menu `start_position` sẽ xoá cờ tại `userData+4`, sau đó gọi `login_roleplay` (trình bày 3 câu hỏi liên tiếp).
+- Ở Câu hỏi 1: Nhập vào một ký tự chữ cái (không phải số nguyên) -> nội dung biến trên stack không bị thay đổi.
+- Ở Câu hỏi 2: Chương trình ngây thơ in ra giá trị biến -> qua đó làm rò rỉ thành công 4 byte cờ.
+- Để đào sâu hơn vào stack: Ta chọn đáp án theo thứ tự Câu 1 = `0`, Câu 2 = `1`, Câu 3 = `4` (nhằm kích hoạt gọi đệ quy).
 
-- lần đầu tiên nó gọi `login_roleplay` (3 câu hỏi), vì `start_position` xoá cờ `userData+4`;
-- q1: trả lời không phải số -> ô giữ nguyên giá trị cũ;
-- q2: in ra `You've entered "<ô đó>"` -> đọc 4 byte;
-- nếu muốn lồng sâu hơn: q1 = `0`, q2 = `1` (để đi tiếp tới menu lý do), q3 = `4`
-  (fun fact rồi `cancel_plan()` đệ quy).
+Mở tổng cộng 13 luồng kết nối tương ứng với 13 đường đi đã tính toán, lần lượt trích xuất và ghép mí 13 mảnh 4-byte lại với nhau để khôi phục trọn vẹn lá cờ.
 
-Chạy 13 kết nối, mỗi kết nối một đường đi, ghép 13 x 4 byte lại là ra cờ.
-
-## 5. Mấy chi tiết phụ giúp sống sót
-
-- Nhập `42` ở câu "Press enter to start." sẽ đặt `be_annoying = 0`, tắt toàn bộ `nanosleep`,
-  không còn phải chờ hàng chục giây mỗi lần gọi `speak_with_an_operator`.
-- Cây menu nói dối theo đúng chủ đề dark-pattern: muốn gặp `cancel_plan` phải bấm 2 ở
-  mục "other inquiries", dù menu ghi "press 3 to speak with an operator". Hai lệnh `call`
-  nằm cạnh nhau trong disassembly khiến mình đoán ngược; chỉ một kết nối thăm dò là ra.
-- Không có marker `>>>` ở menu của `start_position`, nên đồng bộ theo chuỗi dấu hiệu riêng
-  của từng prompt (`Press 8 for yes.`, `Please enter the name of your first pet`, ...).
+Một mẹo tiết kiệm thời gian: Nhập `42` ngay tại dòng nhắc lệnh "Press enter to start." để vô hiệu hoá chế độ `nanosleep`, giúp cắt giảm đáng kể khoảng thời gian chờ chết của hàm `speak_with_an_operator`. Ngoài ra, mặc dù menu gợi ý "press 3 to speak with an operator", tuỳ chọn chính xác để rẽ sang mục khác trên thực tế lại là phím 2. Để tự động hoá, script sẽ đánh dấu đồng bộ (sync) dựa trên văn bản câu hỏi độc nhất (Ví dụ: `Press 8 for yes.`).

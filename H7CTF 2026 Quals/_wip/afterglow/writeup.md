@@ -11,13 +11,6 @@
 <Kết quả triage: loại file, mitigation/kích thước/entropy, những điểm bất thường đầu tiên.
 Nêu rõ vì sao những điểm đó gợi hướng này.>
 
-## Các giả thuyết đã loại trừ
-
-Trước khi chốt đã kiểm tra và loại các kênh sau (log đầy đủ ở `notes.md`):
-
-1. **<giả thuyết>**: <bằng chứng phản bác>. Loại.
-2. **<giả thuyết>**: <bằng chứng phản bác>. Loại.
-
 ## Chuỗi khai thác
 
 **Bước 1 - <việc làm>.** <kỹ thuật + vì sao làm bước này>

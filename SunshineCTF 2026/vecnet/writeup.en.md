@@ -222,8 +222,8 @@ sun{k33p_your_emb3ddings_secur3!}
 ## Reproduce
 
 ```
-python exploit.py            # ~40s, không cần torch
-python exploit.py --invert   # chạy cả vec2text, ~3 phút (model đã cache)
+python exploit.py            # ~40s, no torch needed
+python exploit.py --invert   # runs vec2text too, ~3 mins (cached model)
 ```
 
 Both paths were re-run against the live instance after capturing the flag and produced exactly the

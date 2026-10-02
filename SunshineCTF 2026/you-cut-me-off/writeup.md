@@ -1,56 +1,57 @@
 # You Cut Me Off — Forensics (Medium)
 
-**Flag:** `sun{totallyoriginalchallengeidea}` · **Files:** `HEREYOUGO.PNG`, 38759 B, ảnh Discord 492x382 RGBA
+**Flag:** `sun{totallyoriginalchallengeidea}`
+**Files:** `HEREYOUGO.PNG` (38759 B, ảnh Discord độ phân giải 492x382 RGBA)
 
 ## Đề bài
 
-Mô tả bài chỉ có: "Here's a flag! It's uhhh ...... ............ ......................uhhhhhhhhhh..................... hmm....." kèm một file ảnh. Ảnh là ảnh chụp đoạn chat Discord: người tên Ardian tuyên bố "today i will make a ctf challenge", gửi vài cái meme, rồi "ill type it out just give me a second" - và hết ảnh đúng ở chỗ đó. Tên bài, số dấu chấm trong mô tả và viền tin nhắn cụt ở mép dưới đều chỉ vào một thứ: phần cuối bị cắt.
+Phần mô tả của bài tập vô cùng kỳ lạ: "Here's a flag! It's uhhh ...... ............ ......................uhhhhhhhhhh..................... hmm....." kèm theo một tệp hình ảnh. Bức ảnh chụp lại một đoạn chat trên Discord, trong đó một nhân vật mang tên Ardian dõng dạc tuyên bố "today i will make a ctf challenge", thả vài bức ảnh chế meme, rồi kết thúc bằng câu nói "ill type it out just give me a second". Ngay sau câu nói này, bức ảnh bị cắt ngang một cách phũ phàng. Tiêu đề của thử thách, vô số dấu chấm lửng trong mô tả, và đường viền tin nhắn bị cắt gọt sắc lẹm ở mép dưới bức ảnh đều cùng hội tụ về một gợi ý rõ ràng: phần mấu chốt cuối cùng đã bị cố tình cắt xén.
 
 ## Phân tích ban đầu
 
-Đi theo đường stego trước, vì mô tả gợi "cờ nằm trong ảnh". Cả ba hướng đều chết:
-
-1. Dữ liệu nối thêm / chunk ẩn. Duyệt hết chunk: `IHDR sRGB gAMA pHYs IDAT IEND`, sau `IEND` còn đúng 0 byte, không có `tEXt`/`iTXt`/`zTXt`.
-2. LSB và kênh alpha. Alpha bằng 255 toàn ảnh. LSB kênh xanh dương có tới 96% giá trị lẻ, trông rất đáng ngờ, nhưng màu nền của ảnh Discord là `(50,23,23)` - chẵn/lẻ/lẻ - nên độ lệch đó là của bảng màu, không phải của dữ liệu nhúng.
-3. Chữ màu gần nền (contrast stego). Đếm khoảng cách tới màu nền rồi khuếch đại 24 lần: không có lớp chữ nào hiện ra.
-
-Điểm đáng chú ý duy nhất còn lại là kích thước nén không tương xứng: một ảnh 492x382 RGBA mà IDAT tới 38652 byte thì hơi lớn cho một screenshot ít màu.
+Man mối đáng ngờ duy nhất hiện rõ ngay từ đầu chính là sự bất hợp lý về kích thước nén. Đối với một tấm ảnh chụp màn hình chứa ít màu sắc và độ phân giải khiêm tốn 492x382 RGBA, việc chunk dữ liệu `IDAT` phình to tới 38652 byte là một sự lãng phí quá bất thường.
 
 ## Chuỗi khai thác
 
-**Bước 1 - So kích thước giải nén với kích thước khai báo.** Đây là chỗ bài này khác mọi bài stego ảnh khác: không cần đụng vào pixel, chỉ cần đọc header và giải nén.
+**Bước 1 - Đối chiếu kích thước thực tế so với kích thước khai báo.** 
+Đây là điểm sáng tạo giúp bài toán này khác biệt hoàn toàn so với các thử thách giấu tin trong ảnh (steganography) thông thường: người chơi không cần phải săm soi sửa đổi từng pixel, mà chỉ việc đọc header và đối chiếu thông số sau khi giải nén.
 
 ```python
+import zlib
 raw = zlib.decompress(IDAT)
-print(len(raw), 382 * (1 + 492 * 4))     # 823042  752158
+print(len(raw), 382 * (1 + 492 * 4))     # Kết quả: 823042 so với 752158
 ```
 
-`823042 / 1969 = 418` chẵn, với `1969 = 1 + 492*4` là stride của một dòng RGBA. Toàn bộ 418 dòng đều dùng filter type 0. Nghĩa là buffer scanline thật dài 418 dòng, còn `IHDR` chỉ khai báo 382: thiếu 36 dòng, đúng bằng một tin nhắn.
+Làm một phép chia đơn giản: `823042 / 1969 = 418` (ra kết quả chẵn hoàn toàn), trong đó `1969 = 1 + 492*4` chính là số byte (stride) của một hàng pixel RGBA. Toàn bộ 418 hàng dữ liệu này đều sử dụng loại màng lọc (filter type) số 0. Từ đó có thể khẳng định, bộ đệm dòng quét (scanline buffer) trên thực tế chứa tới 418 hàng, nhưng phân đoạn `IHDR` lại cố tình khai báo dối trá là chỉ có 382 hàng. Khoảng chênh lệch 36 hàng bị thiếu hụt này khớp hoàn hảo với chiều cao của một khung tin nhắn.
 
-**Bước 2 - Dựng lại ảnh theo chiều cao thật.** Bỏ 1 byte filter ở đầu mỗi dòng, ghép lại và vẽ bằng chiều cao 418.
+**Bước 2 - Phục dựng bức ảnh với chiều cao nguyên bản.** 
+Bằng cách loại bỏ 1 byte màng lọc ở đầu mỗi dòng, ghép nối dữ liệu thô lại và dựng hình với chiều cao chính xác là 418 pixel, sự thật sẽ được phơi bày.
 
 ```python
+from PIL import Image
 rows = [raw[i*1969 + 1:(i+1)*1969] for i in range(418)]
 Image.frombytes("RGBA", (492, 418), b"".join(rows)).save("analysis/full.png")
 ```
 
-Phần ảnh hiện ra ngay dưới dòng "ill type it out just give me a second" là ô soạn tin nhắn của Discord, chứa đúng một dòng chữ.
+Ở phần ảnh bị giấu vừa được phục hồi ngay bên dưới dòng chữ "ill type it out just give me a second", ô soạn thảo tin nhắn quen thuộc của Discord hiện ra, mang theo một dòng chữ bí mật.
 
-**Bước 3 - Đọc từng ký tự.** Phóng 4x và 6x (`analysis/hidden4x.png`, `analysis/mid.png`) rồi soi 10x riêng cặp ký tự dễ nhầm (`analysis/glyphs.png`).
+**Bước 3 - Đọc cờ.** 
+Phóng to tấm ảnh lên 4x và 6x (các tệp `analysis/hidden4x.png`, `analysis/mid.png`), sau đó soi kỹ càng 10x vào các cặp ký tự dễ gây nhầm lẫn để có được nội dung chính xác nhất (`analysis/glyphs.png`).
 
-**Bước 4 - Kiểm chứng tính đúng.** Đây không phải suy đoán: `823042` chia chẵn cho `1969` và mọi dòng đều có byte filter hợp lệ (0), nên 418 là số dòng duy nhất khớp với dữ liệu; nếu header đúng thì phần thừa phải là 0 byte. Ký tự giữa "challenge" và "dea" có dấu chấm phía trên nên là `i`, không phải `l`; chuỗi đóng ngoặc `}` ngay sau đó.
+**Bước 4 - Khẳng định tính chính xác.** 
+Kết quả thu được hoàn toàn dựa trên dữ kiện vững chắc, không hề phỏng đoán: con số `823042` chia hết hoàn hảo cho `1969` và mọi dòng lệnh đều chứa byte màng lọc hợp lệ (số 0). Do đó, 418 là con số duy nhất khớp logic với chuỗi dữ liệu thực tế. Bất kỳ sự khác biệt nào ở phần header cũng sẽ để lại phần thừa là các byte 0. Bằng mắt thường, ta thấy ký tự kẹp giữa "challenge" và "dea" có dấu chấm bên trên, tức đó chắc chắn là ký tự `i` thay vì `l`; ngay sau đó là dấu đóng ngoặc `}` của chuỗi cờ.
 
 ## Flag
 ```bash
 python solve.py
 ```
 
-```
+```text
 IHDR: 492x382  stride=1969  IDAT giải nén=823042 byte -> thực tế 418 dòng
 số dòng bị ẩn: 36
 đã ghi analysis/full.png và analysis/hidden.png
 ```
 
-```
+```text
 sun{totallyoriginalchallengeidea}
 ```

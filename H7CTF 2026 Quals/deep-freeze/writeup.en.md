@@ -29,13 +29,6 @@ The first thirty-two bytes of the image: `45 4d 69 4c 01 00 00 00 ...` → the `
 
 volatility3 is not needed for this challenge; everything was done with the self-written parser.
 
-## Approaches Ruled Out
-
-1. The flag sitting in plain `strings` form: scanning all 16 GiB, `flag{` never appears; `H7CTF{` shows up only inside the PDF content and inside the script, i.e. it still has to be proven. The "just grep it" approach is out.
-2. Data hidden in responses/peaks of another protocol: the image is a stand-alone server, with no significant network activity and no `.locked` file wrapped in a zip/tar.
-3. Anchoring the key search on the dictionary's marker string: `ransomware_footprint.py` leaves `note: b"kdmp-resident-do-not-swap"` in RAM. A ±64 KB sweep around all 12 marker positions, 1.572.480 32-byte windows, produced no key. Reason: a Python dict only stores pointers to bytes objects, not the data inline.
-4. A scheme other than AES-CBC: CTR/GCM were suspected (no padding), but the source itself, found in RAM, shows `pad = 16 - len(plaintext) % 16` followed by `AES.new(key, MODE_CBC, iv)`. All stream-cipher directions are out.
-
 ## Exploit Chain
 
 **Step 1 - Reading the `.locked` file's structure.** 672 bytes, and because of CBC + PKCS#7 the length must be a multiple of 16. Split `IV = file[:16] = 866f319940024339a78be5b443ed8289`, `C = file[16:]` (656 bytes). This is confirmed by the very line `f.write(iv + ct)` in the source found in RAM.
@@ -45,7 +38,7 @@ volatility3 is not needed for this challenge; everything was done with the self-
 **Step 3 - Building a one-block oracle.** With CBC: `P1 = D_K(C1) XOR IV`, so for each 32-byte window `K` in RAM a single one-block ECB decryption is enough:
 
 ```
-D_K(C1) == P1 XOR IV      <=>      K là khoá
+D_K(C1) == P1 XOR IV      <=>      K is the key
 ```
 
 `P1 XOR IV = a33f75df6d336d0dadbac5846382e0e3`, `C1 = 184d651fa87011ae7437a09a92e186fa`.
@@ -53,7 +46,7 @@ D_K(C1) == P1 XOR IV      <=>      K là khoá
 **Step 4 - Narrowing the search space using allocation behaviour.** `os.urandom(32)` and `os.urandom(16)` are called back to back, so the two bytes objects sit next to each other on the heap. Since the IV's 16 bytes are already known, it is enough to locate the IV in the dump and sweep around it. The IV appears 9 times; within an 8 KB radius of those positions, the window at
 
 ```
-vaddr 0x120a63490 (file offset 0xe067852c), -2064 byte so với object IV
+vaddr 0x120a63490 (file offset 0xe067852c), -2064 byte relative to the IV object
 key = 21c0780db69f7eabeb3b8dafb1810b9611916c6becdaf0b2b318d40894295d6c
 ```
 

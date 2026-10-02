@@ -43,24 +43,15 @@ The remaining two functions are the solution:
 ```solidity
 function convertToShares(uint256 assets) public view returns (uint256) {
   uint256 supply = totalSupply;
-  return supply == 0 ? assets : assets * supply / reserve;   // không có virtual offset
+  return supply == 0 ? assets : assets * supply / reserve;   // no virtual offset
 }
 
-function sync() external { reserve = asset.balanceOf(address(this)); }   // ai cũng gọi được
+function sync() external { reserve = asset.balanceOf(address(this)); }   // anyone can call it
 ```
 
 `convertToShares` adds no virtual shares/virtual assets like the reference ERC4626 does, and `sync()` sits outside
 owner control. Together they make a rounding puzzle: keep `totalSupply` extremely small while `reserve` is extremely
 large, and a very large deposit converts to 0 shares.
-
-## Approaches Ruled Out
-
-1. Withdrawing via a plain `redeem` while the price has not changed: each share receives exactly its
-   `reserve/totalSupply`, so nobody else's portion can be taken.
-2. Blocking the anchor by calling `victimDeposit()` first: pointless, because the win condition requires
-   `victimDeposited == true`.
-3. Donating directly with `token.transfer(vault, amount)`: the vault balance grows but `reserve` does not change
-   without `sync()`, so the share price stays put.
 
 ## Exploit Chain
 
@@ -90,7 +81,7 @@ State after each step, taken from the output of `solve.mjs`:
 | `redeem(1, me, me)` | 0 | 0 | 0 | 0 | true |
 
 ## Flag
-The last line of `CTF_PK=<private key trong GET /> node solve.mjs` (the `show()` function prints the state after each transaction):
+The last line of `CTF_PK=<private key from GET /> node solve.mjs` (the `show()` function prints the state after each transaction):
 
 ```
 drained    tok(vault)= 0.0000 reserve= 0 supply= 0 share(victim)= 0 share(me)= 0 tok(me)= 300.0000 solved= true

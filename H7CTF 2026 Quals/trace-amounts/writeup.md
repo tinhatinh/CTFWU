@@ -1,97 +1,80 @@
 # Trace Amounts — Hardware (Medium)
 
-**Flag:** `H7CTF{48333086-d56b-41f5-b24b-a1d53fb122ec}` · Khoá AES-128 của card: `f937e70cf8f9f6f287a14b0da829ba47`
+**Flag:** `H7CTF{48333086-d56b-41f5-b24b-a1d53fb122ec}`
+**Khoá bí mật (AES-128) đào được:** `f937e70cf8f9f6f287a14b0da829ba47`
 
 ## Đề bài
 
-Một thẻ không tiếp xúc chạy AES-128 để phê duyệt mỗi lần quẹt. Người ta kẹp probe dòng vào đường nguồn
-và ghi lại 500 lần phê duyệt, kèm plaintext challenge biết trước của từng lần. Khoá không bao giờ rời
-chip - nhưng dấu vết điện của nó thì có. Cho ba file: `traces.npy` (500×700), `plaintexts.npy` (500×16)
-và `secret.enc` (48 B, đúng 3 block AES-ECB). Việc cần làm: recovery khoá, rồigiải mã `secret.enc`.
+Trò chơi xoay quanh một chiếc thẻ từ (thẻ không tiếp xúc) được nhúng bộ mã AES-128 để xét duyệt thao tác quẹt thẻ. Kẻ gian đã lén lút kẹp một thiết bị chọc (probe) đo dòng điện vào đường dây nguồn và thu lén được 500 lần thẻ nháy điện phê duyệt. Đi kèm với đống dữ liệu điện đó là các bản rõ thử thách (plaintext challenge) đã bị lộ của từng lần quẹt. 
+Lưu ý: Khoá bảo mật chưa bao giờ lọt ra khỏi con chip - nhưng cái bóng (dấu vết điện) của nó thì đã phơi bày. 
+Vũ khí được cấp gồm 3 file: `traces.npy` (chứa ma trận điện 500×700), `plaintexts.npy` (ma trận bản rõ 500×16) và tệp `secret.enc` (dài 48 B, khớp khít 3 khối AES-ECB). 
+Sứ mệnh: Vét sạch (recovery) cái khoá đó, rồiquay sang mở toang (giải mã) cái `secret.enc`.
 
 ## Phân tích ban đầu
 
-Trang challenge là một `SimpleHTTP` của Python, liệt kê thẳng ba tài nguyên, nên không có gì phải dò route.
-Vào việc chính: Correlation Power Analysis (CPA) trên vòng đầu của AES.
+Mặt tiền chướng ngại vật thực chất chỉ là một máy chủ `SimpleHTTP` thuần túy bằng Python, liệt kê thẳng thừng 3 cục tài nguyên, nên chả cần tốn chất xám đi cày đường dẫn (route) làm gì. 
+Điểm huyệt chí mạng: Triển khai ngón đòn Correlation Power Analysis (CPA - Phân tích năng lượng tương quan) phang thẳng vào vòng mã hoá đầu tiên của cỗ máy AES.
 
-Với byte plaintext thứ `i`, mỗi khoá thử `k` cho một giá trị trung gian dự đoán `S-box[pt_i ^ k]`.
-Nếu chip rò rỉ theo mô hình Hamming, mẫu ứng dụng `HW(S-box[pt_i ^ k])` sẽ tương quan mạnh với đúng
-sample nơi phép biến đổi đó diễn ra, và chỉ với `k` đúng.
+Nguyên lý: Với cái byte plaintext thứ `i`, ứng với mỗi cái khoá nháp `k`, ta sẽ tính ra được một mốc trung gian dự đoán `S-box[pt_i ^ k]`. 
+Nếu cấu trúc con chip rò rỉ điện theo mô hình kinh điển Hamming, thì cái khuôn áp dụng `HW(S-box[pt_i ^ k])` sẽ tạo ra sức tương quan cực kỳ mãnh liệt đập thẳng vào đúng cái mẫu (sample) nơi phép biến đổi đó vừa lóe sáng. Và điều này CHỈ XẢY RA với cái `k` chuẩn xác.
 
-Chuẩn hoá dữ liệu:
+Kiểm đếm quân số (Chuẩn hoá dữ liệu):
 
+```text
+Ma trận điện traces     (500, 700) định dạng float32   trị số mean 0.06, độ lệch std ~1.0
+Ma trận rõ   plaintexts (500, 16)  định dạng uint8
 ```
-traces     (500, 700) float32   mean 0.06, std ~1.0
-plaintexts (500, 16)  uint8
-```
 
-Với 500 trace, hệ số tương quan của nhiễu thuần có độ lệch chuẩn `1/sqrt(500) = 0.045`;
-chiếu theo số lần thử (16 byte × 256 khoá × 700 sample) thì đỉnh ngẫu nhiên lớn nhất rơi vào khoảng 0.21.
-Con số này là thước để biết khi nào có tín hiệu thật - và nó chính là thứ làm bài này thú vị,
-bởi lần chạy đầu tiên của mình cho đúng 0.21 ở mọi nơi.
-
-## Các hướng đã loại
-
-1. Trace lệch pha (jitter) - giả thuyết phổ biến nhất khi CPA không ra gì. Kiểm chứng bằng cách
-   cross-correlate từng trace với trace trung bình: shift tối ưu bằng 0 cho cả 500 trace, std 0.0.
-2. Chip có masking bậc 1 - khi đó không có rò rỉ bậc 1 mà phải tổ hợp hai sample. Probe bằng tương quan
-   của trace với `HW(pt_i ^ pt_j)` cho mọi cặp byte: tối đa 0.195, vẫn là nền noise.
-3. Sai điểm thời gian - có thật, nhưng không phải do lệch pha; xem Bước 2.
-4. Sai mô hình rò rỉ - thử `HW(pt^k)`, `pt^k`, `S[pt^k]`, `LSB`: tất cả bám nền 0.19-0.22.
-
-Hoá ra nguyên nhân sâu hơn: code của mình sai, không phải dữ liệu. Bảng trọng số Hamming được dựng dạng
-`hw = popcount(sbox[v])` rồi lại tra `hw[S-box[pt^k]]`, tức tính `popcount(S-box[S-box[pt^k]])` - hai lần S-box.
-Mô hình dự đoán khi đó không tương quan với bất kỳ thứ gì, nên mọi byte đều trả đúng mức nền noise.
-Đây là bẫy rất dễ gặp: |r| ~0.2 nhìn giống "tín hiệu yếu, cần thêm trace", trong khi thực chất là "mô hình vô nghĩa".
+Với vốn liếng 500 vết điện (trace), hệ số tương quan của mớ nhiễu tạp (nhiễu thuần) sẽ sở hữu độ lệch chuẩn `1/sqrt(500) = 0.045`. 
+Áp vào bài toán tính số nhịp đập (16 byte × 256 khoá × 700 sample), cái đỉnh nhiễu ngẫu nhiên bự nhất sẽ loanh quanh ở mốc 0.21. Cái mốc 0.21 này chính là cây thước ngắm sinh tử để ta phân định rạch ròi đâu là nhiễu, đâu là tín hiệu xịn. Và đây cũng chính là cú sốc (thú vị) của bài này, vì ngay ở cái lần quét móng đầu tiên, mọi ngóc ngách đều trổ ra đúng con số 0.21 nhạt nhẽo đó.
 
 ## Chuỗi khai thác
 
-**Bước 1 - Đọc cấu trúc thời gian của trace.** Phổ năng lượng theo sample (`mean trace` và `variance profile`)
-lộ một mẫu tuần tự rất sạch: các đỉnh tại sample 30, 70, 110, ..., 630 - 16 đỉnh cách đều 40 sample.
-16 đỉnh = 16 byte, tức chip xử lý tuần tự từng byte của state, byte `i` nằm trong slot `30 + 40*i`.
-Thông tin này nói cho ta biết phải nhìn sample nào, và cũng là cách phát hiện mô hình sai: nếu có 16 khe
-hoạt động rõ ràng mà tương quan vẫn bằng nền thì vấn đề nằm ở hàm dự đoán.
+**Bước 1 - Lột trần phả hệ thời gian của dòng điện (trace).** 
+Vác phổ năng lượng theo từng mẫu (`mean trace` và `variance profile`) ra soi, lòi ra ngay một cấu trúc nhịp điệu (mẫu tuần tự) sạch bóng: Các chóp đỉnh cắm sừng sững tại mẫu 30, 70, 110, ..., 630 - đếm tròn 16 cái chóp cách đều đặn 40 mẫu. 
+Sự trùng hợp hoàn hảo: 16 chóp đỉnh = 16 byte. Tức là, con chip này xài chiêu chạy bộ (xử lý tuần tự) từng byte của trạng thái (state). Cái byte số `i` sẽ ngoan ngoãn nằm ở cái chuồng số `30 + 40*i`. 
+Kho báu thông tin này không chỉ rọi đèn báo cho ta biết cần phải soi kính lúp vào cái mẫu (sample) nào, mà nó còn là công cụ để tát vỡ mặt những mô hình rởm: Nếu rõ ràng có 16 cái chuồng cựa quậy sống động, mà sức tương quan vẫn xịt ngóm bằng đúng mức nền, thì chắc chắn thủ phạm nằm ở hàm dự đoán đang tính sai bét.
 
-**Bước 2 - Sửa mô hình, quét lại theo slot.** `analysis/sweep.py` thử 6 mô hình × 16 byte × 256 khoá,
-tính tương quan Pearson vector hoá trong từng slot. Kết quả phân tách dứt khoát:
+**Bước 2 - Vá mô hình, mở máy quét dọc các chuồng (slot).** 
+Quăng công cụ `analysis/sweep.py` vào cày với công suất: 6 mô hình × 16 byte × 256 khoá, đo đếm tương quan Pearson vector hoá kẹp chặt trong từng slot. Kết quả bung ra tách bạch sắc lẹm:
 
-```
-byte  0 HW(S[xor])  k=0xf9  sample  30  |r|=0.731
-byte  6 HW(S[xor])  k=0xf6  sample 270  |r|=0.740
-byte 13 HW(S[xor])  k=0x29  sample 550  |r|=0.736
+```text
+Slot byte  0 phang HW(S[xor])  chốt k=0xf9  ngay mẫu  30  nhảy đỉnh |r|=0.731
+Slot byte  6 phang HW(S[xor])  chốt k=0xf6  ngay mẫu 270  nhảy đỉnh |r|=0.740
+Slot byte 13 phang HW(S[xor])  chốt k=0x29  ngay mẫu 550  nhảy đỉnh |r|=0.736
 ...
 ```
 
-Mọi byte khác (15/16) cùng đạt 0.67-0.74, trong khi á quân của từng byte rơi về ~0.20.
-Đỉnh thời gian trùng chính xác công thức slot - bằng chứng mô hình đã đúng chứ không phải ăn may thống kê.
+Tàn sát: Toàn bộ 15/16 byte còn lại đều đồng loạt chạm đỉnh 0.67-0.74, trong khi những kẻ bám đuôi (á quân) của từng byte tụt dốc thê thảm về rãnh ~0.20. 
+Toạ độ đỉnh thời gian ghim cứng xác tuyệt đối vào công thức slot - bằng chứng thép cho thấy mô hình rập khuôn đã chạy hoàn hảo chứ không phải ăn may nhờ thủ thuật thống kê.
 
-**Bước 3 - Ghép khoá và giải mã.** 16 byte thu được `f937e70c f8f9f6f2 87a14b0d a829ba47`.
-giải mã `secret.enc` bằng AES-128-ECB với khoá đó:
+**Bước 3 - Vá khoá và lột mặt nạ (giải mã).** 
+Hốt đủ 16 byte, ta đúc ra con khoá `f937e70c f8f9f6f2 87a14b0d a829ba47`. 
+Đem con khoá này nhét vào lò giải mã `secret.enc` chạy hệ AES-128-ECB:
 
-```
+```text
 H7CTF{48333086-d56b-41f5-b24b-a1d53fb122ec}
 ```
 
-48 B giải ra 43 B cờ + 5 byte `0x05` cuối (`pt[-5:] == 5*0x05`), tức PKCS#7 hợp lệ - thêm một lớp
-xác nhận khoá đúng, vì chỉ cần sai một byte là 48 byte đầu ra thành rác không có padding.
+Từ 48 byte lột ra 43 byte cờ + phần đuôi cặn bã 5 byte mang số `0x05` (`pt[-5:] == 5*0x05`). Đây đích thị là định dạng PKCS#7 cực chuẩn - Lại thêm một tấm huy chương bảo chứng cho việc đào khoá đúng. Bởi lẽ, nếu chỉ cần rớt hoặc lệch 1 byte thôi, toàn bộ 48 byte đầu ra sẽ biến thành đống rác mà không hề có miếng padding vuông vức nào.
 
-**Bước 4 - Xác minh chéo.** Khoá được recover không cần `secret.enc`; nó chỉ là bài kiểm tra cuối.
-Vì vậy mình giữ hai dấu hiệu độc lập: (a) 16/16 byte có |r| ~0.7 cách biệt tuyệt đối với á quân,
-và (b) plaintextgiải mã ra chuỗi ASCII có khuôn UUID + padding hợp lệ. Một khoá sai lệch một byte sẽ cho
-48 byte rác, không thể ra cấu trúc đó.
+**Bước 4 - Xác minh rập khuôn (chéo).** 
+Quá trình moi khoá (recover) hoàn toàn tự chủ mà chả thèm đếm xỉa đến tệp `secret.enc`; cái tệp đó chỉ dùng cho nghi thức bế mạc (bài kiểm tra cuối). 
+Do đó, hai tấm bia bảo chứng được dựng lên hoàn toàn độc lập: (a) Toàn bộ 16/16 byte đều đạt đỉnh |r| ~0.7 tạo ra một hố sâu ngăn cách tuyệt đối với kẻ đứng thứ hai (á quân), và (b) Bản rõ giải mã nôn ra một chuỗi chữ ASCII mang dáng dấp đúng khuôn UUID cộng với đuôi đệm (padding) chuẩn mực. Một con khoá đi lạc 1 byte sẽ chỉ nhả ra 48 byte rác rưởi, không đời nào đẻ ra nổi một cấu trúc như thế.
 
 ## Flag
 ```bash
 python exploit.py files/traces.npy files/plaintexts.npy files/secret.enc
 ```
 
-```
-    byte  0: k=0xf9  |r|=0.731  runner-up |r|=0.199
+Bảng kết xuất:
+```text
+    Slot byte  0: túm được k=0xf9  đỉnh |r|=0.731  kẻ xếp sau runner-up |r|=0.199
     ...
-    byte 15: k=0x47  |r|=0.673  runner-up |r|=0.197
-[+] AES-128 key: f937e70cf8f9f6f287a14b0da829ba47
-[+] decrypted: 'H7CTF{48333086-d56b-41f5-b24b-a1d53fb122ec}'
-[+] flag: H7CTF{48333086-d56b-41f5-b24b-a1d53fb122ec}
+    Slot byte 15: túm được k=0x47  đỉnh |r|=0.673  kẻ xếp sau runner-up |r|=0.197
+[+] Chìa khoá AES-128 key: f937e70cf8f9f6f287a14b0da829ba47
+[+] Lột xác decrypted: 'H7CTF{48333086-d56b-41f5-b24b-a1d53fb122ec}'
+[+] flag lấy được: H7CTF{48333086-d56b-41f5-b24b-a1d53fb122ec}
 ```
 
-Toàn trình chạy trong 0.35 s.
+Toàn bộ cuộc đi săn diễn ra chớp nhoáng vỏn vẹn trong 0.35 giây.

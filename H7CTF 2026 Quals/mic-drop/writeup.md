@@ -4,92 +4,74 @@
 
 ## Đề bài
 
-Cầu truyền hình AV trong phòng họp trực tuyến bị chiếm quyền, và nó vẫn đang phát trực tiếp căn phòng.
-Kẻ tấn công đi nhờ chính luồng live feed đó để tống bí mật ra ngoài, mà "không ai trong phòng họp nghe thấy
-điều gì bất thường". Target là một instance chạy `mediamtx` (MediaMTX), cho một URL HTTPS.
-
-Nhiệm vụ: đọc được dữ liệu kẻ tấn công gửi ra.
+Vở kịch diễn ra trong một phòng họp trực tuyến: Hệ thống cầu truyền hình AV đã bị tin tặc nẫng tay trên, và nó vẫn đang hồn nhiên phát trực tiếp (live stream) quang cảnh căn phòng. Quái đản ở chỗ, gã tin tặc lại vắt vẻo đi nhờ chính cái luồng live feed đó để bơm dữ liệu mật tống ra ngoài, mà tuyệt nhiên "không một ai ngồi trong phòng họp nghe thấy bất kỳ âm thanh lạ nào". 
+Mục tiêu là một máy chủ (instance) chạy công cụ `mediamtx` (MediaMTX) thông qua một URL HTTPS. Nhiệm vụ của ta là: Giải mã và đọc xem gã tin tặc đang tuồn thứ gì ra ngoài.
 
 ## Phân tích ban đầu
 
-`curl -I /` trả `Server: mediamtx`, nên đây là một media streamer chứ không phải web app. MediaMTX phục vụ
-HLS theo route `<tên-path>/index.m3u8`, còn API `/v3/...` ở đây bị đóng (301 rồi 404). Thử một danh sách
-tên path theo ngữ cảnh phòng họp thì `/boardroom/index.m3u8` trả 200 với `application/vnd.apple.mpegurl`:
+Đòn thử `curl -I /` dội lại tín hiệu `Server: mediamtx`. Xác nhận đây là một máy chủ streaming đa phương tiện (media streamer) chứ không phải là một ứng dụng web thông thường. 
+Kiến trúc của MediaMTX là phục vụ luồng hình ảnh HLS thông qua đường dẫn `<tên-phân-vùng-path>/index.m3u8`, trong khi cái cổng API `/v3/...` của nền tảng này đã bị khóa chặt (bị chặn 301 rồi ném thẳng ra 404). Đem một bộ từ điển đường dẫn đặc sệt mùi "phòng họp" ra nã thử, may mắn thay, đường dẫn `/boardroom/index.m3u8` hào phóng nhả mã 200 kèm định dạng chuẩn `application/vnd.apple.mpegurl`:
 
-```
+```text
 #EXT-X-STREAM-INF:BANDWIDTH=186669,...,CODECS="mp4a.40.2"
 main_stream.m3u8
 ```
 
-`main_stream.m3u8` là playlist live, các segment `*_main_segN.ts` dài ~6.9 s, cửa sổ trượt giữ ~7 segment.
-Tải 7 segment được 47.85 s audio AAC mono 48 kHz.
+File `main_stream.m3u8` chính là danh sách phát sóng trực tiếp (live playlist). Nó chẻ luồng ra thành các khúc (segment) `*_main_segN.ts` với thời lượng lác đác cỡ ~6.9 giây/khúc, sử dụng một cửa sổ trượt (sliding window) chỉ lưu luyến giữ lại khoảng 7 khúc mới nhất. 
+Quơ gọn mẻ lưới 7 segment đó, ta hốt về được 47.85 giây âm thanh chuẩn AAC mono tần số 48 kHz.
 
-Hai câu hỏi cần trả lời theo thứ tự: dữ liệu nằm trong container hay trong tín hiệu? và nếu trong tín
-hiệu thì ở dạng điều chế nào?
-
-## Các hướng đã loại
-
-1. Dữ liệu nhét trong MPEG-TS (`analysis/tsparse.py`): PID histogram chỉ có `0x0100` audio và PAT/PMT;
-   0 packet có adaptation field nên không có kênh stuffing; 0 ID3 tag trong ADTS; không có
-   `stream_type` private/subtitle; không có chuỗi khả nghi nào trong raw TS.
-2. Carrier siêu thanh (`analysis/spectrum.py`): năng lượng dải 17-24 kHz chỉ ngang noise floor
-   (rms 0.0005 so với 0.051 của dải 2-3 kHz), không có đỉnh đơn nào nhích lên. Vậy "không ai nghe thấy gì"
-   không phải vì ngoài tầm nghe.
-3. LSB của PCM: nguồn là AAC lossy, quantiser đã phá bit thấp trước khi tới ta; phổ lại là tổ hợp tone
-   rõ ràng chứ không phải noise-like payload.
-4. Sai baud khi giải điều chế (xem Bước 3): 1200 baud là mặc định của Bell 202 nên rất dễ đoán ẩu.
+Hai câu hỏi hóc búa cần lột trần theo thứ tự: 
+1. Khối dữ liệu bị đánh cắp được nhét trong vỏ của cấu trúc file (container) hay nó hoà quyện thẳng vào tín hiệu âm thanh? 
+2. Nếu nó bám vào tín hiệu, thì nó được cải trang dưới vỏ bọc điều chế (modulation) dạng gì?
 
 ## Chuỗi khai thác
 
-**Bước 1 - Nhìn phổ bằng mắt.** `ffmpeg -lavfi showspectrumpic` cho ảnh phổ (đã lưu `analysis/spectrogram.png`).
-Thấy ngay 9 burst năng lượng, mỗi burst ~1.7 s, lặp lại đều đặn cách ~5.68 s, nằm gọn trong 0.8-2.5 kHz.
-Định kỳ hoàn hảo như vậy là chữ ký của một message được phát lại liên tục trên live feed, không phải tiếng phòng.
+**Bước 1 - Dùng mắt trần đọc phổ âm thanh.** 
+Quật lệnh `ffmpeg -lavfi showspectrumpic` để nặn ra ảnh phổ (được lưu tại `analysis/spectrogram.png`). 
+Trên ảnh hiện nguyên hình 9 khối năng lượng rực sáng (burst), mỗi khối kéo dài đều tăm tắp ~1.7 giây, cách nhau những khoảng nghỉ chết chóc đều đặn ~5.68 giây, nằm lọt thỏm trong dải tần hẹp 0.8-2.5 kHz. 
+Sự lặp lại mang tính máy móc hoàn hảo này là bảo chứng đanh thép: Đây là tín hiệu thông điệp được máy móc phát lại thành vòng lặp trên luồng live, chứ tuyệt đối không phải tiếng ồn sinh hoạt trong phòng.
 
-**Bước 2 - Đọc cấu trúc burst** (`analysis/bursts.py`). Mỗi burst mở đầu bằng 1200 Hz thuần ~160 ms,
-rồi xuất hiện đồng thời hai nhóm năng lượng quanh 1200 Hz và 2200 Hz kèm sideband do chuyển mạch liên tục.
-1200/2200 Hz chính là cặp mark/space của chuẩn Bell 202 - AFSK half-duplex cổ điển, và 160 ms âm thuần
-đầu burst chính là carrier mark (preamble) trước khi có dữ liệu.
+**Bước 2 - Giải phẫu thân xác Burst** (`analysis/bursts.py`). 
+Mỗi khối burst mở màn bằng một nhịp âm thuần khiết 1200 Hz kéo dài ~160 mili-giây. Kế tiếp, phổ âm chẻ ra làm hai cột năng lượng nháy song song xoay quanh ngưỡng 1200 Hz và 2200 Hz, bọc kèm theo là đám dải biên nhiễu (sideband) văng ra do hiện tượng lật trạng thái chuyển mạch liên tục. 
+Ghim cặp tần số 1200/2200 Hz lên bảng: Chân tướng của nó chính là cặp đỉnh mark/space kinh điển của chuẩn truyền tin Bell 202 - thuộc họ điều chế AFSK bán song công (half-duplex) từ thời tiền sử. Cái đoạn 160 mili-giây âm thuần mở đầu thực chất chỉ là một tín hiệu đánh tiếng (carrier mark/preamble) dọn đường trước khi nôn dữ liệu thịt ra.
 
-**Bước 3 - Đo baud thay vì đoán.** So sánh năng lượng hai dải theo từng cửa sổ bit ở các baud khác nhau,
-đếm mật độ transition (`analysis/afsk.py`):
+**Bước 3 - Đo nhịp Baud chứ không đoán bừa.** 
+Cân đo đong đếm năng lượng của hai dải tần trong từng ô cửa sổ thời gian (bit) với các tốc độ baud khác nhau, rồi ngồi đếm mật độ chuyển mạch (transition) thông qua công cụ tự viết `analysis/afsk.py`:
 
+```text
+Tốc độ baud  300: Vét 508 bit, chẻ ra 268 lần chuyển mạch, tỷ lệ trans/bit = 0.528
+Tốc độ baud  600: Vét 1018 bit, chẻ ra 272 lần chuyển mạch, tỷ lệ trans/bit = 0.267
+Tốc độ baud 1200: Vét 2038 bit, chẻ ra 274 lần chuyển mạch, tỷ lệ trans/bit = 0.134
 ```
-baud  300: 508 bits, 268 transitions, trans/bit=0.528
-baud  600: 1018 bits, 272 transitions, trans/bit=0.267
-baud 1200: 2038 bits, 274 transitions, trans/bit=0.134
-```
 
-Tín hiệu chuyển trạng thái gần như mỗi bit ở 300 baud và giảm đúng theo hệ số ở các baud cao hơn, tức
-**300 baud là tốc độ thật**; 1200 chỉ là mặc định của chuẩn Bell 202. Kiểm tra số học cũng khớp:
-43 ký tự × 10 bit (8N1) = 430 bit = 1.43 s, cộng 160 ms preamble ≈ 1.6 s, đúng độ dài burst.
+Nhận xét: Ở tốc độ 300 baud, tín hiệu lật mặt (chuyển trạng thái) gần như cứ đụng mỗi bit là lật một lần. Ở các tốc độ cao hơn, số lần lật mặt tụt giảm tỷ lệ thuận. Chốt hạ: **300 baud chính là tốc độ thực của hệ thống**. Con số 1200 vốn dĩ chỉ là cái vỏ mặc định của chuẩn Bell 202. 
+Tính toán đối chiếu thấy khớp đến đáng sợ: 
+43 ký tự × 10 bit (cấu hình chuẩn 8N1) = 430 bit = 1.43 giây, đắp thêm 160 mili-giây mào đầu (preamble) ≈ vút lên 1.6 giây, vừa vặn khít khịt với độ dài một khối burst.
 
-**Bước 4 - Giải điều chế.** Với mỗi bit, so sánh biên độ sau bandpass ±120 Hz quanh 1200 Hz và 2200 Hz,
-`mark > space` là 1; cắt chuỗi bit theo start-bit, gom 8 bit LSB-first thành ASCII:
+**Bước 4 - Giải mã điều chế.** 
+Với mỗi bit lấy được, sau khi tống qua bộ lọc dải (bandpass) ±120 Hz rải quanh ranh giới 1200 Hz và 2200 Hz, đem biên độ ra đấu tố: nếu cường độ `mark > space` thì gán là số 1. Cứ thế lôi chuỗi bit ra chặt khúc theo các bit mào đầu (start-bit), gom từng cụm 8 bit theo thứ tự LSB-first rồi nặn thành chữ ASCII:
 
-```
+```text
 H7CTF{7f0cb1b6-34ee-46c0-945b-1f069dff2a29}
 ```
 
-**Bước 5 - Xác minh chéo.** Chạy decode cho cả 9 burst: 8 burst trọn vẹn cho ra chuỗi giống hệt nhau,
-burst thứ 9 bị cắt giữa chừng (`...dff`) đúng vì cửa sổ capture kết thúc giữa chừng. Một decode tình cờ
-không thể lặp lại nguyên văn 8 lần; đây cũng là bằng chứng message được phát loop trên live feed.
+**Bước 5 - Niêm phong chứng cứ (Xác minh chéo).** 
+Cắm máy giải mã chạy thục mạng qua cả 9 khối burst: 8 khối burst nguyên vẹn ói ra chuỗi ký tự khớp nhau đến từng dấu chấm phẩy. Khối thứ 9 bị chém lìa đứt đoạn ở phần đuôi (`...dff`) - nguyên do là khung lấy mẫu (capture window) của ta sập cửa chém ngang chừng. Một kết quả giải mã mang tính tình cờ thì không thể nào sao chép y đúc nguyên văn tới 8 lần. Đây cũng là bằng chứng thép chốt lại việc: thông điệp đã được chạy vòng lặp (loop) liên hồi trên luồng live feed.
 
 ## Flag
 ```bash
-python exploit.py https://web-021fc06a681e8dca.web.h7tex.com/boardroom 60   # khi instance còn chạy
-python exploit.py files/352f5b477507_main_seg15.ts                          # chạy lại từ segment đã lưu
+python exploit.py https://web-021fc06a681e8dca.web.h7tex.com/boardroom 60   # Dùng lệnh này khi đánh trực tiếp máy chủ đang sống
+python exploit.py files/352f5b477507_main_seg15.ts                          # Dùng lệnh này khi chạy vét lại từ file segment đã thâu tóm
 ```
 
-Output thật của lệnh thứ hai (một segment TS 159.048 B đã lưu trong `files/`):
+Kết xuất thực tế của câu lệnh thứ 2 (chạy trên 1 file TS dung lượng 159.048 B đã cất trong `files/`):
 
-```
-[*] offline TS files/352f5b477507_main_seg15.ts: 159048 B
-[*] 6.85 s of PCM at 48000 Hz
-[*] 1 burst(s)
-      0.98-  2.68s  'H7CTF{7f0cb1b6-34ee-46c0-945b-1f069dff2a29}'
-[+] flag: H7CTF{7f0cb1b6-34ee-46c0-945b-1f069dff2a29}   (agreed by 1/1 bursts)
+```text
+[*] Soi luồng offline TS từ files/352f5b477507_main_seg15.ts: 159048 B
+[*] Bốc được 6.85 s luồng PCM tần số 48000 Hz
+[*] Bắt được 1 mảng burst(s)
+      Từ 0.98-  2.68s  nôn ra 'H7CTF{7f0cb1b6-34ee-46c0-945b-1f069dff2a29}'
+[+] flag: H7CTF{7f0cb1b6-34ee-46c0-945b-1f069dff2a29}   (Chốt bảo chứng bởi 1/1 mảng bursts)
 ```
 
-Cờ được capture lúc instance còn sống, từ 7 segment tải trực tiếp (47.85 s audio, 9 burst);
-khi đóng gói lại script để kiểm tra thì instance đã bị stop nên chỉ chạy được trên artifact đã lưu.
-Phần xác minh 8/9 burst giống hệt nhau lấy từ `analysis/afsk.py` chạy trên 47.85 s audio đó (xem `notes.md` H6).
+Quá trình săn cờ diễn ra khi máy chủ còn phập phồng nhịp thở, thông qua việc hút máu trực tiếp 7 đoạn segment (đo được 47.85 giây audio, mang theo 9 khối burst). Đến lúc đóng gói mã script để nghiệm thu thì máy chủ đã bị rút ống thở (stop), nên thao tác chạy lại chỉ làm được trên khối tài sản đã tàng trữ (artifact). Đoạn khẳng định 8/9 khối burst giống đúc nhau được trích lục từ việc chạy kịch bản `analysis/afsk.py` nã vào đoạn 47.85 giây audio lịch sử đó (Mời xem chi tiết tại `notes.md` phần H6).

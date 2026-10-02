@@ -1,93 +1,92 @@
 # Papers Please — Pwn (Easy)
 
-**Flag:** `H7CTF{b66621cc-c85c-4042-b908-0d3dd36a71e5}` · **Target:** `pwn.h7tex.com:42578`
-**Files:** `checkpoint.zip` (1077085 B, sha256 `737ceea6...a209da0b`) chứa `checkpoint` (ELF x86-64, 16344 B, sha256 `b04ebc61...`), `libc.so.6`, `ld-linux-x86-64.so.2`, `README.txt`.
-Môi trường đích: Ubuntu 24.04, glibc 2.39-0ubuntu8.9.
+**Flag:** `H7CTF{b66621cc-c85c-4042-b908-0d3dd36a71e5}`
+**Máy chủ mục tiêu:** `pwn.h7tex.com:42578`
+**File cung cấp:** `checkpoint.zip` (1077085 B, sha256 `737ceea6...a209da0b`) bung ra chứa tệp `checkpoint` (định dạng ELF x86-64, kích thước 16344 B, sha256 `b04ebc61...`), đi kèm `libc.so.6`, trình nạp `ld-linux-x86-64.so.2` và file `README.txt`.
+**Bối cảnh chạy:** Hệ điều hành Ubuntu 24.04, nhân thư viện glibc phiên bản 2.39-0ubuntu8.9.
 
 ## Đề bài
 
-Trạm kiểm soát biên giới hỏi tên, echo tên vào log, trả "Access denied ... Turn back." rồi cắt kết nối. Sau quầy có sẵn con dấu, tức hàm cấp quyền. Lính gác không với lấy nó hộ ai. Mục tiêu: bắt dịch vụ in flag.
+Trò chơi mô phỏng một trạm kiểm soát biên giới. Tên lính gác chặn cửa hạch sách hỏi tên bạn, dùng lệnh in (echo) cái tên đó vào nhật ký log, rồi phũ phàng phán một câu: "Access denied ... Turn back." (Từ chối truy cập... Quay xe đi.) trước khi lạnh lùng cắt xoẹt kết nối. 
+Ở phía sau quầy gác, nằm im lìm một con dấu (chính là hàm cấp quyền). Khổ nỗi, lính gác không bao giờ tự tay với lấy con dấu đó đóng cho bất kỳ ai. Nhiệm vụ của ta là: Dùng vũ lực (hack) ép hệ thống phải tự tay cầm con dấu đó dập lên giấy và phun ra lá cờ (flag).
 
 ## Phân tích ban đầu
 
-`triage.cjs` cho:
+Đẩy tệp qua công cụ rọi `triage.cjs`, ta bóc tách được bản đồ:
 
-| Thuộc tính | Giá trị | Hệ quả |
+| Thuộc tính | Hiện trạng | Kết luận (Hệ quả) |
 | --- | --- | --- |
-| `ET_EXEC`, no PIE | base cố định | không cần leak, địa chỉ hàm là hằng số tuyệt đối |
-| Stack canary | không có (`__stack_chk_fail` không nằm trong imports) | đè return address tự do |
-| NX | bật | không đặt shellcode trên stack, chỉ được tái sử dụng code có sẵn |
-| Imports | `read fopen fgets printf puts setvbuf fflush fclose` | `read` không chặn theo độ dài buffer |
+| Lõi kiến trúc | `ET_EXEC`, cờ PIE tắt (no PIE) | Địa chỉ không nhảy loạn xạ (base cố định). Chẳng cần mất công chọc dò rỉ (leak), địa chỉ các hàm đã bị đông cứng thành hằng số tuyệt đối. |
+| Vệ sĩ Stack (canary) | Tắt lịm (Hàm `__stack_chk_fail` bốc hơi khỏi danh sách import) | Cho phép đè chà đạp lên địa chỉ trả về (return address) một cách vô tội vạ. |
+| Vùng cấm thực thi (NX) | Bật | Bít cửa ném mã độc (shellcode) trực tiếp lên stack. Muốn chạy lệnh, phải đi ăn mày (tái sử dụng) các đoạn mã nhị phân có sẵn trong máy. |
+| Danh mục Imports | `read fopen fgets printf puts setvbuf fflush fclose` | Điểm chí mạng: Lệnh đọc `read` hoàn toàn không quan tâm đến giới hạn kích thước của cái rổ đựng (buffer). |
 
-Ba hàm liên quan:
+Điểm danh 3 hàm nhân vật chính:
 
-```
-main        @ 0x401302   setvbuf(stdout, NULL, _IONBF, 0); call checkpoint
-checkpoint  @ 0x4012a4   sub rsp,0x40 -> buffer 64 byte ở [rbp-0x40]
-grant_access@ 0x401216   fopen("/flag","r"); fgets(buf,0x50); printf("ACCESS GRANTED: %s")
-```
-
-`main` không gọi `grant_access`. Hàm đó là con dấu trong đề: nó tự mở `/flag` rồi in nội dung ra.
-
-Chỗ hỏng nằm ở `checkpoint`:
-
-```
-4012ce: lea   rax,[rbp-0x40]     ; buffer 64 byte
-4012d2: mov   edx,0x100          ; đọc 256 byte
-4012df: call  read@plt           ; read(0, buf, 256)
-4012fa: call  printf@plt         ; printf("Access denied, %s. Turn back.", buf)
+```text
+Hàm main        @ 0x401302   Chạy setvbuf(stdout, NULL, _IONBF, 0); Gọi đàn em checkpoint.
+Hàm checkpoint  @ 0x4012a4   Cắt ngăn xếp sub rsp,0x40 -> Xây một rổ chứa (buffer) 64 byte tại vị trí [rbp-0x40].
+Hàm grant_access@ 0x401216   Nã fopen("/flag","r"); Hút dữ liệu fgets(buf,0x50); Hét lên printf("ACCESS GRANTED: %s").
 ```
 
-`read(0, buf, 0x100)` với `buf` chỉ 64 byte, không canary: stack overflow thuần túy.
+Đúng như kịch bản, hàm `main` lờ tịt không bao giờ triệu gọi `grant_access`. Cái hàm `grant_access` này chính là con dấu của đề bài: nó sinh ra để tự động đập vỡ tệp `/flag` rồi khoe lõi cờ ra ngoài.
 
-## Các hướng đã loại
+Lỗ hổng (bug) toạc ra ở hàm `checkpoint`:
 
-1. Format string qua tên. Chuỗi định dạng `"Access denied, %s. Turn back."` nằm trong `.rodata` và là đối số cố định của `printf`; tên người nhập chỉ đi vào `%s`. `%p`/`%n` gửi lên được in nguyên văn, không đọc và không ghi được stack.
-2. Shellcode trên stack. NX bật.
-3. Leak base trước khi đánh. `ET_EXEC`, no PIE: địa chỉ hàm là hằng số tuyệt đối, không có gì để leak.
+```text
+4012ce: lea   rax,[rbp-0x40]     ; Lôi cái buffer 64 byte ra
+4012d2: mov   edx,0x100          ; Giao chỉ tiêu: Mày phải đọc 256 byte
+4012df: call  read@plt           ; Chạy hàm read(0, buf, 256)
+4012fa: call  printf@plt         ; Hét lên ("Access denied, %s. Turn back.", buf)
+```
+
+Nghịch lý rõ ràng: Dùng lệnh `read(0, buf, 0x100)` rót một dòng thác tận 256 byte vào cái cốc `buf` cọc cạch dung tích chỉ 64 byte. Khi không có vệ sĩ canary bảo kê, đây là một pha tràn bộ đệm (stack overflow) chuẩn chỉ giáo khoa thuần túy.
 
 ## Chuỗi khai thác
 
-**Bước 1 - offset tới return address.** Buffer ở `[rbp-0x40]` (64 byte), saved rbp ở `[rbp]` (8 byte), return address ở `[rbp+8]`. Offset = 64 + 8 = 72 byte. `read` cho phép gửi tối đa 256 byte, dư chỗ.
+**Bước 1 - Lập bản đồ đo khoảng cách (offset) tới đích return address.** 
+Cái rổ buffer toạ lạc tại `[rbp-0x40]` (chiếm 64 byte), sát vách nó là lưu trữ rbp (saved rbp) nằm tại `[rbp]` (chiếm 8 byte), và đích đến - địa chỉ trả về (return address) đang rình rập ngay tại `[rbp+8]`. Phép tính Offset = 64 + 8 = 72 byte. Dòng chảy của lệnh `read` cho phép xả tới 256 byte, tức là tha hồ đất rộng để thả payload.
 
-**Bước 2 - căn chỉnh stack.** ABI yêu cầu tại instruction đầu tiên của một hàm thì `rsp % 16 == 8`.
+**Bước 2 - Trò ma xó nắn thẳng ngăn xếp (stack alignment).** 
+Luật thép của hệ điều hành (ABI) quy định cứng: ngay tại instruction (câu lệnh) mở màn của một hàm, con trỏ stack phải thỏa mãn đẳng thức `rsp % 16 == 8`.
 
-- Nhảy thẳng tới `grant_access` bằng `leave; ret`: `leave` đặt `rsp = rbp_checkpoint`, `pop rbp` đẩy lên 8, `ret` đẩy thêm 8, kết quả `rsp = rbp_main + 8`. `main` chỉ `push rbp` rồi call, nên `rbp_main % 16 == 0`. Vào `grant_access` với `rsp % 16 == 0`, lệch 8 byte so với chuẩn.
-- `grant_access` gọi `fopen`/`fgets`/`printf` của glibc 2.39; các đường đó `movaps` trên stack và `SIGSEGV` khi stack lệch.
+- Đâm bổ thẳng vào hàm `grant_access` qua lệnh `leave; ret`: Lệnh `leave` sẽ đè con trỏ `rsp = rbp_checkpoint`, lệnh `pop rbp` hất tiếp con trỏ lên 8 bậc, chốt sổ lệnh `ret` hất thêm 8 bậc nữa. Hậu quả: `rsp = rbp_main + 8`. Quay nhìn hàm `main`, nó khởi động nhạt nhẽo chỉ bằng lệnh `push rbp` rồi call luôn, dẫn tới `rbp_main % 16 == 0`. Tổng hợp lại: Ta đâm sầm vào cổng `grant_access` với con trỏ `rsp % 16 == 0`, trượt đường rày 8 byte so với cái luật chuẩn mực.
+- Cánh cửa `grant_access` có gọi bầy đàn `fopen`/`fgets`/`printf` thuộc thư viện glibc 2.39; lũ đàn em này có thói quen xài chiêu `movaps` trên ngăn xếp. Chúng sẽ vả thẳng mặt bằng lỗi `SIGSEGV` (sập hệ thống) ngay khi ngửi thấy mùi stack bị lệch.
 
-Chèn một gadget `ret` để dịch `rsp` thêm 8 byte. Chọn `_fini @ 0x401334` (`endbr64; sub rsp,8; add rsp,8; ret`): nó trượt stack đúng 8 byte, và mở đầu bằng `endbr64` nên vẫn hợp lệ nếu CPU bật CET/IBT.
+Kế hoạch vá đường: Chèn một con dốc (gadget `ret`) để xê dịch con trỏ `rsp` trượt đi đúng 8 byte. Ứng cử viên sáng giá là `_fini @ 0x401334` (mang lõi: `endbr64; sub rsp,8; add rsp,8; ret`). Cục gadget này kéo trượt stack đúng 8 byte, lại khoác trên mình lớp áo bào mở đầu `endbr64`, bảo đảm nó lướt mượt qua các hàng rào phòng ngự phần cứng (nếu CPU có bật CET/IBT).
 
-**Bước 3 - payload.**
+**Bước 3 - Lên nòng (payload).**
 
 ```python
-OFFSET      = 72
+OFFSET       = 72
 GRANT_ACCESS = 0x401216
 RET_SLIDE    = 0x401334
 
+# Cấu trúc: [Đạn độn chèn đủ 72 byte] + [Đoạn dốc trượt stack] + [Cổng hàm cấp quyền]
 payload = b"DANH.B23DCAT040".ljust(OFFSET, b"A") + p64(RET_SLIDE) + p64(GRANT_ACCESS)
 ```
 
-Tổng 88 byte, nhỏ hơn trần 256 byte của `read`. Không có ký tự cấm: `read` không dừng ở `\0`, và phần `printf` in tới `\0` chỉ là hiệu ứng phụ vô hại.
+Quả bom này cân nặng vỏn vẹn 88 byte, chui lọt thỏm qua cái trần 256 byte của ống xả `read`. Đặc biệt, chả phải lo ngay ngáy về chuyện dính ký tự cấm: hàm `read` vốn không ngán dấu kết thúc chuỗi `\0`, và cái phần râu ria của `printf` khi in ra gặp `\0` cũng chỉ tắt đài tạo ra một hiệu ứng phụ vô thưởng vô phạt.
 
-**Bước 4 - chạy.**
+**Bước 4 - Bấm nút.**
 
-```
+```bash
 cd "H7CTF 2026 Quals/papers-please"
 python exploit.py
 ```
 
-Phản hồi nhận được:
+Tiếng vọng từ hệ thống đổ về:
 
-```
+```text
 === Sparrow Freight border checkpoint ===
 State your name for the log:
 Access denied, DANH.B23DCAT040AAAA...4@. Turn back.
 ACCESS GRANTED: H7CTF{b66621cc-c85c-4042-b908-0d3dd36a71e5}
 ```
 
-**Bước 5 - Kiểm chứng.** Cờ được bắt bằng regex `H7CTF\{[^}\n]*\}` trên đúng byte đọc từ socket, rồi ghi thẳng vào `flag.txt`.
+**Bước 5 - Niêm phong cờ.** Dùng ngay lưỡi dao regex `H7CTF\{[^}\n]*\}` cắt gọt dòng dữ liệu dội ra từ cổng socket, rồi tống thẳng lá cờ (flag) nhốt vào file `flag.txt`.
 
 ## Flag
-```
+```text
 H7CTF{b66621cc-c85c-4042-b908-0d3dd36a71e5}
 ```

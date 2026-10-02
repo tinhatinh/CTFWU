@@ -4,29 +4,26 @@
 
 `Fill in the blanks! Our Mad Libs game prints back whatever you type. It's just a simple word game... right?`
 
-Target `nc chal.sunshinectf.games 26001`, kèm `mad_libs`, `libc.so.6`, `ld-linux-x86-64.so.2`.
-499 điểm, 38 solves, tác giả Oreomeister.
+Mục tiêu được cung cấp qua địa chỉ `nc chal.sunshinectf.games 26001`, kèm theo các tệp tin `mad_libs`, `libc.so.6`, và `ld-linux-x86-64.so.2`.
+Bài có trị giá 499 điểm với tổng cộng 38 lượt giải thành công, tác giả là Oreomeister.
 
 ## Phân tích ban đầu
 
-Binary 14584 byte, ELF 64-bit PIE, stripped. Mitigation: PIE, NX, canary, RELRO một phần
-(không có `BIND_NOW`), libc là Ubuntu glibc 2.39.
+Tập tin thực thi là một ELF 64-bit PIE đã bị loại bỏ thông tin gỡ lỗi (stripped) với kích thước 14584 byte. Các cơ chế bảo vệ được bật bao gồm PIE, NX, stack canary, và Partial RELRO (không sử dụng `BIND_NOW`). Thư viện C được cung cấp là Ubuntu glibc 2.39.
 
-`main` nằm tại `0x11c9`, dịch ngược ra được đúng một vòng lặp:
+Hàm `main` nằm tại offset `0x11c9` và khi được dịch ngược sẽ lộ ra một vòng lặp đơn giản:
 
 ```c
 for (i = 0; i <= 7; i++) {
     printf("(%d) > ", i + 1);
     if (fgets(buf, 0x100, stdin) == NULL) break;
-    printf(buf);                  // <= format string
+    printf(buf);                  // <= Lỗ hổng Format String
 }
 ```
 
-Buffer nằm ở `[rbp-0x110]` tức rộng 272 byte, trong khi `fgets` chỉ đọc 256 byte, nên không có
-overflow, không với tới return address. Chương trình chỉ có duy nhất một primitive, là `printf(buf)`
-với `buf` hoàn toàn do ta chọn, lặp lại 8 lần.
+Vùng đệm `buf` nằm tại địa chỉ `[rbp-0x110]`, cung cấp khoảng trống 272 byte, nhưng hàm `fgets` chỉ cho phép đọc tối đa 256 byte. Kích thước này ngăn chặn hoàn toàn khả năng tràn bộ đệm (buffer overflow) và không cho phép ghi đè trực tiếp lên địa chỉ trả về (return address). Chương trình chỉ tồn tại duy nhất một điểm yếu (primitive): hàm `printf(buf)` được gọi trực tiếp với chuỗi định dạng `buf` hoàn toàn nằm dưới sự kiểm soát của người chơi, và quá trình này được lặp lại 8 lần.
 
-`.rela.plt` cho biết vị trí GOT, và vì RELRO chỉ một phần nên vùng này ghi được:
+Bảng thông tin `.rela.plt` chỉ ra vị trí của bảng GOT. Vì chương trình chỉ biên dịch với Partial RELRO, các địa chỉ hàm trong bảng GOT hoàn toàn có thể bị ghi đè:
 
 ```
 0x4000 puts   0x4008 __stack_chk_fail   0x4010 printf   0x4018 fgets   0x4020 setvbuf
@@ -34,62 +31,47 @@ với `buf` hoàn toàn do ta chọn, lặp lại 8 lần.
 
 ## Chuỗi khai thác
 
-### Bước 1, định vị stack
+### Bước 1: Khảo sát và định vị stack
 
-Gửi `%1$p %2$p ...` rồi đọc lại. Slot 8 in ra đúng 8 byte đầu của chính chuỗi ta gửi
-(`0x2432252070243125` = `"%1$p %2$"`), nghĩa là vùng varargs bắt đầu ngay tại buffer:
-slot `k` tương ứng `buf[8*(k-8)]`. Như vậy chỉ cần đặt một địa chỉ vào `buf` là có ngay
-đọc/ghi tùy ý bằng `%k$s` / `%k$hhn`.
+Tiến hành gửi thử chuỗi định dạng `%1$p %2$p ...` để phân tích bộ nhớ. Kết quả trả về cho thấy tham số ở vị trí số 8 (slot 8) trỏ chính xác vào 8 byte đầu tiên của chuỗi đầu vào (`0x2432252070243125` tương đương với chuỗi `"%1$p %2$"`). Điều này khẳng định vùng tham số biến đổi (varargs) bắt đầu ngay tại vùng đệm đầu vào: tham số thứ `k` sẽ tương ứng với con trỏ lưu tại `buf[8*(k-8)]`. Nhờ đó, ta hoàn toàn có thể đọc hoặc ghi tùy ý vào bất kỳ địa chỉ nào bằng cách đặt trực tiếp địa chỉ đó vào `buf` và sử dụng các chỉ thị như `%k$s` để đọc, hoặc `%k$hhn` để ghi.
 
-Tiếp tục quét các slot phía trên buffer. Hai lần quét liên tiếp cho kết quả giống hệt nhau, tức
-là ổn định:
+Tiếp tục quét các giá trị trên stack ở các vị trí nằm ngoài `buf`. Hai lần quét độc lập cho ra những kết quả nhất quán, minh chứng cho sự ổn định của vùng nhớ này:
 
 ```
 40 0x7fffa7bb40e0 (stack)   41 0x2ef1945964c7bb00 (canary)   42 0x7fffa7bb4160 (stack)
 47 0x60de6e4031c9           52 0x60de6e405db8
 ```
 
-12 bit thấp của slot 47 là `0x1c9`, khớp chính xác `main` tại `0x11c9`. Đó là con trỏ `main` mà
-`__libc_start_call_main` để lại. Vậy PIE base = slot 47 - 0x11c9, và kết quả luôn chia hết cho
-0x1000, đúng tính chất của một base.
+Đáng chú ý, 12 bit thấp của giá trị tại slot 47 là `0x1c9`, khớp hoàn hảo với offset của hàm `main` tại `0x11c9`. Đây chính là con trỏ hàm `main` do `__libc_start_call_main` lưu lại trên stack. Từ đây, địa chỉ cơ sở của chương trình (PIE base) có thể được tính bằng cách lấy giá trị tại slot 47 trừ đi `0x11c9`. Kết quả tính toán luôn là một bội số của `0x1000`, đảm bảo tính chính xác của địa chỉ cơ sở.
 
-### Bước 2, leak libc qua chính GOT
+### Bước 2: Trích xuất địa chỉ thư viện libc thông qua GOT
 
-Không cần đoán symbol nào nằm ở slot 1 (các slot 1-7 là giá trị còn lại trong thanh ghi, không ổn
-định giữa các lần chạy). Thay vào đó dùng đúng cái GOT: `printf` đã được gọi ở lần in prompt đầu
-tiên, nên `printf@GOT` đã resolve thành địa chỉ thật trong libc.
+Không cần phải dò đoán ý nghĩa của các con trỏ nằm ở những slot đầu tiên (các slot 1-7 chỉ chứa giá trị tàn dư trong thanh ghi và không ổn định). Thay vào đó, mục tiêu lý tưởng nhất là đọc trực tiếp từ bảng GOT: hàm `printf` đã được gọi ít nhất một lần để in dấu nhắc lệnh, do đó mục `printf@GOT` đã được phân giải thành địa chỉ thực tế trong bộ nhớ libc.
 
-Định dạng chuỗi đọc: prefix phải dài đúng 8 byte để địa chỉ rơi vào `buf[8:16]` tức slot 9:
+Để đọc địa chỉ này, ta thiết kế một chuỗi format đặc biệt. Phần tiền tố (prefix) cần dài chính xác 8 byte để đẩy địa chỉ cần đọc vào khối 8 byte thứ hai (tức là `buf[8:16]`), tương ứng với slot 9:
 
 ```
 "%9$s" + "AAAA" + p64(base + 0x4010)
 ```
 
-`%9$s` in ra 6 byte của con trỏ rồi dừng (2 byte cao là NUL). `libc_base = ptr - 0x600f0`.
+Chỉ thị `%9$s` sẽ in ra 6 byte giá trị của con trỏ và dừng lại (do 2 byte cao nhất là ký tự NUL). Từ đó, địa chỉ cơ sở của thư viện libc được xác định bằng công thức `libc_base = ptr - 0x600f0`.
 
-Trước khi tin con số này, tôi đặt một đáp án đã biết để kiểm: đọc tiếp `libc_base + 0x1cb42f` và yêu
-cầu nó in ra đúng chuỗi `/bin/sh`. Nếu base sai, bước này fail và exploit dừng, không leo thang trên
-một địa chỉ vô nghĩa.
+Để xác thực con số này, một phép thử được thực hiện bằng cách đọc dữ liệu tại `libc_base + 0x1cb42f`, nơi chứa chuỗi `/bin/sh` cố định trong thư viện. Nếu phép toán base sai, bước này sẽ thất bại và chuỗi khai thác tự động dừng lại, tránh việc tiếp tục tấn công một cách mù quáng vào các vùng nhớ không hợp lệ.
 
-### Bước 3, ghi GOT
+### Bước 3: Ghi đè bảng GOT
 
-`printf = 0x600f0` và `system = 0x58740` trong libc, cách nhau `0x79b0` (dưới 16 MB). Nghĩa là 3 byte
-cao của hai địa chỉ giống hệt nhau, và GOT đang sẵn chứa 3 byte cao đúng. Nên chỉ cần ghi 3 byte
-thấp, không phải 8:
+Tra cứu trong thư viện libc, ta có `printf = 0x600f0` và `system = 0x58740`. Khoảng cách giữa hai hàm này chỉ là `0x79b0` (nhỏ hơn 16 MB). Điều này có nghĩa là 3 byte cao của hai địa chỉ này hoàn toàn giống nhau, và bảng GOT hiện tại đã chứa sẵn 3 byte cao chính xác đó. Nhờ vậy, ta chỉ cần ghi đè 3 byte thấp của địa chỉ thay vì phải ghi lại toàn bộ 8 byte:
 
 ```
-%hhn vào base+0x4010, +1, +2 với giá trị = 3 byte thấp của system
+Dùng %hhn ghi vào base+0x4010, base+0x4011, base+0x4012 các giá trị tương ứng với 3 byte thấp của hàm system.
 ```
 
-Bộ dựng chuỗi format tính delta cho từng byte (`d = (muốn - đã in) mod 256`), xếp các đích theo giá
-trị tăng dần để không phải quay vòng, rồi đệm cho đủ 40 byte để ba địa chỉ nằm đúng slot 13, 14, 15.
-Tôi kiểm bộ dựng này bằng cách mô phỏng printf với 500 bộ ba byte ngẫu nhiên: cả 500 đều ghi đúng
-(`analysis/selftest_fmt.py`).
+Một bộ dựng chuỗi format tự động sẽ đảm nhiệm việc tính toán delta cho từng byte (`d = (giá trị mong muốn - số ký tự đã in) mod 256`), sắp xếp các địa chỉ đích theo thứ tự tăng dần của giá trị cần ghi để tránh tình trạng tràn số đếm, và cuối cùng đệm thêm các ký tự rác để đảm bảo ba địa chỉ đích nằm gọn gàng tại các slot 13, 14 và 15.
+Bộ dựng này được kiểm chứng nghiêm ngặt bằng cách mô phỏng kỹ thuật printf với 500 bộ ba byte ngẫu nhiên, kết quả cho thấy cả 500 trường hợp đều được ghi vào bộ nhớ chính xác tuyệt đối (`analysis/selftest_fmt.py`).
 
-### Bước 4, shell
+### Bước 4: Gọi shell hệ thống
 
-Sau khi GOT trỏ sang `system`, lời gọi `printf(buf)` kế tiếp trở thành `system(buf)`. Chỉ cần gửi
-`/bin/sh` làm nội dung buffer, vì `buf` chính là tham số đầu tiên.
+Sau khi mục `printf@GOT` bị ghi đè thành địa chỉ của hàm `system`, mọi lời gọi `printf(buf)` tiếp theo trong vòng lặp sẽ trở thành `system(buf)`. Lúc này, ta chỉ cần gửi chuỗi `/bin/sh` làm đầu vào, nó sẽ trở thành tham số đầu tiên truyền cho lệnh system.
 
 ```
 uid=1337(mad_libs) gid=1337(mad_libs)
@@ -102,12 +84,9 @@ sun{f1ll_iN_th3_g0T_eNtry}
 ```
 
 ```bash
-python exploit.py                  # mặc định: ls -l /ctf; cat /ctf/*; env | grep -i flag
+python exploit.py                  # Chế độ mặc định: chạy ls -l /ctf; cat /ctf/*; env | grep -i flag
 python exploit.py 'cat /ctf/flag.txt'
-python analysis/selftest_fmt.py    # mô phỏng printf, kiểm bộ dựng chuỗi %hhn
+python analysis/selftest_fmt.py    # Chạy mô phỏng printf để kiểm tra độ tin cậy của bộ dựng %hhn
 ```
 
-Cờ nằm ở `/ctf/flag.txt` (27 byte, chủ `root:mad_libs`, chế độ `-rw-r-----`). Script chỉ dùng
-stdlib, tự nối vào `chal.sunshinectf.games:26001`, tự dò lại base ở mỗi lần chạy (5 lượt thử),
-tự kiểm `libc_base` bằng chuỗi `/bin/sh` trước khi ghi GOT, và ghi `flag.txt` khi bắt được chuỗi
-cờ trong output.
+Cờ nằm trong tệp `/ctf/flag.txt` (độ dài 27 byte, thuộc quyền sở hữu `root:mad_libs` với chế độ quyền `-rw-r-----`). Kịch bản khai thác được viết hoàn toàn bằng thư viện tiêu chuẩn (stdlib), tự động kết nối đến `chal.sunshinectf.games:26001`, tự dò tìm PIE base mỗi lần chạy (giới hạn 5 lượt thử), tự xác minh `libc_base` bằng cách đối chiếu chuỗi `/bin/sh` trước khi can thiệp vào GOT, và tự động trích xuất nội dung `flag.txt` khi nhận diện được chuỗi cờ trong kết quả trả về.

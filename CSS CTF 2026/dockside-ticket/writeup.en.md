@@ -26,16 +26,6 @@ goal: turn a cancelled ticket into emergency harbour access.
 4013ae:  mov    QWORD PTR [rax+0x20],rdx         # con tro ham
 ```
 
-## Approaches Ruled Out
-
-1. **Stack overflow / overwriting a return address**: `edit_ticket` writes exactly 0x28 bytes into the
-   malloc region and reaches nothing beyond it, and the binary has `__stack_chk_fail`. Ruled out as
-   unnecessary.
-2. **Overwriting the GOT (partial RELRO)**: nothing gives us a write into the GOT, and there is no need
-   for one since the chunk itself carries a function pointer. Ruled out.
-3. **Double free**: there is no path that frees twice without re-creating a ticket (`create_ticket`
-   refuses while `active_ticket` is non-zero). Ruled out.
-
 ## Exploit Chain
 
 **Step 1 - Show the pointer is never cleared.** `cancel_ticket` contains only a `free` and a `puts`:

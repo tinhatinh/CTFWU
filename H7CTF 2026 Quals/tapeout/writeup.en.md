@@ -53,15 +53,15 @@ So there is no need to beat the equivalence checking problem - only to exploit i
 `0x00000000` when different, so:
 
 ```
-hi    = shr a 16      # 0 với mọi input trong miền chứng minh
-islow = eq hi zero    # 0xFFFFFFFF trong miền, 0 ở ngoài miền
+hi    = shr a 16      # 0 for every input in the proof domain
+islow = eq hi zero    # 0xFFFFFFFF in domain, 0 out of domain
 ```
 
 **Step 2 - Choosing between the two behaviours with `mux`.** `mux s x y = (x & s) | (y & ~s)` selects per
 bit, so with an all-1/all-0 mask it works as a real multiplexer:
 
 ```
-yref  = xor t2 k2                     # đúng transform của reference
+yref  = xor t2 k2                     # exact transform of the reference
 y     = mux islow yref magic          # magic = const 0xB105F00D
 ```
 

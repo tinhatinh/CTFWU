@@ -30,7 +30,7 @@ cluster around 0 and one cluster around 1.0, which looks a lot like OOK (the pre
 ```
 total runs 5
    0  2909 0      im lặng đầu burst (noise floor)
-2909 43200 1      burst liên tục, envelope không đổi
+2909 43200 1      continuous burst, unchanged envelope
 46109   151 0
 46260     1 1     blip đơn lẻ
 46261  2932 0     im lặng cuối
@@ -61,7 +61,7 @@ Count the transition positions and examine them modulo each candidate period:
 ```
 best symbol-period candidates:
    0.552  S=100  100.0 us  10000.0 baud
-   0.552  S= 50   50.0 us  20000.0 baud      (hoà âm của S=100)
+   0.552  S= 50   50.0 us  20000.0 baud      (harmonic of S=100)
    0.552  S= 25   25.0 us  40000.0 baud
    ...
 top transition-train lines (Hz): [10001.9, 20003.7, ...]

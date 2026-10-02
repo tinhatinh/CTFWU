@@ -26,7 +26,7 @@ forged_sig  = SHA256_state_continue(tag, forged_body phần đuôi)
 1. **Thiếu length field trong padding**: ban đầu `pad = 0x80 + 00*...` chỉ tới boundary 64 byte. Sai: digest công bố là state **sau cả block chứa độ dài**, nên phần splice phải gồm luôn `be64(bitlen gốc)`. Sửa: `pad = 0x80 + 00*((55-L)%64) + struct.pack(">Q", L*8)`.
 2. **Self-test so sánh sai đối tượng**: so `forged` với `sha256(secret+body+suffix)` trong khi message thật server hash là `secret+body+pad+suffix`. Khiến code đúng cũng bị báo sai.
 3. **Typo trong bảng K**: `K[19] = 0x240CA4CC`, giá trị chuẩn là `0x240CA1CC`. Tìm ra bằng cách tự sinh lại toàn bộ 64 hằng số từ `frac(cbrt(prime_i))` và diff từng phần tử.
-4. **Sai dòng cập nhật state**: viết `hh,g,f,e,d,c,b,a = g,f,e,(d+t1),d,c,b,(t1+t2)` — ba vị trí cuối phải là `c,b,a` (tụt xuống), không phải `d,c,b` (giữ nguyên). Nghiêm trọng hơn: bản "reference" tôi viết tay để đối chiếu **mắc y cùng một lỗi**, nên hai bản khớp nhau mà vẫn khác hashlib. Kết luận: đừng lấy bộ não thứ hai của chính mình làm ground truth; chỉ chuẩn là `hashlib` trên message đầy đủ.
+4. **Sai dòng cập nhật state**: viết `hh,g,f,e,d,c,b,a = g,f,e,(d+t1),d,c,b,(t1+t2)` — ba vị trí cuối phải là `c,b,a` (tụt xuống), không phải `d,c,b` (giữ nguyên). Nghiêm trọng hơn: bản "reference" tôi viết tay để đối chiếu **mắc y cùng một lỗi**, nên hai bản khớp nhau mà vẫn khác hashlib. Kết luận: đừng lấy bộ não thứ hai của chính user làm ground truth; chỉ chuẩn là `hashlib` trên message đầy đủ.
 5. **Điều kiện lưu flag quá chặt**: bắt chuỗi `"owner"` trong khi response trả `"payout": "authorized"` -> có cờ trong tay nhưng không ghi `flag.txt`. Sửa: chỉ regex `H7CTF\{...\}` trên response.
 
 ## Vì sao phải viết SHA-256 thuần Python

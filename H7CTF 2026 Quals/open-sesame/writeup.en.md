@@ -13,13 +13,6 @@ transmit on the 9th press and submit it to the service.
 
 `capture.cf32` = I/Q float32 LE @ 1 MHz. The host has no GNU Radio and no urh, so the demodulation is done by hand.
 
-## Approaches Ruled Out
-
-1. KeeLoq, or some secret PRNG standing behind the code hopping. No key is even needed: splitting the 48 bits into
-   `32 bit fixed | 12 bit counter | 4 bit checksum` the counter steps uniformly by `+0x30` across all 8 presses, and
-   the last nibble equals the summed value of the first 11 nibbles mod 16 over all 8 frames. Once a public generator
-   describes the whole capture, no secret channel is left to attack.
-
 ## Exploit Chain
 
 **Step 1 - Envelope.** `env = I^2 + Q^2`, smoothed over a 20 µs window to flatten ripple within one chip.

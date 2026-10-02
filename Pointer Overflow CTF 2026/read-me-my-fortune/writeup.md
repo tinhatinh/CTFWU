@@ -1,19 +1,18 @@
 # Read Me My Fortune - Exploitation
 
-**Điểm:** 200 · **Wave:** 1 · **Cờ:** `POCTF{127.612.IB2GGFAM2XGX6RDT.TEENFQ3KNWVEA3MCHJNFWFODQI}`
+**Điểm:** 200 · **Wave:** 1
+**Cờ:** `POCTF{127.612.IB2GGFAM2XGX6RDT.TEENFQ3KNWVEA3MCHJNFWFODQI}`
 
-**File cho trước:** `service.py` (`a1421668…`), `Dockerfile`, `runner.sh`, `entrypoint.sh`, `read_my_fortune.xinetd`, tất cả khớp sha256 in trên thẻ đề.
+**Files cung cấp:** `service.py` (`a1421668…`), `Dockerfile`, `runner.sh`, `entrypoint.sh`, `read_my_fortune.xinetd` (tất cả đều có mã băm sha256 trùng khớp với thông tin trên thẻ đề).
 
 ## Đề bài
 
-Một service netcat tại `read-my-fortune.pointeroverflowctf.com:9000`. Trước khi reading bắt đầu,
-service đòi session token phát hành riêng cho team, đổi mỗi lần reload trang và hết hạn sau
-15 phút. Người chơi nhập tên, cung hoàng đạo và một template `.format()` tự viết; Madame Elara
-render template đó và in kết quả.
+Người chơi được cung cấp một dịch vụ netcat tại địa chỉ `read-my-fortune.pointeroverflowctf.com:9000`. Để bắt đầu phiên "coi bói" (reading), hệ thống bắt buộc phải nhận được một mã phiên (session token) phát hành độc quyền cho từng đội. Token này sẽ tự động thay đổi mỗi khi tải lại (reload) trang và có thời hạn sử dụng khắt khe chỉ trong 15 phút.
+Trong quá trình tương tác, người chơi sẽ lần lượt nhập tên, cung hoàng đạo và cung cấp một chuỗi mẫu `.format()` tự do. Nhân vật ảo "Madame Elara" sẽ kết xuất (render) chuỗi mẫu đó và in ra lời bói toán.
 
 ## Phân tích ban đầu
 
-Toàn bộ `service.py` là source công khai, và nó tự nói luôn chỗ đánh:
+Toàn bộ mã nguồn `service.py` được công khai trong gói tải về, và nó cũng phơi bày luôn vị trí tử huyệt của chương trình:
 
 ```python
 reading = template.format(
@@ -21,9 +20,9 @@ reading = template.format(
 )
 ```
 
-`name`, `sign`, `date` là chuỗi. `elara` là **function object** (`_greet`). Trong Python 3,
-format string cho phép đi thuộc tính và subscript ngay trong field name
-(`{a.b[c]}`), nên một đối tượng hàm mở ra `__globals__`, tức namespace module. Đầu file ghi rõ:
+Ở đây, `name`, `sign`, `date` đều là dữ liệu kiểu chuỗi thuần tuý. Lỗ hổng chết người nằm ở biến `elara` – nó thực chất là một **đối tượng hàm (function object)** tham chiếu tới hàm `_greet`. Theo đặc tả của Python 3, khi sử dụng chuỗi định dạng (format string), ta hoàn toàn có thể trỏ thẳng tới các thuộc tính (attribute) và truy cập theo chỉ số (subscript) ngay trong cấu trúc cặp ngoặc nhọn (ví dụ: `{a.b[c]}`). Lợi dụng cơ chế này, một đối tượng hàm cho phép ta đi sâu vào thuộc tính `__globals__`, mở toang cánh cửa bước vào không gian tên (namespace) của toàn bộ module. 
+
+Ngay trên đầu tệp mã nguồn, tác giả cũng để lại những lời ghi chú chân thành:
 
 ```python
 # FLAG is a module-level global by design - the intended solve path
@@ -31,71 +30,52 @@ format string cho phép đi thuộc tính và subscript ngay trong field name
 # function's __globals__.
 ```
 
-Vậy bài này không có bug ẩn: primitive là `.format()` với tham số là object sống, và nhiệm vụ
-chỉ là viết đúng field, vượt qua vòng token, rồi đọc lại output.
+Tóm lại, bài này không hề có những mánh khoé lỗi (bug) ngầm nào cả: cơ chế khai thác cốt lõi (primitive) chính là kỹ thuật lạm dụng hàm `.format()` khi đối số truyền vào là một đối tượng sống. Nhiệm vụ duy nhất của người chơi là viết đúng cú pháp truy xuất trường dữ liệu, nạp token hợp lệ, và lấy cờ từ dữ liệu xuất ra.
 
-Hai ràng buộc còn lại đáng chú ý nhưng không chặn được gì:
+Hai giới hạn bảo vệ được đặt ra nhưng không mảy may ảnh hưởng đến quá trình khai thác:
 
-- `_read()` cắt input theo `max_len`, template được phép dài 2048 ký tự, dư sức chứa payload.
-- Kết quả bị cắt `reading[:8000]`, nhưng payload chỉ in ra một field nên nằm gọn trong giới hạn.
-- Exception được in kèm loại và message (`print(f"({type(exc).__name__}: {exc})")`), nên nếu đi
-  sai bước nào thì service tự báo KeyError hay IndexError, đủ để chỉnh đường đi mà không cần đoán.
-
-## Các giả thuyết đã loại trừ
-
-- **Chạy `service.py` trực tiếp trên Windows để test**: chết ngay ở `signal.signal(signal.SIGALRM, ...)`
-  vì `SIGALRM` không tồn tại trên platform này. Không cần WSL hay Docker cho bước này, chỉ cần
-  stub đúng hai symbol `SIGALRM` và `alarm`, giữ nguyên mọi đường dẫn code khác
-  (`analysis/local_service.py`).
-- **Bỏ qua token để test live**: `main()` gọi `sys.exit(1)` nếu `_verify_token` trả `None`,
-  và `_verify_token` kiểm tra prefix `EXP1`, đúng 6 phần, `cid` khớp `CHALLENGE_ID_ENV`, nonce
-  hợp lệ, còn hạn, rồi mới so HMAC. Không có đường vòng, nên mọi thử nghiệm live đều phải dùng
-  token thật của team.
-- **Đi đường `os.environ` qua `{elara.__globals__[...]}`**: khả thi về kỹ thuật nhưng không cần
-  thiết, vì `FLAG` nằm ngay trong globals của chính `_greet`. Service cũng đã chừa sẵn comment
-  về việc cắt output 8000 ký tự để chặn kiểu dump cả dict môi trường.
+- Hàm `_read()` cắt cụt chuỗi đầu vào theo `max_len`, cho phép chuỗi khuôn mẫu (template) dài tới 2048 ký tự – thừa sức để nhét vừa bất kỳ payload khai thác nào.
+- Kết quả đầu ra bị giới hạn bằng lệnh `reading[:8000]`. Payload khai thác của ta chỉ in ra nội dung một biến dữ liệu nên chắc chắn nằm gọn trong giới hạn an toàn này.
+- Bất kỳ ngoại lệ (exception) nào xảy ra cũng sẽ được in kèm theo loại và thông báo chi tiết (`print(f"({type(exc).__name__}: {exc})")`). Điều này vô cùng đáng giá, vì nếu ta có gõ sai cú pháp, hệ thống sẽ ân cần báo lỗi `KeyError` hoặc `IndexError`, giúp người chơi tự tinh chỉnh đường đi mà không cần phải chơi trò đoán mò.
 
 ## Chuỗi khai thác
 
-**Bước 1 - Xác định primitive.** Đọc `main()`, thấy `template.format(elara=_greet)` và ghi nhớ
-rằng field name trong `str.format` hỗ trợ cả attribute lookup lẫn subscript. Không có sanitisation
-nào trên `template` ngoài giới hạn độ dài.
+**Bước 1 - Khoanh vùng Primitive.** 
+Đọc kỹ luồng hàm `main()`, chú ý dòng `template.format(elara=_greet)`. Phải khắc cốt ghi tâm rằng trường định danh (field name) trong phương thức `str.format` hỗ trợ đồng thời tính năng tra cứu thuộc tính (attribute lookup) và chỉ mục. Hoàn toàn không có màng lọc (sanitisation) nào xử lý biến `template` ngoài việc chặt ngắn độ dài.
 
-**Bước 2 - Dựng payload.** `FLAG` là global của module chứa `_greet`, nên:
+**Bước 2 - Lắp ráp Payload.** 
+Biến `FLAG` đóng vai trò là biến toàn cục (global) ở cấp module – chính là module chứa hàm `_greet`. Do đó, cú pháp payload sẽ là:
 
 ```text
 {elara.__globals__[FLAG]}
 ```
 
-Field này resolve thành `getattr(_greet, "__globals__")["FLAG"]`, tức đúng chuỗi cờ.
+Khi được thực thi, bộ phân giải (resolver) sẽ diễn dịch trường này thành `getattr(_greet, "__globals__")["FLAG"]`, và hệ quả tất yếu là nó kéo toàn bộ chuỗi cờ ra ngoài ánh sáng.
 
-**Bước 3 - Proof trên máy local.** Chạy service qua `analysis/local_service.py` với
-`POCTF_DEV_MODE=1` (bỏ bước token, cờ là placeholder), đưa payload vào, nhận về
-`POCTF{dev.flag.local.testing.only}`. Bước này xác nhận giao thức hội thoại và cú pháp payload
-mà không tiêu tốn token live, đúng như thẻ đề khuyên.
+**Bước 3 - Diễn tập trên môi trường nội bộ (Local Proof-of-Concept).** 
+Sử dụng script `analysis/local_service.py` kèm theo biến môi trường `POCTF_DEV_MODE=1` (để lách qua bước kiểm tra token, cờ trên môi trường cục bộ chỉ là chuỗi mẫu). Bơm payload vào và ta lập tức thu về `POCTF{dev.flag.local.testing.only}`. 
+Giai đoạn này giúp ta kiểm chứng độ tin cậy của giao thức kết nối và cú pháp payload mà không bị lãng phí token trên môi trường live, hoàn toàn tuân thủ theo lời khuyên in trên thẻ đề.
 
-Ba chỗ phải sửa để local chạy được trên Windows, đều là lỗi harness chứ không phải lỗi bài:
-`signal.SIGALRM` thiếu (stub), banner chứa ký tự box-drawing làm child chết vì
-`UnicodeEncodeError` của cp1252 (set `PYTHONIOENCODING=utf-8` cho child), và `os.read()` không
-dùng được với socket trên Windows (dùng `sock.recv` cho socket, `os.read` cho pipe).
+Trong quá trình thiết lập, có ba chỗ nhỏ cần phải sửa lại để môi trường local chạy mượt mà trên hệ điều hành Windows (đều là sự cố tương thích do môi trường giả lập, không phải là lỗi ẩn của đề): 
+1. Tín hiệu ngắt `signal.SIGALRM` bị thiếu (cần tạo mã stub giả). 
+2. Biểu ngữ (banner) có chứa các ký tự đồ họa đường kẻ (box-drawing) khiến luồng tiến trình con chết đột ngột vì lỗi `UnicodeEncodeError` dưới bảng mã cp1252 (khắc phục bằng cách gắn biến `PYTHONIOENCODING=utf-8` cho luồng con).
+3. Lệnh `os.read()` không dùng được cho socket trên môi trường Windows (thay bằng `sock.recv` cho kết nối socket và giữ nguyên `os.read` cho cấu trúc pipe).
 
-**Bước 4 - Đánh live.** Kết nối tới cổng 9000, gửi token còn hạn, trả lời hai câu hỏi bằng chuỗi
-bất kỳ, rồi gửi payload ở câu Template. Service in cờ vào phần Reading.
+**Bước 4 - Khai hoả vào mục tiêu Live.** 
+Tạo kết nối ròng đến cổng 9000, nạp token hợp lệ, bịa một câu trả lời bất kỳ cho hai câu hỏi đầu (tên và cung hoàng đạo), và tung đòn quyết định bằng payload vào ô câu hỏi Template. Hệ thống ngoan ngoãn nôn ra cờ ở phần kết quả Reading.
 
-## Cờ
+## Flag
 
 ```text
 POCTF{127.612.IB2GGFAM2XGX6RDT.TEENFQ3KNWVEA3MCHJNFWFODQI}
 ```
 
-Cấu trúc cờ khớp chính xác `_build_marker()`: `<cid>.<team_id>.<nonce>.<sig26>` với
-`cid=127`, `team_id=612`, `nonce=IB2GGFAM2XGX6RDT` lấy từ token, và 26 ký tự base32 của
-HMAC-SHA256. `sig` không tự tính lại được vì cần `FLAG_HMAC_SECRET` phía server.
+Cấu trúc cờ thu được khớp chính xác đến từng ký tự so với hàm `_build_marker()`: bao gồm định dạng `<cid>.<team_id>.<nonce>.<sig26>`, trong đó `cid=127`, mã đội `team_id=612`, phần nonce ngẫu nhiên `nonce=IB2GGFAM2XGX6RDT` được kéo nguyên vẹn từ cấu trúc token, và kết lại bằng 26 ký tự chữ số hệ base32 của mã băm HMAC-SHA256. Thành phần chữ ký (`sig`) này không thể bị thao túng tự do do cần đến chìa khoá `FLAG_HMAC_SECRET` trên máy chủ.
 
-## Chạy lại
+## Phục dựng (Reproduce)
 
 ```bash
 cd read-me-my-fortune
 python exploit.py --local
-python exploit.py read-my-fortune.pointeroverflowctf.com 9000 "<token còn hạn trên trang đề>"
+python exploit.py read-my-fortune.pointeroverflowctf.com 9000 "<nhập token còn hạn lấy trên trang web>"
 ```
