@@ -5,26 +5,26 @@
 
 ## Đề bài
 
-Hãng camera VoltEye vừa tung ra thị trường cả một hạm đội (fleet) thiết bị giống hệt nhau, đúc chung từ "một dây chuyền, chung một sự vội vã". Trong đám cừu nhân bản đó, có một thiết bị mục tiêu mà ta khao khát được mở khoá bảng điều khiển (console) của nó. 
-Thử thách câm như hến: Hệ thống không cho một mảnh mã nguồn nào, chỉ ném lại đúng 3 đầu mối (endpoint) API để tự bơi.
+Hệ thống camera VoltEye phát hành loạt thiết bị có cấu trúc bảo mật thấp, các thiết bị này được cấu hình đồng bộ. Mục tiêu là cần truy cập vào bảng điều khiển (console) của thiết bị. 
+Hệ thống thiếu tài liệu kỹ thuật, cung cấp 3 endpoint API để phân tích.
 
 ## Phân tích ban đầu
 
-Đẩy lệnh thăm dò:
+Gửi lệnh truy vấn:
 ```text
-Cổng GET /          -> Chặn cửa: "Device fleet console. Admin bootstrap required." (Bảng điều khiển hạm đội. Yêu cầu mã khởi động quyền Admin).
-                       Gợi ý 3 ngách: GET /fleet · GET /captured · POST /admin kẹp theo {"token":"..."}
-Cổng GET /fleet     -> Bê ra nguyên cả hạm đội: {"e": 65537, "devices": [{"serial","n"} x30]}    (Sử dụng số hiệu modulus n cỡ 1023/1024 bit).
-Cổng GET /captured  -> Túm được 1 thông điệp: {"note": "RSA/PKCS1v1.5, encrypted to the device cert",
+Cổng GET /          -> Trả về lỗi: "Device fleet console. Admin bootstrap required." (Bảng điều khiển hạm đội. Yêu cầu mã khởi động quyền Admin).
+                       Gợi ý 3 ngách: GET /fleet · GET /captured · POST /admin với payload {"token":"..."}
+Cổng GET /fleet     -> Hiển thị thông tin hệ thống: {"e": 65537, "devices": [{"serial","n"} x30]}    (Sử dụng số hiệu modulus n cỡ 1023/1024 bit).
+Cổng GET /captured  -> Lấy được thông điệp: {"note": "RSA/PKCS1v1.5, encrypted to the device cert",
                        "serial": "VE-C1E90650", "e": 65537, "ciphertext": <128 byte mã hex>}
 ```
 
-Hoàn toàn không có cửa cho chiêu lợi dụng máy tiên tri giải mã (decrypt oracle): Ta chỉ có lót tay duy nhất một bản mã (ciphertext). Chân lý là: con đường độc đạo dẫn tới bản rõ (plaintext) bắt buộc phải cày qua việc phân tích toàn bộ modulus của thiết bị đích. 
-Khổ nỗi, một con số nguyên khổng lồ 1024 bit thì cày chay phân tích là chuyện viễn tưởng. Nhưng câu sấm truyền "family resemblance runs deeper than you'd think" (sự giống nhau của dòng họ sâu đậm hơn bạn tưởng) lại chĩa thẳng mũi giáo vào một tử huyệt kinh điển của việc sinh khoá hàng loạt (fleet keygen): Đó là lỗi hai thiết bị ngẫu nhiên gắp trúng cùng một số nguyên tố.
+Không thể khai thác qua decryption oracle: Hệ thống chỉ có một bản mã (ciphertext). Do đó phương pháp duy nhất là phân tích modulus của thiết bị đích. 
+Tuy nhiên, với số nguyên kích thước 1024 bit, phân tích thô không khả thi. Gợi ý "family resemblance runs deeper than you'd think" chỉ ra lỗi chia sẻ chung trong quá trình tạo khóa hàng loạt (fleet keygen): Tồn tại hai thiết bị sử dụng chung một số nguyên tố.
 
-## Chuỗi khai thác
+## Quá trình khai thác
 
-### Bước 1: Tính ước số chung lớn nhất chéo cặp (pairwise GCD) cày nát cả hạm đội
+### Bước 1: Phân tích GCD toàn hệ thống
 
 ```python
 hits = [(a, b, math.gcd(an, bn))
@@ -32,39 +32,39 @@ hits = [(a, b, math.gcd(an, bn))
         if j > i and math.gcd(an, bn) > 1]
 ```
 
-Trong tổng số tổ hợp chéo C(30,2) = 435 cặp, thật may mắn chỉ nảy ra đúng duy nhất một pha đụng hàng (va chạm). Và kỳ diệu thay, vụ tai nạn đó lại dính líu trực tiếp tới thiết bị mục tiêu của ta:
+Duyệt tổ hợp C(30,2) = 435 cặp, phát hiện một va chạm duy nhất. Va chạm này liên quan trực tiếp đến thiết bị mục tiêu:
 
 ```text
-[*] Phát hiện số cặp xài chung nguyên tố (shared-prime pairs): 1 cặp
-    Máy VE-C1E90650 va chạm Máy VE-23795497   -> Phân tách được ước chung gcd = một số nguyên tố bự 512-bit
+[*] Phát hiện số cặp chia sẻ chung nguyên tố (shared-prime pairs): 1 cặp
+    Máy VE-C1E90650 trùng lặp với Máy VE-23795497   -> Phân tách được ước chung gcd = nguyên tố 512-bit
 ```
 
-### Bước 2: Từ giọt máu chung (thừa số), rèn ra chìa khoá riêng tư (Private Key)
+### Bước 2: Từ thừa số chung, tính toán chìa khoá riêng tư (Private Key)
 
 ```text
-Rút ra p = 792448642746425956602219402032306819204...44085721   (Độ dài 512 bit)
-Chia n lấy q = n // p                                           (Cũng 512 bit)
-Xác thực ngược: p * q == n  ->  True (Đúng)
-Lập công thức rèn khoá: phi = (p-1)*(q-1);  d = pow(65537, -1, phi);  m = pow(ct, d, n)
+Tính p = 792448642746425956602219402032306819204...44085721   (Độ dài 512 bit)
+Chia n cho p lấy q = n // p                                           (512 bit)
+Xác thực: p * q == n  ->  True
+Công thức tạo khoá: phi = (p-1)*(q-1);  d = pow(65537, -1, phi);  m = pow(ct, d, n)
 ```
 
-### Bước 3: Lột xác chuẩn mã PKCS#1 v1.5
+### Bước 3: Phân tích chuẩn PKCS#1 v1.5
 
-Khối giải mã phơi bụng ra nguyên dải 128 byte:
+Kết quả giải mã trả về 128 byte:
 
 ```text
 0002 81c2c61e...415d5d 00 766c745f343832353238633831343263613962316665353763666533
-└kiểu 2┘└── 97 byte đệm (padding), tuyệt đối vắng bóng byte 0 ──┘└Mốc chặn┘└──── Lõi thông điệp: "vlt_482528c8142ca9b1fe57cfe3" ────┘
+└loại 2┘└── 97 byte đệm (padding), không có byte 0 ──┘└Mốc chặn┘└──── Lõi thông điệp: "vlt_482528c8142ca9b1fe57cfe3" ────┘
 ```
 
-Khuôn mẫu chuẩn đét `00 02 PS 00 M` (với khoảng đệm PS hoàn toàn không dính một hạt sạn byte 0 nào) là lời chứng thực đanh thép: chìa khoá riêng (d) ta vừa đúc ra là hàng thật giá thật (chỉ cần sai lệch 1 bit ở biến `d` là nguyên khối sẽ nát bươm thành rác, khỏi hy vọng nhô ra được cái mào đầu `00 02`). Khúc token `vlt_<hex>` vừa vặn như in với cái lỗ khoá "admin bootstrap token" mà form đăng nhập yêu cầu.
+Định dạng chuẩn `00 02 PS 00 M` chứng minh chìa khóa tính toán là chính xác (sai số ở biến `d` sẽ tạo ra chuỗi vô nghĩa, không đúng định dạng `00 02`). Chuỗi token `vlt_<hex>` phù hợp với định dạng yêu cầu ở bảng quản trị.
 
-### Bước 4: Mở két
+### Bước 4: Thực thi
 
 ```bash
 $ python solve_blood.py
-[+] Đào được token = 'vlt_482528c8142ca9b1fe57cfe3'
-[*] Dập POST /admin -> Phản hồi 200 {"authed": true, "flag": "H7CTF{a727587f-67d5-4246-b7c3-e57798659fac}"}
+[+] Trích xuất token = 'vlt_482528c8142ca9b1fe57cfe3'
+[*] Thực thi POST /admin -> Phản hồi 200 {"authed": true, "flag": "H7CTF{a727587f-67d5-4246-b7c3-e57798659fac}"}
 [+] FLAG: H7CTF{a727587f-67d5-4246-b7c3-e57798659fac}
 ```
 

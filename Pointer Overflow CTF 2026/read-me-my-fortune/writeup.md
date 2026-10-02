@@ -7,12 +7,12 @@
 
 ## Đề bài
 
-Người chơi được cung cấp một dịch vụ netcat tại địa chỉ `read-my-fortune.pointeroverflowctf.com:9000`. Để bắt đầu phiên "coi bói" (reading), hệ thống bắt buộc phải nhận được một mã phiên (session token) phát hành độc quyền cho từng đội. Token này sẽ tự động thay đổi mỗi khi tải lại (reload) trang và có thời hạn sử dụng khắt khe chỉ trong 15 phút.
-Trong quá trình tương tác, người chơi sẽ lần lượt nhập tên, cung hoàng đạo và cung cấp một chuỗi mẫu `.format()` tự do. Nhân vật ảo "Madame Elara" sẽ kết xuất (render) chuỗi mẫu đó và in ra lời bói toán.
+Thử thách cung cấp một dịch vụ netcat tại địa chỉ `read-my-fortune.pointeroverflowctf.com:9000`. Để bắt đầu phiên tương tác (reading), hệ thống yêu cầu một mã phiên (session token) cấp phát riêng cho từng đội. Token này sẽ thay đổi mỗi khi tải lại trang và có thời hạn sử dụng 15 phút.
+Trong quá trình tương tác, người chơi nhập tên, cung hoàng đạo và một chuỗi mẫu `.format()` tự do. Hệ thống sẽ kết xuất (render) chuỗi mẫu đó và in ra kết quả.
 
 ## Phân tích ban đầu
 
-Toàn bộ mã nguồn `service.py` được công khai trong gói tải về, và nó cũng phơi bày luôn vị trí tử huyệt của chương trình:
+Mã nguồn `service.py` được cung cấp cho thấy rõ vị trí lỗ hổng của chương trình:
 
 ```python
 reading = template.format(
@@ -20,9 +20,9 @@ reading = template.format(
 )
 ```
 
-Ở đây, `name`, `sign`, `date` đều là dữ liệu kiểu chuỗi thuần tuý. Lỗ hổng chết người nằm ở biến `elara` – nó thực chất là một **đối tượng hàm (function object)** tham chiếu tới hàm `_greet`. Theo đặc tả của Python 3, khi sử dụng chuỗi định dạng (format string), ta hoàn toàn có thể trỏ thẳng tới các thuộc tính (attribute) và truy cập theo chỉ số (subscript) ngay trong cấu trúc cặp ngoặc nhọn (ví dụ: `{a.b[c]}`). Lợi dụng cơ chế này, một đối tượng hàm cho phép ta đi sâu vào thuộc tính `__globals__`, mở toang cánh cửa bước vào không gian tên (namespace) của toàn bộ module. 
+Các biến `name`, `sign`, `date` là dữ liệu kiểu chuỗi thuần tuý. Điểm yếu bảo mật nằm ở biến `elara` – đây là một **đối tượng hàm (function object)** tham chiếu tới hàm `_greet`. Theo đặc tả của Python 3, khi sử dụng chuỗi định dạng (format string), ta có thể truy cập các thuộc tính (attribute) và chỉ số (subscript) bên trong cặp ngoặc nhọn (ví dụ: `{a.b[c]}`). Dựa vào cơ chế này, đối tượng hàm cho phép truy cập vào thuộc tính `__globals__`, từ đó tiếp cận không gian tên (namespace) của toàn bộ module.
 
-Ngay trên đầu tệp mã nguồn, tác giả cũng để lại những lời ghi chú chân thành:
+Tác giả cũng đã để lại chú thích trong tệp mã nguồn:
 
 ```python
 # FLAG is a module-level global by design - the intended solve path
@@ -30,39 +30,39 @@ Ngay trên đầu tệp mã nguồn, tác giả cũng để lại những lời 
 # function's __globals__.
 ```
 
-Tóm lại, bài này không hề có những mánh khoé lỗi (bug) ngầm nào cả: cơ chế khai thác cốt lõi (primitive) chính là kỹ thuật lạm dụng hàm `.format()` khi đối số truyền vào là một đối tượng sống. Nhiệm vụ duy nhất của người chơi là viết đúng cú pháp truy xuất trường dữ liệu, nạp token hợp lệ, và lấy cờ từ dữ liệu xuất ra.
+Thử thách không chứa các lỗi (bug) tiềm ẩn phức tạp: cơ chế khai thác cốt lõi (primitive) là kỹ thuật lợi dụng hàm `.format()` khi đối số truyền vào là một đối tượng. Nhiệm vụ của người chơi là sử dụng đúng cú pháp truy xuất dữ liệu, cung cấp token hợp lệ, và lấy cờ từ kết quả đầu ra.
 
-Hai giới hạn bảo vệ được đặt ra nhưng không mảy may ảnh hưởng đến quá trình khai thác:
+Hệ thống có hai giới hạn bảo vệ nhưng không ngăn cản quá trình khai thác:
 
-- Hàm `_read()` cắt cụt chuỗi đầu vào theo `max_len`, cho phép chuỗi khuôn mẫu (template) dài tới 2048 ký tự – thừa sức để nhét vừa bất kỳ payload khai thác nào.
-- Kết quả đầu ra bị giới hạn bằng lệnh `reading[:8000]`. Payload khai thác của ta chỉ in ra nội dung một biến dữ liệu nên chắc chắn nằm gọn trong giới hạn an toàn này.
-- Bất kỳ ngoại lệ (exception) nào xảy ra cũng sẽ được in kèm theo loại và thông báo chi tiết (`print(f"({type(exc).__name__}: {exc})")`). Điều này vô cùng đáng giá, vì nếu ta có gõ sai cú pháp, hệ thống sẽ ân cần báo lỗi `KeyError` hoặc `IndexError`, giúp người chơi tự tinh chỉnh đường đi mà không cần phải chơi trò đoán mò.
+- Hàm `_read()` giới hạn đầu vào theo `max_len`, cho phép chuỗi khuôn mẫu (template) dài tối đa 2048 ký tự – đủ để chứa các payload khai thác thông thường.
+- Kết quả đầu ra bị giới hạn bằng lệnh `reading[:8000]`. Payload khai thác chỉ in ra nội dung một biến dữ liệu nên sẽ nằm gọn trong giới hạn này.
+- Mọi ngoại lệ (exception) sẽ được in ra kèm theo loại và thông báo chi tiết (`print(f"({type(exc).__name__}: {exc})")`). Điều này giúp người chơi dễ dàng điều chỉnh cú pháp payload nếu gặp lỗi `KeyError` hoặc `IndexError` mà không cần phỏng đoán.
 
-## Chuỗi khai thác
+## Quá trình phân tích
 
-**Bước 1 - Khoanh vùng Primitive.** 
-Đọc kỹ luồng hàm `main()`, chú ý dòng `template.format(elara=_greet)`. Phải khắc cốt ghi tâm rằng trường định danh (field name) trong phương thức `str.format` hỗ trợ đồng thời tính năng tra cứu thuộc tính (attribute lookup) và chỉ mục. Hoàn toàn không có màng lọc (sanitisation) nào xử lý biến `template` ngoài việc chặt ngắn độ dài.
+**Bước 1 - Xác định phương thức khai thác (Primitive).** 
+Phân tích luồng hàm `main()`, chú ý dòng `template.format(elara=_greet)`. Trường định danh (field name) trong phương thức `str.format` hỗ trợ tính năng tra cứu thuộc tính (attribute lookup) và chỉ mục. Không có cơ chế lọc (sanitisation) nào xử lý biến `template` ngoại trừ việc giới hạn độ dài.
 
-**Bước 2 - Lắp ráp Payload.** 
-Biến `FLAG` đóng vai trò là biến toàn cục (global) ở cấp module – chính là module chứa hàm `_greet`. Do đó, cú pháp payload sẽ là:
+**Bước 2 - Xây dựng Payload.** 
+Biến `FLAG` là biến toàn cục (global) ở cấp module – module chứa hàm `_greet`. Do đó, cú pháp payload được xây dựng như sau:
 
 ```text
 {elara.__globals__[FLAG]}
 ```
 
-Khi được thực thi, bộ phân giải (resolver) sẽ diễn dịch trường này thành `getattr(_greet, "__globals__")["FLAG"]`, và hệ quả tất yếu là nó kéo toàn bộ chuỗi cờ ra ngoài ánh sáng.
+Khi thực thi, bộ phân giải (resolver) sẽ diễn dịch chuỗi này thành `getattr(_greet, "__globals__")["FLAG"]`, từ đó xuất nội dung cờ.
 
-**Bước 3 - Diễn tập trên môi trường nội bộ (Local Proof-of-Concept).** 
-Sử dụng script `analysis/local_service.py` kèm theo biến môi trường `POCTF_DEV_MODE=1` (để lách qua bước kiểm tra token, cờ trên môi trường cục bộ chỉ là chuỗi mẫu). Bơm payload vào và ta lập tức thu về `POCTF{dev.flag.local.testing.only}`. 
-Giai đoạn này giúp ta kiểm chứng độ tin cậy của giao thức kết nối và cú pháp payload mà không bị lãng phí token trên môi trường live, hoàn toàn tuân thủ theo lời khuyên in trên thẻ đề.
+**Bước 3 - Kiểm thử trên môi trường nội bộ (Local Proof-of-Concept).** 
+Sử dụng script `analysis/local_service.py` với biến môi trường `POCTF_DEV_MODE=1` (để bỏ qua bước kiểm tra token, cờ trên môi trường cục bộ là chuỗi giả định). Áp dụng payload, hệ thống trả về `POCTF{dev.flag.local.testing.only}`. 
+Giai đoạn này giúp xác nhận kết nối và cú pháp payload hoạt động chính xác trước khi thực hiện trên môi trường thật, tiết kiệm thời gian thao tác với token.
 
-Trong quá trình thiết lập, có ba chỗ nhỏ cần phải sửa lại để môi trường local chạy mượt mà trên hệ điều hành Windows (đều là sự cố tương thích do môi trường giả lập, không phải là lỗi ẩn của đề): 
-1. Tín hiệu ngắt `signal.SIGALRM` bị thiếu (cần tạo mã stub giả). 
-2. Biểu ngữ (banner) có chứa các ký tự đồ họa đường kẻ (box-drawing) khiến luồng tiến trình con chết đột ngột vì lỗi `UnicodeEncodeError` dưới bảng mã cp1252 (khắc phục bằng cách gắn biến `PYTHONIOENCODING=utf-8` cho luồng con).
-3. Lệnh `os.read()` không dùng được cho socket trên môi trường Windows (thay bằng `sock.recv` cho kết nối socket và giữ nguyên `os.read` cho cấu trúc pipe).
+Trong quá trình thiết lập môi trường local trên Windows, cần lưu ý ba điểm tương thích: 
+1. Tín hiệu ngắt `signal.SIGALRM` không hỗ trợ (cần tạo mã thay thế). 
+2. Dữ liệu đầu ra (banner) chứa các ký tự đồ họa (box-drawing) gây lỗi `UnicodeEncodeError` dưới bảng mã cp1252 (khắc phục bằng cách thiết lập biến môi trường `PYTHONIOENCODING=utf-8`).
+3. Lệnh `os.read()` không hoạt động với socket trên Windows (thay bằng `sock.recv` cho socket và giữ nguyên `os.read` cho pipe).
 
-**Bước 4 - Khai hoả vào mục tiêu Live.** 
-Tạo kết nối ròng đến cổng 9000, nạp token hợp lệ, bịa một câu trả lời bất kỳ cho hai câu hỏi đầu (tên và cung hoàng đạo), và tung đòn quyết định bằng payload vào ô câu hỏi Template. Hệ thống ngoan ngoãn nôn ra cờ ở phần kết quả Reading.
+**Bước 4 - Khai thác mục tiêu Live.** 
+Tạo kết nối đến cổng 9000, cung cấp token hợp lệ, nhập thông tin bất kỳ cho hai câu hỏi đầu tiên, và nhập payload vào phần yêu cầu Template. Hệ thống sẽ trả về nội dung cờ ở phần kết quả Reading.
 
 ## Flag
 
@@ -70,9 +70,9 @@ Tạo kết nối ròng đến cổng 9000, nạp token hợp lệ, bịa một 
 POCTF{127.612.IB2GGFAM2XGX6RDT.TEENFQ3KNWVEA3MCHJNFWFODQI}
 ```
 
-Cấu trúc cờ thu được khớp chính xác đến từng ký tự so với hàm `_build_marker()`: bao gồm định dạng `<cid>.<team_id>.<nonce>.<sig26>`, trong đó `cid=127`, mã đội `team_id=612`, phần nonce ngẫu nhiên `nonce=IB2GGFAM2XGX6RDT` được kéo nguyên vẹn từ cấu trúc token, và kết lại bằng 26 ký tự chữ số hệ base32 của mã băm HMAC-SHA256. Thành phần chữ ký (`sig`) này không thể bị thao túng tự do do cần đến chìa khoá `FLAG_HMAC_SECRET` trên máy chủ.
+Cấu trúc cờ thu được khớp chính xác với hàm `_build_marker()`: định dạng `<cid>.<team_id>.<nonce>.<sig26>`, trong đó `cid=127`, mã đội `team_id=612`, phần nonce ngẫu nhiên `nonce=IB2GGFAM2XGX6RDT` lấy từ token, và kết thúc bằng 26 ký tự hệ base32 của mã băm HMAC-SHA256. Thành phần chữ ký (`sig`) này được bảo mật bằng khóa `FLAG_HMAC_SECRET` trên máy chủ.
 
-## Phục dựng (Reproduce)
+## Reproduce
 
 ```bash
 cd read-me-my-fortune

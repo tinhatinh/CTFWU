@@ -7,53 +7,44 @@
 
 ## Đề bài
 
-Tình huống đặt ra: Một vị khách vội vã rời đi, bỏ quên lại chiếc laptop tại phòng khách sạn. Máy tính vẫn đang trong trạng thái mở khoá, và trình duyệt web thì đang hiển thị dang dở một biểu mẫu (form) chưa kịp gửi. Đội phản ứng sự cố IT bên ngoài đã can thiệp và đóng gói toàn bộ hiện trạng này thành một tệp tin zip. 
-Nhiệm vụ của bạn là truy tìm lá cờ được giấu trong phiên làm việc (session) đó, với lời dặn dò "hãy chú ý đến các chi tiết". Đáng chú ý, file zip được sinh riêng biệt cho từng đội chơi (mỗi đội nhận một file độc bản).
+Tình huống đặt ra: Một vị khách rời đi và để lại laptop tại phòng khách sạn. Máy tính vẫn đang mở khoá, trình duyệt web đang hiển thị một biểu mẫu (form) chưa được gửi. Đội phản ứng sự cố đã can thiệp và đóng gói toàn bộ hiện trạng thành một tệp tin zip. Nhiệm vụ của người chơi là tìm lá cờ được giấu trong phiên làm việc (session) đó, với gợi ý "hãy chú ý đến các chi tiết". Mỗi đội chơi sẽ nhận được một file zip có nội dung khác nhau.
 
 ## Phân tích ban đầu
 
-Bên trong tệp nén là một thư mục hồ sơ người dùng Firefox mang tên `k-vance-profile`, chứa đúng 5 tệp tin cốt lõi:
+Bên trong tệp nén là một thư mục hồ sơ người dùng Firefox tên `k-vance-profile`, chứa 5 tệp tin chính:
 
-| Tên File | Chẩn đoán nội dung |
+| Tên File | Phân tích nội dung |
 | --- | --- |
-| `places.sqlite` | Bảng `moz_places` chứa 8 dòng lịch sử duyệt web + bảng `moz_bookmarks` chứa 1 dòng. |
+| `places.sqlite` | Bảng `moz_places` chứa 8 dòng lịch sử duyệt web và bảng `moz_bookmarks` chứa 1 dòng. |
 | `formhistory.sqlite` | Bảng `moz_formhistory` chứa 3 dòng: tìm kiếm `search` = "eighth session lssf redacted", tài khoản `email` = "e.marchetti@hollis.edu", và `search` = "halberd office hours wednesday". |
-| `logins.json` | 2 bản ghi đăng nhập, các trường `encryptedUsername` và `encryptedPassword` thực chất chỉ mã hoá base64 thông thường chứ không dùng cơ chế bảo mật mạnh. |
-| `prefs.js` | Ghi nhận cấu hình: giả mạo `general.useragent.override` thành Firefox/119.0, `browser.startup.page=3`, và bật `resume_from_crash=true`. |
-| `sessionstore-backups/recovery.jsonlz4` | File khôi phục phiên nặng 584 byte, được nén dưới định dạng container `mozLz40\0`. |
-| `README.txt` | Dòng thông điệp bí ẩn: Docket MARCHETTI/2026-14, "Find what she was about to submit." (Hãy tìm thứ cô ấy định gửi đi). |
+| `logins.json` | 2 bản ghi đăng nhập, các trường `encryptedUsername` và `encryptedPassword` được mã hoá base64 thông thường, không dùng cơ chế bảo mật phức tạp. |
+| `prefs.js` | Ghi nhận cấu hình: `general.useragent.override` thiết lập thành Firefox/119.0, `browser.startup.page=3`, và `resume_from_crash=true`. |
+| `sessionstore-backups/recovery.jsonlz4` | File khôi phục phiên có kích thước 584 byte, được nén dưới định dạng `mozLz40\0`. |
+| `README.txt` | Chứa thông điệp: Docket MARCHETTI/2026-14, "Find what she was about to submit." |
 
-Lời gợi ý "data entered mid-form" (dữ liệu nhập dở giữa chừng) và "what she was about to submit" (thứ cô ấy định gửi) là mũi tên chỉ thẳng vào tệp lưu trữ phiên (session store): bởi đây chính là nơi duy nhất Firefox tự động lưu lại những nội dung người dùng đã gõ vào form nhưng chưa kịp bấm nút submit. Các file sqlite còn lại đóng vai trò như những gia vị để tái tạo lại bức tranh toàn cảnh của cuộc điều tra.
+Gợi ý "data entered mid-form" và "what she was about to submit" chỉ ra rằng dữ liệu mục tiêu nằm trong tệp lưu trữ phiên (session store). Đây là nơi Firefox lưu lại nội dung người dùng đã nhập vào form nhưng chưa bấm submit. Các file sqlite còn lại cung cấp thông tin ngữ cảnh để hỗ trợ quá trình phân tích.
 
-## Khám nghiệm các chi tiết lạc hướng (Rabbit Holes)
+## Phân tích các dữ liệu nhiễu (Rabbit Holes)
 
-Có ba chi tiết cực kỳ dễ đánh lừa người chơi, chúng không dẫn tới cờ nhưng lại phục vụ hoàn hảo cho tiêu chí "chú ý đến các chi tiết" của tác giả:
+Có ba chi tiết dễ gây nhầm lẫn nhưng không chứa dữ liệu cờ:
 
-- Trong bảng `moz_places`, bản ghi mang id 99 chứa url là `https://catalog.spr.org.uk/apparatus/provenance/lssf`, nhưng trường `rev_host` (chuỗi hostname đảo ngược) lại là `moc.ftcwolfrevoretniop.nimda.` (giải mã ra là `admin.pointeroverflowctf.com`). Trên thực tế, `rev_host` là một cột do Firefox tự động nội suy từ url; việc hai cột này mâu thuẫn khốc liệt chứng tỏ bản ghi này đã được ai đó (hoặc tác giả) "ghép tay" giả mạo. Tuy nhiên, nó không mở ra hướng tấn công nào vì đây là thử thách forensics ngoại tuyến (offline), không hề có service thật để chúng ta tương tác.
-- Bookmark duy nhất có tên gọi cực kỳ khiêu khích "flag draft (do not lose)". Thế nhưng trường `fk=3` lại trỏ nó về một trang của Hollis Special Collections, hoàn toàn không phải là trang web chứa form điền thông tin. Cái tên hấp dẫn kia chỉ là một mồi nhử rẻ tiền.
-- Tệp `logins.json` nhìn bề ngoài có vẻ chứa thông tin xác thực bị mã hoá sâu. Nhưng nếu tinh mắt, các chuỗi `ZS5tYXJjaGV0dGlAaG9sbGlzLmVkdQ==` và `TW5EYXlXM2RuZXNkQHk3` chỉ là lớp mặt nạ base64 ngây ngô của tài khoản `e.marchetti@hollis.edu` / `MnDayW3dnesd@y7`, và cặp thứ hai lột ra là `anon-analyst` / `hunter2`. Hoàn toàn không có thuật toán PKCS#11 hay 3DES cao siêu nào ở đây.
+- Trong bảng `moz_places`, bản ghi id 99 chứa url `https://catalog.spr.org.uk/apparatus/provenance/lssf`, nhưng trường `rev_host` lại là `moc.ftcwolfrevoretniop.nimda.` (giải mã thành `admin.pointeroverflowctf.com`). Thực tế, `rev_host` là cột do Firefox tự nội suy từ url. Sự mâu thuẫn giữa hai cột này cho thấy bản ghi đã được chỉnh sửa thủ công. Tuy nhiên, do đây là thử thách forensics ngoại tuyến (offline), thông tin này không dẫn đến phương pháp khai thác nào.
+- Bookmark duy nhất có tên "flag draft (do not lose)". Tuy nhiên, trường `fk=3` trỏ về một trang của Hollis Special Collections, không phải trang chứa form điền thông tin. Đây là một dữ liệu giả (decoy).
+- Tệp `logins.json` trông giống như chứa thông tin xác thực bị mã hoá. Thực tế, các chuỗi `ZS5tYXJjaGV0dGlAaG9sbGlzLmVkdQ==` và `TW5EYXlXM2RuZXNkQHk3` chỉ là dữ liệu base64 của tài khoản `e.marchetti@hollis.edu` / `MnDayW3dnesd@y7`, cặp thứ hai là `anon-analyst` / `hunter2`.
 
-## Chuỗi khai thác
+## Quá trình phân tích
 
-**Bước 1 - Giám định hiện trường (Artifact Verification).** 
-Việc đầu tiên là chạy lệnh `sha256sum` trên tệp zip để đảm bảo nó nguyên vẹn và khớp với mã băm trên thẻ đề trước khi bung nén. File nén sạch sẽ: 6 mục (entry), phần comment trống rỗng, không hề có byte thừa thãi giấu sau khối EOCD (phép tính 3486 - 3464 = 22 byte vừa vặn với kích thước chuẩn tối thiểu của một khối EOCD).
+**Bước 1 - Xác thực toàn vẹn dữ liệu.** 
+Kiểm tra mã băm sha256 của tệp zip để đảm bảo khớp với thông tin trên thẻ đề. File nén bao gồm 6 mục, phần comment trống, không có byte thừa ở khối EOCD.
 
-**Bước 2 - Vét cạn các nguồn dữ liệu thô.** 
-Dùng `sqlite3` nhúng trong Python để kết xuất (dump) sạch sẽ toàn bộ các bảng `moz_places`, `moz_bookmarks`, `moz_formhistory`; và dùng thư viện `base64` để bóc tách `logins.json`. Không tìm thấy bất kỳ dấu vết nào của chuỗi tiền tố `POCTF{` trong các nguồn tĩnh này. Khi quét bằng lệnh bạo lực `grep -rao "POCTF{[^}]*}"` lên toàn bộ cây thư mục vừa giải nén, công cụ trả về đúng một kết quả duy nhất đang nằm thoi thóp trong tệp `recovery.jsonlz4` đang bị nén chặt.
+**Bước 2 - Trích xuất dữ liệu thô.** 
+Sử dụng `sqlite3` trong Python để kết xuất dữ liệu các bảng `moz_places`, `moz_bookmarks`, `moz_formhistory`; và thư viện `base64` để phân tích `logins.json`. Không phát hiện chuỗi có tiền tố `POCTF{`. Khi tìm kiếm chuỗi regex `POCTF{[^}]*}` trên toàn bộ thư mục, công cụ trả về một kết quả duy nhất trong tệp `recovery.jsonlz4` đang bị nén.
 
-**Bước 3 - Phá vỡ container jsonlz4.** 
-Tệp tin Firefox jsonlz4 luôn được bảo vệ bởi phần header mở đầu bằng chuỗi 8 byte `6d 6f 7a 4c 7a 34 30 00` (dịch ra là `mozLz40\0`). Tiếp nối ngay sau đó là 4 byte ghi lại kích thước tệp gốc trước khi nén dưới định dạng little-endian (ở đây là `0x00000291`, tương đương 657 byte). Ngay sau header là một khối nén LZ4 thuần tuý. Cạm bẫy chết người nằm ở đây: nếu bạn nhầm tưởng header chỉ dài 6 byte và cố đọc kích thước ở offset 6, bạn sẽ nhận về một con số điên rồ `0x0291_0000`, khiến thư viện giải nén `lz4.block` chết sặc với lỗi "insufficient space in destination buffer":
+**Bước 3 - Giải nén định dạng jsonlz4.** 
+Tệp Firefox jsonlz4 bắt đầu bằng phần header 8 byte `6d 6f 7a 4c 7a 34 30 00` (`mozLz40\0`). Theo sau là 4 byte little-endian ghi kích thước tệp gốc (`0x00000291` hoặc 657 byte). Ngay sau header là khối nén LZ4. Cần lưu ý đọc đúng độ dài header (8 byte) để tránh lỗi không đủ bộ đệm (insufficient space in destination buffer) khi sử dụng thư viện `lz4.block`. Cài đặt thư viện `lz4` trên Python để hỗ trợ giải nén định dạng này.
 
-```python
-assert blob[:8] == b"mozLz40\x00"
-size = struct.unpack("<I", blob[8:12])[0]
-data = lz4.block.decompress(blob[12:], uncompressed_size=size)
-```
-
-Gói `pip install lz4` đã có sẵn wheel Windows cho Python 3.12, không đòi hỏi biên dịch phức tạp.
-
-**Bước 4 - Bóc tách dữ liệu Form.** 
-Chuỗi JSON thu được sau khi giải nén hé lộ trạng thái của một cửa sổ trình duyệt chỉ mở một tab duy nhất. Tab này đang chốt tại URL `catalog.spr.org.uk/apparatus/provenance/lssf`. Quý giá hơn, thuộc tính `formdata.id` vẫn còn lưu giữ nguyên vẹn bốn trường thông tin mà người dùng đã cặm cụi gõ vào nhưng chưa kịp nhấn submit:
+**Bước 4 - Phân tích dữ liệu Form.** 
+Chuỗi JSON thu được cho thấy trạng thái của một tab đang mở tại URL `catalog.spr.org.uk/apparatus/provenance/lssf`. Thuộc tính `formdata.id` chứa bốn trường thông tin chưa được gửi:
 
 ```json
 "workstation":   "hollis-office-desktop-elena"
@@ -62,12 +53,9 @@ Chuỗi JSON thu được sau khi giải nén hé lộ trạng thái của một
 "case-notes":    "Subject: E. Marchetti disappearance. Chain of custody initiated 2026-06-29..."
 ```
 
-**Bước 5 - Đối chiếu chữ ký bảo mật.** 
-Chuẩn cờ của giải POCTF luôn tuân thủ nghiêm ngặt định dạng:
-`POCTF{<cid>.<team_id>.<nonce>.<sig26>}` 
-(với `sig26` là hệ chữ số base32 của mã băm HMAC-SHA256 bị cắt cụt còn 26 ký tự - cấu trúc này từng bị lộ trong mã nguồn của bài `read-me-my-fortune`). 
-Chuỗi thu được khớp hoàn hảo: chỉ số `cid` là 109, mã đội `team` là 612 (trùng khớp với file zip cấp cho đội), phần `nonce` là chuỗi `I777LWHDFNCWRJ2S` dài 16 ký tự, và phần chữ ký `sig` dài đúng 26 ký tự base32. 
-Đó chính là lý do tuyệt đối để khẳng định field `artifact-flag` là nơi chứa lá cờ thực sự, chứ không phải ba field còn lại, và ta có thể nộp cờ tự tin mà không cần máy chủ phải mớm lời xác nhận.
+**Bước 5 - Đối chiếu định dạng cờ.** 
+Cờ của giải POCTF có định dạng: `POCTF{<cid>.<team_id>.<nonce>.<sig26>}`.
+Chuỗi thu được có chỉ số `cid` là 109, mã đội `team` là 612 (trùng khớp với file zip), `nonce` là `I777LWHDFNCWRJ2S` (16 ký tự), và chữ ký `sig` dài 26 ký tự base32. Cấu trúc này xác nhận tính hợp lệ của cờ tại trường `artifact-flag`.
 
 ## Flag
 
@@ -75,11 +63,11 @@ Chuỗi thu được khớp hoàn hảo: chỉ số `cid` là 109, mã đội `t
 POCTF{109.612.I777LWHDFNCWRJ2S.JB6P5ZRASWPVYKKKHXKAPSQFWT}
 ```
 
-## Phục dựng (Reproduce)
+## Reproduce
 
 ```bash
 cd everything-left-open
 python exploit.py
 ```
 
-Công cụ `exploit.py` được thiết kế để tự động hoá từ A đến Z: xác thực toàn vẹn sha256, móc ruột toàn bộ các bảng sqlite, bóc tách tài khoản trong logins, giải nén hoàn chỉnh định dạng jsonlz4 đặc thù của Firefox và in trực tiếp trường chứa cờ. Nếu muốn chạy với tệp zip cấp cho một đội khác, chỉ cần nối thêm đối số: `python exploit.py <duong-dan-zip>`.
+Tệp `exploit.py` tự động hóa các bước: kiểm tra sha256, trích xuất dữ liệu sqlite, giải mã base64 các tài khoản, giải nén định dạng jsonlz4 của Firefox và in cờ. Có thể áp dụng cho tệp zip của đội khác thông qua đối số: `python exploit.py <duong-dan-zip>`.

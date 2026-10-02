@@ -3,16 +3,16 @@
 **Điểm:** 100 · **Wave:** 1
 **Cờ:** `POCTF{3.612.H5VA2OHFE333SO62.EAIOF76YB2L4XMZTFSV4CPOEOX}`
 
-**Artifact:** Thử thách này không cung cấp file để tải về. Thay vào đó, một bàn cờ trạng thái động được sinh ngẫu nhiên cho từng đội và hiển thị trực tiếp trên trang `/challenges/the-apparatus-invocation/`. Trạng thái khởi điểm của bàn cờ thuộc đội 612 được lưu giữ lại trong file `files/board.txt`.
+**Artifact:** Thử thách này không cung cấp file tải về. Hệ thống tạo một bàn cờ trạng thái ngẫu nhiên cho từng đội, hiển thị trực tiếp trên trang `/challenges/the-apparatus-invocation/`. Trạng thái khởi tạo của bàn cờ thuộc đội 612 được lưu trữ trong file `files/board.txt`.
 
 ## Đề bài
 
-Hệ thống đưa ra một lưới toạ độ 7x7 chứa tổng cộng 49 ngọn nến. Lối chơi tuân theo quy luật muôn thuở của trò "Lights Out": Mỗi lần nhấn vào một ngọn nến, nó sẽ đảo trạng thái của chính nó (sáng thành tắt, tắt thành sáng), đồng thời kéo theo 4 ngọn nến láng giềng kề sát cạnh nó theo phương dọc và ngang cũng bị đảo trạng thái theo. 
-Nhiệm vụ tối thượng để triệu hồi cỗ máy (apparatus) là phải làm tắt ngúm toàn bộ 49 ngọn nến trên bàn. Gợi ý trên trang web khẳng định: thứ tự bấm hoàn toàn vô nghĩa, điều duy nhất quan trọng là tập hợp các lần bấm. Đồng thời, một nút Reset được cung cấp để khôi phục bàn cờ về đúng mốc thời gian khởi thuỷ.
+Hệ thống hiển thị một lưới toạ độ 7x7 gồm 49 bóng đèn (ngọn nến). Cách chơi tương tự trò "Lights Out": Nhấn vào một bóng đèn sẽ thay đổi trạng thái của nó (sáng thành tắt, tắt thành sáng), và đồng thời thay đổi trạng thái của 4 bóng đèn liền kề (trên, dưới, trái, phải). 
+Mục tiêu là phải tắt hoàn toàn 49 bóng đèn trên bàn cờ. Gợi ý cho biết thứ tự thực hiện không quan trọng, chỉ tập hợp các ô được chọn mới quyết định kết quả. Hệ thống cũng cung cấp nút Reset để khôi phục trạng thái ban đầu.
 
 ## Phân tích ban đầu
 
-Đảo mắt qua cấu trúc DOM của trang để bóc tách hai yếu tố sống còn: trạng thái tĩnh của bàn cờ và cơ chế kiểm duyệt của máy chủ.
+Kiểm tra cấu trúc DOM của trang để xác định trạng thái bàn cờ và cơ chế giao tiếp với máy chủ.
 
 ```html
 <div id="board" class="board" role="grid" aria-label="Invocation board">
@@ -21,13 +21,13 @@ Nhiệm vụ tối thượng để triệu hồi cỗ máy (apparatus) là phả
   ...
 ```
 
-Đào sâu vào đoạn script nội tuyến (inline script) nặng 4.3 KB, ta khai quật được ba yếu tố quyết định số phận ván đấu:
+Phân tích đoạn mã script nội tuyến (inline script) dung lượng 4.3 KB tiết lộ các yếu tố quan trọng:
 
-1. Lá cờ **không hề** bị giấu ngu ngốc trong mã HTML. Tác giả khai báo thẳng thừng `const presetFlag = ""` và `const alreadySolved = false`. Chỉ khi nào bạn dọn sạch bàn cờ, trang web mới kích hoạt lệnh gọi `fetch(window.location.pathname + 'complete', {body: JSON.stringify({clicks: presses})})` và cập nhật `$flagTxt.textContent = d.flag`. Điều này đập tan mọi ảo tưởng đi đường tắt: máy chủ sẽ tự tay thẩm định lại chuỗi hành động (presses) của đội chơi và tự mình sinh ra cờ; không có kẽ hở nào từ phía client để khai thác lỗ hổng.
-2. Biến `presses` thực chất là một mảng lưu trữ cấu trúc toạ độ `{r, c}` (hàng, cột) được nạp vào (push) liên tục sau mỗi phát nhấn. Hệ quả là, ta chỉ việc kích hoạt chuẩn xác cơ chế lắng nghe sự kiện (handler) của trang là đủ để dắt mũi máy chủ, hoàn toàn miễn nhiễm với gánh nặng phải tự đồng bộ lại trạng thái hiển thị.
-3. Việc vẽ lại giao diện (render) được giao phó cho lệnh `classList.toggle('lit', on)` chạy song hành cùng thuộc tính `aria-pressed`. Nhờ đó, bằng cách quét giá trị `aria-pressed` theo chiều dọc luồng DOM (quy tắc row-major), ta có thể ép xuất ra một ma trận 7x7 chân thực đến từng pixel.
+1. Mã cờ không được nhúng sẵn trong HTML. Script khởi tạo `const presetFlag = ""` và `const alreadySolved = false`. Khi trạng thái bàn cờ đạt yêu cầu, trang web gọi API `fetch(window.location.pathname + 'complete', {body: JSON.stringify({clicks: presses})})` và nhận mã cờ. Do đó, người chơi bắt buộc phải tìm ra chuỗi hành động (presses) chính xác và gửi về máy chủ để xác thực.
+2. Biến `presses` là mảng lưu trữ toạ độ `{r, c}` (hàng, cột) của mỗi lần nhấn. Việc kích hoạt sự kiện click trên giao diện sẽ tự động cập nhật mảng này và duy trì đồng bộ trạng thái.
+3. Việc cập nhật giao diện được thực hiện thông qua lệnh `classList.toggle('lit', on)` kết hợp thuộc tính `aria-pressed`. Trạng thái toàn bộ bàn cờ có thể được trích xuất bằng cách quét giá trị `aria-pressed` theo từng hàng (row-major).
 
-Dưới đây là ma trận trạng thái khởi điểm trích xuất được (với `1` đại diện cho ngọn nến đang rực cháy):
+Ma trận trạng thái khởi điểm trích xuất được (giá trị `1` tương ứng với bóng đèn đang sáng):
 
 ```text
 0000000
@@ -39,25 +39,25 @@ Dưới đây là ma trận trạng thái khởi điểm trích xuất được 
 0110110
 ```
 
-## Chuỗi khai thác
+## Quá trình phân tích
 
-**Bước 1 - Trừu tượng hoá toán học (Mathematical Modeling).** 
-Bản chất của mọi thao tác nhấn chuột trên lưới "Lights Out" đều được quy về một phép cộng tuyến tính tĩnh trên trường hữu hạn GF(2) (nơi phép cộng và trừ đồng nhất với phép XOR) và có tính chất giao hoán tuyệt đối. Bài toán được thu gọn thành một hệ phương trình ma trận kinh điển: `A * x = b`. 
-Trong đó: Hàng `i` đại diện cho ô thứ `i`; Hệ số `A[i][j] = 1` nếu việc nhấn ô `j` có sức sát thương lan tới ô `i` (nghĩa là `j` trùng `i` hoặc `j` kề cạnh `i`); Và vector `b[i]` lưu trữ giá trị trạng thái ban đầu của ô `i` (chỉ ra liệu ô đó có cần bị đảo ngược trạng thái số lẻ lần hay không).
+**Bước 1 - Mô hình hoá toán học (Mathematical Modeling).** 
+Trò chơi "Lights Out" có thể được biểu diễn thông qua đại số tuyến tính trên trường GF(2) (nơi phép cộng và trừ tương đương với phép XOR). Bài toán đưa về hệ phương trình ma trận: `A * x = b`. 
+Trong đó: Hàng `i` đại diện cho ô thứ `i`; Hệ số `A[i][j] = 1` nếu việc nhấn ô `j` làm thay đổi trạng thái của ô `i` (nghĩa là `j` trùng với `i` hoặc `j` kề cạnh `i`); Vector `b[i]` biểu diễn trạng thái ban đầu của ô `i` (xác định ô đó cần thay đổi trạng thái số lẻ lần hay không).
 
-**Bước 2 - Phá giải hệ phương trình.** 
-Vận hành thuật toán khử Gauss (Gaussian elimination) trên không gian ma trận 49x50. Phân tích toán học chỉ ra hạng (rank) của ma trận `A` đạt mốc tối đa 49, nghĩa là không hề tồn tại bất kỳ biến tự do (free variable) nào. Lời giải (nghiệm) sinh ra là **duy nhất** — bất kể hệ thống tung ra ván cờ nào cũng đều bị giải mã dễ dàng và không bao giờ xảy ra rủi ro chọn nhầm nghiệm. 
-Toạ độ sinh ra dành riêng cho đội 612 gồm 14 phát bắn (đánh chỉ số từ 0):
+**Bước 2 - Giải hệ phương trình.** 
+Sử dụng thuật toán khử Gauss (Gaussian elimination) trên ma trận kích thước 49x50. Phân tích cho thấy hạng (rank) của ma trận `A` là 49, nghĩa là không có biến tự do (free variable). Do đó, hệ phương trình luôn có một nghiệm duy nhất, đảm bảo tính xác định cho mọi cấu hình trạng thái ban đầu. 
+Nghiệm thu được cho ma trận của đội 612 gồm 14 toạ độ (chỉ số tính từ 0):
 
 ```text
 (2,4) (2,5) (3,0) (3,1) (3,3) (4,0) (4,6) (5,0) (5,3) (5,4) (5,6) (6,0) (6,3) (6,5)
 ```
 
-**Bước 3 - Diễn tập cục bộ (Local Verification).** 
-Trước khi tung đòn trên môi trường live, hệ thống được cho diễn tập mô phỏng lại 14 phát bắn trực tiếp trên ma trận ban đầu thông qua chính lõi hàm `neighbors()` trộm từ script của tác giả. Mọi ô đèn đều ngoan ngoãn tắt lịm về 0, xác nhận đường đạn hoàn mỹ.
+**Bước 3 - Kiểm tra nghiệm (Local Verification).** 
+Trước khi gửi kết quả, hệ thống tiến hành kiểm tra trên mô phỏng cục bộ bằng cách mô phỏng 14 thao tác click trên ma trận ban đầu (áp dụng hàm `neighbors()` lấy từ mã nguồn). Mọi ô đèn đều chuyển sang trạng thái 0, xác nhận nghiệm hoàn toàn chính xác.
 
-**Bước 4 - Bóp cò.** 
-Bắn một đợt sóng sự kiện click tự động ngắm chuẩn xác vào 14 toạ độ (button) tương ứng trên giao diện. Trình xử lý sự kiện (handler) của trang web sẽ tự động ghi chép vào mảng `presses` và kính cẩn gọi API lên máy chủ:
+**Bước 4 - Thực thi.** 
+Sử dụng đoạn mã tự động để gọi sự kiện click trên 14 toạ độ tương ứng trên giao diện trang web. Trình xử lý sự kiện sẽ cập nhật mảng `presses` và tự động gọi API:
 
 ```javascript
 () => { 
@@ -68,7 +68,7 @@ Bắn một đợt sóng sự kiện click tự động ngắm chuẩn xác vào
 }
 ```
 
-Đồng hồ đếm `press-count` nảy lên con số 14, thẻ `#flag-box` trồi lên khỏi mặt nước và thẻ `#flag-text` rực rỡ hiện ra chuỗi cờ do máy chủ nôn về.
+Bộ đếm thao tác đạt 14, thẻ `#flag-box` xuất hiện và `#flag-text` hiển thị mã cờ do máy chủ trả về.
 
 ## Flag
 
@@ -76,14 +76,14 @@ Bắn một đợt sóng sự kiện click tự động ngắm chuẩn xác vào
 POCTF{3.612.H5VA2OHFE333SO62.EAIOF76YB2L4XMZTFSV4CPOEOX}
 ```
 
-Chuỗi cờ tuân thủ nghiêm ngặt định dạng chuẩn `POCTF{<cid>.<team_id>.<nonce>.<sig26>}`: ứng với cid 3, mã đội 612, theo sau là 16 ký tự nonce ngẫu nhiên và chốt chặn bằng 26 ký tự mã băm (sig) ở hệ base32.
+Chuỗi cờ tuân thủ định dạng chuẩn `POCTF{<cid>.<team_id>.<nonce>.<sig26>}`: ứng với cid 3, mã đội 612, theo sau là 16 ký tự nonce ngẫu nhiên và 26 ký tự mã băm (sig) ở hệ base32.
 
-## Phục dựng (Reproduce)
+## Reproduce
 
 ```bash
 cd the-apparatus-invocation
 python exploit.py
 ```
 
-Công cụ giải mã (script) sẽ tự động in ra 14 toạ độ chết chóc cần nhắm bắn dựa trên dữ liệu lưới lấy từ `files/board.txt`, đi kèm với đoạn mã JavaScript để người chơi nã trực tiếp vào giao diện (console) của trình duyệt. 
-Nếu bạn muốn san bằng bàn cờ của đội khác, chỉ cần vứt bỏ `files/board.txt` và nạp mẫu ma trận rút từ cấu trúc DOM bằng mệnh lệnh ghi trong tài liệu `de.md`.
+Công cụ giải mã (script) tự động phân tích dữ liệu lưới từ `files/board.txt` và trả về danh sách 14 toạ độ cần thao tác, kèm theo đoạn mã JavaScript để chạy trực tiếp trong console của trình duyệt. 
+Để giải mã bảng của đội khác, thay thế nội dung `files/board.txt` bằng mẫu ma trận lấy từ cấu trúc DOM (hướng dẫn chi tiết trong tệp `de.md`).

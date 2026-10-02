@@ -5,13 +5,13 @@
 
 ## Đề bài
 
-Tác giả úp mở rằng có một thông điệp bí mật được cất giấu ngay bên trong tệp tin, và chỉ cần "nhìn đúng chỗ" là sẽ thấy. Thử thách cung cấp duy nhất một tệp mã nguồn `invisible_text.py` (tệp này được sinh riêng biệt cho từng đội, máy chủ phát tệp dưới tên `invisible_text_612.py`). Không có bất kỳ tệp nhị phân nào đi kèm, cũng không có hệ thống hay dịch vụ từ xa nào để kết nối. Nhiệm vụ duy nhất là trích xuất thông điệp ẩn bên trong mã nguồn và nộp nó.
+Tác giả gợi ý rằng có một thông điệp được cất giấu bên trong tệp tin, và yêu cầu người chơi phân tích kỹ lưỡng. Thử thách cung cấp tệp mã nguồn `invisible_text.py` (tệp được sinh riêng cho từng đội, ví dụ: `invisible_text_612.py`). Nhiệm vụ là trích xuất thông điệp ẩn bên trong mã nguồn và nộp. Thử thách không yêu cầu giao tiếp với dịch vụ từ xa.
 
 ## Phân tích ban đầu
 
-Tệp tin hoàn toàn là mã Python thuần tuý, nặng 4245 byte, gồm 81 dòng văn bản được mã hoá ở chuẩn UTF-8. Khi kiểm kê từng byte một, ta nhận thấy cả tệp chỉ chứa duy nhất một ký tự nằm ngoài dải ASCII chuẩn, đó là dấu gạch ngang `—` vô thưởng vô phạt nằm gọn trong một dòng comment. Hoàn toàn không có sự xuất hiện của các kỹ thuật giấu tin tàng hình kinh điển như Zero Width Space, không có dấu định dạng BOM, không có NBSP (khoảng trắng không ngắt), và cũng không có bất kỳ ký tự đồng dạng (homoglyph) nào.
+Tệp tin là mã Python, kích thước 4245 byte, bao gồm 81 dòng văn bản định dạng UTF-8. Phân tích nội dung cho thấy tệp chỉ chứa một ký tự ngoài dải ASCII chuẩn là dấu gạch ngang `—` trong phần bình luận (comment). Không ghi nhận các kỹ thuật giấu tin như Zero Width Space, BOM (Byte Order Mark), NBSP, hoặc ký tự đồng dạng (homoglyph).
 
-Man mối duy nhất còn sót lại lại là một sự bất thường cực kỳ tinh tế: **47 trên tổng số 81 dòng mã đều kết thúc bằng một khoảng trắng (whitespace) thừa thãi**. Cụ thể hơn:
+Chi tiết đáng chú ý là **47 trên tổng số 81 dòng mã kết thúc bằng các khoảng trắng (whitespace) dư thừa**. Cụ thể:
 
 ```text
 dòng 1   SSSTSTSSSS        (chứa 10 ký tự khoảng trắng/tab)
@@ -24,19 +24,19 @@ dòng 45  SSSSSTTTTTST
 dòng 46  T
 dòng 47  SS                (chứa 2 ký tự)
 ```
-*(Trong đó `S` đại diện cho Space, `T` đại diện cho Tab).*
+*(Quy ước: `S` là Space, `T` là Tab).*
 
-Điểm thú vị là các dòng số lẻ luôn có độ dài cố định là 12 ký tự (ngoại trừ dòng đầu tiên bị lẹm còn 10), trong khi các dòng chẵn chỉ chứa duy nhất một phím tab. Chắc chắn lời gợi ý "look closely" của tác giả đang ám chỉ thẳng vào vùng dữ liệu vô hình này.
+Các dòng lẻ có độ dài cố định là 12 ký tự (ngoại trừ dòng đầu tiên có 10 ký tự), trong khi các dòng chẵn chứa một ký tự tab. Dữ liệu ẩn nằm trong các khoảng trắng cuối dòng này.
 
-Nội dung bề nổi của file là một công cụ `diary_reader.py` thực hiện nhiệm vụ nối 46 khối base64 thành một chuỗi duy nhất, giải mã bằng `b64decode`, bung nén bằng `zlib.decompress`, rồi in kết quả ra màn hình. Khi chạy thử script này (cần lưu ý phải ghi kết quả ra tệp UTF-8 vì giao diện console của Windows dùng bảng mã cp1252, nếu dùng lệnh `print` thẳng ra sẽ bị văng lỗi `UnicodeEncodeError`), thứ ta nhận được là một văn bản gồm 2145 ký tự braille (chữ nổi) trải dài trên 33 dòng. Đó chỉ là một lớp mồi nhử.
+Mã nguồn bề mặt là một công cụ `diary_reader.py`, thực hiện nối 46 khối base64, giải mã bằng `b64decode`, bung nén với `zlib.decompress`, và in kết quả. Khi thực thi (yêu cầu ghi kết quả ra tệp UTF-8 để tránh lỗi `UnicodeEncodeError` trên môi trường Windows cp1252), đầu ra là 2145 ký tự braille (chữ nổi) trên 33 dòng. Đây là dữ liệu đánh lạc hướng (decoy).
 
-## Chuỗi khai thác
+## Quá trình phân tích
 
-**Bước 1 — Nhận diện khuôn mẫu dữ liệu (Fixed-length groups).** 
-Quan sát kỹ, mỗi dòng dữ liệu chính đều chứa chính xác 12 ký tự khoảng trắng, trong đó vị trí thứ sáu **luôn luôn là một dấu tab**. Đây là một dấu ấn kinh điển của mô hình mã hoá 7-bit: năm dấu cách đầu tiên chỉ đóng vai trò đệm (padding) để căn lề, còn bảy ký tự cuối cùng mới thực sự mang dữ liệu mã hoá.
+**Bước 1 — Phân tích mẫu dữ liệu (Fixed-length groups).** 
+Các dòng lẻ chứa 12 ký tự khoảng trắng, trong đó vị trí thứ sáu **luôn là một dấu tab**. Đây là mô hình mã hoá 7-bit: 5 ký tự space đầu tiên đóng vai trò đệm (padding) căn lề, và 7 ký tự cuối mang dữ liệu.
 
 **Bước 2 — Trích xuất dữ liệu, quy ước `tab = 1`, `space = 0`.** 
-Theo tiêu chuẩn, các ký tự ASCII in được luôn có bit cao nhất (MSB) bằng 1. Vì thế, việc nhóm 7 bit luôn bắt đầu bằng một phím tab (tương đương với số 1) chính là cọc tiêu định vị hoàn hảo.
+Ký tự ASCII in được có bit cao nhất (MSB) bằng 1. Việc nhóm 7 bit luôn bắt đầu bằng tab (tương đương bit 1) hỗ trợ xác định ranh giới bit.
 
 ```python
 flag = ""
@@ -48,7 +48,7 @@ for line in src.split("\n"):
     flag += chr(int(bits, 2))
 ```
 
-Chạy đoạn mã trên, ta giải mã thành công:
+Thực thi đoạn mã trên trả về kết quả:
 
 ```text
   dòng   1  TSTSSSS  =  80  'P'
@@ -62,21 +62,21 @@ Chạy đoạn mã trên, ta giải mã thành công:
 MESSAGE: POCTF{PIEMPAOSMHDLEGRT}
 ```
 
-**Bước 3 — Khẳng định tính lô-gíc.** 
-Có ba mảnh ghép xác nhận độ chuẩn xác của phương pháp này, loại trừ hoàn toàn yếu tố ăn may: 
-(a) Trọn vẹn 22/22 nhóm 12 ký tự đều có dấu tab nằm ở đúng một vị trí cố định (bit đầu tiên của nhóm).
-(b) Tổng số dòng dữ liệu mang thông điệp là 23, khớp hoàn hảo với công thức độ dài cờ: `POCTF{` (6 ký tự) + thân cờ (16 ký tự) + `}` (1 ký tự).
-(c) Chuỗi 16 ký tự viết hoa ở phần thân hoàn toàn phù hợp với định dạng cờ truyền thống của giải. 
-Những dấu cách thừa thãi ở phần đầu (5 dấu cách, riêng dòng đầu chỉ có 3 do dòng đó được bắt đầu sớm hơn) thực chất chỉ dùng để căn dòng và không hề mang thông tin.
+**Bước 3 — Đánh giá kết quả.** 
+Phương pháp được xác nhận qua ba yếu tố:
+(a) 22/22 nhóm 12 ký tự đều có tab tại vị trí thứ sáu.
+(b) Tổng số dòng chứa thông điệp là 23, tương đương độ dài cờ: `POCTF{` (6 ký tự) + thân cờ (16 ký tự) + `}` (1 ký tự).
+(c) Chuỗi ký tự khớp với định dạng cờ tiêu chuẩn của hệ thống.
+Các dấu cách ở phần đầu dòng (padding) không chứa thông tin.
 
-**Bước 4 — Nộp cờ.**
+**Bước 4 — Xác thực cờ.**
 
 ```http
 POST /challenges/invisible-text/submit
 {"flag":"POCTF{PIEMPAOSMHDLEGRT}"}
 ```
 
-Hệ thống ghi nhận:
+Hệ thống phản hồi:
 ```json
 HTTP 200 :: {"correct":true,"message":"Correct."}
 ```
@@ -87,9 +87,9 @@ HTTP 200 :: {"correct":true,"message":"Correct."}
 POCTF{PIEMPAOSMHDLEGRT}
 ```
 
-Máy chủ đã xác nhận tính chính xác và không trả về thêm bất kỳ chuỗi cờ nào khác. Ý tưởng cốt lõi của thử thách nằm ở chỗ: thông điệp bí mật không nằm ở output sinh ra khi chạy script, mà lại cư ngụ ở vùng **khoảng trắng cuối dòng** của tệp mã nguồn. Toàn bộ lớp vỏ bọc base64 + zlib + braille chỉ là một hệ thống mồi nhử tinh vi để đánh lạc hướng người chơi.
+Thông điệp bí mật được lưu trữ tại vùng **khoảng trắng cuối dòng** của tệp mã nguồn. Các lớp mã hóa cơ bản (base64, zlib, braille) chỉ có chức năng làm nhiễu thông tin.
 
-## Phục dựng (Reproduce)
+## Reproduce
 
 ```bash
 python exploit.py files/invisible_text.py

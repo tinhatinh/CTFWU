@@ -5,24 +5,24 @@
 
 ## Đề bài
 
-Câu chuyện cảnh giác: Có một chiếc máy tính trong phòng lab đã âm thầm "buôn dưa lê" tuồn dữ liệu ra thế giới bên ngoài. Tên điệp viên (bot) này có một lịch trình trò chuyện chậm đến mức đáng sợ - trong suốt sáu tuần hoạt động, nó lầm lì không hề vô tình kích hoạt bất cứ hệ thống cảnh báo (alert) nào. 
-Thử thách chỉ quăng cho ta một tập tin ghi hình mạng duy nhất (`capture.pcap`) và bắt người chơi phải moi ra bằng được bức thông điệp bí ẩn mà kẻ tấn công đã thì thầm mang đi. 
-Quy ước định dạng của cờ chiến lợi phẩm phải là `H7CTF{...}`.
+Bối cảnh: Hệ thống giám sát ghi nhận một máy tính trong hệ thống gửi dữ liệu trái phép ra ngoài. Phần mềm mã độc này hoạt động với tần suất rất chậm - không gây ra bất kỳ cảnh báo nào trong suốt thời gian hoạt động. 
+Hệ thống cung cấp một tập tin mạng (`capture.pcap`) và yêu cầu trích xuất thông điệp mà mã độc truyền tải. 
+Định dạng của cờ thu được phải là `H7CTF{...}`.
 
 ## Phân tích ban đầu
 
-Đưa nạn nhân lên bàn mổ bằng dụng cụ khám nghiệm `node ~/.qoder/skills/ctf-solve/scripts/triage.cjs`:
+Phân tích file bằng công cụ `node ~/.qoder/skills/ctf-solve/scripts/triage.cjs`:
 
-- Hồ sơ tệp: `magic = libpcap capture (mã hoá little-endian)`, độ nhiễu loạn `entropy = 5.084/8`, vét cạn chỉ đào được lèo tèo 87 chuỗi ký tự hiển thị được (printable strings), số lượng manh mối trúng khuôn mẫu cờ (flag-pattern hits) là con số `0` tròn trĩnh. 
-  Lời giải: Lá cờ không hề nằm tơ hơ tênh hênh trong file. Dữ liệu đã bị lột xác mã hoá (encode) hoặc bị nghiền nát rải rác khắp nơi.
-- Kéo lưới bằng công cụ `survey.py` (nhân thư viện scapy): Thu lượm được 1260 gói tin (packet) trải dài trong suốt khung hình 148,31 giây, đặc biệt TOÀN BỘ đều đâm về địa chỉ cục bộ loopback `127.0.0.1`. 
-  Trong đó, chẻ ra 1080 gói thuộc họ TCP + 180 gói DNS. Tuyệt nhiên vắng bóng bọn ICMP hay bất kỳ giao thức ất ơ lạ mặt nào.
-- Rà soát các bến đỗ (Cổng đích): Cổng `8080` (gánh 534 gói), cổng `8443` (gánh 114 gói), phần cặn bã còn lại thuộc về các cổng tạm (ephemeral) dạt bên sườn máy chủ, mỗi cổng lẹt đẹt xả 4 gói.
-- Mổ bụng giao thức HTTP:
-  - Trên mâm cổng 8080 chỉ thấy quanh quẩn đúng 5 dạng lệnh (request) quay vòng lặp đi lặp lại (`/assets/app.js` 28 nháy, `/api/health` 22 nháy, `/index` 20 nháy, `/` 19 nháy).
-  - Khả nghi nhất là trên mâm cổng 8443 phơi bày 19 phát nã lệnh `GET /api/v2/checkin` bọc trong tấm áo choàng `User-Agent: telemetry-agent/1.4`. Đây đích thị là nhịp đập (heartbeat) giao tiếp máy chủ C2 của mã độc mà đề bài đã hé mở ("very patient schedule" - một lịch trình kiên nhẫn). Nhưng trớ trêu thay, cả 19 luồng này như được đúc từ một khuôn: 100% mọi luồng dội về (response) đều trơn tuột mã `ok`, cùng 1 vóc dáng độ dài 66 byte.
-- Cày nát các mảng DNS: Sàng lọc được 10 cái tên truy vấn (qname) độc bản (unique). Trong đó 7 cái tên ngây thơ vô số tội (như `pool.ntp.org`, `updates.ubuntu.com`, `mirror.lab.local`, `grafana.internal.lab`, `logging.googleapis.com`, `api.weather.example`, `cdn.jsdelivr.net`).
-  Lộ ra 3 cái tên kỳ dị đột biến mọc chung từ một cái gốc (cha):
+- Hồ sơ tệp: `magic = libpcap capture (mã hoá little-endian)`, giá trị entropy = 5.084/8. Kiểm tra chuỗi cho thấy có 87 chuỗi hiển thị được, nhưng không có dữ liệu khớp định dạng cờ (flag-pattern hits = 0). 
+  Kết luận: Lá cờ không nằm trực tiếp trong file mạng. Dữ liệu đã bị mã hóa hoặc phân mảnh.
+- Trích xuất thông tin qua `survey.py`: Ghi nhận 1260 gói tin (packet) được ghi nhận trong 148,31 giây, tất cả đều kết nối đến địa chỉ loopback `127.0.0.1`. 
+  Phân tích bao gồm 1080 gói TCP và 180 gói DNS. Không có gói ICMP hay các giao thức bất thường.
+- Phân tích cổng đích: Cổng `8080` (có 534 gói), cổng `8443` (có 114 gói), phần còn lại là cổng truy cập ngẫu nhiên, mỗi cổng ghi nhận khoảng 4 gói.
+- Phân tích giao thức HTTP:
+  - Trên cổng 8080 chỉ có 5 loại truy vấn lặp lại (`/assets/app.js` 28 lần, `/api/health` 22 lần, `/index` 20 lần, `/` 19 lần).
+  - Đáng chú ý là trên cổng 8443 có 19 lệnh `GET /api/v2/checkin` với header `User-Agent: telemetry-agent/1.4`. Đây xác nhận là tín hiệu giao tiếp (heartbeat) với máy chủ C2 của mã độc như được mô tả. Tuy nhiên, 100% phản hồi đều trả về mã `ok`, cùng định dạng độ dài 66 byte.
+- Phân tích luồng DNS: Phát hiện 10 truy vấn (qname) duy nhất. Trong đó 7 truy vấn thông thường (`pool.ntp.org`, `updates.ubuntu.com`, `mirror.lab.local`, `grafana.internal.lab`, `logging.googleapis.com`, `api.weather.example`, `cdn.jsdelivr.net`).
+  Xác nhận 3 truy vấn có cấu trúc chung từ một tên miền gốc:
 
   ```text
   00ja3ugvcgpm3doobx.sync.cdn-telemetry-lab.net.
@@ -30,51 +30,51 @@ Quy ước định dạng của cờ chiến lợi phẩm phải là `H7CTF{...}
   02gi3geoldgb6q.sync.cdn-telemetry-lab.net.
   ```
 
-Bắt bệnh: Đích thị là kỹ năng khoan hầm qua DNS (DNS tunneling). Tên miền `cdn-telemetry-lab.net` chỉ là chiếc mặt nạ nguỵ trang thành dịch vụ đo lường viễn trắc (telemetry). Đám tiền tố lù lù `00/01/02` rõ ràng là số đánh dấu chỉ mục của mẩu tin bị chẻ nhỏ. Thủ đoạn lợi dụng máy chủ phân giải tên miền (DNS lookup) này là một con đường ma đạo kinh điển để lẻn lọt qua bảng điều khiển radar giám sát mạng.
+Nhận dạng: Đây là phương thức DNS tunneling. Tên miền giả mạo `cdn-telemetry-lab.net` mô phỏng dịch vụ telemetry. Các tiền tố `00/01/02` xác định chỉ mục (index) của dữ liệu phân mảnh. Phương thức sử dụng truy vấn DNS là kỹ thuật phổ biến để vượt qua giám sát bảo mật.
 
-## Chuỗi khai thác
+## Quá trình khai thác
 
-**Bước 1 - Lên danh sách bóc lột theo tên miền cha.** 
-Sử dụng màng lọc rà quét toàn bộ mớ truy vấn DNS, tóm gáy những đứa nào có phần `qname` kết thúc bằng cái đuôi `.sync.cdn-telemetry-lab.net.`. 
-Lưới kéo lên 12 gói packet, nhưng ruột thịt (label) độc bản chỉ có 3 mống. Cái hay là mỗi nhãn (label) lại được nhân bản lên làm một cặp (đề phòng rơi rớt - retry), trải qua hai vòng lặp kín kẽ từ giây thứ 5,60 dạt đến giây 47,02 của cuộn băng. Đây là minh hoạ hoàn hảo cho triết lý "low and slow" (Chậm và lẩn khuất): xả vỏn vẹn 12 phát súng truy vấn trong 148 giây thì chả có cái máy quét cảnh báo nào (threshold) buồn đánh hơi.
+**Bước 1 - Phân loại dữ liệu theo tên miền.** 
+Sử dụng bộ lọc rà quét toàn bộ truy vấn DNS, xác định các gói tin có `qname` kết thúc bằng `.sync.cdn-telemetry-lab.net.`. 
+Kết quả có 12 gói packet, với 3 giá trị thành phần. Đáng chú ý, mỗi gói dữ liệu được gửi thành một cặp (cơ chế dự phòng), kéo dài tới giây 47,02 của quá trình. Kỹ thuật này tuân thủ chiến lược truyền tin chậm, gửi 12 truy vấn trong 148 giây nên hệ thống không phát hiện bất thường.
 
-**Bước 2 - Lột xác chỉ mục khỏi khối payload.** 
-Áp chiêu bóc tách bằng bùa regex `^(\d{2})([a-z2-7]+)\.sync\.cdn-telemetry-lab\.net$`. 
-Săm soi kỹ cái phần payload (sau khi bóc số), thấy nó rặt dùng các ký tự nằm quẩn quanh trong bảng chữ cái `[a-z2-7]`. 100% lọt thỏm vào hệ chữ cái của định dạng base32 (Tuyệt nhiên không có mặt đám `0`,`1`,`8`,`9`). 
-Bài học xương máu: Bắt buộc phải tỉnh táo nhận diện `00/01/02` là những con số hiệu chỉ mục (index) chắp vá, chứ không phải dữ liệu nhúng (data). Nếu khờ khạo gom luôn cả cái cụm số này vào khối giải mã thì muôn đời kết quả nôn ra toàn rác.
+**Bước 2 - Tách chỉ mục khỏi payload.** 
+Sử dụng biểu thức chính quy `^(\d{2})([a-z2-7]+)\.sync\.cdn-telemetry-lab\.net$`. 
+Phân tích payload (phần chữ cái sau số chỉ mục), ghi nhận chỉ sử dụng ký tự trong nhóm `[a-z2-7]`. Tập dữ liệu này thuộc định dạng base32. 
+Lưu ý: Cần xác định `00/01/02` là giá trị chỉ mục, không phải dữ liệu mã hoá. Nếu chưa loại bỏ số chỉ mục, kết quả sẽ không chính xác khi giải mã.
 
-**Bước 3 - Cấy ghép xương cốt (theo thứ tự chỉ mục) và lột mặt nạ base32.**
+**Bước 3 - Khôi phục dữ liệu và giải mã base32.**
 
 ```python
-# Lắp ghép các khối theo mã số
+# Kết hợp các khối theo mã số
 blob = "".join(chunks[k] for k in sorted(chunks))     # Trình tự nạp: 00, 01, 02
-# Bọc độn thêm (padding) các ký hiệu = cho đủ phom base32
+# Bổ sung padding cho định dạng base32
 pad  = blob.upper() + "=" * ((8 - len(blob) % 8) % 8)
 # Giải mã
 data = base64.b32decode(pad)
 ```
 
-Quá trình phơi bày:
+Kết quả quá trình:
 ```text
-Khối thô blob (gom 44 ký tự): ja3ugvcgpm3doobxmi4dmy3dg43tozrugi3geoldgb6q
-Bản trần decoded (lòi ra 27 byte): H7CTF{6787b86cc777f426b9c0}
+Dữ liệu khối (44 ký tự): ja3ugvcgpm3doobxmi4dmy3dg43tozrugi3geoldgb6q
+Dữ liệu giải mã (27 byte): H7CTF{6787b86cc777f426b9c0}
 ```
 
-**Bước 4 - Bồi thẩm (Kiểm chứng tính toàn vẹn).** 
-Phép toán `44 % 8 = 4` lý giải rành rành vì sao cái cục (chunk) chót cùng lại có dáng vẻ cụt lủn (chỉ ôm 12 ký tự so với 16). Đây là dấu hiệu nhận diện đặc thù của cái khúc đuôi trong một dòng chảy dữ liệu bị băm vằm. Tuyệt phẩm hơn nữa là dòng kết quả giải mã được chốt sổ vừa khít bằng dấu `}` và mở màn hiên ngang bằng tiền tố `H7CTF{`. 
-Hãy nhớ: Nếu bạn xếp hàng các chunk lộn xộn, hay ngớ ngẩn làm rớt mất một chunk nào đó dọc đường, cái lò nôn ra sẽ chỉ toàn là một đống ký tự rác rưởi hỗn loạn. Làm gì có chuyện xếp nhầm mà nó lại tự động ép viền ngoặc thẳng hàng tăm tắp như vậy. Do đó, đây là bằng chứng thép chốt lại quy trình giải mã, chứ không phải là một trò đoán mò (suy đoán) ăn may.
+**Bước 4 - Kiểm chứng tính toàn vẹn.** 
+Phép toán `44 % 8 = 4` cho thấy khối cuối cùng ngắn hơn tiêu chuẩn (12 ký tự so với 16). Đây là hiện tượng phổ biến khi phân mảnh dữ liệu base32. Đặc biệt, dữ liệu giải mã kết thúc bằng `}` và bắt đầu bằng `H7CTF{`. 
+Nếu dữ liệu được kết hợp không đúng thứ tự hoặc thiếu hụt phân đoạn, kết quả sẽ là chuỗi dữ liệu sai hoàn toàn. Rất khó xảy ra trường hợp dữ liệu ghép sai lại khớp định dạng chính xác. Đây là minh chứng khẳng định quá trình giải mã đúng, không phải sự trùng hợp.
 
 ## Flag
-Kích hoạt tự động bằng lệnh:
+Thực thi công cụ:
 
 ```bash
 python _ctf/patient-exfil/exploit.py "C:/Users/Administrator/Downloads/capture (2).pcap"
 ```
 
-Nhật ký nôn ra:
+Kết quả:
 ```text
-[+] Gom được 3 khối cục chunks: ['00', '01', '02']
-[+] Cục blob thô dạng base32 (ôm 44 ký tự chars): ja3ugvcgpm3doobxmi4dmy3dg43tozrugi3geoldgb6q
-[+] Mở khoá ra được 27 bytes -> b'H7CTF{6787b86cc777f426b9c0}'
-[+] Cờ lượm được flag: H7CTF{6787b86cc777f426b9c0}
+[+] Trích xuất được 3 khối: ['00', '01', '02']
+[+] Dữ liệu gốc định dạng base32 (chứa 44 ký tự): ja3ugvcgpm3doobxmi4dmy3dg43tozrugi3geoldgb6q
+[+] Giải mã được 27 bytes -> b'H7CTF{6787b86cc777f426b9c0}'
+[+] Cờ thu được: H7CTF{6787b86cc777f426b9c0}
 ```

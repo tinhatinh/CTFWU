@@ -4,20 +4,20 @@
 
 ## Đề bài
 
-Trò chơi xoay quanh công cụ FoundryProof. Chức năng của nó là gõ búa xác nhận: xem thiết kế mạch tổ hợp của ta có thực sự "tương đương" (equivalent) với bản vẽ vàng (golden reference) hay không, trước khi chịu "đóng dấu" phê duyệt (tape-out). Quái đản hơn, sau khi mạch đã được đúc thành chip thành phẩm, hệ thống sẽ chọc ngẫu nhiên một que dò (probe) lên để test xem có kẻ gian nào nhúng chàm phá hoại hay không. 
-Luật chơi được niêm yết sống sượng trong file `SPEC.md`:
+Trò chơi sử dụng công cụ FoundryProof, có chức năng kiểm tra tương đương: xác nhận thiết kế mạch tổ hợp có "tương đương" (equivalent) với bản vẽ vàng (golden reference) hay không trước khi chấp nhận (tape-out). Thêm vào đó, sau khi mạch được sản xuất, hệ thống sẽ kiểm tra ngẫu nhiên xem có mạch bị sửa đổi hay không. 
+Điều kiện đánh giá được trình bày trong file `SPEC.md`:
 
 ```text
-Điểm dò kiểm toán (audit vector):   A_AUDIT = 0xDEADBEEF
-Giá trị phá hoại đích (sabotage value): MAGIC   = 0xB105F00D
-Luật thắng cuộc (Win) = Bản netlist của bạn phải được chứng nhận (certified) AND Kết quả chọc T(A_AUDIT) phải == con số MAGIC
+Điểm kiểm tra (audit vector):   A_AUDIT = 0xDEADBEEF
+Giá trị mục tiêu (sabotage value): MAGIC   = 0xB105F00D
+Điều kiện chiến thắng (Win) = Bản netlist của bạn phải được chứng nhận (certified) AND Kết quả chọc T(A_AUDIT) phải == MAGIC
 ```
 
-Tóm gọn: Ta phải nặn ra bằng được một bản thiết kế (netlist) vừa đánh lừa được máy quét là "tương đương hoàn hảo", nhưng lại âm thầm nhả ra con số phá hoại tại đúng cái điểm dò audit.
+Yêu cầu: Tạo ra một bản thiết kế (netlist) vượt qua được bài kiểm tra tương đương, đồng thời tạo ra giá trị phá hoại tại điểm kiểm tra (audit vector).
 
 ## Phân tích ban đầu
 
-Đồ nghề được ném cho gồm 3 file: `hdl.py` (cỗ máy phân tích parser + trình mô phỏng simulator + lò đẻ công thức toán z3), `verifier.py` (đóng vai trò người chứng nhận certifier) và bản vẽ vàng `reference.hdl`:
+Tệp tin bao gồm 3 file: `hdl.py` (parser + simulator + bộ xử lý biểu thức z3), `verifier.py` (trình xác thực) và bản tham chiếu `reference.hdl`:
 
 ```text
 Đầu vào input a
@@ -29,40 +29,40 @@ t2 = Phép cộng add t1 và hi
 y  = Phép xor giữa t2 và k2
 ```
 
-Đề bài mớm một câu hiểm hóc: "Read the certifier closely" (Đọc kỹ thằng chứng nhận vào). Và đúng như dự đoán, cái bẫy giăng ra chỉ thu gọn trong đúng một dòng code:
+Gợi ý của đề bài: "Read the certifier closely" (Đọc kỹ đoạn mã xác thực). Phân tích cho thấy lỗ hổng nằm ở cấu trúc này:
 
 ```python
 SAMPLE_BITS = 16
 sample = z3.BitVec("sample", SAMPLE_BITS)
-a = z3.ZeroExt(WIDTH - SAMPLE_BITS, sample)      # Tai hại: 16 bit cao bị ép dập tắt bằng 0
+a = z3.ZeroExt(WIDTH - SAMPLE_BITS, sample)      # Lưu ý: 16 bit cao bị khởi tạo giá trị 0
 solver.add(build(ref, a) != build(sub, a))
 return solver.check() == z3.unsat
 ```
 
-Lệnh `certify()` KHÔNG HỀ chứng minh tính tương đương trên toàn bộ không gian bao la `2^32` của input. Nó lười biếng chỉ chứng minh trên cái vũng lầy chật hẹp `{ZeroExt(16, s) : với s chạy trong 2^16}` = Tức là nó chỉ quét rà soát các giá trị nằm ngoan ngoãn trong khoảng `a < 0x10000`.
-Đá mắt qua điểm audit, nó lại nhảy chồm lên tận mốc `0xDEADBEEF` - hoàn toàn trượt ra ngoài vùng trời mà máy quét đã rà soát lượng hoá. Câu sấm truyền "probes the finished part once" (chọc kiểm tra thiết bị hoàn thiện duy nhất một lần) chính là nút thắt sinh tử: Chỉ có đúng MỘT điểm bị kiểm tra, và cái điểm đó lại nằm chình ình ngoài vùng quét của máy chứng minh.
+Lệnh `certify()` KHÔNG HỀ kiểm tra tính tương đương trên toàn bộ không gian `2^32` của input. Hàm này chỉ kiểm tra tương đương trong dải dữ liệu giới hạn `{ZeroExt(16, s) : với s chạy trong 2^16}` = tương ứng với các giá trị hợp lệ `a < 0x10000`.
+Kiểm tra điểm audit, mốc kiểm tra nằm ở `0xDEADBEEF` - nằm ngoài phạm vi kiểm tra tương đương của công cụ z3. Gợi ý "probes the finished part once" (kiểm tra thiết bị hoàn thiện chỉ một lần) là điểm mấu chốt: Điểm bị kiểm tra nằm ngoài phạm vi kiểm tra của hệ thống.
 
-Đường hướng khai mở: Ta chẳng việc gì phải húc đầu vào vách đá đòi đánh bại thuật toán kiểm tra tính tương đương (equivalence checking) - Ta chỉ cần luồn lách qua cái khe cửa hẹp về "phạm vi" (khoảng quét) của nó là đủ sống.
+Hướng giải quyết: Ta không cần phá vỡ thuật toán kiểm tra tính tương đương - chỉ cần tận dụng giới hạn phạm vi kiểm tra của nó là đủ.
 
 ## Chuỗi khai thác
 
-**Bước 1 - Chế tạo cờ báo "outside the proof" (Trượt ngoài vùng quét).** 
-Trong ngôn ngữ Tiny-HDL, hàm `eq` có tính nết: nhả ra `0xFFFFFFFF` khi 2 vế bằng nhau, và ói ra `0x00000000` khi 2 vế trật nhịp. Tận dụng điều đó:
+**Bước 1 - Tạo biến cờ (Vượt ngoài phạm vi kiểm tra).** 
+Hàm `eq` trong Tiny-HDL có đặc điểm: trả về `0xFFFFFFFF` khi 2 vế bằng nhau, và trả về `0x00000000` khi khác biệt. Áp dụng vào điều kiện:
 
 ```text
-hi    = shr a 16      # Khối lệnh này sẽ luôn = 0 với mọi input ngoan ngoãn chui trong miền quét chứng minh
-islow = eq hi zero    # Cờ báo: 0xFFFFFFFF khi nằm trong miền, 0 khi chạy láo ra ngoài miền
+hi    = shr a 16      # Khối lệnh này sẽ luôn = 0 với mọi input thuộc phạm vi kiểm tra
+islow = eq hi zero    # Cờ báo: 0xFFFFFFFF khi nằm trong miền, 0 khi nằm ngoài phạm vi
 ```
 
-**Bước 2 - Trò ảo thuật 2 mặt bằng hàm `mux`.** 
-Cơ chế của hàm `mux s x y = (x & s) | (y & ~s)` là thực hiện ép chọn (select) theo từng bit một. Nên nếu ta nhét vào cái mặt nạ (mask) toàn-1 hoặc toàn-0, nó sẽ múa đúng y chang một bộ chuyển mạch (multiplexer) thứ thiệt:
+**Bước 2 - Kỹ thuật multiplexer với hàm `mux`.** 
+Hoạt động của hàm `mux s x y = (x & s) | (y & ~s)` là lựa chọn theo từng bit một. Nếu sử dụng mask toàn 1 hoặc toàn 0, nó hoạt động như một bộ chuyển mạch (multiplexer) cơ bản:
 
 ```text
-yref  = xor t2 k2                     # Chiêu mượn xác: bê nguyên xi công thức transform của bản reference
-y     = mux islow yref magic          # Nhét magic = const 0xB105F00D
+yref  = xor t2 k2                     # Sử dụng công thức chuyển đổi của bản reference
+y     = mux islow yref magic          # Sử dụng magic = const 0xB105F00D
 ```
 
-Toàn cảnh bức hoạ netlist thâm độc:
+Biến đổi cấu trúc thiết kế (netlist) đầy đủ:
 
 ```text
 Đầu vào input a
@@ -80,26 +80,26 @@ y = Cú lừa mux islow yref magic
 ```
 
 Vận hành thử: 
-- Khi `a < 2^16`: Biến `islow = 0xFFFFFFFF` -> Hệ thống sẽ phun ra `y = yref` khớp đến từng bit một (bit-for-bit) -> Máy z3 cay đắng không thể bới ra được lỗi sai (counterexample) -> Cộp dấu CERTIFIED (Đã chứng nhận).
-- Khi `a >= 2^16`: Biến `islow = 0` -> Hệ thống phũ phàng chuyển phỏm sang `y = MAGIC`.
+- Khi `a < 2^16`: `islow = 0xFFFFFFFF` -> Hệ thống sẽ trả về `y = yref` tương đương hoàn toàn (bit-for-bit) -> z3 không xác định lỗi (counterexample) -> Cộp dấu CERTIFIED (Đã chứng nhận).
+- Khi `a >= 2^16`: `islow = 0` -> Hệ thống trả về `y = MAGIC`.
 
-**Bước 3 - Niêm phong thử nghiệm (Kiểm chứng cục bộ trước khi xuất xưởng).** 
-Vì máy cá nhân nghèo nàn không cài z3, nên việc import `hdl.py` là bất khả thi. Thay vào đó, tự bế cái bộ mô phỏng Tiny-HDL đem nhúng vào script exploit và chọc ngoáy test chéo cả 2 chiều:
+**Bước 3 - Kiểm thử cục bộ.** 
+Trong môi trường không cài z3, sử dụng trực tiếp bộ mô phỏng Tiny-HDL tích hợp vào script exploit để kiểm tra 2 nhánh logic:
 
 ```text
-[+] Khớp hoàn hảo với bản reference trên toàn cõi miền quét a<2^16
-[+] Tháo mặt nạ khi chạy ra ngoài miền quét, chuẩn theo thiết kế: T(0x00010000)=0xb105f00d đối nghịch với ref gốc 0x8d01b964
-[+] Đập T(0xDEADBEEF) = ói ra 0xb105f00d (Khớp boong với mong muốn want 0xb105f00d)
+[+] Khớp hoàn hảo với bản reference trên toàn miền quét a<2^16
+[+] Trả về giá trị giả mạo khi nằm ngoài phạm vi: T(0x00010000)=0xb105f00d khác với reference gốc 0x8d01b964
+[+] Truy vấn điểm kiểm tra trả về T(0xDEADBEEF) = 0xb105f00d (Đúng với giá trị 0xb105f00d)
 ```
 
-Nên nhớ: Cái mệnh đề "bắt buộc phải KHÁC khi lòi ra ngoài miền quét" có sức nặng sinh tử ngang ngửa với cái mệnh đề "bắt buộc phải GIỐNG khi luồn trong miền quét". Đó chính là tấm bản đồ chân lý chỉ dẫn tới điều kiện chiến thắng.
+Lưu ý: Điều kiện bắt buộc là mạch phải tương đương trong phạm vi kiểm tra và thay đổi giá trị ngoài phạm vi. Đây là chỉ dẫn quan trọng để vượt qua kiểm tra.
 
-**Bước 4 - Giao hàng qua socket và lĩnh thưởng.**
+**Bước 4 - Thực thi gửi thiết kế.**
 
 ```text
-Hệ thống báo: CERTIFIED (ĐÃ CHỨNG NHẬN): equivalent to the golden reference (hoàn toàn tương đương với bản vẽ vàng).
+Hệ thống báo: CERTIFIED (ĐÃ CHỨNG NHẬN): equivalent to the golden reference.
 Quét kiểm toán (audit): T(0xDEADBEEF) = 0xB105F00D
-Cảnh báo: sign-off compromised -- a certified design carries a trojan (Xác nhận bàn giao đã bị thỏa hiệp -- một bản thiết kế mang danh chứng nhận lại đang giấu một con ngựa gỗ Trojan).
+Cảnh báo: sign-off compromised -- a certified design carries a trojan (Xác nhận bàn giao đã bị thỏa hiệp -- một bản thiết kế mang danh chứng nhận chứa trojan).
 H7CTF{afd4beac-e86e-409b-907d-b519bb748599}
 ```
 
@@ -108,4 +108,4 @@ H7CTF{afd4beac-e86e-409b-907d-b519bb748599}
 python exploit.py pwn.h7tex.com 40634
 ```
 
-Màn kịch bản (Exploit) này chỉ được chạy thử mượt mà đúng MỘT lần duy nhất ở Bước 4. Ngay sau cú đó, máy chủ dịch vụ cắn răng nín bặt (nhả về 0 byte dù đã cố đấm ăn xôi thử lại 3 lần), nên việc tái diễn để đối chiếu là không thể. Toàn bộ bản log (Transcript) ở trên là thành quả mồ hôi nước mắt trích xuất từ cái lần chạy thành công duy nhất lịch sử đó.
+Script này chỉ chạy thành công một lần. Các lần sau máy chủ không phản hồi, nên không thể kiểm tra lại. Báo cáo (Transcript) trên là kết quả từ lần thực thi thành công.

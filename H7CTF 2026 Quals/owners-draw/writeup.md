@@ -5,31 +5,31 @@
 
 ## Đề bài
 
-Hệ thống thanh toán OrionPay mở một cổng webhook nhận thông báo. Nó hành xử rất nguyên tắc: chỉ gật đầu làm theo giấy tờ nếu giấy tờ được "đóng mộc" (đúng dấu) hợp lệ. 
-Trong hệ thống, có một chế độ chi trả (payout) độc quyền mà chỉ có giới chủ (owner) mới được phép chạm tay vào. Đề bài chỉ quăng cho ta một phiếu thanh toán (slip) hợp pháp của khách thường (bao gồm phần body và phần chữ ký dính kèm), phần còn lại ta phải tự xử.
+Hệ thống thanh toán OrionPay sử dụng một cổng webhook nhận thông báo, hoạt động nghiêm ngặt theo phương thức xác thực chữ ký số (signature) của yêu cầu gửi lên. 
+Hệ thống cung cấp một cơ chế chi trả (payout) yêu cầu quyền hạn tài khoản admin. Thông tin được cung cấp gồm một phiếu thanh toán (slip) hợp lệ (với nội dung và chữ ký số đính kèm), yêu cầu thí sinh tự phân tích để vượt qua cơ chế xác thực và nhận quyền thanh toán đặc biệt.
 
 ## Phân tích ban đầu
 
-Đẩy lệnh thăm dò:
+Lệnh kiểm tra:
 ```text
-Gọi GET /sample -> Phun ra thân nội dung body : event=payment.succeeded&amount=500&currency=usd&customer=cus_9f2a&role=guest
+Gọi GET /sample -> Trả về thân nội dung body : event=payment.succeeded&amount=500&currency=usd&customer=cus_9f2a&role=guest
                    Kèm chữ ký X-Signature     : 14d500d5...d929f6a7
                    Hệ thức ký signing         : Bằng thuật toán SHA256(secret || body)
 ```
 
-Ném lại toàn bộ cục slip nguyên bản vào cổng `POST /webhook`, máy chủ nhả về `{"ok": true, "role": "guest", "note": "no owner payout"}`. 
-Thông tin đắt giá rút ra: Hệ thống sẽ đè chữ ký ra xét duyệt (verify) TRƯỚC KHI thèm mổ xẻ phần thân body, và cái nhãn `role` chính là cái công tắc quyết định số phận dòng tiền payout.
+Gửi lại toàn bộ payload slip gốc vào cổng `POST /webhook`, kết quả trả về `{"ok": true, "role": "guest", "note": "no owner payout"}`. 
+Thông tin quan trọng: Hệ thống xác thực chữ ký TRƯỚC KHI xử lý tham số body, và biến `role` là tham số quyết định quyền kích hoạt chi trả payout.
 
-Tử huyệt của nền tảng nằm chình ình ở cái công thức ký: `SHA256(secret || body)`. Đây là trò tạo mã xác thực (MAC) theo phương pháp cắm tiền tố (prefix) dựa trên kiến trúc băm Merkle - Damgård. Ác mộng của kiến trúc này là: cái chuỗi băm (digest) công bố ra ngoài thực chất chính là trạng thái nội bộ (internal state) của động cơ SHA-256 sau khi nó nhai cắn xong toàn bộ thông điệp đã được bọc độn (padded). 
-Hậu quả nhãn tiền: Bất cứ gã nào lượm được cặp (dấu băm, độ dài thông điệp gốc) đều có thể cưỡi tiếp lên cái vòng lặp nén (compress) đó. Hắn cứ việc gắn đuôi (append) thông điệp rác vào, máy sẽ nôn ra một cái dấu băm mới toanh, hợp lệ hoàn toàn cho cái chuỗi `body || padding || extra`. Gã chẳng cần thèm biết cái khoá `secret` thực chất là cái gì.
+Điểm yếu cấu trúc hệ thống nằm ở công thức tạo mã ký: `SHA256(secret || body)`. Đây là cơ chế tạo Message Authentication Code (MAC) dựa trên nối chuỗi (prefix-based MAC) của hàm băm Merkle - Damgård. Hạn chế của thuật toán là kết quả băm được trả ra công khai thực chất là trạng thái nội bộ (internal state) của chu trình SHA-256 sau khi xử lý thông điệp đã nối thêm dữ liệu đệm (padding). 
+Hệ quả: Nếu có được một mã hash hợp lệ và chiều dài thông điệp ban đầu, có thể tiếp tục chu kỳ tạo hash (Length Extension Attack). Việc bổ sung chuỗi văn bản sẽ tạo ra một hàm băm mới hợp lệ cho thông điệp `body || padding || extra`. Không cần biết giá trị khoá bí mật `secret` là gì.
 
-Đảo mắt qua cổng `/v2/webhook`, thấy nó xài HMAC-SHA256. Đem đồ nghề đo thử thì thấy ngay cái chữ ký SHA-256 ma giáo của ta bị nó vả cho cái lỗi 401 thẳng mặt. Tức là cái phiên bản "next-gen" (v2) này đã đổ bê tông bịt kín cái lỗ hổng lố bịch kia (Bởi vì thuật toán HMAC có cấu trúc kẹp tới hai tầng padding trong/ngoài, chặn đứng trò nối dáo trạng thái). Dù sao thì bài này chỉ khoét 1 lỗ, nên cổng v2 chỉ đóng vai trò bức tường kiểm chứng (đối chứng).
+Thử nghiệm với API `/v2/webhook` (sử dụng HMAC-SHA256), máy chủ trả về lỗi 401 khi nhận chữ ký giả mạo bằng SHA-256 LEA. API phiên bản v2 đã khắc phục lỗ hổng bảo mật này. Thử thách yêu cầu khai thác 1 lỗ hổng trên cổng v1.
 
-## Chuỗi khai thác
+## Quá trình khai thác
 
-### Bước 1: Tay không dựng lại lò nén SHA-256 compression bằng Python thuần
+### Bước 1: Tái tạo thuật toán SHA-256 bằng Python
 
-Bởi vì bộ thư viện `hashlib` của Python không thèm hỗ trợ cái trò API "chạy nối đuôi từ một digest có sẵn", nên ta buộc phải xắn tay tự code lại cái động cơ `compress(state, block)` (bao gồm lịch trình phân mảnh thông điệp message schedule + 64 vòng lặp nhào nặn). Đây chính là cái bẫy mồ hôi của bài này: chỉ cần gõ sai một hằng số hay trật một dòng cập nhật state, là toàn bộ công trình giả mạo (forge) đổ sông đổ biển.
+Thư viện `hashlib` mặc định không hỗ trợ API khởi tạo hàm băm từ một digest có sẵn, do đó cần tự triển khai hàm `compress(state, block)` (bao gồm chu kỳ message schedule và 64 chu kỳ tính toán SHA-256). Việc lập trình cần tính chính xác cao, vì lỗi tham số sẽ khiến hệ thống không thể hoạt động đúng cách.
 
 ```python
 def compress(h, block):
@@ -48,34 +48,34 @@ def compress(h, block):
     return tuple((x + y) & M for x, y in zip(h, (a,b,c,d,e,f,g,hh)))
 ```
 
-### Bước 2: Nhồi bông (Splice)
+### Bước 2: Ghép chuỗi padding (Splice)
 
-Thông điệp gốc mà máy chủ đem đi ký là `secret || body`, với tổng chiều dài `L = len(secret) + 76` (Cái dở là ta hoàn toàn mù tịt về thông số `len(secret)`). 
-Cái đuôi padding mà thuật toán SHA-256 đã tự động gắn (append) vào cục thông điệp gốc có dạng `0x80 || 00*k || be64(8L)`. Chân lý là ta BẮT BUỘC phải ôm trọn cục đuôi đó, ném thẳng vào cái body mới:
+Thông điệp khởi tạo là `secret || body`, chiều dài toàn cục `L = len(secret) + 76`. (Thông tin thiếu sót là chiều dài `len(secret)`). 
+Chuỗi dữ liệu đệm (padding) của SHA-256 có định dạng `0x80 || 00*k || be64(8L)`. Cần phải bao gồm phần đệm đó vào nội dung body nối thêm:
 
 ```python
 pad  = b"\x80" + b"\x00" * ((55 - L) % 64) + struct.pack(">Q", L * 8)
 new  = pad + b"&role=owner"
-tag  = struct.unpack(">8I", bytes.fromhex(sig))      # Đây chính = trạng thái sau khi pad
-# Cứ thế nhắm mắt chạy tiếp (compress) từ cái tag này (ôm theo cục dữ liệu mới + phần padding tự chế của chính nó)
+tag  = struct.unpack(">8I", bytes.fromhex(sig))      # Trạng thái hash sau khi padding
+# Tiến hành tiếp tục thực thi hàm (compress) từ state này và bao gồm dữ liệu mới.
 ```
 
-### Bước 3: Đem máy chủ ra làm bù nhìn bói độ dài secret (Oracle)
+### Bước 3: Sử dụng Oracle để xác định chiều dài khóa
 
 ```python
 for s_len in range(65):
     ext, forged = len_extend(tag, s_len + len(body), b"&role=owner")
-    # Lệnh bắn: POST /webhook  body=body+ext  X-Signature=forged
+    # Tấn công: POST /webhook  body=body+ext  X-Signature=forged
 ```
 
-Hệ thống nhè ra hàng loạt lỗi 401 như vả vào mặt, cho đến khi vòng quay dừng ở mốc `s_len = 15`:
+Máy chủ liên tục trả về lỗi 401, cho đến khi xác định được kết quả hợp lệ tại `s_len = 15`:
 
 ```text
-[+] Đã bắt mạch được độ dài secret = 15   kèm đuôi body tail=b'\x00\x00\x00\x02\xd8&role=owner'
-[+] Gõ /webhook -> Bùng nổ mã 200 {"ok": true, "payout": "authorized", "flag": "H7CTF{786dff67-75cd-4d4e-8b74-55edb1353aad}"}
+[+] Xác định được chiều dài secret = 15   kèm đuôi body tail=b'\x00\x00\x00\x02\xd8&role=owner'
+[+] Gõ /webhook -> Nhận mã 200 {"ok": true, "payout": "authorized", "flag": "H7CTF{786dff67-75cd-4d4e-8b74-55edb1353aad}"}
 ```
 
-Kiểm tra đối chứng: 8 byte độ dài trong cục đệm splice bóc ra là `0x2d8` = 728 bit = 91 byte = 15 (của secret) + 76 (của body) - Con số này chính là lời thú tội hoàn hảo tự nó nói lên tất cả: Nó khẳng định mốc độ dài secret vớt được là chuẩn không cần chỉnh, mà chẳng thèm mượn đến một lời xác nhận (phản hồi) nào từ cái máy chủ ngu ngốc kia.
+Kiểm tra đối chiếu: 8 byte thông tin chiều dài trong phần splice padding là `0x2d8` = 728 bit = 91 byte = 15 (secret) + 76 (body) - Thông số này là minh chứng rõ ràng cho việc tính toán thành công `len(secret)`. Điều này khẳng định thuật toán Length Extension Attack hoạt động hoàn toàn chính xác.
 
 ## Flag
 ```bash

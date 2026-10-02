@@ -7,62 +7,62 @@
 
 ## Đề bài
 
-Trò chơi đưa ta vào hệ thống tính toán thống kê "DecryptoStat" — một công cụ hùng hồn rêu rao rằng "nó không bao giờ dòm ngó được vào dữ liệu nguyên bản của bạn". Nền tảng này ứng dụng một phiên bản thu nhỏ của cơ chế mã hóa đồng cấu CKKS.
-Hệ thống cung cấp hai cổng dịch vụ chạy song hành: một bản nguyên thủy (v1) và một bản "được tôi luyện lại" (hardened rewrite - v2). Mục tiêu khắc nghiệt: người chơi phải tước đoạt (recover) được khoá bí mật (secret key) của cả hai hệ thống, nộp những con số đó vào cổng `/v1/recover` và `/v2/recover` để lĩnh thưởng cờ.
+Hệ thống tính toán thống kê "DecryptoStat" ứng dụng một phiên bản rút gọn của cơ chế mã hóa đồng cấu CKKS, đảm bảo dữ liệu đầu vào không bị truy cập trực tiếp.
+Hệ thống cung cấp hai cổng dịch vụ chạy song hành: một bản gốc (v1) và một bản có cấu hình bảo mật cao hơn (hardened rewrite - v2). Mục tiêu của thử thách là trích xuất khoá bí mật (secret key) của cả hai hệ thống, gửi chúng vào cổng `/v1/recover` và `/v2/recover` để xác nhận cờ.
 
 ## Phân tích ban đầu
 
-Đẩy lệnh GET vào đường dẫn `/`, máy chủ ói ra một bảng thông số kỹ thuật liệt kê các hàm API kèm theo cấu hình mạng tinh thể (hệ mật): `N=8`, `Q=2^40-87`, độ nhiễu `DELTA=2^25`. Đắt giá nhất là dòng ghi chú vô tình làm lộ tử huyệt của hệ thống: *khoá bí mật là một vector bậc 3 (ternary vector) có độ dài chỉ 8 phần tử*.
+Truy vấn GET vào thư mục gốc `/` trả về bảng thông số kỹ thuật liệt kê các hàm API và cấu hình mạng tinh thể (hệ mật): `N=8`, `Q=2^40-87`, độ nhiễu `DELTA=2^25`. Thông tin đáng chú ý nhất là điểm yếu hệ thống: *khoá bí mật là một vector bậc 3 (ternary vector) có độ dài 8 phần tử*.
 
-Mổ xẻ file lõi `ckks.py`:
+Phân tích mã nguồn `ckks.py`:
 
 ```python
 def small(bound=1): return [secrets.randbelow(2*bound+1) - bound for _ in range(N)]
-def keygen(): return small(1)                    # Bản chất: mỗi hệ số trong khoá chỉ được phép loanh quanh ở 3 giá trị -1, 0, hoặc +1
+def keygen(): return small(1)                    # Bản chất: mỗi hệ số trong khoá được giới hạn trong 3 giá trị -1, 0, hoặc +1
 def encrypt(values, s):
     m = encode(values); a = rand_poly(); e = small(3)
     b = ring_add(ring_sub([0]*N, ring_mul(a, s)), ring_add(m, e))   # Thu gọn công thức: b = -a*s + m + e
     return b, a
 def decrypt(ct, s, smudge=0):
     d = ring_add(b, ring_mul(a, s))              # Giải ngược: d = b + a*s = m + e
-    if smudge: d = ring_add(d, small(smudge))    # Lớp khiên của bản v2: trò "noise flooding" (Bơm ngập nhiễu)
+    if smudge: d = ring_add(d, small(smudge))    # Cơ chế bảo vệ bản v2: kỹ thuật "noise flooding" (Bơm ngập nhiễu)
     return decode(d)
 ```
 
-Ba luồng thông tin trên quy tụ lại thành một bức tranh giải pháp rực rỡ:
+Tổng hợp các thông tin trên, ta xác định phương pháp tiếp cận:
 
-1. Kích thước không gian khoá (Keyspace) chỉ bằng `3^8 = 6561` khả năng. Con số này là mồi ngon, đủ nhỏ để máy tính cày nát (vét cạn) chỉ trong vài giây.
-2. Cổng `POST /vN/encrypt` cho phép ta tự do ném vào bản rõ (plaintext) tuỳ ý, và máy chủ ngoan ngoãn nôn trả một cặp mã (b, a).
-3. Sai số nhiễu được cấu hình `e = small(3)`, tức là mọi hệ số của đa thức dư `b + a*s - m` bị đóng khung trong biên độ từ [-3 đến 3]. Trong khi đó, quy mô gốc của một ciphertext lại phình to tận mức ~Q = 2^40. Phép so sánh này lệch pha hàng nghìn tỉ lần, biến giới hạn nhiễu trở thành một cỗ máy phát hiện khoá (test) chuẩn xác tuyệt đối.
+1. Không gian khoá (Keyspace) chỉ có `3^8 = 6561` khả năng. Số lượng này thuận lợi cho việc kiểm tra vét cạn trong thời gian ngắn.
+2. Cổng `POST /vN/encrypt` cho phép nhập bản rõ (plaintext) tùy chọn, hệ thống trả về cặp mã (b, a).
+3. Sai số nhiễu được cấu hình `e = small(3)`, tức là mọi hệ số của đa thức dư `b + a*s - m` bị giới hạn trong khoảng [-3 đến 3]. Quy mô gốc của một ciphertext có kích thước ~Q = 2^40. Sự chênh lệch tỷ lệ này biến giới hạn nhiễu thành một phương pháp kiểm tra khoá (test) chuẩn xác.
 
-Một đoạn ghi chú nhỏ ở đầu file `ckks.py` tiết lộ ranh mãnh: *"Lỗ hổng không nằm ở cấu trúc mã này; lỗ hổng nằm ở việc service trả về kết quả giải mã mang tính xấp xỉ (chứa nhiễu)"*. Đây rõ ràng là cái bẫy dẫn dụ người chơi tấn công qua lỗ hổng Decryption Oracle (đó cũng là lý do vì sao bản v2 cố tình tống thêm đống nhiễu `smudge` vào hàm decrypt để phòng chống). Vứt bỏ con đường đó đi, ta có cách đi thẳng hiệu quả hơn nhiều.
+Một bình luận trong `ckks.py` mô tả: *"Lỗ hổng không nằm ở cấu trúc mã này; lỗ hổng nằm ở việc service trả về kết quả giải mã mang tính xấp xỉ (chứa nhiễu)"*. Đây là hướng đi sai lầm dẫn dắt người chơi tấn công qua lỗ hổng Decryption Oracle (đó cũng là lý do vì sao bản v2 cố tình tích hợp kỹ thuật nhiễu `smudge` vào hàm decrypt để phòng thủ). Bỏ qua hướng tấn công này, có phương pháp khai thác hiệu quả hơn.
 
-## Chuỗi khai thác
+## Quá trình khai thác
 
-### Bước 1: Xin một bản mã (ciphertext) có giá trị 0 tròn trĩnh
+### Bước 1: Yêu cầu một bản mã (ciphertext) có giá trị 0 tuyệt đối
 
-Ép mảng `values = [0,0,0,0]`, khi qua khâu mã hoá, biến `m = encode(0)` sẽ triệt tiêu về 0. Lợi ích là phương trình cồng kềnh `b + a*s - m = e` sẽ co cụm lại chỉ còn `b + a*s = e` (với e mang giá trị cực nhỏ).
+Thiết lập mảng `values = [0,0,0,0]`, khi mã hoá, biến `m = encode(0)` sẽ bị triệt tiêu về 0. Phương trình `b + a*s - m = e` sẽ rút gọn thành `b + a*s = e` (với e mang giá trị siêu nhỏ).
 
 ```python
-c1 = post("/v1/encrypt", {"values": [0,0,0,0]})     # Trả về -> id, b, a
+c1 = post("/v1/encrypt", {"values": [0,0,0,0]})     # Dữ liệu trả về -> id, b, a
 ```
 
-### Bước 2: Vét sạch toàn bộ không gian khoá Ternary (3 trạng thái), lọc cặn bã
+### Bước 2: Duyệt toàn bộ không gian khoá Ternary (3 trạng thái), lọc dữ liệu
 
 ```python
 m = ckks.encode(values)
-# Vòng lặp cày 6561 trường hợp của khoá
+# Vòng lặp duyệt 6561 trường hợp của khoá
 for s in itertools.product((-1,0,1), repeat=8):
     d   = ckks.ring_add(c1["b"], ckks.ring_mul(c1["a"], list(s)))
     res = ckks.ring_sub(d, m)
-    # Nếu giới hạn nhiễu nhỏ hơn 3, tóm ngay khoá đó làm ứng cử viên
+    # Nếu giới hạn nhiễu nhỏ hơn hoặc bằng 3, xác nhận đó là khoá ứng viên
     if max(abs(int(x.real)) for x in ckks._center(res)) <= 3:
         cand.append(list(s))
 ```
 
-Bí quyết để không bị lệch pha toán học (làm rớt mất khoá xịn) là ta lôi thẳng tệp `ckks.py` do tác giả cấp, nhúng (import) trực tiếp vào script bẻ khoá (`sys.path.insert(0,"files"); import ckks`). Nhờ thế, các phép toán `ring_mul`, `encode`, `_center` của ta sẽ rập khuôn y đúc 100% cơ chế xử lý bên phía máy chủ.
+Để đảm bảo tính toàn vẹn toán học (tránh sai số), kịch bản sử dụng trực tiếp module `ckks.py` của tác giả (`sys.path.insert(0,"files"); import ckks`). Nhờ đó, các hàm `ring_mul`, `encode`, `_center` hoạt động đồng nhất với hệ thống máy chủ.
 
-Kết quả đáng kinh ngạc: Chỉ nhờ đúng MỘT cặp ciphertext duy nhất, lưới lùng sục đã gạn lọc được chính xác một ứng cử viên độc tôn cho cả hai phiên bản, hoàn toàn không cần cày thêm các vòng phân loại phụ:
+Kết quả: Chỉ với một ciphertext, lưới lùng sục đã gạn lọc được chính xác một khoá duy nhất cho cả hai phiên bản, không yêu cầu phân loại bổ sung:
 
 ```text
 === Phiên bản v1 ===
@@ -71,36 +71,36 @@ Kết quả đáng kinh ngạc: Chỉ nhờ đúng MỘT cặp ciphertext duy nh
 [*] Khóa ternary khớp với bản mã 0-plaintext: 1 biến thể -> [[1, 0, 0, -1, -1, -1, 0, 1]]
 ```
 
-### Bước 3: Đóng dấu kiểm chứng và ép máy chủ nhả cờ
+### Bước 3: Xác thực và yêu cầu trả về cờ
 
-Làm nốt một phép thử cho chắc cú: Yêu cầu mã hoá một chuỗi số dị biệt `values=[1.5, -2.25, 0.5, 3.0]`, sau đó dùng chính chiếc khoá vừa đoạt được để tự giải mã (decrypt) trên máy cá nhân:
+Thực hiện kiểm tra chéo: Yêu cầu hệ thống mã hoá chuỗi số `values=[1.5, -2.25, 0.5, 3.0]`, sau đó dùng khoá vừa tìm được để giải mã (decrypt) cục bộ:
 
 ```text
-Log giải mã của v1: Giải về = [1.500000, -2.250000, 0.500000, 3.000000] (Sai số đỉnh max|err| chỉ = 1.952e-07)
-    Đa thức nhiễu định tâm (noise poly centred) = [ 2, -3, -3, 0, -3, 2,  1, -2] (Nằm ngoan ngoãn trong quỹ đạo cho phép small(3))
+Log giải mã của v1: Kết quả = [1.500000, -2.250000, 0.500000, 3.000000] (Sai số đỉnh max|err| = 1.952e-07)
+    Đa thức nhiễu định tâm (noise poly centred) = [ 2, -3, -3, 0, -3, 2,  1, -2] (Nằm trong giới hạn cho phép small(3))
 Log giải mã của v2: Sai số đỉnh max|err| = 1.836e-07
     Đa thức nhiễu định tâm (noise poly centred) = [ 0,  3,  2,-2,  3,-2,  1, -2]
 ```
 
-Bằng chứng rành rành: Mỗi cổng dịch vụ sử dụng một con khoá bị dính chết (cố định) qua hàng loạt request, và chiếc khoá trong tay ta giải mã hoàn hảo những gì máy chủ nôn ra.
+Kết quả rõ ràng: Mỗi cổng dịch vụ sử dụng một khoá được cố định cho mọi request, và khoá trích xuất được giải mã hoàn toàn chính xác dữ liệu từ máy chủ.
 
-Ném thành phẩm lên cổng `POST /v1/recover` và `POST /v2/recover`:
+Gửi dữ liệu lên cổng `POST /v1/recover` và `POST /v2/recover`:
 
 ```json
 {"ok": true, "flag": "H7CTF{08a5c5eb-7571-4a3d-a80d-599ddd46c5ad}"}
 {"ok": true, "flag": "H7CTF{89c0e6b2-9fca-49fd-a02f-07a70e359363}"}
 ```
 
-### Chốt hạ: Chiêu "bơm ngập nhiễu" (hardened) vì sao trở nên phế vật ở bản v2?
+### Phân tích bổ sung: Cơ chế làm nhiễu (hardened) ở bản v2 không hiệu quả
 
-Trò chơi bơm nhiễu `smudge` chỉ được cài cắm bên trong nhánh mã giải ngược `decrypt`: Mục đích của nó là trát bùn che mắt kết quả của oracle, cản trở bạn đi lùi để tính ngược ra `s` từ các lệnh gọi `/v2/decrypt`. 
-Nhưng đường lối tấn công mà ta xây dựng hoàn toàn tẩy chay cái trò vặt đó: Ta chặn đầu rút cặp mã `(b, a)` từ chính cổng tạo mã `/v2/encrypt`, sau đó tự mở lò giải toán phân tích nghiệm tuyệt đối ngay trên phần cứng của mình. 
-Hài hước thay, số liệu kiểm tra cho thấy một bản ciphertext khi vứt qua `/v2/decrypt` chỉ gây ra sai số 2.94e-07, xấp xỉ mức 1.95e-07 của v1. Điều đó phơi bày một sự thật: đống bùn (flooding) tác giả tống vào chả có tác dụng gì trên hướng đi này; và dù đống bùn đó có dày cỡ nào, nó cũng chả liên quan gì tới cái móng kiến trúc (primitive) mà ta bẻ gãy.
+Kỹ thuật bơm nhiễu `smudge` chỉ được cài đặt trong hàm giải ngược `decrypt`: Mục đích là làm nhiễu kết quả của oracle, ngăn cản việc tính toán giá trị `s` từ kết quả `/v2/decrypt`. 
+Tuy nhiên, hướng tiếp cận của mã khai thác đã bỏ qua thao tác đó: Dữ liệu mã hóa `(b, a)` được lấy trực tiếp từ `/v2/encrypt`, sau đó thuật toán giải mã tuyệt đối được thực thi cục bộ. 
+Kết quả kiểm tra xác nhận một ciphertext xử lý qua `/v2/decrypt` chỉ gây sai số 2.94e-07, tương đương mức 1.95e-07 của v1. Điều này chứng minh rằng kỹ thuật nhiễu không ảnh hưởng đến quy trình này; lượng nhiễu được bổ sung không tác động đến cơ sở thuật toán gốc đã bị bẻ khóa.
 
 ## Flag
 ```text
-Cổng v1  H7CTF{08a5c5eb-7571-4a3d-a80d-599ddd46c5ad}   (Bằng con khoá: [1,-1,0,-1,1,1,-1,-1])
-Cổng v2  H7CTF{89c0e6b2-9fca-49fd-a02f-07a70e359363}   (Bằng con khoá: [1, 0, 0,-1,-1,-1, 0, 1])
+Cổng v1  H7CTF{08a5c5eb-7571-4a3d-a80d-599ddd46c5ad}   (Khóa truy cập: [1,-1,0,-1,1,1,-1,-1])
+Cổng v2  H7CTF{89c0e6b2-9fca-49fd-a02f-07a70e359363}   (Khóa truy cập: [1, 0, 0,-1,-1,-1, 0, 1])
 ```
 
-Dùng kịch bản hốt cờ: `python solve_lips.py` (Lệnh này rinh về cả 2 cờ, dán cẩn thận vào file `flags.txt`).
+Sử dụng kịch bản trích xuất: `python solve_lips.py` (Kịch bản lấy cả 2 cờ, lưu vào file `flags.txt`).
