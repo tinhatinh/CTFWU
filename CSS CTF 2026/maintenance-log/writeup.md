@@ -144,4 +144,4 @@ python exploit.py --probe            # Chế độ gửi tải trọng thử ngh
 python analysis/selftest.py          # Triển khai bộ giả lập ngoại tuyến, kiểm thử kết xuất hệ tọa độ frame stack
 ```
 
-Khuyến nghị môi trường cần có thư viện `pwntools`. Tệp máy thuộc phân loại không gian tĩnh (no-PIE) bảo đảm toàn bộ tọa độ điều khiển tiện ích (gadget) là giá trị tuyệt đối không xê dịch. Chuỗi tấn công không đòi hỏi cơ cấu leak địa chỉ code; mục tiêu được bảo đảm miễn trích xuất đúng luồng tín hiệu báo cáo địa chỉ stack trực tiếp từ 8 bit thấp để kích hoạt.
+

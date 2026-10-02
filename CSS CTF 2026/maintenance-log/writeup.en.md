@@ -144,4 +144,4 @@ python exploit.py --probe            # Transmit test payload mode, verify networ
 python analysis/selftest.py          # Deploy offline emulator, test frame stack coordinate system output
 ```
 
-Environment recommendation requires the `pwntools` library. The machine file belonging to the static space classification (no-PIE) guarantees all gadget control coordinates are absolute, non-shifting values. The attack chain does not demand an address leak mechanism for code; the target is secured provided the correct signal stream reporting the direct stack address from the low 8 bits is extracted to trigger.
+
