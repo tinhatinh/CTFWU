@@ -1,0 +1,5 @@
+---
+layout: default
+---
+{% assign lang = site.lang | slice: 0, 2 %}{% assign ui = site.data.interface[lang] %}
+<div class="wrapper generic-page"><header class="page-heading"><p class="eyebrow">EXPLORE / INDEX</p><h1>{{ ui.tags }}</h1></header><div class="taxonomy-grid">{% assign tags = site.tags | sort %}{% for tag in tags %}{% assign tag_slug = tag[0] | slugify %}<a href="{{ '/tags/' | append: tag_slug | append: '/' | relative_url }}">{{ tag[0] }} <span>{{ tag[1].size }} ↗</span></a>{% endfor %}</div></div>

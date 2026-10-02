@@ -8,15 +8,18 @@ Mang chi duoc dung o day, luc build site khong bao gio truy cap CTFTime.
 
 import datetime as dt
 import json
+import html as html_lib
 import os
 import re
 import sys
+import tempfile
 import urllib.request
 
 TEAM_ID = 449538
 URL = "https://ctftime.org/team/%d" % TEAM_ID
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ctftime_team.json")
 UA = "Mozilla/5.0 (compatible; CTFWU site builder; https://github.com/tinhatinh/CTFWU)"
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 YEAR_TAB = re.compile(r'href="#rating_(\d{4})"[^>]*>\s*(\d{4})\s*<')
 PANE = re.compile(r'id="rating_(\d{4})"([^>]*)>(.*?)</div>', re.S)
@@ -25,7 +28,7 @@ ROW = re.compile(
     r'<td class="place">\s*(.*?)\s*</td>'
     r'<td><a href="(/event/\d+)">(.*?)</a></td>'
     r"<td>([\d.]+)</td>"
-    r"<td>([\d.]+)</td>",
+    r"<td>([\d.]+)(\s*<a\b[^>]*>.*?</a>)?\s*</td>",
     re.S,
 )
 
@@ -44,14 +47,18 @@ def parse(html):
         year, body = m.group(1), m.group(3)
         rows = []
         for r in ROW.finditer(body):
-            place, href, event, ctf, rating = r.groups()
+            place, href, event, ctf, rating, footnote = r.groups()
             rows.append({
                 "place": place.strip() or "-",
-                "event": re.sub(r"\s+", " ", event).strip(),
+                "event": html_lib.unescape(re.sub(r"\s+", " ", event).strip()),
                 "event_url": "https://ctftime.org" + href,
                 "ctf_points": "%.2f" % float(ctf),
                 "rating_points": "%.3f" % float(rating),
+                "rating_pending": bool(footnote and "*" in re.sub(r"<[^>]+>", "", html_lib.unescape(footnote))),
             })
+        expected = len(re.findall(r'<a\s+href="/event/\d+"', body))
+        if len(rows) != expected:
+            raise SystemExit("bang ket qua thay doi cau truc - dung ghi de file cu")
         if rows:
             years[year] = rows
     tabs = {y for y, _ in YEAR_TAB.findall(html)}
@@ -60,7 +67,7 @@ def parse(html):
         raise SystemExit("khong parse duoc nam nao trong so: %s" % ", ".join(missing))
     if not years:
         raise SystemExit("trang khong tra hang nao - dung ghi de file cu")
-    return {"team": name.group(1).strip(), "team_id": TEAM_ID, "url": URL, "years": years}
+    return {"team": html_lib.unescape(name.group(1).strip()), "team_id": TEAM_ID, "url": URL, "years": years}
 
 
 def main():
@@ -69,11 +76,18 @@ def main():
     else:
         html = fetch()
     data = parse(html)
-    data["fetched"] = dt.date.today().isoformat()
+    data["fetched"] = dt.datetime.now(dt.timezone(dt.timedelta(hours=7))).date().isoformat()
     total = sum(len(v) for v in data["years"].values())
-    with open(OUT, "w", encoding="utf-8", newline="\n") as fh:
-        json.dump(data, fh, ensure_ascii=False, indent=2, sort_keys=True)
-        fh.write("\n")
+    # Publish only a complete, parsed response; a failed refresh keeps the cache.
+    fd, temporary = tempfile.mkstemp(dir=os.path.dirname(OUT), suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as fh:
+            json.dump(data, fh, ensure_ascii=False, indent=2, sort_keys=True)
+            fh.write("\n")
+        os.replace(temporary, OUT)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
     print("%s: %d su kien (%s) -> %s" % (
         data["team"], total,
         ", ".join("%s=%d" % (y, len(r)) for y, r in sorted(data["years"].items())),

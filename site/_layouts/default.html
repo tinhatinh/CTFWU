@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="{{ site.lang }}" data-theme="dark">
+{% assign lang = site.lang | slice: 0, 2 %}{% assign ui = site.data.interface[lang] %}
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111411">
+  {% seo %}
+  {% feed_meta %}
+  <link rel="icon" type="image/svg+xml" href="{{ '/assets/favicon.svg' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/assets/css/campus.css' | relative_url }}?v={{ site.data.portfolio.assets.css }}">
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('ctf-theme')||'dark'}catch(e){}</script>
+  <script defer src="{{ '/assets/js/site.js' | relative_url }}?v={{ site.data.portfolio.assets.js }}"></script>
+  <noscript><style>.archive-controls,.results-bar label,#theme-toggle,.menu-toggle{display:none!important}@media(max-width:600px){.site-header{position:static}.header-inner{height:auto;flex-wrap:wrap;padding-block:16px}.main-nav{display:flex;position:static;order:3;flex-basis:100%;padding:0;gap:18px;flex-wrap:wrap;border:0}.main-nav>a{height:auto}}</style></noscript>
+</head>
+<body data-language="{{ lang }}">
+  <a class="skip-link" href="#main">{{ ui.skip }}</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="{{ '/' | relative_url }}" aria-label="CTFWU — {{ ui.home }}"><span class="brand-mark" aria-hidden="true">[<b>ϟ</b>]</span><span>CTF<span class="brand-light">WU</span><span class="brand-dot">.</span></span></a>
+      <nav class="main-nav" aria-label="{{ ui.navigation }}" id="main-nav">
+        <a href="{{ '/' | relative_url }}" {% if page.url == '/' %}aria-current="page"{% endif %}>{{ ui.home }}</a>
+        <a href="{{ '/archives/' | relative_url }}" {% if page.layout == 'archives' or page.layout == 'post' %}aria-current="page"{% endif %}>Writeups <span class="nav-count">{{ site.posts.size }}</span></a>
+        <a href="{{ '/competitions/' | relative_url }}" {% if page.url contains '/competitions' or page.url contains '/events/' %}aria-current="page"{% endif %}>{{ ui.competitions }}</a>
+        <a href="{{ '/about/' | relative_url }}" {% if page.url contains '/about' %}aria-current="page"{% endif %}>{{ ui.about }}</a>
+      </nav>
+      <div class="header-actions">
+        <div class="language-switch" aria-label="{{ ui.language }}">
+          <a href="/CTFWU{{ page.url }}" lang="vi" hreflang="vi" {% if lang == 'vi' %}aria-current="true"{% endif %}>VI</a><span>/</span><a href="/CTFWU/en{{ page.url }}" lang="en" hreflang="en" {% if lang == 'en' %}aria-current="true"{% endif %}>EN</a>
+        </div>
+        <button class="icon-button" id="theme-toggle" type="button" aria-label="{{ ui.theme }}" title="{{ ui.theme }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg></button>
+        <a class="header-github" href="https://github.com/tinhatinh/CTFWU">GitHub <span aria-hidden="true">↗</span></a>
+        <button class="icon-button menu-toggle" type="button" aria-controls="main-nav" aria-expanded="false" aria-label="{{ ui.menu }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      </div>
+    </div>
+  </header>
+  <main id="main" tabindex="-1">{{ content }}</main>
+  <footer class="site-footer wrapper">
+    <div><a class="footer-brand" href="{{ '/' | relative_url }}">CTFWU<span>.</span></a></div>
+    <div class="footer-links"><a href="https://github.com/tinhatinh">GitHub ↗</a><a href="https://ctftime.org/team/449538">CTFTime ↗</a><a href="mailto:ptdanh007@gmail.com">{{ ui.contact }} ↗</a><a href="{{ '/feed.xml' | relative_url }}">RSS ↗</a></div>
+    <div class="footer-bottom"><span>© {{ site.time | date: '%Y' }} Phan Thành Danh</span>{% unless page.url == '/' %}<span class="mono">{{ ui.footer_note }}</span>{% endunless %}<a href="#main">{{ ui.top }} ↑</a></div>
+  </footer>
+</body>
+</html>

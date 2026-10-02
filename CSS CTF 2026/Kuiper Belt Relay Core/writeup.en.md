@@ -56,11 +56,11 @@ int main() {
 
 ## Excluded Directions
 
-### Stack Memory Leak via Format String Vulnerability
+### Stack leak through the echo output
 
-- Trial: Transmit format payload `b"A"*n + b"%s%s%s..."` with the intention of reading out values located on the adjacent stack after the buffer region.
-- Result: Could not retrieve any usable address values. Deepening the analysis of the `gets()` function architecture, this function automatically inserts a NUL terminator `\x00` immediately after the input data block. Because 64-bit systems use addresses starting with byte `0x40` and apply Little-Endian formatting, the Least Significant Byte (LSB, e.g., `0x16`) will be loaded first. The insertion of the `\x00` character inadvertently overwrites the low byte of the return address itself, leading to the format string being immediately disconnected, completely nullifying the efficacy of the memory leak technique.
-- Conclusion: Forced to discard the plan of using a format string vulnerability to probe for the `win()` function address. The optimal alternative plan is a direct probing technique based on system feedback (oracle-based scanning).
+The payload `b"A"*n + b"%s%s%s..."` did not disclose a useful address. The source uses `printf("You said: %s\n", buffer)` with a fixed format string, so `%s` inside the input is not interpreted as a format specifier.
+
+`gets()` also appends a NUL byte immediately after the input. Printing the buffer with `%s` stops at that byte. This approach did not provide a stack leak, so the solution used the server response to probe candidate addresses instead.
 
 ## Exploitation Chain
 

@@ -11,6 +11,9 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+  schedule:
+    # 07:00 and 19:00 in UTC+7 (GitHub schedules use UTC).
+    - cron: '0 0,12 * * *'
 
 permissions:
   contents: read
@@ -25,6 +28,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: read
 
     steps:
       - name: Checkout
@@ -35,8 +41,27 @@ jobs:
           # If using the 'assets' git submodule from Chirpy Starter, uncomment above
           # (See: https://github.com/cotes2020/chirpy-starter/tree/main/assets)
 
+      - name: Refresh CTFTime results
+        id: ctftime
+        continue-on-error: true
+        run: python3 tools/fetch_ctftime.py
+
+      - name: Keep the verified CTFTime snapshot
+        if: steps.ctftime.outcome == 'success' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+        run: |
+          if ! git diff --quiet -- tools/ctftime_team.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add tools/ctftime_team.json
+            git commit -m "Update CTFTime team results"
+            git push
+          fi
+
       - name: Assemble site sources (vi + en)
         run: python3 tools/build_site.py
+
+      - name: Check editor data integrity and CTFTime parser
+        run: python3 tools/test_editor.py
 
       - name: Setup Pages
         id: pages

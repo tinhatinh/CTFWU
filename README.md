@@ -4,7 +4,7 @@ My own writeups from competitive CTF events. I play with **R3:TURИ**
 ([CTFTime team 449538](https://ctftime.org/team/449538)): minhduc26122913, k4tpr02k5, Tikilazada,
 tinhatinh, Lizamort1 - their solutions live in their own repos, this one is only mine.
 
-**Rendered site:** <https://tinhatinh.github.io/CTFWU/> (Jekyll + [Chirpy](https://github.com/cotes2020/jekyll-theme-chirpy), deployed by GitHub Actions).
+**Rendered site:** <https://tinhatinh.github.io/CTFWU/> (custom Jekyll interface, deployed by GitHub Actions).
 
 ## Site
 
@@ -12,7 +12,7 @@ The archive layout below is the source of truth. The site is assembled into a st
 1.3 GB of challenge artifacts in this repo never reach `_site`:
 
 ```bash
-python tools/build_site.py              # writes _site_src/ and _site_src_en/, 55 posts each
+python tools/build_site.py              # writes _site_src/ and _site_src_en/, 72 posts each
 ```
 
 `_site_src/` (Vietnamese) and `_site_src_en/` (English) are generated and git-ignored - never edit
@@ -24,8 +24,32 @@ referenced images to `assets/writeups/<event>/<case>/`, and wraps every body in 
 writeups quote Liquid syntax (`{{7*7}}`, `{% ... %}`) that Jekyll would otherwise try to execute.
 GitHub Actions runs it before building, so the site cannot drift from the archive.
 
-The team's CTFTime results under the competition cards come from `tools/ctftime_team.json`, which is
-committed rather than fetched during the build (CI never touches the network):
+The interface lives in `site/_layouts/`, `site/_includes/`, `site/assets/css/campus.css`,
+and `site/assets/js/site.js`. Shared interface translations are in `site/_data/interface.json`.
+The homepage shows the six most recent writeups by solve date. Counts, event metadata,
+source links, and search text come from the archive via `tools/build_site.py`.
+The archive supports accent-insensitive search, category/event filters, sorting, and shareable
+query strings. The reader includes syntax highlighting, code copying, and a generated TOC.
+All writeups and navigation remain available without JavaScript.
+
+To preview and check the same two-language tree used in deployment:
+
+```bash
+bundle install
+python tools/build_site.py
+bundle exec jekyll build -s _site_src -d _build/preview/CTFWU
+bundle exec jekyll build -s _site_src_en -d _build/preview/CTFWU/en
+bundle exec htmlproofer _build/preview --disable-external
+python tools/serve_site.py --skip-build
+# Open http://localhost:4173/CTFWU/
+```
+
+Rebuild Vietnamese before English: the English output is nested inside the Vietnamese tree.
+
+The team's CTFTime results come from `tools/ctftime_team.json`. GitHub Actions refreshes the
+snapshot on builds and every 12 hours (07:00 / 19:00 UTC+7, subject to GitHub scheduling delays).
+Scheduled and manual runs commit a changed snapshot, then build and deploy both language trees.
+The generator itself works offline. To refresh locally:
 
 ```bash
 python tools/fetch_ctftime.py     # re-scrape https://ctftime.org/team/449538, then commit the JSON
@@ -33,6 +57,48 @@ python tools/fetch_ctftime.py     # re-scrape https://ctftime.org/team/449538, t
 
 If the JSON is missing the section is skipped with a warning; if CTFTime changes its markup the
 fetcher refuses to write an empty file, so the site keeps the last real numbers.
+
+## Editing writeups in the browser
+
+```bash
+python tools/serve_site.py              # build, then serve on 127.0.0.1:4173
+python tools/serve_site.py --skip-build # reuse an existing preview
+python tools/test_editor.py            # data integrity and request security checks
+```
+
+Open a writeup and choose **Sửa writeup / Edit writeup**. Authenticate with a GitHub personal
+access token belonging to the owner of `tinhatinh/CTFWU`. The server verifies the authenticated
+GitHub user ID against the repository owner ID; collaborator access and Git commit names do
+not grant editing rights. A fine-grained token with public repository metadata access is enough;
+the editor does not need permission to push. The GitHub token is not persisted. The owner session
+uses an HttpOnly, SameSite cookie, expires after eight hours, and can be signed out.
+
+Choose **Tiếng Việt (VN)**, **English (EN)**, or **Cả VN và EN / Both VN and EN**. The editor saves
+the corresponding original files, creates backups in `_build/editor-backups/`, then rebuilds.
+Choosing both submits both drafts together; all versions are checked before any file is replaced,
+and a write failure rolls back replacements. Content is not translated automatically. Unsaved
+changes in an unselected edition are retained in the editor after saving the selected edition.
+An external file change causes a conflict instead of silently overwriting it. If a build fails, the source remains
+saved and its backup is preserved; diagnostics are in `_build/editor-build.log`.
+
+The server binds only to loopback and checks origin/session for saves. Do not expose it via
+a tunnel or change it into a public server. It needs Ruby/Bundler, or Docker with the cached
+`ruby:3.4-slim` image and gems in `ctfwu-bundle`. To prepare the Docker fallback in PowerShell:
+
+```powershell
+docker run --rm -v "${PWD}:/work" -v ctfwu-bundle:/usr/local/bundle -w /work ruby:3.4-slim sh -c "apt-get update && apt-get install -y build-essential git libcurl4 && bundle install"
+python tools/serve_site.py
+```
+
+Public GitHub Pages remains a read-only site without editor controls. Repository edits made
+directly on GitHub trigger a rebuild when committed to the deployment branch. Public Pages
+cannot write directly to files on your computer. Local saves do not commit or push automatically.
+
+## Adding writeups with another AI
+
+Read [AI_README.md](AI_README.md) for the source layout, new-competition checklist, bilingual
+content rules, solve timestamps, verification commands, and deployment conventions. New
+competitions without a cover image receive a generated placeholder automatically.
 
 ## Competitions
 

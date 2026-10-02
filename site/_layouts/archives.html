@@ -1,0 +1,14 @@
+---
+layout: default
+---
+{% assign lang = site.lang | slice: 0, 2 %}{% assign ui = site.data.interface[lang] %}
+<div class="wrapper archive-page">
+  <header class="page-heading"><p class="eyebrow">THE KNOWLEDGE BASE / {{ site.posts.size }} WRITEUPS</p><h1>{{ ui.archive }}</h1><p>{{ ui.archive_intro }}</p></header>
+  <section class="archive-controls" aria-label="{{ ui.search }}">
+    <div class="search-line"><label class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><input id="archive-search" type="search" placeholder="{{ ui.search }}" aria-label="{{ ui.search }}" autocomplete="off"><kbd>/</kbd></label><label class="sr-only" for="event-filter">{{ ui.event }}</label><select id="event-filter"><option value="">{{ ui.all_events }}</option>{% for event in site.data.portfolio.events %}<option>{{ event.name }}</option>{% endfor %}</select></div>
+    <div class="category-filters" aria-label="{{ ui.category }}"><button class="filter-chip" type="button" data-filter="" aria-pressed="true">{{ ui.all }} <span>{{ site.posts.size }}</span></button>{% assign categories = site.categories | sort %}{% for category in categories %}<button class="filter-chip" type="button" data-filter="{{ category[0] | escape }}" aria-pressed="false">{{ category[0] }} <span>{{ category[1].size }}</span></button>{% endfor %}</div>
+  </section>
+  <div class="results-bar"><p role="status" aria-live="polite"><strong id="result-count">{{ site.posts.size }}</strong> {{ ui.results }}</p><label for="sort-order">{{ ui.sort }} <select id="sort-order"><option value="newest">{{ ui.newest }}</option><option value="oldest">{{ ui.oldest }}</option><option value="name">{{ ui.alphabetical }}</option></select></label></div>
+  <div class="writeup-list" id="archive-list"><div class="list-heading"><span>{{ ui.challenge }}</span><span>{{ ui.category }}</span><span>{{ ui.event }}</span><span>{{ ui.date }}</span><span></span></div>{% for post in site.posts %}{% include writeup-row.html %}{% endfor %}</div>
+  <div id="empty-state" class="empty-state" hidden><span class="mono">[ ∅ ]</span><h2>{{ ui.empty }}</h2><p>{{ ui.empty_hint }}</p><button class="button button-primary" id="reset-filters" type="button">{{ ui.reset }}</button></div>
+</div>

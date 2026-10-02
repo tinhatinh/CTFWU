@@ -1,15 +1,24 @@
 {
-  "fetched": "2026-10-02",
+  "fetched": "2026-10-03",
   "team": "R3:TURИ",
   "team_id": 449538,
   "url": "https://ctftime.org/team/449538",
   "years": {
     "2026": [
       {
+        "ctf_points": "2066.00",
+        "event": "CSS CTF 2026: Return of Nexus",
+        "event_url": "https://ctftime.org/event/3434",
+        "place": "8",
+        "rating_pending": true,
+        "rating_points": "0.000"
+      },
+      {
         "ctf_points": "10153.00",
         "event": "SunshineCTF 2026",
         "event_url": "https://ctftime.org/event/3399",
         "place": "68",
+        "rating_pending": false,
         "rating_points": "52.389"
       },
       {
@@ -17,6 +26,7 @@
         "event": "H7CTF 2026 Quals",
         "event_url": "https://ctftime.org/event/3093",
         "place": "27",
+        "rating_pending": false,
         "rating_points": "25.013"
       }
     ]

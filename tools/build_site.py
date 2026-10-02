@@ -5,10 +5,9 @@ Kho writeup theo thu muc van la nguon duy nhat:
     <Event>/<slug>/writeup.md        ban tieng Viet
     <Event>/<slug>/writeup.en.md     ban tieng Anh (thieu thi bai do bi loai o cay en)
 
-Ly do build 2 cay: Chirpy khong co i18n plugin, ma trang chu / categories / archive
-cua no liet ke toan bo `site.posts`. De tron hai ngon ngu vung chung mot cay thi
-nội dung VI va EN dong lan tren trang chu. Cach nay giu nguyen HTML cua Chirpy:
-moi cay la mot site hoan chinh, nut ngon ngu chi doi mirror URL.
+Hai cay doc lap giup trang chu / categories / archive chi liet ke bai cua ngon ngu
+hien tai. Layout rieng trong site/_layouts dung chung metadata tu kho writeup;
+nut ngon ngu doi mirror URL va giu lai bo loc tim kiem.
 
 Chay:  python tools/build_site.py            # ca hai ngon ngu
         python tools/build_site.py --lang vi # mot cay
@@ -16,19 +15,21 @@ Chay:  python tools/build_site.py            # ca hai ngon ngu
 import argparse
 import datetime as dt
 import json
+import html
+import hashlib
 import os
 import re
 import shutil
 import subprocess
 import sys
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SKIP_TOP = {".git", ".github", "site", "tools", "_site_src", "_site_src_en",
             "_site", "assets", "node_modules", "_template", "_wip", "_de_raw", "docs"}
-MAX_COPY = 4 * 1024 * 1024
+MAX_COPY = 32 * 1024 * 1024
 # Nen pastel + muc dam, cung bang mau voi site/assets/css/campus.css
 COLORS = ["#98ff98", "#add8e6", "#fdbcb4", "#e6e6fa"]
 INK = "#2d3748"
@@ -230,11 +231,16 @@ def protect_liquid(body):
 
 
 def describe(body):
-    for ln in body.split("\n"):
-        s = ln.strip()
-        if s and not s.startswith(("#", "!", ">", "|", "```", "---")):
-            s = re.sub(r"[*_`]", "", s)
-            return s[:157] + "..." if len(s) > 157 else s
+    # Use an actual prose paragraph, never the flag / attachment metadata.
+    body = re.sub(r"```[\s\S]*?```", "", body)
+    for paragraph in re.split(r"\n\s*\n", body):
+        s = paragraph.strip()
+        if not s or s.startswith(("#", "!", ">", "|", "**", "-", "```")):
+            continue
+        s = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", s)
+        s = re.sub(r"\s+", " ", re.sub(r"[*_`]", "", s))
+        if len(s) > 45:
+            return s[:197].rsplit(" ", 1)[0] + "…" if len(s) > 197 else s
     return ""
 
 
@@ -330,25 +336,72 @@ def collect(lang):
 
 
 def write_post(stage, ev, p, lang, base):
-    body = p["text"].split("\n")
+    # Some source translations repeat the opening title + metadata verbatim.
+    # Collapse that exact duplicate in the rendered copy, preserving the source.
+    paragraphs = p["text"].split("\n\n")
+    if len(paragraphs) >= 4 and paragraphs[:2] == paragraphs[2:4]:
+        paragraphs = paragraphs[2:]
+    body = "\n\n".join(paragraphs).split("\n")
     if body and body[0].startswith("# "):
         body = body[1:]
     body = "\n".join(body).strip() + "\n"
 
+    case_root = os.path.realpath(os.path.join(ROOT, ev["name"], p["case"]))
+    copied = {}
+
+    def copy_image(target):
+        target = unquote(target.strip().strip("<>"))
+        if re.match(r"^(https?:|/|#)", target):
+            return None
+        src = os.path.realpath(os.path.join(case_root, target.split("#")[0]))
+        if not os.path.isfile(src):
+            src = os.path.realpath(os.path.join(case_root, "files", target.split("#")[0]))
+        if os.path.commonpath([os.path.realpath(case_root), src]) != os.path.realpath(case_root) or not os.path.isfile(src):
+            return None
+        if src in copied:
+            return copied[src]
+        if os.path.getsize(src) > MAX_COPY:
+            print("[warn] image over size limit: " + os.path.relpath(src, ROOT))
+            return None
+        relative = os.path.relpath(src, case_root).replace(os.sep, "/")
+        dst = os.path.join(stage, "assets", "writeups", ev["slug"], p["case"], relative)
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        shutil.copyfile(src, dst)
+        url = "/assets/writeups/%s/%s/%s" % (ev["slug"], quote(p["case"], safe=""), quote(relative, safe="/"))
+        copied[src] = url
+        return url
+
+    inline_images = set()
     def hold(m):
         alt, target = m.group(1), m.group(2).strip()
-        if re.match(r"^(https?:|/|#)", target):
+        url = copy_image(target)
+        if not url:
             return m.group(0)
-        src = os.path.normpath(os.path.join(ROOT, ev["name"], p["case"], target.split("#")[0]))
-        if not os.path.isfile(src) or os.path.getsize(src) > MAX_COPY:
-            return m.group(0)
-        dst_dir = os.path.join(stage, "assets", "writeups", ev["slug"], p["case"])
-        os.makedirs(dst_dir, exist_ok=True)
-        shutil.copyfile(src, os.path.join(dst_dir, os.path.basename(src)))
-        return "![%s](/assets/writeups/%s/%s/%s)" % (
-            alt, ev["slug"], p["case"], quote(os.path.basename(src)))
+        inline_images.add(url)
+        return "![%s](%s)" % (alt, url)
 
     body = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", hold, body)
+    statement_images = []
+    statement_path = os.path.join(case_root, "de.md")
+    statement = ""
+    if os.path.isfile(statement_path):
+        with open(statement_path, encoding="utf-8") as source:
+            statement = source.read()
+    references = re.findall(r"!\[([^\]]*)\]\(([^)]+)\)", statement)
+    if not references and os.path.isfile(os.path.join(case_root, "files", "de.png")):
+        references = [("", "files/de.png")]
+    seen = set(inline_images)
+    for alt, target in references:
+        url = copy_image(target)
+        if url and url not in seen:
+            statement_images.append({"path": url, "alt": alt if alt and alt != "de" else ("Ảnh đề bài" if lang == "vi" else "Challenge screenshot")})
+            seen.add(url)
+    artifact_images = []
+    for target in re.findall(r"`([^`\n]+\.(?:png|jpg|jpeg|webp|gif|bmp))`", p["text"], re.I):
+        url = copy_image(target)
+        if url and url not in seen:
+            artifact_images.append({"path": url, "alt": target})
+            seen.add(url)
     if p.get("fallback"):
         body = ("> %s\n{: .prompt-warning }\n\n" % UI["en"]["nottranslated"]) + body
     body = protect_liquid(body)
@@ -361,16 +414,22 @@ def write_post(stage, ev, p, lang, base):
           "categories: [%s]" % p["cat"],
           "tags: [%s]" % ", ".join(dict.fromkeys([ev["slug"].replace("-ctf-", "-").replace("-2026", ""),
                                                   p["cat"].lower()])),
-          "permalink: /posts/%s/" % p["key"]]
+          "permalink: /posts/%s/" % p["key"],
+          "challenge_key: " + json.dumps(p["key"]),
+          "challenge_name: " + json.dumps(re.split(r"\s[-–—]\s", p["title"], maxsplit=1)[0], ensure_ascii=False),
+          "event_name: " + json.dumps(ev["name"]),
+          "event_slug: " + json.dumps(ev["slug"]),
+          "difficulty: " + json.dumps(next(iter(re.findall(r"\b(?:Insane|Expert|Hard|Medium|Intermediate|Easy|Beginner)\b", p["title"], re.I)), "")),
+          "source_url: " + json.dumps("https://github.com/tinhatinh/CTFWU/tree/main/" + quote(ev["name"]) + "/" + quote(p["case"])),
+          "edit_url: " + json.dumps("https://github.com/tinhatinh/CTFWU/edit/main/" + quote(os.path.relpath(p["path"], ROOT).replace(os.sep, "/"))),
+          "statement_images: " + json.dumps(statement_images, ensure_ascii=False),
+          "artifact_images: " + json.dumps(artifact_images, ensure_ascii=False),
+          "search_text: " + json.dumps(re.sub(r"\s+", " ", re.sub(r"```[\s\S]*?```", "", p["text"]))[:12000], ensure_ascii=False)]
     desc = describe(p["text"])
     if desc:
         fm.append('description: "%s"' % desc.replace('"', "'"))
-    preview = os.path.join(ROOT, ev["name"], p["case"], "files", "de.png")
-    if os.path.isfile(preview) and os.path.getsize(preview) <= MAX_COPY:
-        dst_dir = os.path.join(stage, "assets", "writeups", ev["slug"], p["case"])
-        os.makedirs(dst_dir, exist_ok=True)
-        shutil.copyfile(preview, os.path.join(dst_dir, "de.png"))
-        fm += ["image:", "  path: /assets/writeups/%s/%s/de.png" % (ev["slug"], p["case"])]
+    if statement_images:
+        fm += ["image:", "  path: " + statement_images[0]["path"]]
     fm += ["---", ""]
     out_dir = os.path.join(stage, "_posts")
     os.makedirs(out_dir, exist_ok=True)
@@ -378,13 +437,15 @@ def write_post(stage, ev, p, lang, base):
     text_out = "\n".join(fm) + body
     if text_out.count("{% raw %}") != text_out.count("{% endraw %}"):
         raise SystemExit("the raw khong can doi o %s/%s" % (ev["name"], p["case"]))
-    open(out, "w", encoding="utf-8", newline="\n").write(text_out)
+    with open(out, "w", encoding="utf-8", newline="\n") as output:
+        output.write(text_out)
     return out
 
 
 def write_event_page(stage, ev, lang, base):
     ui = UI[lang]
-    lines = ["---", 'title: "%s"' % ev["name"], "layout: page",
+    lines = ["---", 'title: "%s"' % ev["name"], "layout: event",
+             'event_slug: "%s"' % ev["slug"],
              "permalink: /events/%s/" % ev["slug"],
              'description: "%s"' % ("%d %s" % (len(ev["posts"]), ui["posts"])), "---", ""]
     for p in sorted(ev["posts"], key=lambda x: x["date"]):
@@ -402,7 +463,8 @@ def ctftime_team():
     p = os.path.join(ROOT, "tools", "ctftime_team.json")
     if not os.path.isfile(p):
         return None
-    return json.load(open(p, encoding="utf-8"))
+    with open(p, encoding="utf-8") as source:
+        return json.load(source)
 
 
 def achievements(lang):
@@ -434,7 +496,7 @@ def achievements(lang):
 def write_competitions(stage, events, lang, base):
     ui = UI[lang]
     body = ["---", 'title: "%s"' % ui["competitions"], "icon: fas fa-trophy", "order: 1",
-            "layout: page", "permalink: /competitions/", "---", ""]
+            "layout: competitions", "permalink: /competitions/", "---", ""]
     body.append("<p>%s</p>\n" % ui["hint"])
     body.append('<div class="ctfw-cards">')
     for ev in events:
@@ -466,11 +528,39 @@ def write_competitions(stage, events, lang, base):
 def write_about(stage, lang):
     out = os.path.join(stage, "_tabs")
     os.makedirs(out, exist_ok=True)
-    fm = "---\nicon: fas fa-info-circle\norder: 5\n---\n\n"
+    fm = "---\nlayout: about\ntitle: Phan Thành Danh\npermalink: /about/\nicon: fas fa-info-circle\norder: 5\n---\n\n"
     about = ABOUT[lang].replace("{team}", TEAM).replace("{members}", member_table(lang))
     if "{t" in about:
         raise SystemExit("placeholder ve trong about")
     open(os.path.join(out, "about.md"), "w", encoding="utf-8", newline="\n").write(fm + about)
+
+
+def write_portfolio(stage, events, lang):
+    """Event totals and team results derived from the archive."""
+    records = []
+    for ev in sorted(events, key=lambda e: max(p["date"] for p in e["posts"]), reverse=True):
+        cover_dir = os.path.join(stage, "assets", "competitions")
+        os.makedirs(cover_dir, exist_ok=True)
+        cover = next((ev["slug"] + "." + ext for ext in ("png", "jpg", "jpeg", "webp", "svg")
+                      if os.path.isfile(os.path.join(cover_dir, ev["slug"] + "." + ext))), None)
+        if not cover:
+            cover = ev["slug"] + ".svg"
+            with open(os.path.join(cover_dir, cover), "w", encoding="utf-8") as image:
+                image.write('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300">'
+                            '<rect width="600" height="300" fill="#171b17"/>'
+                            '<text x="300" y="170" text-anchor="middle" font-family="monospace" '
+                            'font-size="68" fill="#c0ec88">' + html.escape(initials(ev["name"])) + '</text></svg>')
+        records.append({"name": ev["name"], "slug": ev["slug"], "count": len(ev["posts"]),
+                        "categories": sorted({p["cat"] for p in ev["posts"]}),
+                        "date": max(p["date"] for p in ev["posts"]).strftime("%m / %Y"),
+                        "cover": "/assets/competitions/" + cover})
+    path = os.path.join(stage, "_data", "portfolio.json")
+    with open(path, "w", encoding="utf-8", newline="\n") as out:
+        assets = {}
+        for key, relative in [("css", "assets/css/campus.css"), ("js", "assets/js/site.js"), ("editor", "assets/js/editor.js")]:
+            with open(os.path.join(stage, relative), "rb") as asset:
+                assets[key] = hashlib.sha256(asset.read()).hexdigest()[:12]
+        json.dump({"events": records, "results": ctftime_team(), "assets": assets}, out, ensure_ascii=False, indent=2)
 
 
 def build(lang):
@@ -496,6 +586,7 @@ def build(lang):
         write_event_page(stage, ev, lang, base)
     write_competitions(stage, events, lang, base)
     write_about(stage, lang)
+    write_portfolio(stage, events, lang)
     total = sum(os.path.getsize(os.path.join(dp, f)) for dp, _, fs in os.walk(stage) for f in fs)
     if pending:
         print("[warn] %d bai en dang dung ban tieng Viet: %s" % (len(pending), ", ".join(pending)))

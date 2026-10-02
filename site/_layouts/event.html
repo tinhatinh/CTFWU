@@ -1,0 +1,6 @@
+---
+layout: default
+---
+{% assign lang = site.lang | slice: 0, 2 %}{% assign ui = site.data.interface[lang] %}
+{% assign event = site.data.portfolio.events | where: 'slug', page.event_slug | first %}
+<div class="wrapper generic-page"><header class="page-heading"><p class="eyebrow">COMPETITION LOG / {{ event.date }}</p><h1>{{ page.title }}</h1><p>{{ event.count }} writeups · {{ event.categories | join: ' / ' }}</p><div class="hero-actions"><a class="text-link" href="{{ '/competitions/' | relative_url }}">← {{ ui.competitions }}</a><a class="text-link" href="{{ '/archives/' | relative_url }}?event={{ event.name | uri_escape }}">{{ ui.search }} ↗</a></div></header><div class="writeup-list"><div class="list-heading"><span>{{ ui.challenge }}</span><span>{{ ui.category }}</span><span>{{ ui.event }}</span><span>{{ ui.date }}</span><span></span></div>{% assign posts = site.posts | where: 'event_slug', page.event_slug %}{% for post in posts %}{% include writeup-row.html %}{% endfor %}</div></div>

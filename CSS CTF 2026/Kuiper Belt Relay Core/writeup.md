@@ -1,14 +1,15 @@
 # Kuiper Belt Relay Core - Pwn (Beginner)
 
-**Sự kiện:** CSS CTF 2026  
-**Phân loại:** pwn  
-**Mức độ:** Beginner (50 điểm)
+**Sự kiện:** CSS CTF 2026
+**Category:** Pwn
+**Độ khó:** Beginner (50 điểm)
 
 ## Đề bài
 
-Hệ thống cung cấp một dịch vụ phản hồi chuỗi (echo service) hoạt động dựa trên hàm `vuln()`. Hàm này tiếp nhận dữ liệu đầu vào thông qua lời gọi hàm không an toàn `gets(buffer[64])`. Một hàm có tên `win()` đã được khai báo sẵn trong mã nguồn nhưng không có đường dẫn thực thi hợp lệ (dead code). Mục tiêu của thử thách: Lợi dụng lỗ hổng tràn bộ đệm (buffer overflow) tại `gets` để ghi đè địa chỉ trả về (return address), từ đó điều hướng luồng điều khiển của chương trình nhảy trực tiếp vào hàm `win()` nhằm xuất cờ (flag).
+`vuln()` đọc dữ liệu bằng `gets()` vào `char buffer[64]`. Hàm `win()` đọc và in flag nhưng không được gọi trong luồng chạy bình thường. Mục tiêu là ghi đè return address để chuyển điều khiển sang `win()`.
 
-Mã nguồn đính kèm:
+Source:
+
 ```c
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,26 +48,26 @@ int main() {
 }
 ```
 
+
 ## Phân tích ban đầu
 
-- Đặc tả vùng nhớ bộ đệm: Mảng `char buffer[64]` được phân bổ bắt đầu tại mức chênh lệch (offset) 0 trên khung ngăn xếp (stack frame) của hàm `vuln`.
-- Kỹ thuật xác định ranh giới tràn bộ đệm thông qua tương tác ngoại vi (Black-box testing): Khi truyền payload gồm chuỗi `"A"*71`, chương trình vẫn hoạt động ổn định và in ra thông báo `Goodbye!`. Tuy nhiên, với payload `"A"*72`, thông báo này không còn xuất hiện, xác nhận chương trình đã gặp lỗi phân đoạn (crash) trước khi lệnh in cuối cùng trong hàm `main` được thực thi.
-- Dựa trên kết quả này, hệ thống khẳng định địa chỉ trả về (return address) nằm tại **offset 72** (Bao gồm 64 byte dành cho bộ đệm và 8 byte cho thanh ghi Base Pointer - saved RBP).
-- Tệp nhị phân được biên dịch tương thích kiến trúc x86-64 và không kích hoạt cơ chế PIE (Position Independent Executable). Việc rà quét các địa chỉ tĩnh thành công và xác nhận toàn bộ phân vùng nằm trong dải `0x40xxxx`.
+- Buffer có kích thước 64 byte.
+- Payload `"A"*71` vẫn nhận được `Goodbye!`; với `"A"*72`, thông báo này không xuất hiện. Kết quả phù hợp với việc return address bị ảnh hưởng ở offset 72: 64 byte buffer và 8 byte saved RBP.
+- Các địa chỉ tìm được thuộc dải `0x40xxxx` và có thể dùng lại giữa các lần kết nối trong thử nghiệm.
 
-## Các hướng đã loại trừ
+## Các hướng đã loại
 
-### Rò rỉ thông tin bộ nhớ ngăn xếp (Stack Leak) thông qua lỗi chuỗi định dạng (Format String)
+### Stack leak qua output của echo
 
-- Phép thử: Truyền payload định dạng `b"A"*n + b"%s%s%s..."` với chủ đích đọc xuất các giá trị nằm trên ngăn xếp liền kề sau vùng đệm.
-- Kết quả: Không thu hồi được bất kỳ giá trị địa chỉ khả dụng nào. Đào sâu phân tích kiến trúc hàm `gets()`, hàm này tự động chèn một ký tự kết thúc chuỗi `\x00` (NUL terminator) ngay sau khối dữ liệu đầu vào. Do hệ thống 64-bit sử dụng địa chỉ bắt đầu bằng byte `0x40` và áp dụng định dạng Little-Endian, byte thấp nhất (Least Significant Byte - LSB, ví dụ `0x16`) sẽ được nạp đầu tiên. Việc chèn ký tự `\x00` vô tình đè lên chính byte thấp của địa chỉ trả về, dẫn đến chuỗi định dạng bị ngắt kết nối ngay lập tức, vô hiệu hóa hoàn toàn hiệu lực của kỹ thuật rò rỉ bộ nhớ.
-- Kết luận: Buộc phải loại bỏ phương án sử dụng lỗi chuỗi định dạng để dò tìm địa chỉ hàm `win()`. Phương án tối ưu thay thế là kỹ thuật dò quét trực tiếp dựa trên phản hồi hệ thống (oracle-based scanning).
+Đã thử payload `b"A"*n + b"%s%s%s..."` nhưng không thu được địa chỉ hữu ích. Source dùng `printf("You said: %s\n", buffer)` với format string cố định: các ký tự `%s` trong input không được xử lý như format specifier.
+
+Ngoài ra, `gets()` thêm NUL ngay sau input; việc in buffer bằng `%s` dừng ở NUL này. Vì vậy, output của echo không cung cấp stack leak cho cách thử trên. Lời giải chuyển sang dò địa chỉ dựa trên phản hồi của server.
 
 ## Chuỗi khai thác
 
-**Bước 1 - Định vị chính xác ranh giới của địa chỉ trả về.**
+**Bước 1 - Xác định offset của return address.**
 
-Truyền lần lượt các payload có kích thước tịnh tiến và giám sát phản hồi máy chủ để tìm ngưỡng phá vỡ quy trình in chuỗi `Goodbye!`:
+Tăng độ dài payload và kiểm tra `Goodbye!`:
 
 ```text
 Chuỗi "A"*64 → Trạng thái bình thường, phản hồi chứa "Goodbye!"
@@ -74,43 +75,42 @@ Chuỗi "A"*71 → Trạng thái bình thường, phản hồi chứa "Goodbye!"
 Chuỗi "A"*72 → Trạng thái bất thường, chỉ phản hồi ký tự ngắt dòng (Mất "Goodbye!")
 ```
 
-Cơ sở này củng cố kết luận return address bắt đầu ở giới hạn byte thứ 72.
 
-**Bước 2 - Quét rà phản hồi (Oracle-based scanning) để trích xuất địa chỉ hàm `win()`.**
+Kết quả xác định offset 72 cho payload ret2win.
 
-Trong điều kiện không có file thực thi cục bộ để trích xuất danh mục địa chỉ tĩnh, quy trình dò quét bắt buộc tiến hành trực tiếp đối với máy chủ trong phạm vi phân đoạn mã `.text` (Kéo dài từ `0x401000` đến `0x401500`).
+**Bước 2 - Dò địa chỉ `win()`.**
 
-- Cấu trúc Payload cho mỗi bước thử nghiệm: `b"A"*72 + low_bytes(addr)` (Định dạng Little-Endian, bảo đảm an toàn khi ký tự NUL kết thúc chuỗi).
-- Dấu hiệu phân biệt (Oracle): Dựa trên việc phân tích phản hồi máy chủ có chứa chuỗi "hijacked" hoặc "CSSCTF" hay không.
+Không có binary local để disassemble, nên thử các địa chỉ trong khoảng `0x401000` đến `0x401500`.
 
-Kết quả quét tự động phát hiện hàm `win()` tồn tại tại địa chỉ: **0x401216**.
+- Payload: `b"A"*72 + low_bytes(addr)`, theo little-endian.
+- Oracle: phản hồi chứa `hijacked` hoặc `CSSCTF`.
 
-**Bước 3 - Kiến trúc Payload khai thác (Exploit Payload).**
+Địa chỉ tìm được là **`0x401216`**.
 
-Bởi địa chỉ `0x401216` nhỏ hơn ngưỡng `0x1000000`, hệ thống chỉ yêu cầu ghi đè 3 byte thấp nhất: `0x16 0x12 0x40`.
+**Bước 3 - Tạo payload.**
 
-Cấu trúc Payload hoàn thiện: `b"A"*72 + b"\x16\x12\x40"`.
+Với địa chỉ `0x401216`, payload dùng ba byte thấp `0x16 0x12 0x40`: `b"A"*72 + b"\x16\x12\x40"`.
 
-**Bước 4 - Thử nghiệm thực tiễn (Kiểm chứng).**
+**Bước 4 - Kiểm tra trên server.**
 
-Triển khai Payload lên máy chủ mục tiêu trong 3 phiên độc lập. Cả 3 phiên đều vượt qua hàng rào bảo vệ, chiếm quyền điều khiển và trả về cờ thành công.
+Gửi payload trong ba phiên độc lập. Cả ba đều gọi được `win()` và trả flag.
 
 ## Flag
 
-Kết quả:
 ```text
 CSSCTF{s1gn4l_r3c0v3r3d_fr0m_th3_v01d}
 ```
 
-## Reproduce
 
-Quá trình tự động tái thiết lập bằng công cụ (script):
+## Reproduce
 
 ```bash
 python exploit.py
 ```
 
-Đầu ra hệ thống:
+
+Output:
+
 ```text
 This program is a simple echo service.
 Enter your message: You hijacked the return address!
@@ -118,8 +118,9 @@ Here's your flag:
 CSSCTF{s1gn4l_r3c0v3r3d_fr0m_th3_v01d}
 ```
 
-## Tài liệu đính kèm (Files)
 
-- **exploit.py**: Mã kịch bản điều phối khai thác tự động.
-- **de.png**: Ảnh màn hình chứa nội dung đề bài gốc.
-- **analysis/**: Tập hợp các script hỗ trợ quá trình quét dò và phân tích giai đoạn.
+## Files
+
+- `exploit.py`: script chạy lời giải.
+- `de.png`: ảnh đề bài.
+- `analysis/`: script dò địa chỉ và ghi lại các thử nghiệm.

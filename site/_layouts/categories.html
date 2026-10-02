@@ -1,0 +1,5 @@
+---
+layout: default
+---
+{% assign lang = site.lang | slice: 0, 2 %}{% assign ui = site.data.interface[lang] %}
+<div class="wrapper generic-page"><header class="page-heading"><p class="eyebrow">EXPLORE / DISCIPLINES</p><h1>{{ ui.taxonomy }}</h1><p>{{ ui.taxonomy_intro }}</p></header><div class="taxonomy-grid">{% assign categories = site.categories | sort %}{% for category in categories %}<a href="{{ '/archives/' | relative_url }}?category={{ category[0] | uri_escape }}"><h2>{{ category[0] }}</h2><span class="mono">{{ category[1].size }} writeups ↗</span></a>{% endfor %}</div></div>
