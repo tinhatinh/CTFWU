@@ -1,4 +1,4 @@
-# Kuiper Belt Relay Core
+# Kuiper Belt Relay Core - Pwn (Beginner)
 
 **Event:** CSS CTF 2026  
 **Category:** pwn  

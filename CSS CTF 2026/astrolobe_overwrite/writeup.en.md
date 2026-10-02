@@ -1,4 +1,4 @@
-# Astrolobe Overwrite - PWN/Reverse (746pts)
+# Astrolobe Overwrite - Pwn/Reverse (Expert, 746pts)
 
 **Flag:** `CSSCTF{0ur0b0r0s_g00d_j0b_b01s_heh3_67}`
 **Attached file:** `ouroboros.7z` (Size: 4121 bytes, SHA256: `e7aecc224f6ead512639a33f42f9aa0464ce309ea758b180764ec8dd053e5f2e`)

@@ -47,6 +47,7 @@ Ra cờ thì chuyển thư mục bài lên thẳng `<Event>/`, điền vào bả
 |-----------|----------|------------|------|
 | [a-star-trail](a-star-trail/writeup.md) | Misc | Beginner* | `CSSCTF{P1JT-21.0}` |
 | [a-star-trail-2](a-star-trail-2/writeup.md) | Misc | Intermediate | `CSSCTF{STARmaPdElAUNaY…geOMeTRy}` (136 ký tự, bản đầy đủ trong `a-star-trail-2/flag.txt`) |
+| [astrolobe_overwrite](astrolobe_overwrite/writeup.md) | Pwn/Reverse | Expert | `CSSCTF{0ur0b0r0s_g00d_j0b_b01s_heh3_67}` |
 | [chrono-i](chrono-i/writeup.md) | Crypto | Beginner | `CSSCTF{every_second_hides_a_secret}` |
 | [chrono-ii](chrono-ii/writeup.md) | Crypto | Intermediate | `CSSCTF{th3_cl0ck_r3m3mb3rs_3very_s3c0nd}` |
 | [cloudy-spaceships](cloudy-spaceships/writeup.md) | Web | n/a | `CSSCTF{your_forecast_says_love_is_on_its_way}` |
