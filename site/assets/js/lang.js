@@ -1,16 +1,16 @@
-/* Doi ngon ngu VI/EN khong tai lai trang: lay HTML cua trang doi ung, thay ca
-   <html> roi chay lai cac <script>. Node <script> chen qua DOM API khong tu
-   chay, nen phai tai tao chung. CSS/anh da co trong bo nho nen chuyen chi mat
-   vai chuc ms va giu duoc vi tri cuon. */
+/* Chuyen ngon ngu VI/EN khong tai lai trang.
+   Logic chinh: fetch HTML ban doi ung, replaceChild(<html>), chay lai script.
+   Nang cap 2026-10-02: fade-out/in mua sat truoc/sau swap de tranh nhay man hinh;
+   spinner tren pill trong luc fetch; khong the view-transition API vi Chirpy chen SW
+   va cache co the tra HTML cu. */
 
 (function () {
   "use strict";
 
-  /* window song qua lan thay documentElement, nen neo co vao day chu khong
-     vao attribute cua pill: script nay se chay lan nua sau khi swap. */
   if (window.ctfwLang) return;
   window.ctfwLang = true;
 
+  /* Lay URL cua ngon ngu doi ung tu pill #ctfw-lang */
   function otherHref() {
     var pill = document.getElementById("ctfw-lang");
     if (!pill) return null;
@@ -23,6 +23,8 @@
     return null;
   }
 
+  /* Chay lai toan bo <script> sau khi swap documentElement.
+     Script chen qua DOM khong tu chay -> phai tao node moi. */
   function runScripts(root) {
     var chain = Promise.resolve();
     [].slice.call(root.querySelectorAll("script")).forEach(function (old) {
@@ -34,18 +36,14 @@
         if (!fresh.src) fresh.textContent = old.textContent;
         old.parentNode.replaceChild(fresh, old);
         if (!fresh.src) return;
-        return new Promise(function (done) {
-          fresh.onload = fresh.onerror = done;
-        });
+        return new Promise(function (done) { fresh.onload = fresh.onerror = done; });
       });
     });
     return chain;
   }
 
-  function at(top) {
-    /* Chirpy dat `scroll-behavior: smooth` tren <html> nen scrollTo bi hieu
-       thanh dong cuon; tat no trong luc dat lai vi tri cu. setTimeout chu khong
-       rAF de van chay duoc khi tab an. */
+  /* Khoi phuc vi tri cuon, tat smooth truoc khi set de tranh dong cuon. */
+  function restoreScroll(top) {
     var root = document.documentElement;
     root.style.scrollBehavior = "auto";
     window.scrollTo(0, top);
@@ -55,30 +53,119 @@
     }, 80);
   }
 
+  /* Them CSS transition 1 lan duy nhat vao <head> */
+  var STYLE_ID = "ctfw-fade-style";
+  function ensureFadeStyle() {
+    if (document.getElementById(STYLE_ID)) return;
+    var s = document.createElement("style");
+    s.id = STYLE_ID;
+    s.textContent = [
+      "#ctfw-lang a { transition: background 150ms, color 150ms, opacity 150ms; }",
+      "#ctfw-lang a.ctfw-loading { opacity: .5; pointer-events: none; cursor: wait; }",
+      "@keyframes ctfw-spin { to { transform: rotate(360deg); } }",
+      "#ctfw-lang a.ctfw-loading::after {",
+      "  content: '';",
+      "  display: inline-block;",
+      "  width: 10px; height: 10px;",
+      "  border: 2px solid currentColor;",
+      "  border-top-color: transparent;",
+      "  border-radius: 50%;",
+      "  margin-left: 6px;",
+      "  animation: ctfw-spin .6s linear infinite;",
+      "  vertical-align: middle;",
+      "}",
+      /* Fade overlay tren <body> */
+      "#ctfw-fade {",
+      "  position: fixed; inset: 0; z-index: 99999;",
+      "  background: var(--bg, #f5f7fa);",
+      "  opacity: 0; pointer-events: none;",
+      "  transition: opacity 120ms ease;",
+      "}",
+      "#ctfw-fade.ctfw-out { opacity: 1; pointer-events: all; }"
+    ].join("\n");
+    document.head.appendChild(s);
+  }
+
+  /* Tao hoac lay overlay fade */
+  function getFade() {
+    var el = document.getElementById("ctfw-fade");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "ctfw-fade";
+      document.body.appendChild(el);
+    }
+    return el;
+  }
+
+  /* Fade out -> fetch -> swap -> fade in */
   function swap(url, push) {
+    ensureFadeStyle();
+
+    /* Hien thi spinner tren nut vua click */
+    var pill = document.getElementById("ctfw-lang");
+    var loadingLink = pill && pill.querySelector("a:not([aria-current=true])");
+    if (loadingLink) loadingLink.classList.add("ctfw-loading");
+
+    /* Fade out body (120ms) truoc khi fetch de tranh flicker */
+    var fade = getFade();
     var top = window.scrollY;
-    return fetch(url, { credentials: "same-origin" })
+
+    /* Bat dau fade out */
+    requestAnimationFrame(function () {
+      fade.classList.add("ctfw-out");
+    });
+
+    /* Fetch song song voi fade (fetch thuong mat 50-300ms, fade mat 120ms) */
+    var fetchP = fetch(url, { credentials: "same-origin", cache: "no-cache" })
       .then(function (r) {
         if (!r.ok) throw new Error(r.status);
         return r.text();
-      })
-      .then(function (text) {
-        var parsed = new DOMParser().parseFromString(text, "text/html");
-        if (!parsed.getElementById("ctfw-lang")) throw new Error("khong phai trang CTFWU");
-        document.replaceChild(document.importNode(parsed.documentElement, true), document.documentElement);
-        return runScripts(document);
-      })
-      .then(function () {
-        if (push) history.pushState({ ctfwLang: true }, "", url);
-        at(top);
-        warm();
-      })
-      .catch(function () {
-        location.assign(url);
       });
+
+    /* Doi ca fade ra lan fetch xong (min 130ms) truoc khi swap */
+    Promise.all([
+      fetchP,
+      new Promise(function (res) { setTimeout(res, 130); })
+    ])
+    .then(function (results) {
+      var text = results[0];
+      var parsed = new DOMParser().parseFromString(text, "text/html");
+      if (!parsed.getElementById("ctfw-lang")) throw new Error("not CTFWU page");
+
+      /* Swap */
+      document.replaceChild(
+        document.importNode(parsed.documentElement, true),
+        document.documentElement
+      );
+      return runScripts(document);
+    })
+    .then(function () {
+      if (push) history.pushState({ ctfwLang: true }, "", url);
+      restoreScroll(top);
+
+      /* Fade in */
+      var newFade = document.getElementById("ctfw-fade");
+      if (newFade) {
+        /* Bao dam opacity=1 truoc khi animate ve 0 */
+        newFade.style.transition = "none";
+        newFade.classList.add("ctfw-out");
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            newFade.style.transition = "";
+            newFade.classList.remove("ctfw-out");
+          });
+        });
+      }
+
+      warm();
+    })
+    .catch(function () {
+      /* Fallback: tai lai binh thuong */
+      location.assign(url);
+    });
   }
 
-  /* Nap som trang doi ung vao bo nho dem de lan bam dau tien khong phai cho. */
+  /* Prefetch trang doi ung de lan bam dau tien khong phai cho. */
   function warm() {
     var url = otherHref();
     if (!url) return;
@@ -89,11 +176,12 @@
   }
 
   document.addEventListener("click", function (ev) {
-    if (ev.defaultPrevented || ev.button !== 0 || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
+    if (ev.defaultPrevented || ev.button !== 0 ||
+        ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
     var link = ev.target.closest && ev.target.closest("#ctfw-lang a");
     if (!link) return;
     var url = link.getAttribute("href");
-    if (!url || url === location.pathname) return;
+    if (!url || url.split("?")[0] === location.pathname) return;
     ev.preventDefault();
     swap(url, true);
   });
