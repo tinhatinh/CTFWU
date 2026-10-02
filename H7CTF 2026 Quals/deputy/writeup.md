@@ -1,6 +1,6 @@
 # Deputy - Cloud (Hard)
 
-Sứ mệnh này gồm 4 cờ (flag) ẩn giấu theo cấp độ thâm nhập (objective):
+Bài này gồm 4 cờ (flag) ẩn giấu theo cấp độ thâm nhập (objective):
 
 ```text
 recon       H7CTF{d6cc592f5a2f3db80718}
@@ -36,7 +36,7 @@ iam:GetUserPolicy                 -> Trả về tài liệu policy chi tiết
 iam:ListRolePolicies(ci-runner)   -> Trả về mảng ["ci-runner-permissions"]
 ```
 
-Nội dung của hai tài liệu chính sách phản ánh các giới hạn và đặc quyền cấu hình của hệ thống (chi tiết tại tệp `de.md`): Tài khoản `analyst` sở hữu quyền hạn `iam:PassRole` hướng đến vai trò `ci-runner-role`, đồng thời có quyền tạo và kích hoạt Lambda function (`lambda:CreateFunction|InvokeFunction`). Trong khi đó, `ci-runner-role` được cấu hình đặc quyền `sts:AssumeRole` cho phép chuyển vai trò sang `arn:aws:iam::999999999999:role/partner-admin-role`. Lớp bảo vệ của runner (trust policy) bị bỏ qua, cho phép các dịch vụ `lambda.amazonaws.com` tự do giả mạo chức năng.
+Nội dung của hai tài liệu chính sách phản ánh các giới hạn và đặc quyền cấu hình của hệ thống (chi tiết tại file `de.md`): Tài khoản `analyst` sở hữu quyền hạn `iam:PassRole` hướng đến vai trò `ci-runner-role`, đồng thời có quyền tạo và kích hoạt Lambda function (`lambda:CreateFunction|InvokeFunction`). Trong khi đó, `ci-runner-role` được cấu hình đặc quyền `sts:AssumeRole` cho phép chuyển vai trò sang `arn:aws:iam::999999999999:role/partner-admin-role`. Lớp bảo vệ của runner (trust policy) bị bỏ qua, cho phép các dịch vụ `lambda.amazonaws.com` tự do giả mạo chức năng.
 
 ## Quá trình khai thác
 
@@ -51,11 +51,11 @@ GET /deputy-analyst-scratch/welcome.txt
   H7CTF{d6cc592f5a2f3db80718}
   Onboarding: our deploys run through a Lambda that executes as ci-runner-role.
 ```
-Cờ số 1 được chứa trong tập tin chào mừng, đính kèm thông tin gợi ý về luồng phân quyền thông qua `ci-runner-role`.
+Cờ số 1 được chứa trong file chào mừng, đính kèm thông tin gợi ý về luồng phân quyền thông qua `ci-runner-role`.
 
 ### Giai đoạn 2 - Cấp quyền (PassRole) vào Lambda 
 
-Tài khoản Analyst không có đặc quyền gọi trực tiếp `sts:AssumeRole` để giả mạo runner (do chính sách trust policy chỉ áp dụng cho dịch vụ Lambda), nhưng sở hữu quyền `iam:PassRole` với định danh ARN cụ thể đó. Phương án triển khai: Tạo một hàm (Function) mới, gán vai trò đó, sau đó tiến hành kích hoạt:
+Tài khoản Analyst không có đặc quyền gọi trực tiếp `sts:AssumeRole` để giả mạo runner (do chính sách trust policy chỉ áp dụng cho dịch vụ Lambda), nhưng sở hữu quyền `iam:PassRole` với định danh ARN cụ thể đó. Phương án triển khai: Tạo một hàm (Function) mới, gán vai trò đó, sau đó kích hoạt:
 
 ```http
 POST /2015-03-31/functions
@@ -95,7 +95,7 @@ s3://deputy-flag-vault/partner-config.json  -> Thu nhận dữ liệu cấu hìn
 
 ### Giai đoạn 4 - Tấn công theo kỹ thuật Confused-Deputy
 
-Kho lưu trữ cuối cùng `deputy-crown-vault` trả về mã lỗi 403 đối với cả phiên partner-admin. Việc nâng cấp lên vai trò `partner-secure-role` đã được kiểm soát nghiêm ngặt (hardened): trust policy bắt buộc phải đính kèm tham số xác thực `sts:ExternalId`. Hệ thống AWS giả lập phản hồi các lỗi cấu hình như sau:
+Kho lưu trữ cuối cùng `deputy-crown-vault` trả về mã lỗi 403 đối với cả phiên partner-admin. Việc nâng cấp lên vai trò `partner-secure-role` đã được kiểm soát (hardened): trust policy bắt buộc phải đính kèm tham số xác thực `sts:ExternalId`. Hệ thống AWS giả lập phản hồi các lỗi cấu hình như sau:
 
 ```text
 AssumeRole partner-secure-role                          -> Trả về 403: The trust policy requires an sts:ExternalId but none was provided.
@@ -128,4 +128,4 @@ $ python solve_deputy.py
 [+] STAGE 4 externalid: H7CTF{1dbe909840d15aabdd63}
 ```
 
-Kiểm tra hệ thống: Chạy công cụ `python solve_deputy.py` (cần tệp đi kèm `analysis/awsclient.py`; ghi nhật ký cờ thu thập ra `flags.txt`). Khi thực thi nhiều lần trên cùng một instance, bước CreateFunction có thể trả về lỗi `409 Conflict` nếu hàm Lambda đã tồn tại, nhưng lệnh invoke vẫn được tiếp tục thực thi, duy trì khả năng truy cập tài nguyên ở các lần chạy sau.
+Kiểm tra hệ thống: Chạy công cụ `python solve_deputy.py` (cần file đi kèm `analysis/awsclient.py`; ghi nhật ký cờ thu thập ra `flags.txt`). Khi thực thi nhiều lần trên cùng một instance, bước CreateFunction có thể trả về lỗi `409 Conflict` nếu hàm Lambda đã tồn tại, nhưng lệnh invoke vẫn được tiếp tục thực thi, duy trì khả năng truy cập tài nguyên ở các lần chạy sau.

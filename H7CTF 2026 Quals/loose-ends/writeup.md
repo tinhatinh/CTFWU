@@ -2,16 +2,16 @@
 
 **Flag:** `H7CTF{4d0e9693-88bd-4749-87d8-c64dd2ef80ab}`
 **Máy chủ mục tiêu:** `pwn.h7tex.com:42589` 
-**File cung cấp:** `ledger.zip` (chứa tệp thực thi `ledger` định dạng ELF x86-64, thư viện `libc.so.6` phiên bản glibc 2.39-0ubuntu8.9, và bộ nạp `ld-linux-x86-64.so.2`).
+**File cung cấp:** `ledger.zip` (chứa binary `ledger` định dạng ELF x86-64, thư viện `libc.so.6` phiên bản glibc 2.39-0ubuntu8.9, và bộ nạp `ld-linux-x86-64.so.2`).
 
 ## Đề bài
 
-Trò chơi mô phỏng hệ thống sổ cái (ledger) của công ty Sparrow Freight. Hệ thống có lỗi bảo mật trong việc quản lý bộ nhớ: các bản ghi bị xoá bỏ (free) không được xử lý bộ nhớ đầy đủ. Cùng lúc, hệ thống chứa tính năng kiểm toán (audit) cho phép đọc mã thông hành (flag) trong ngày, nhưng tính năng này bị cô lập và không được kết nối. 
+Đề mô phỏng hệ thống sổ cái (ledger) của công ty Sparrow Freight. Hệ thống có lỗi bảo mật trong việc quản lý bộ nhớ: các bản ghi bị xoá bỏ (free) không được xử lý bộ nhớ đầy đủ. Cùng lúc, hệ thống chứa tính năng kiểm toán (audit) cho phép đọc mã thông hành (flag) trong ngày, nhưng tính năng này bị cô lập và không được kết nối.
 Nhiệm vụ là lợi dụng thiếu sót bộ nhớ, liên kết các thành phần để kích hoạt chức năng ẩn và trích xuất cờ.
 
 ## Phân tích ban đầu
 
-Đánh giá cơ chế bảo mật của tệp tin:
+Đánh giá cơ chế bảo mật của file:
 ```text
 Cấu trúc ET_EXEC không bật PIE | Cờ báo NX được kích hoạt (cấm thực thi trên ngăn xếp) | Có tích hợp Canary bảo vệ (trong các hàm menu/idx/audit).
 Bảo vệ GNU_RELRO kích hoạt một phần, chỉ bảo vệ 0x403df8..0x404000  ->  Toàn bộ các slot JUMP_SLOT dạt vào vùng 0x404000..0x404060 vẫn ở chế độ cho phép ghi.
@@ -29,7 +29,7 @@ Lệnh view   : Cắm cờ if (notes[i]), in ra write(1, notes[i], 0x50).
 
 Do hàm `delete` không vô hiệu hóa con trỏ sau khi giải phóng (free), và các lệnh `edit` cùng `view` chỉ kiểm tra giá trị con trỏ khác 0, hệ thống tồn tại lỗ hổng Use-After-Free (UAF). Lỗ hổng này cho phép người dùng thao tác đọc (view) và ghi (edit) trên vùng nhớ đã giải phóng.
 
-Hàm `audit` nằm ở địa chỉ `0x4012b6`. Hàm này mở tệp `/flag`, đọc 80 byte dữ liệu và in ra dòng chữ `printf("[audit] %s\n", ...)`. Tuy nhiên, lệnh này không được liệt kê trong bảng chọn (jump table), yêu cầu kỹ thuật điều hướng luồng thực thi (jump) để kích hoạt.
+Hàm `audit` nằm ở địa chỉ `0x4012b6`. Hàm này mở file `/flag`, đọc 80 byte dữ liệu và in ra dòng chữ `printf("[audit] %s\n", ...)`. Tuy nhiên, lệnh này không được liệt kê trong bảng chọn (jump table), yêu cầu kỹ thuật điều hướng luồng thực thi (jump) để kích hoạt.
 
 Hai yếu tố giúp việc khai thác thuận lợi hơn: Bộ nhớ Heap tĩnh, không bị ngẫu nhiên hoá (no ASLR trên heap) - khối cấp phát đầu tiên mặc định chốt tại `0x4062b0`, kề vùng BSS. RELRO bị vô hiệu hóa ở `0x404000`, cho phép ghi đè lên phân đoạn PLT (GOT). Việc PIE bị tắt đồng nghĩa các địa chỉ đều là hằng số cố định, loại bỏ thao tác phức tạp liên quan đến rò rỉ (leak) bộ nhớ.
 

@@ -5,23 +5,22 @@
 
 ## Đề bài
 
-Hệ thống cung cấp một cơ sở dữ liệu gồm 10.000 tệp định dạng Markdown đại diện cho một bản đồ thiên hà. Mỗi tệp tương ứng với một hành tinh, chứa các thông tin bao gồm: ID, tọa độ, và danh sách các hành tinh lân cận được trình bày dưới định dạng thẻ liên kết wiki (`[[wikilink]]`). Yêu cầu đặt ra là tìm một lộ trình từ hành tinh `S0jRxc` đến hành tinh `yRJyDb` "trong khoảng thời gian hợp lý". 
+Đề cung cấp một cơ sở dữ liệu gồm 10.000 file định dạng Markdown đại diện cho một bản đồ thiên hà. Mỗi file tương ứng với một hành tinh, chứa các thông tin bao gồm: ID, tọa độ, và danh sách các hành tinh lân cận được trình bày dưới định dạng thẻ liên kết wiki (`[[wikilink]]`). Mục tiêu là tìm một lộ trình từ hành tinh `S0jRxc` đến hành tinh `yRJyDb` "trong khoảng thời gian hợp lý".
 Quy tắc ghép cờ: Bắt đầu bằng việc lấy chữ cái thứ nhất của điểm dừng đầu tiên, chữ cái thứ hai của điểm dừng thứ hai, tiếp tục tịnh tiến và quay vòng lại (modulo) thành chữ cái thứ nhất ở các điểm dừng thứ 7, 13, 19, v.v. Quá trình ghép này có phân biệt chữ hoa và chữ thường.
 
 ## Phân tích ban đầu
 
-Tiến hành quét toàn bộ 10.000 tệp tin, dữ liệu chỉ hiển thị chính xác ba loại trường thông tin:
+Quét toàn bộ 10.000 file, dữ liệu chỉ hiển thị chính xác ba loại trường thông tin:
 
 ```python
 Counter({'wikilink': 59944, 'title': 10000, 'coords': 10000})
 ```
-
-Không tồn tại trường dữ liệu chỉ định "số ngày" (thời gian) như ở bài trước. Yếu tố duy nhất có thể sử dụng làm định lượng (trọng số) là tọa độ. Phân tích cấu trúc đồ thị cho thấy dữ liệu rất toàn vẹn: 59.944 cạnh có hướng khi hợp nhất sẽ tạo thành chính xác 29.972 cạnh vô hướng. Điều này chứng tỏ toàn bộ các liên kết đều mang tính đối xứng tuyệt đối, không có liên kết cụt (dangling link), và bậc trung bình của mỗi đỉnh xấp xỉ 5.99.
+Các file không có trường số ngày hoặc tốc độ. Dùng khoảng cách giữa các tọa độ làm trọng số cạnh. Script kiểm tra 59.944 cạnh có hướng, tương ứng 29.972 cạnh vô hướng, không có cạnh lệch chiều hoặc link tới ID không tồn tại. Bậc trung bình của đỉnh khoảng 5.99.
 
 ## Chuỗi khai thác
 
-**Bước 1 - Xây dựng đồ thị trực tiếp từ tập tin nén.** 
-Không cần giải nén thủ công, kịch bản Python sử dụng thư viện `zipfile` để đọc tuần tự từng tệp `map/<ID>.md`, từ đó trích xuất các trường tọa độ và danh sách hành tinh lân cận để hình thành đồ thị.
+**Bước 1 - Xây dựng đồ thị trực tiếp từ file nén.**
+Không cần giải nén thủ công, Python script sử dụng thư viện `zipfile` để đọc tuần tự từng file `map/<ID>.md`, từ đó trích xuất các trường tọa độ và danh sách hành tinh lân cận để hình thành đồ thị.
 
 **Bước 2 - Áp dụng thuật toán Dijkstra với trọng số khoảng cách Euclid.** 
 Sử dụng công thức khoảng cách Euclid giữa hai tọa độ làm trọng số cho các cạnh, sau đó áp dụng thuật toán Dijkstra:
@@ -30,11 +29,9 @@ Sử dụng công thức khoảng cách Euclid giữa hai tọa độ làm trọ
 Kết quả: 135 chặng, tổng quãng đường 144.9333, số đường tối ưu = 1
 Khoảng cách đường thẳng nối hai điểm đầu cuối là 138.6231 -> Lộ trình tối ưu dài hơn 4.55%
 ```
+Đếm đường đi ngắn nhất bằng dynamic programming trên kết quả Dijkstra cho đúng một đường đi tối ưu theo trọng số đã chọn.
 
-Thông qua kỹ thuật quy hoạch động (Dynamic Programming) chạy trên cây Dijkstra, hệ thống xác nhận chỉ có chính xác 1 đường đi tối ưu duy nhất, không cần thiết phải đưa ra thêm các suy luận phụ.
-
-**Bước 3 - Đối chiếu tiêu chí đánh giá.** 
-Đường đi có số chặng ít nhất đo được là 199.95, trong khi đường đi ngắn nhất dựa trên hệ tọa độ có độ dài 144.93. Nếu đề bài yêu cầu tối ưu số lượng chặng (hops), hai kết quả này đã phải trùng khớp với nhau. Sự khác biệt này xác nhận rằng khoảng cách tọa độ là trọng số chính xác.
+BFS cho đường đi 13 chặng với tổng khoảng cách 199.95; Dijkstra theo khoảng cách tọa độ cho tổng 144.93. Hai tiêu chí cho kết quả khác nhau. Đường Dijkstra được kiểm tra tiếp bằng thông điệp ghép từ các ID ở bước sau.
 
 **Bước 4 - Xác thực thông qua thông điệp ẩn.** 
 Áp dụng quy tắc ghép chữ cái `id[i % 6]` (bao gồm cả hai đỉnh đầu và cuối là `S0jRxc` và `yRJyDb`), hệ thống thu được chuỗi kết quả dài 136 ký tự. Khi đọc chuỗi này, nội dung hình thành một thông điệp có ngữ nghĩa rõ ràng:
@@ -45,12 +42,11 @@ STAR MAP · DELAUNAY TRIANGULATION · DIJKSTRA VORONOI · GRAPHS · DETERMINANT 
 
 Nếu lựa chọn sai lộ trình, kết quả sẽ là một chuỗi ký tự ngẫu nhiên không mang ý nghĩa (nhiễu). Việc chuỗi ký tự hình thành một danh sách các thuật toán hình học tính toán là bằng chứng xác thực mạnh mẽ nhất cho thấy lộ trình Dijkstra theo tọa độ chính là thiết kế dự kiến của tác giả.
 
-**Bước 5 - Kiểm thử quy tắc ghép cờ.** 
-Đề bài cung cấp một ví dụ minh họa về luật ghép: (ASTART, BCDEFG, hijklm, NOPQRS, tuvwxy, ZFINAL → `ACjQxL`). Ví dụ này được đưa vào mã khai thác (`exploit.py`) dưới dạng một bài kiểm tra đơn vị (unit test) để chốt chặn. Nếu áp dụng quy tắc ghép sai (ví dụ: luôn trích xuất chữ cái đầu tiên), unit test sẽ phát hiện và báo lỗi ngay lập tức.
+Ví dụ của đề (ASTART, BCDEFG, hijklm, NOPQRS, tuvwxy, ZFINAL → `ACjQxL`) được dùng làm unit test cho quy tắc `id[i % 6]` trong `exploit.py`. Phép thử lấy chữ đầu của mọi ID không khớp ví dụ này.
 
 ## Flag
 
-Quá trình thực thi mã kịch bản tự động hóa:
+Chạy script:
 
 ```bash
 $ python exploit.py files/map.zip

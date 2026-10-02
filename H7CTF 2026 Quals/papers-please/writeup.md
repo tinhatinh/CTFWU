@@ -2,7 +2,7 @@
 
 **Flag:** `H7CTF{b66621cc-c85c-4042-b908-0d3dd36a71e5}`
 **Máy chủ mục tiêu:** `pwn.h7tex.com:42578`
-**File cung cấp:** `checkpoint.zip` (1077085 B, sha256 `737ceea6...a209da0b`) chứa tệp `checkpoint` (định dạng ELF x86-64, kích thước 16344 B, sha256 `b04ebc61...`), đi kèm `libc.so.6`, trình nạp `ld-linux-x86-64.so.2` và file `README.txt`.
+**File cung cấp:** `checkpoint.zip` (1077085 B, sha256 `737ceea6...a209da0b`) chứa file `checkpoint` (định dạng ELF x86-64, kích thước 16344 B, sha256 `b04ebc61...`), đi kèm `libc.so.6`, trình nạp `ld-linux-x86-64.so.2` và file `README.txt`.
 **Bối cảnh chạy:** Hệ điều hành Ubuntu 24.04, nhân thư viện glibc phiên bản 2.39-0ubuntu8.9.
 
 ## Đề bài
@@ -12,14 +12,14 @@ Hệ thống tồn tại một hàm cấp quyền. Tuy nhiên, luồng thực th
 
 ## Phân tích ban đầu
 
-Đưa tệp qua công cụ phân tích `triage.cjs`, xác định được cấu trúc:
+Đưa file qua công cụ phân tích `triage.cjs`, xác định được cấu trúc:
 
 | Thuộc tính | Hiện trạng | Kết luận (Hệ quả) |
 | --- | --- | --- |
 | Lõi kiến trúc | `ET_EXEC`, cờ PIE tắt (no PIE) | Địa chỉ không thay đổi ngẫu nhiên (base cố định). Không cần rò rỉ bộ nhớ (leak), địa chỉ các hàm cố định. |
-| Vệ sĩ Stack (canary) | Vô hiệu hóa (Hàm `__stack_chk_fail` không tồn tại) | Cho phép ghi đè lên địa chỉ trả về (return address) tùy ý. |
+| Vệ sĩ Stack (canary) | Vô hiệu hóa (Hàm `__stack_chk_fail` không tồn tại) | Cho phép ghi đè lên return address tùy ý. |
 | Vùng cấm thực thi (NX) | Bật | Ngăn chặn thực thi mã độc (shellcode) trên stack. Phải sử dụng lại các hàm có sẵn trong hệ thống (ROP). |
-| Danh mục Imports | `read fopen fgets printf puts setvbuf fflush fclose` | Điểm yếu: Lệnh `read` đọc dữ liệu không kiểm tra giới hạn của bộ đệm (buffer). |
+| Danh mục Imports | `read fopen fgets printf puts setvbuf fflush fclose` | Điểm yếu: Lệnh `read` đọc dữ liệu không kiểm tra giới hạn của buffer. |
 
 Phân tích 3 hàm chức năng:
 
@@ -29,7 +29,7 @@ Hàm checkpoint  @ 0x4012a4   Cấp phát ngăn xếp sub rsp,0x40 -> Khởi t�
 Hàm grant_access@ 0x401216   Thực thi fopen("/flag","r"); Đọc dữ liệu fgets(buf,0x50); Hiển thị printf("ACCESS GRANTED: %s").
 ```
 
-Đúng như thiết kế, hàm `main` không triệu gọi `grant_access`. Hàm quan trọng này được tạo ra để đọc tệp `/flag` và hiển thị nội dung ra ngoài.
+Đúng như thiết kế, hàm `main` không triệu gọi `grant_access`. Hàm quan trọng này được tạo ra để đọc file `/flag` và hiển thị nội dung ra ngoài.
 
 Lỗ hổng xuất hiện ở hàm `checkpoint`:
 
@@ -45,7 +45,7 @@ Lệnh `read(0, buf, 0x100)` truyền 256 byte dữ liệu vào bộ đệm ch�
 ## Quá trình khai thác
 
 **Bước 1 - Xác định khoảng cách (offset) tới đích return address.** 
-Bộ đệm nằm ở `[rbp-0x40]` (kích thước 64 byte), liền kề là lưu trữ rbp (saved rbp) nằm tại `[rbp]` (kích thước 8 byte), và địa chỉ trả về (return address) nằm tại `[rbp+8]`. Tính toán Offset = 64 + 8 = 72 byte. Lệnh `read` cho phép truyền tới 256 byte, đủ không gian cho payload.
+Bộ đệm nằm ở `[rbp-0x40]` (kích thước 64 byte), liền kề là lưu trữ rbp (saved rbp) nằm tại `[rbp]` (kích thước 8 byte), và return address nằm tại `[rbp+8]`. Tính toán Offset = 64 + 8 = 72 byte. Lệnh `read` cho phép truyền tới 256 byte, đủ không gian cho payload.
 
 **Bước 2 - Điều chỉnh stack (stack alignment).** 
 Quy tắc hệ điều hành (ABI) yêu cầu: tại lệnh mở màn của một hàm, con trỏ stack phải thỏa mãn `rsp % 16 == 8`.

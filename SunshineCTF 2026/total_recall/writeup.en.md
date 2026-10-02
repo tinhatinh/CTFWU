@@ -38,14 +38,11 @@ leaking. The whole program is only 108 bytes (`analysis/disasm.txt`):
 
 Four points drawn from those 108 bytes:
 
-1. The leak is a raw stack pointer, little-endian, with no banner: `write` takes
-   `rsi = rsp` right after `push rsp`.
-2. f2 reads 1024 bytes into the area at `rsp-0x80` while the return address sits at `rsp+0x80`,
-   that is offset 0x80 measured from the start of the buffer. This is a forward overflow, with 1024
-   bytes to choose from.
-3. `read` does not stop at a 0x00 byte, so the payload is allowed to contain any byte.
-4. `read` returns the number of bytes read in `rax`. Combined with the bare `syscall; ret` the
-   binary already provides, this is exactly the way out.
+The 108-byte disassembly provides four details used by the exploit:
+1. `write` uses `rsi = rsp` immediately after `push rsp`, returning a little-endian stack pointer.
+2. `f2` reads up to 1024 bytes; probing places the return address at offset `0x80` from the buffer start.
+3. `read` accepts `0x00`, so the input can contain a binary payload.
+4. `read` returns its byte count in `rax`. Together with a `syscall; ret` gadget, this controls the syscall number for SROP.
 
 ## Hypotheses Ruled Out
 

@@ -6,7 +6,7 @@
 ## Đề bài
 
 Bối cảnh thử thách là một cổng thông tin "Collaborative Research Portal". Tác giả đưa ra lời mời thử nghiệm hệ thống kèm theo lưu ý về tính năng **bảo mật người dùng** (user security), nhằm ngăn chặn các nhà nghiên cứu truy cập vào dữ liệu của nhau. 
-Hệ thống được đặt trên một tên miền phụ (subdomain) riêng biệt. Người chơi sử dụng mã phiên (session token) riêng của đội để đăng nhập (token có hiệu lực 15 phút và thay đổi mỗi khi tải lại trang). Sau khi đăng nhập, hệ thống cung cấp một **API GraphQL tại đường dẫn `/graphql`, với tính năng introspection (tự phản chiếu) đang được kích hoạt**.
+Hệ thống được đặt trên một tên miền phụ (subdomain) riêng biệt. Người chơi sử dụng mã phiên (session token) riêng của đội để đăng nhập (token có hiệu lực 15 phút và thay đổi mỗi khi tải lại trang). Sau khi đăng nhập, đề cung cấp một **API GraphQL tại đường dẫn `/graphql`, với tính năng introspection (tự phản chiếu) đang được kích hoạt**.
 
 ## Phân tích ban đầu
 
@@ -46,7 +46,7 @@ Phản hồi trả về:
 ]}}}}
 ```
 
-Kết quả cho thấy trường `Team.members` trả về thông tin mọi thành viên trong đội cùng với trường `privateNotes` mà không áp dụng cơ chế kiểm tra phân quyền. Khảo sát cấu trúc hệ thống, mỗi đội được chỉ định một tài khoản có dạng `admin_<team_id>`, và lá cờ của đội được lưu trong trường ghi chú cá nhân của tài khoản này.
+Kết quả cho thấy trường `Team.members` trả về thông tin mọi thành viên trong đội cùng với trường `privateNotes` mà không áp dụng cơ chế kiểm tra phân quyền. Khảo sát cấu trúc hệ thống, mỗi đội được chỉ định một tài khoản có dạng `admin_<team_id>`, và flag của đội được lưu trong trường ghi chú cá nhân của tài khoản này.
 
 **Bước 3 - Xác thực cơ chế phân quyền.** 
 Khi thực thi truy vấn trực tiếp `user(id:"admin_612")`, kết quả trả về là `null`, dù tài khoản này thuộc cùng đội. Điều này chứng minh cơ chế phân quyền bảo mật chỉ được cấu hình tại resolver của `Query.user`, trong khi resolver của `Team.members` bị bỏ sót. Chuỗi nonce `EB7ZOZUZT7FJHWR2` trong thân cờ khớp với nonce trong session token, xác nhận đây là cờ hợp lệ của đội 612.

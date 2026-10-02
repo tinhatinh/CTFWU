@@ -5,12 +5,12 @@
 
 ## Problem Description
 
-The system provides a single executable file named `flappy_board` along with a requirement to pass three obstacle areas (relays) within a 20-minute time limit. The challenge card does not include any network address (URL).
+The challenge provides a single executable file named `flappy_board` along with a requirement to pass three obstacle areas (relays) within a 20-minute time limit. The challenge card does not include any network address (URL).
 Functional analysis: The executable acts as a client application for a game similar to the "flappy-bird" model, operating via a terminal interface. However, the result (score) is submitted to the server system for approval, which then returns the flag.
 
 ## Initial Analysis
 
-Evaluating the binary file via the `file` utility: The program is packaged in a 64-bit ELF format, features a Position Independent Executable (PIE) structure, has a stripped symbol table, and uses dynamic library linking. The file's entropy level is measured at 4.700, which is equivalent to a standard file structure, confirming the absence of any camouflaging or embedded payload blocks within the file structure. 
+Evaluating the binary via the `file` utility: The program is packaged in a 64-bit ELF format, features a Position Independent Executable (PIE) structure, has a stripped symbol table, and uses dynamic library linking. The file's entropy level is measured at 4.700, which is equivalent to a standard file structure, confirming the absence of any camouflaging or embedded payload blocks within the file structure.
 The Imports dependency list splits the application into two main functions: A visual rendering system comprising `XOpenDisplay`, `XDrawString`, `XNextEvent`, `XLoadQueryFont` (requires an X11 environment, restricting direct execution in headless environments); and a `curl_easy_*` network system handling server connection tasks.
 Extracting the static string array data (`rabin2 -z`) reveals the entire communication protocol architecture:
 

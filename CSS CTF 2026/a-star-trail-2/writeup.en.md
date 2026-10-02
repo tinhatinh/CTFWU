@@ -5,7 +5,7 @@
 
 ## Problem Description
 
-The system provides a database comprising 10,000 Markdown format files representing a galactic map. Each file corresponds to a planet, containing information including: ID, coordinates, and a list of neighboring planets presented in wiki link tag format (`[[wikilink]]`). The requirement is to find a route from planet `S0jRxc` to planet `yRJyDb` "in a reasonable amount of time".
+The challenge provides a database comprising 10,000 Markdown format files representing a galactic map. Each file corresponds to a planet, containing information including: ID, coordinates, and a list of neighboring planets presented in wiki link tag format (`[[wikilink]]`). The requirement is to find a route from planet `S0jRxc` to planet `yRJyDb` "in a reasonable amount of time".
 Flag assembly rule: Begin by taking the 1st letter of the first stop, the 2nd letter of the second stop, continuing to increment and loop back (modulo) to the 1st letter at the 7th, 13th, 19th stops, etc. This assembly process is case-sensitive.
 
 ## Initial Analysis
@@ -15,8 +15,7 @@ Proceeding to scan all 10,000 files, the data exactly displays only three types 
 ```python
 Counter({'wikilink': 59944, 'title': 10000, 'coords': 10000})
 ```
-
-There is no data field specifying the "number of days" (time) as in the previous challenge. The sole factor usable as a quantifier (weight) is the coordinates. Graph structure analysis reveals highly integral data: 59,944 directed edges, when merged, form exactly 29,972 undirected edges. This proves all links are absolutely symmetrical, with no dangling links, and the average degree of each vertex is approximately 5.99.
+The files contain no time or speed field, so coordinate distance is used as the edge weight. The script checks 59,944 directed edges, corresponding to 29,972 undirected edges, with no asymmetric edges or links to missing IDs. The mean vertex degree is about 5.99.
 
 ## Exploitation Chain
 
@@ -30,11 +29,9 @@ Utilize the Euclidean distance formula between two coordinates as the weight for
 Result: 135 hops, total distance 144.9333, optimal path count = 1
 The straight-line distance connecting the two endpoints is 138.6231 -> The optimal route is 4.55% longer
 ```
+Dynamic programming on the Dijkstra result counts one shortest path under the selected weights.
 
-Through Dynamic Programming techniques running on the Dijkstra tree, the system confirms there is exactly 1 unique optimal path, necessitating no further secondary deductions.
-
-**Step 3 - Cross-reference evaluation criteria.** 
-The path with the fewest hops measures at 199.95, while the shortest path based on the coordinate system has a length of 144.93. If the problem demanded optimizing the hop count, these two results would have coincided. This discrepancy confirms that coordinate distance is the correct weight.
+BFS finds a 13-hop route with total coordinate distance 199.95; distance-weighted Dijkstra gives 144.93. These optimize different criteria. The Dijkstra route is checked against the message assembled from its IDs in the next step.
 
 **Step 4 - Validate via hidden message.** 
 Applying the letter assembly rule `id[i % 6]` (including both the starting and ending vertices `S0jRxc` and `yRJyDb`), the system obtains a result string 136 characters long. When reading this string, the content forms a clearly semantic message:
@@ -42,15 +39,14 @@ Applying the letter assembly rule `id[i % 6]` (including both the starting and e
 ```text
 STAR MAP · DELAUNAY TRIANGULATION · DIJKSTRA VORONOI · GRAPHS · DETERMINANT · COLINEAR · ALGORITHMS · … TANGENTS · MERGE · CIRCUMCIRCLE · CONVEX HULL · GEOMETRY
 ```
-
-If an incorrect route were chosen, the result would be a string of meaningless random characters (noise). The fact that the character string forms a list of computational geometry algorithms is the strongest conclusive evidence that the coordinate-based Dijkstra route is exactly the author's intended design.
+The resulting string reads as a list of computational-geometry terms. This supports the coordinate-distance interpretation; it is checked together with edge validity and the stated letter-selection rule.
 
 **Step 5 - Test the flag assembly rule.** 
 The problem provides an illustrative example of the assembly rule: (ASTART, BCDEFG, hijklm, NOPQRS, tuvwxy, ZFINAL -> `ACjQxL`). This example is integrated into the exploit script (`exploit.py`) as a unit test checkpoint. If an incorrect assembly rule is applied (e.g., always extracting the first letter), the unit test will detect it and report an error immediately.
 
 ## Flag
 
-Executing the automated script:
+Run the script:
 
 ```bash
 $ python exploit.py files/map.zip

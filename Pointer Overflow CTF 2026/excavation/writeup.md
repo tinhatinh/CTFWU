@@ -10,11 +10,11 @@ POST /challenges/excavation/submit  {"flag":"2VE5EKXUA5IV2R57"}
 
 ## 1. Đề bài
 
-Thử thách cung cấp 4 tệp tin có phần mở rộng `.sav`, mô phỏng bản lưu (save data) của một trò chơi nhập vai (RPG). Ba file là các bản lưu mẫu, và file thứ tư mang tên `team.sav` được sinh riêng cho từng đội chơi, kèm theo thông báo chứa một token dài 16 ký tự. Không có công cụ giải mã hay định nghĩa cấu trúc dữ liệu nào được cung cấp. Người chơi cần phân tích định dạng tệp tin và trích xuất dữ liệu.
+Thử thách cung cấp 4 file có phần mở rộng `.sav`, mô phỏng bản lưu (save data) của một trò chơi nhập vai (RPG). Ba file là các bản lưu mẫu, và file thứ tư mang tên `team.sav` được sinh riêng cho từng đội chơi, kèm theo thông báo chứa một token dài 16 ký tự. Không có công cụ giải mã hay định nghĩa cấu trúc dữ liệu nào được cung cấp. Người chơi cần phân tích định dạng file và trích xuất dữ liệu.
 
 ## 2. Phân tích ban đầu
 
-Kiểm tra các file bằng trình hex editor, 12 byte đầu tiên của cả bốn tệp tin đều giống nhau:
+Kiểm tra các file bằng trình hex editor, 12 byte đầu tiên của cả bốn file đều giống nhau:
 
 ```text
 9e e1 c7 21 | 02 00 | 02 00 | d2 01 00 00     (sample1)
@@ -23,7 +23,7 @@ Kiểm tra các file bằng trình hex editor, 12 byte đầu tiên của cả b
 9e e1 c7 21 | 02 00 | 02 00 | 66 05 00 00     (team)
 ```
 
-Bốn byte cuối cùng của phần header là số nguyên không dấu 32-bit (u32) định dạng little-endian, khớp với kích thước của từng tệp: 466, 857, 1144 và 1382. Điều này cho thấy phần dữ liệu (body) bắt đầu từ mốc offset 12, và phần header này không bị mã hoá.
+Bốn byte cuối cùng của phần header là số nguyên không dấu 32-bit (u32) định dạng little-endian, khớp với kích thước của từng file: 466, 857, 1144 và 1382. Điều này cho thấy phần dữ liệu (body) bắt đầu từ mốc offset 12, và phần header này không bị mã hoá.
 
 Phân tích độ tự tương quan (autocorrelation) trên phần body bằng cách thống kê xác suất `body[i] == body[i+L]`, nhận thấy tỷ lệ cao ở các vị trí là bội số của 8:
 
@@ -47,10 +47,10 @@ team   :  1337df4e77c16cc7
 ```
 
 **Giả thuyết 2: Toàn bộ dữ liệu là văn bản thuần tuý (Plaintext).** 
-Sau khi giải mã XOR, tệp `team.sav` vẫn chứa khoảng 260/1370 byte ngoài dải ký tự in được, phân bố đều theo 8 cột ma trận. Điều này cho thấy định dạng file bao gồm cả các trường nhị phân (binary fields) đan xen với chuỗi ký tự.
+Sau khi giải mã XOR, file `team.sav` vẫn chứa khoảng 260/1370 byte ngoài dải ký tự in được, phân bố đều theo 8 cột ma trận. Điều này cho thấy định dạng file bao gồm cả các trường nhị phân (binary fields) đan xen với chuỗi ký tự.
 
 **Giả thuyết 3: Khoá thay đổi theo từng bản ghi.** 
-Khi so sánh các bản ghi của cùng một vật phẩm giữa hai file khác nhau, dữ liệu trùng khớp hoàn toàn trên đoạn dài hơn 60 ký tự:
+Khi so sánh các bản ghi của cùng một vật phẩm giữa hai file khác nhau, dữ liệu trùng khớp trên đoạn dài hơn 60 ký tự:
 
 ```text
 sample1: 21 20 37 72 55 53 54 45 44 00 53 50 49 52 49 54 0d 4d ... 4c 45 00 57 45 49 47 48 54 0e
@@ -153,7 +153,7 @@ Needle, Ivory, Ghost-key, Hair-braid, Talcum, Ember, Needle, Doubling mirror, Si
 
 Chuỗi nhận được: **`2VE5EKXUA5IV2R57`**
 
-Ba vật phẩm bắt đầu bằng chữ số (`2-star runic band`, `5-knot cord`, `7-day candle`) là các thành phần chỉ xuất hiện trong tệp `team.sav`, được sử dụng để mã hóa các chữ số vào token.
+Ba vật phẩm bắt đầu bằng chữ số (`2-star runic band`, `5-knot cord`, `7-day candle`) là các thành phần chỉ xuất hiện trong file `team.sav`, được sử dụng để mã hóa các chữ số vào token.
 
 Quy trình nộp Token qua API:
 
@@ -173,4 +173,4 @@ cd excavation
 python exploit.py
 ```
 
-Công cụ `exploit.py` thực hiện tự động hóa các bước: trích xuất khóa 8 byte, giải mã lớp XOR `0x20`, phân tích các bản ghi `0x10` và in ra kết quả. Quá trình giải mã có độ chính xác cao đối với tất cả các tệp dữ liệu được cung cấp. Các kết quả phân tích có thể tìm thấy trong thư mục `analysis/`.
+Công cụ `exploit.py` thực hiện tự động hóa các bước: trích xuất khóa 8 byte, giải mã lớp XOR `0x20`, phân tích các bản ghi `0x10` và in ra kết quả. Quá trình giải mã có độ chính xác cao đối với tất cả các file dữ liệu được cung cấp. Các kết quả phân tích có thể tìm thấy trong thư mục `analysis/`.

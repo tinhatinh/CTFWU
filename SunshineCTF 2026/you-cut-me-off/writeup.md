@@ -5,7 +5,7 @@
 
 ## Đề bài
 
-Phần mô tả của bài tập vô cùng kỳ lạ: "Here's a flag! It's uhhh ...... ............ ......................uhhhhhhhhhh..................... hmm....." kèm theo một tệp hình ảnh. Bức ảnh chụp lại một đoạn chat trên Discord, trong đó một nhân vật mang tên Ardian dõng dạc tuyên bố "today i will make a ctf challenge", thả vài bức ảnh chế meme, rồi kết thúc bằng câu nói "ill type it out just give me a second". Ngay sau câu nói này, bức ảnh bị cắt ngang một cách phũ phàng. Tiêu đề của thử thách, vô số dấu chấm lửng trong mô tả, và đường viền tin nhắn bị cắt gọt sắc lẹm ở mép dưới bức ảnh đều cùng hội tụ về một gợi ý rõ ràng: phần mấu chốt cuối cùng đã bị cố tình cắt xén.
+Phần mô tả của bài tập: "Here's a flag! It's uhhh ...... ............ ......................uhhhhhhhhhh..................... hmm....." kèm theo một file hình ảnh. Bức ảnh chụp lại một đoạn chat trên Discord, trong đó một nhân vật mang tên Ardian dõng dạc tuyên bố "today i will make a ctf challenge", thả vài bức ảnh chế meme, rồi kết thúc bằng câu nói "ill type it out just give me a second". Ngay sau câu nói này, bức ảnh bị cắt ngang một cách phũ phàng. Tiêu đề của thử thách, vô số dấu chấm lửng trong mô tả, và đường viền tin nhắn bị cắt gọt sắc lẹm ở mép dưới bức ảnh đều cùng hội tụ về một gợi ý rõ ràng: phần mấu chốt cuối cùng đã bị cố tình cắt xén.
 
 ## Phân tích ban đầu
 
@@ -21,8 +21,7 @@ import zlib
 raw = zlib.decompress(IDAT)
 print(len(raw), 382 * (1 + 492 * 4))     # Kết quả: 823042 so với 752158
 ```
-
-Làm một phép chia đơn giản: `823042 / 1969 = 418` (ra kết quả chẵn hoàn toàn), trong đó `1969 = 1 + 492*4` chính là số byte (stride) của một hàng pixel RGBA. Toàn bộ 418 hàng dữ liệu này đều sử dụng loại màng lọc (filter type) số 0. Từ đó có thể khẳng định, bộ đệm dòng quét (scanline buffer) trên thực tế chứa tới 418 hàng, nhưng phân đoạn `IHDR` lại cố tình khai báo dối trá là chỉ có 382 hàng. Khoảng chênh lệch 36 hàng bị thiếu hụt này khớp hoàn hảo với chiều cao của một khung tin nhắn.
+Dữ liệu giải nén dài 823042 byte. Mỗi scanline RGBA dài `1969 = 1 + 492*4` byte, nên có `823042 / 1969 = 418` hàng, đều dùng filter type 0. `IHDR` chỉ khai báo 382 hàng; cần sửa chiều cao thành 418 và cập nhật CRC để hiển thị thêm 36 hàng.
 
 **Bước 2 - Phục dựng bức ảnh với chiều cao nguyên bản.** 
 Bằng cách loại bỏ 1 byte màng lọc ở đầu mỗi dòng, ghép nối dữ liệu thô lại và dựng hình với chiều cao chính xác là 418 pixel, sự thật sẽ được phơi bày.
@@ -36,10 +35,9 @@ Image.frombytes("RGBA", (492, 418), b"".join(rows)).save("analysis/full.png")
 Ở phần ảnh bị giấu vừa được phục hồi ngay bên dưới dòng chữ "ill type it out just give me a second", ô soạn thảo tin nhắn quen thuộc của Discord hiện ra, mang theo một dòng chữ bí mật.
 
 **Bước 3 - Đọc cờ.** 
-Phóng to tấm ảnh lên 4x và 6x (các tệp `analysis/hidden4x.png`, `analysis/mid.png`), sau đó soi kỹ càng 10x vào các cặp ký tự dễ gây nhầm lẫn để có được nội dung chính xác nhất (`analysis/glyphs.png`).
+Phóng to tấm ảnh lên 4x và 6x (các file `analysis/hidden4x.png`, `analysis/mid.png`), sau đó soi kỹ càng 10x vào các cặp ký tự dễ gây nhầm lẫn để có được nội dung chính xác nhất (`analysis/glyphs.png`).
 
-**Bước 4 - Khẳng định tính chính xác.** 
-Kết quả thu được hoàn toàn dựa trên dữ kiện vững chắc, không hề phỏng đoán: con số `823042` chia hết hoàn hảo cho `1969` và mọi dòng lệnh đều chứa byte màng lọc hợp lệ (số 0). Do đó, 418 là con số duy nhất khớp logic với chuỗi dữ liệu thực tế. Bất kỳ sự khác biệt nào ở phần header cũng sẽ để lại phần thừa là các byte 0. Bằng mắt thường, ta thấy ký tự kẹp giữa "challenge" và "dea" có dấu chấm bên trên, tức đó chắc chắn là ký tự `i` thay vì `l`; ngay sau đó là dấu đóng ngoặc `}` của chuỗi cờ.
+Chiều cao 418 khớp độ dài dữ liệu giải nén và các filter byte. Sau khi khôi phục ảnh, đọc trực tiếp dòng chữ trong ô chat. Đối chiếu nét chữ ở các vị trí dễ nhầm, như `i` và `l`, trên ảnh đầy đủ.
 
 ## Flag
 ```bash

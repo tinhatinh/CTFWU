@@ -5,8 +5,8 @@
 
 ## Đề bài
 
-Hệ thống thanh toán OrionPay sử dụng một cổng webhook nhận thông báo, hoạt động nghiêm ngặt theo phương thức xác thực chữ ký số (signature) của yêu cầu gửi lên. 
-Hệ thống cung cấp một cơ chế chi trả (payout) yêu cầu quyền hạn tài khoản admin. Thông tin được cung cấp gồm một phiếu thanh toán (slip) hợp lệ (với nội dung và chữ ký số đính kèm), yêu cầu thí sinh tự phân tích để vượt qua cơ chế xác thực và nhận quyền thanh toán đặc biệt.
+Hệ thống thanh toán OrionPay sử dụng một cổng webhook nhận thông báo, hoạt động theo phương thức xác thực chữ ký số (signature) của yêu cầu gửi lên.
+Đề cung cấp một cơ chế chi trả (payout) yêu cầu quyền hạn tài khoản admin. Thông tin được cung cấp gồm một phiếu thanh toán (slip) hợp lệ (với nội dung và chữ ký số đính kèm), yêu cầu thí sinh tự phân tích để vượt qua cơ chế xác thực và nhận quyền thanh toán đặc biệt.
 
 ## Phân tích ban đầu
 

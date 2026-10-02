@@ -17,7 +17,7 @@ Yêu cầu: Tạo ra một bản thiết kế (netlist) vượt qua được bà
 
 ## Phân tích ban đầu
 
-Tệp tin bao gồm 3 file: `hdl.py` (parser + simulator + bộ xử lý biểu thức z3), `verifier.py` (trình xác thực) và bản tham chiếu `reference.hdl`:
+File bao gồm 3 file: `hdl.py` (parser + simulator + bộ xử lý biểu thức z3), `verifier.py` (trình xác thực) và bản tham chiếu `reference.hdl`:
 
 ```text
 Đầu vào input a
@@ -39,7 +39,7 @@ solver.add(build(ref, a) != build(sub, a))
 return solver.check() == z3.unsat
 ```
 
-Lệnh `certify()` KHÔNG HỀ kiểm tra tính tương đương trên toàn bộ không gian `2^32` của input. Hàm này chỉ kiểm tra tương đương trong dải dữ liệu giới hạn `{ZeroExt(16, s) : với s chạy trong 2^16}` = tương ứng với các giá trị hợp lệ `a < 0x10000`.
+Lệnh `certify()` Không kiểm tra tính tương đương trên toàn bộ không gian `2^32` của input. Hàm này chỉ kiểm tra tương đương trong dải dữ liệu giới hạn `{ZeroExt(16, s) : với s chạy trong 2^16}` = tương ứng với các giá trị hợp lệ `a < 0x10000`.
 Kiểm tra điểm audit, mốc kiểm tra nằm ở `0xDEADBEEF` - nằm ngoài phạm vi kiểm tra tương đương của công cụ z3. Gợi ý "probes the finished part once" (kiểm tra thiết bị hoàn thiện chỉ một lần) là điểm mấu chốt: Điểm bị kiểm tra nằm ngoài phạm vi kiểm tra của hệ thống.
 
 Hướng giải quyết: Ta không cần phá vỡ thuật toán kiểm tra tính tương đương - chỉ cần tận dụng giới hạn phạm vi kiểm tra của nó là đủ.
@@ -80,7 +80,7 @@ y = Cú lừa mux islow yref magic
 ```
 
 Vận hành thử: 
-- Khi `a < 2^16`: `islow = 0xFFFFFFFF` -> Hệ thống sẽ trả về `y = yref` tương đương hoàn toàn (bit-for-bit) -> z3 không xác định lỗi (counterexample) -> Cộp dấu CERTIFIED (Đã chứng nhận).
+- Khi `a < 2^16`: `islow = 0xFFFFFFFF` -> Hệ thống sẽ trả về `y = yref` tương đương hoàn toàn (bit-for-bit) -> z3 không xác định lỗi (counterexample) -> Cộp dấu CERTIFIED (Đã cho thấy).
 - Khi `a >= 2^16`: `islow = 0` -> Hệ thống trả về `y = MAGIC`.
 
 **Bước 3 - Kiểm thử cục bộ.** 

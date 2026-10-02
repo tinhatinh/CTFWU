@@ -34,21 +34,15 @@ pcm = audioop.ulaw2lin(payload, 2)
 `ffmpeg -f mulaw -ar 8000 -i payload.raw` gives a matching result: `corr(audioop, ffmpeg) = 1.0000`.
 (Also: because `width=1` was passed the first time, I mis-measured the audio length as 7.78 s instead of 15.56 s.)
 
-With correct audio, the spectrogram shows continuous harmonics + formants, a fundamental around
-~100-125 Hz, 32 sound clusters: it really is a human voice. But whisper `base`/`small`, beam=5, with a
-CTF prompt, language auto-detect, speed sweeps of 0.6x-4x all yield consistently meaningless text
--> the signal itself was transformed, this is not a model failure.
+The decoded audio is 15.56 seconds long. Reversing its samples with `x[::-1]` makes the spoken message intelligible. Earlier Whisper attempts did not produce useful text; that failure alone does not distinguish transformed audio from a recognition error.
 
-The deciding measurement is the onset/offset asymmetry of the sound clusters. Forward-playing human
-speech has a sharp attack and a slow decay, so the start of a cluster must be stronger than its end.
-Measured over the 32 clusters:
+The log includes the onset/offset measurements for 32 sound clusters below. These are additional observations, not a proof of speech direction. The check is whether the reversed audio contains the intelligible message:
 
 ```
 năng lượng trung bình 1/3 đầu cụm = 0.0539
 năng lượng trung bình 1/3 cuối cụm = 0.0649   -> ratio 0.83
 ```
-
-Sign reversed -> the audio is time-reversed. Apply `x[::-1]` and only then transcribe:
+The reversed audio contains the following message. It can be heard directly; the transcription is used as a cross-check:
 
 ```
 Welcome to Bsides Orlando. The flag that you are looking for is Sun with a left curly

@@ -5,7 +5,7 @@
 
 ## Problem Description
 
-The system provides a map titled "POLARIS LOGISTICS STAR MAP - NO. CA-S08-R11". This map depicts 13 celestial bodies connected to each other via 20 dashed lines, each line annotated with the corresponding number of travel days. The requirement is to find a travel route from the celestial body `EARTH` to the celestial body `LANCER-RXKRD`, moving along the given lines such that the total number of days does not exceed 25.
+The challenge provides a map titled "POLARIS LOGISTICS STAR MAP - NO. CA-S08-R11". This map depicts 13 celestial bodies connected to each other via 20 dashed lines, each line annotated with the corresponding number of travel days. The requirement is to find a travel route from the celestial body `EARTH` to the celestial body `LANCER-RXKRD`, moving along the given lines such that the total number of days does not exceed 25.
 The flag structure is assembled from the first letter of each celestial body on the route (counting only intermediate stations), concatenated with the total travel days (formatted with one decimal place) using a hyphen `-`.
 
 ## Initial Analysis
@@ -39,11 +39,11 @@ The data point "each planet/oid in your path" is interpreted as the intermediate
 The full route is: `EARTH -> PALLUS-XA -> 12-PUCK-8 -> JIP-REIA -> TAYLOR-3489 -> LANCER-RXKRD`. 
 Taking the first letter of the four intermediate stations, we have: `P` (PALLUS-XA), `1` (12-PUCK-8), `J` (JIP-REIA), `T` (TAYLOR-3489). Assembling them yields the string `P1JT`, concatenated with the total days as `-21.0`. (The testing process showed that if both endpoints are included as `EP1JTL-21.0`, the system rejects it).
 
-A notable point regarding data sensitivity: The second shortest route has a cost of 21.6 days, a mere 0.6 days difference from the optimal route. If there is any error in reading the small weight labels (such as misreading 0.4 or 1.8), the flag string could change to `EPBJTL-21.6`. The test script verified this change if incorrect parameters were input, proving the data reading step from the image is the highest-risk phase, demanding absolute precision.
+The second-shortest route costs 21.6 days, 0.6 days more than the selected route. Misreading small weights such as 0.4 or 1.8 can produce `EPBJTL-21.6`, so the labels are checked against the image before finalizing the graph.
 
 ## Flag
 
-Executing the automated script:
+Run the script:
 ```bash
 $ python exploit.py
 1) graph: 13 nodes, 20 edges (read from image)

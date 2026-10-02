@@ -5,7 +5,7 @@ Points: 498 · **Flag:** `sun{fr4gm3nt3d_r3fl3ct10ns_1n_th3_futur3}`
 
 ## Challenge
 
-SiteCheck is a website inspection service. Register an inspector account and submit a URL, and SiteCheck's "drone" goes to that address itself, measures the load time, counts the files downloaded, then returns a viewport screenshot. The drone refuses internal and local addresses. The problem is getting past that refusal in order to read something the site never hands back directly.
+SiteCheck is a website inspection service. Register an inspector account and submit a URL, and SiteCheck's "drone" goes to that address itself, measures the load time, counts the files downloaded, then returns a viewport screenshot. The drone refuses internal and local addresses. The problem is getting past that refusal to read something the site never hands back directly.
 
 ## Recon
 

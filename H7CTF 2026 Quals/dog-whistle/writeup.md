@@ -15,10 +15,10 @@ Phương pháp khai thác: Truyền lệnh bằng tín hiệu phái sinh (tone h
 
 | File đính kèm | Vai trò |
 |---|---|
-| `aria` | Tệp nhị phân ELF x86-64, biên dịch PIE, stripped, kích thước 18 KB, liên kết động. |
+| `aria` | Binary ELF x86-64, biên dịch PIE, stripped, kích thước 18 KB, liên kết động. |
 | `SPEC.md` | Tài liệu đặc tả kỹ thuật truyền tải, mô đun mạng (modem) và cấu trúc gói tin TLV. |
-| `eq.cfg` | Tệp cấu hình bộ cân bằng âm thanh 8 dải (8 band), với mức tăng 0 dB (flat). |
-| `reference_ping.wav` | Tệp âm thanh mẫu (24-bit/96 kHz mono), dài 15.168 mẫu, giải mã ra chuỗi `A5 5A 02 10 00 12`. |
+| `eq.cfg` | File cấu hình bộ cân bằng âm thanh 8 dải (8 band), với mức tăng 0 dB (flat). |
+| `reference_ping.wav` | File âm thanh mẫu (24-bit/96 kHz mono), dài 15.168 mẫu, giải mã ra chuỗi `A5 5A 02 10 00 12`. |
 
 Quy trình xử lý âm thanh (phân tích từ `analysis/aria.asm` và tài liệu `frontend_notes.md`):
 
@@ -114,7 +114,7 @@ $ python -u exploit.py
 [+] FLAG: H7CTF{3c48f268-6761-422b-9df0-e652f6b2c4d0}
 ```
 
-## Các tệp tin liên quan
+## Các file liên quan
 
 ```text
 de.md  notes.md  writeup.md  flag.txt  exploit.py

@@ -5,7 +5,7 @@
 
 ## Problem Description
 
-The Gateway system establishes a three-layer protection system inside the UPDC smart contract, operating on the Quantum Nexus Network infrastructure. The requirements to complete the challenge include three conditions: (1) Execute a call originating from another smart contract (`tx.origin != msg.sender`), (2) transfer assets (ether) via the default `receive()` function, and (3) submit a correct password value. The interactive Instance is provisioned at the address `nc 34.116.80.78:31337`.
+Gateway requires three actions: call from another contract (`tx.origin != msg.sender`), send ether through `receive()`, and supply the correct password. The instance is managed through `nc 34.116.80.78:31337`.
 
 ## Initial Analysis
 
@@ -47,7 +47,7 @@ echo -e "1\nR3:TURИ" | nc 34.116.80.78 31337
 
 **Step 3 - Deploy the Breaker contract.**
 
-The Breaker contract is built with the objective of bypassing the basic `tx.origin != msg.sender` censorship system:
+`Breaker` calls `Gate` as a contract, satisfying `tx.origin != msg.sender`. It then calls `enter()`, sends ether and calls `claim(secret)`:
 
 ```solidity
 contract Breaker {
@@ -101,7 +101,7 @@ CSSCTF{CSS{B451C_BL0CKCH41N_5K1LL5}}
 
 ## Reproduce
 
-Automated re-establishment process via script:
+Reproduce:
 
 ```bash
 export CSS_RPC=http://34.116.80.78:8545/47c4a887-8b71-4b92-aa4d-eea88f7669f2

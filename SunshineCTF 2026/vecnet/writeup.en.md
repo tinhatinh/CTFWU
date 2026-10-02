@@ -14,8 +14,7 @@ which is left with nothing but a 768-dimensional vector. vec2text returns the se
 archive's password structure, and the password is found by brute-forcing against a hash already
 present in the database.
 
-The rest of the attack surface (SQLi, SSRF, XSS) has no way in; the hypotheses that were checked and
-ruled out are listed at the end.
+The SQLi, SSRF and XSS probes used in this investigation did not yield a working path. Their results are listed at the end; the statement is limited to those probes.
 
 ## Initial Analysis
 
@@ -62,12 +61,7 @@ not change the response of any route among the 626 shapes that were swept.
 `GET http://...:8025/api/v2/messages` with Basic auth `vecadmin:Emb3dPass2026!` returns the whole
 mailbox. Three messages, no flag, but two details:
 
-* Greg to Mike: "Here are the vec2text specifications you were asking for earlier:
-  num_steps=4, sequence_beam_width=5", with the link `http://...:8025/files/specs.7z`.
-* Greg to Steve: "our ChromaDB database is not exposed to the open Internet, and is only
-  accessible on our local servers, served with proper authentication to our web interface". That
-  sentence is true in the literal sense, Chroma is not exposed to the Internet; it sits on port 8000
-  of the same host.
+* Greg to Steve: "our ChromaDB database is not exposed to the open Internet, and is only accessible on our local servers, served with proper authentication to our web interface". Port 8000 nevertheless returned a heartbeat during the scan. The database queries below use HTTP Basic credentials from `config.php`.
 
 ### Step 3 - `fetch.php` and `specs.7z`
 
@@ -159,17 +153,12 @@ The control run on a vector whose answer is known:
 ```
 inversion(vec(magic_string)) -> '   suncf8_ '      cos 0.85
 ```
-
-Off in exactly the way vec2text usually is (losing `shin`, `t`), meaning the harness works. For
-`user_password_requirements`:
+The control output differs from the known text by missing characters (`shin`, `t`). This records an inversion error rather than guaranteeing the model’s accuracy. Next, process `user_password_requirements`:
 
 ```
 The user's first and last initials, three special characters followed by the magic string.
 ```
-
-There is one more check that does not depend on the quality of the answer: use the frozen GTR inside
-the corrector to re-embed the hypothesis and compare the cosine with the stored vector. cos = 0.9956,
-clearly higher than the control, so the sentence above was recovered verbatim.
+Re-embedding the proposed sentence with the frozen GTR encoder gives cosine similarity 0.9956 against the stored vector. This supports semantic similarity, not recovery of the original wording verbatim. The password candidate is checked separately against `user_hash_sha256` and the archive.
 
 ### Step 6 - The password: brute-forcing the sha256 instead of the 7z
 

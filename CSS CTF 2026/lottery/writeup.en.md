@@ -5,7 +5,7 @@
 
 ## Problem Description
 
-The system provides two Solidity structure files and a network service operating at the address `34.116.80.78:31338`. The `Lottery.sol` source code maintains a mechanism to record winning streaks. For each call to the `guess(_guess)` function, the smart contract calculates the target parameter `target = random() % 100`. If the guess is correct, the `streaks[msg.sender]` counter is incremented by 1; if incorrect, this variable is reset to 0. When the winning streak reaches a threshold of 10 consecutive times, the authority to designate `winner = msg.sender` will be activated. The `Setup.sol` file contains only a single victory validation condition:
+The challenge provides two Solidity structure files and a network service operating at the address `34.116.80.78:31338`. The `Lottery.sol` source code maintains a mechanism to record winning streaks. For each call to the `guess(_guess)` function, the smart contract calculates the target parameter `target = random() % 100`. If the guess is correct, the `streaks[msg.sender]` counter is incremented by 1; if incorrect, this variable is reset to 0. When the winning streak reaches a threshold of 10 consecutive times, the authority to designate `winner = msg.sender` will be activated. The `Setup.sol` file contains only a single victory validation condition:
 
 ```solidity
 function isSolved() external view returns (bool) {
@@ -23,9 +23,9 @@ Technical evaluation on the `Lottery.sol` file identified three critical logic v
 2. `target` value generation process: The `guess()` function recalculates the `target = random() % 100` variable using the exact same formula as the `random()` function. The contract does not use a random salt value or any independent secret storage mechanism.
 3. No quota mechanism exists: The contract lacks censorship conditions (`require`) limiting the number of `guess` function calls per transaction, and also imposes no restrictions checking `tx.origin`.
 
-The victory definition at the `isSolved` function (`winner != address(0)`) does not constrain the transparency of the participant's address (player address). Therefore, an intermediary contract (proxy contract) is still fully authorized to stand in as the `winner`. Combining these factors, a theoretical attack chain is formed: establish a single transaction containing a loop of 10 iterations of `{ t = random()%100; guess(t) }`.
+`isSolved()` checks only `winner != address(0)`, so a contract can be the winner. A helper contract can run ten iterations of `{ t = random()%100; guess(t) }` in a single transaction.
 
-The system operates as a replica (mainnet fork) of the main blockchain rather than as a white-label chain. This is confirmed when calling `eth_chainId` (returns value `0x1`) and `eth_blockNumber` (around block `26096389`). The `block.difficulty` parameter simulated by Anvil defaults to 0, however, this detail does not impact the exploitation chain as the attack method does not require predicting the mathematical structure of the parameters.
+The RPC reports `eth_chainId = 0x1` and a block number around `26096389`. Anvil reports `block.difficulty = 0` in this instance. The exploit relies on the block values remaining unchanged within a transaction; it does not need to predict them in advance.
 
 ## Exploitation Chain
 
@@ -86,7 +86,7 @@ def create_address(sender, nonce):
     return to_checksum_address("0x" + h.digest()[12:].hex())
 ```
 
-The deduced address contains exactly 726 bytes of code format. When querying the `lottery()` call function, it subsequently returns another address, absolutely confirming this is the system's original `Setup` address:
+The computed address contains exactly 726 bytes of code. When querying the `lottery()` call function, it subsequently returns another address, confirming this is the system's original `Setup` address:
 
 ```text
 Address candidate 0xE5Bf39E2a633f350eA183716b898b601530cBc85 code length 726 bytes -> routed to lottery() 0x13b4Edba63FAcaDC68232DAFDAaF31f76Ca72A3b
@@ -111,8 +111,7 @@ ticket please:
 >> R3:TURИ
 CSS{U5E_4_R4ND0M_FUNCT10N}
 ```
-
-**Verify independence:** Function `3` was initialized twice at far apart timestamps (15:55:15 and 15:56:03), the results were perfectly identical. The string text structure also concurrently validates the approach method: `U5E_4_R4ND0M_FUNCT10N` is the decoded cipher for "USE A RANDOM FUNCTION". Conclude with the structure kill operation (`2` + ticket) and receive the `Instance killed` message, affirming all operational flows are completely legitimate.
+**Repeat check:** Requests at 15:55:15 and 15:56:03 returned the same flag. Afterward, operation `2` with the ticket returned `Instance killed`.
 
 ## Flag
 
@@ -130,13 +129,12 @@ Override format: CSSCTF{CSS{U5E_4_R4ND0M_FUNCT10N}}
 
 ## Reproduce
 
-Automated re-establishment process:
+Reproduce:
 
 ```bash
 python exploit.py <instance-rpc-endpoint> "<team name>"
 ```
-
-The automated process operates smoothly without needing Private Key and Setup Address configuration parameters. The algorithm directly extracts accounts from the node, determines Setup via arithmetic calculation (CREATE), verifies using the Getter method, initializes the `analysis/Attacker.sol` source code, and calls the API interaction to output the flag. Testing on a controlled environment (offline replica) requires properly simulating the Launcher's configuration variables:
+The script obtains unlocked accounts from the RPC, derives the `Setup` address using CREATE, checks its getter, deploys `analysis/Attacker.sol`, and requests the flag. It does not need the private key or Setup address from the launcher. A local reproduction uses the following Anvil configuration:
 
 ```bash
 anvil --chain-id 31337 --block-base-fee-per-gas 0 --accounts 2 --balance 5000

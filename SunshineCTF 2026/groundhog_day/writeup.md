@@ -1,7 +1,7 @@
 # Groundhog Day - Web (Hard)
 
 **Flag:** `sun{s1x_m0r3_w33ks_0f_g0ph3r_ssrf}`
-**Files:** Không có tệp đính kèm
+**Files:** Không có file đính kèm
 **Instance:** `https://odyssey.web.2026.sunshinectf.games`
 
 ## Đề bài
@@ -31,7 +31,7 @@ Quá trình quét các cổng mạng nội bộ phát hiện chính xác hai d�
 |---|---|
 | `127.0.0.1:5000` | Đây chính là ứng dụng console hiện tại, chỉ có duy nhất một route gốc `/` |
 | `127.0.0.1:8000` | Một API nội bộ mang tên "Bureau Archive" |
-| `169.254.169.254` | Dịch vụ siêu dữ liệu (metadata) giả lập môi trường GCP của hạ tầng tổ chức giải |
+| `169.254.169.254` | Dịch vụ metadata giả lập môi trường GCP của hạ tầng tổ chức giải |
 
 Điểm đặc biệt là API nội bộ tự hào "khoe" danh sách tính năng của nó ngay tại trang chủ `GET /` (dài 1045 byte):
 
@@ -43,7 +43,7 @@ POST /report  Kết xuất (render) file PDF lưu trữ từ dữ liệu đầu 
 NOTE(ops): ... mainly updating from wkhtmltopdf 0.12.5
 ```
 
-Đích nhắm cuối cùng hiện lên rất rõ ràng: route `/report`. Khi ta POST dữ liệu vào đây, phần thân (body) sẽ được kết xuất bằng công cụ `wkhtmltopdf` phiên bản 0.12.5 - một phiên bản cổ lỗ sĩ khét tiếng với khả năng cho phép đọc file cục bộ. Tuy nhiên, hành trình tiếp cận nó bị cản bước bởi hai rào cản mang tính vật lý (do hệ thống quy định chứ không phải do ta phỏng đoán):
+Đích nhắm cuối cùng hiện lên rất rõ ràng: route `/report`. Khi ta POST dữ liệu vào đây, phần thân (body) sẽ được xuất bằng công cụ `wkhtmltopdf` phiên bản 0.12.5 - một phiên bản cổ lỗ sĩ khét tiếng với khả năng cho phép đọc file cục bộ. Tuy nhiên, hành trình tiếp cận nó bị cản bước bởi hai rào cản mang tính vật lý (do hệ thống quy định chứ không phải do ta phỏng đoán):
 
 - Console SSRF luôn phát request dưới định dạng GET, nên khi đâm vào `/report` sẽ bị bật ngược lại bằng lỗi `405 Method Not Allowed`.
 - Dịch vụ mock metadata thì khăng khăng đòi hỏi phải có header bảo mật `Metadata-Flavor: Google`.
@@ -55,11 +55,11 @@ Nhìn rộng ra bên ngoài, container này đã bị khoá chặt đường ra 
 | # | Giả thuyết (Rabbit Hole) | Kết luận |
 |---|---|---|
 | H2 | Giao thức `file://` bị chặn vì ứng dụng client không hỗ trợ | SAI. Lệnh chặn xuất phát từ bộ lọc (allow-list) chủ đích của tác giả, còn câu thông báo lỗi in ra là nguyên văn của thư viện libcurl. |
-| H4 | Hai ứng dụng có thể còn chứa các endpoint ẩn | CHẾT. Đã vét cạn 139 từ đơn và khoảng 30 đường dẫn, mọi mã lỗi 405 đều nhả ra một cục body 153 byte y hệt nhau, chứng tỏ không có handler ẩn nào cả. |
+| H4 | Hai ứng dụng có thể còn chứa các endpoint ẩn | CHẾT. Đã vét cạn 139 từ đơn và khoảng 30 đường dẫn, mọi mã lỗi 405 đều trả về một cục body 153 byte y hệt nhau, chứng tỏ không có handler ẩn nào cả. |
 | H5 | Tồn tại thủ thuật ép GET thành POST | CHẾT. Mọi phương pháp từ tham số `?_method`, header `X-HTTP-Method-Override`, mã hoá multipart, JSON body, đổi method sang PUT/PATCH/OPTIONS, mánh lới routing, thay 5 kiểu Host, thử 19 tên tham số... tất thảy đều vô dụng. |
 | H9 | Container có thể truy cập nội dung từ một trạm (station) do người chơi kiểm soát | CHẾT. Không có kết nối ngoại mạng (no egress), TCP bị bóp nghẹt. |
 | H10 | Máy chủ mock metadata có chứa cờ | CHẾT. Dù có smuggle được header để lọt vào đọc trọn vẹn toàn bộ cây `/computeMetadata/v1/`, thì bên trong cũng chỉ rỗng tuếch các thông số GCP tiêu chuẩn. |
-| H14 | Thẻ `<iframe src="file://...">` có khả năng hiển thị (render) nội dung file | CHẾT. Tệp tin tuy có bị fetch (gọi) thật, nhưng thư viện Qt từ chối vẽ văn bản (text) của các khung con (subframe), dẫn đến file PDF sinh ra không có bất kỳ dòng chữ (text operator) nào. |
+| H14 | Thẻ `<iframe src="file://...">` có khả năng hiển thị (render) nội dung file | CHẾT. File tuy có bị fetch (gọi) thật, nhưng thư viện Qt từ chối vẽ văn bản (text) của các khung con (subframe), dẫn đến file PDF sinh ra không có bất kỳ dòng chữ (text operator) nào. |
 
 ## Chuỗi khai thác
 
@@ -75,8 +75,7 @@ cổng >= 65536             -> station unreachable - URL rejected: Port number w
 
 Chú ý kỹ văn phong của ba dòng thông báo cuối: nó rặc mùi của thư viện `libcurl` trong ngôn ngữ C. Các thư viện như `requests` hay `urllib3` của Python không bao giờ phun ra những câu kiểu `Failed to connect to <host> port <n> after <m> ms` hay `URL rejected:`. Từ đây rút ra hai chân lý: Giao thức `file://` bị đứt bóng là do bộ lọc kiểm duyệt thủ công của tác giả chứ không phải do client chê; và giao thức `gopher://` lách thành công qua khe hở của bộ lọc này (vì log báo `bytes=0`, không hiện lỗi fault nào, đồng nghĩa với việc kết nối đã được thực thi dưới ngầm).
 
-**Bước 2 - Tuyệt kỹ Gopher: Ép GET của console thành một HTTP request tuỳ ý.** 
-Công cụ libcurl có một thói quen xử lý cực kỳ thú vị với giao thức `gopher://host:port/_<selector>`: nó sẽ tự động giải mã URL (percent-decode) phần selector rồi tống khứ toàn bộ chuỗi ký tự thô đó thẳng xuống socket:
+Với `gopher://host:port/_<selector>`, libcurl percent-decode selector rồi gửi các byte đó xuống socket:
 
 ```text
 gopher://127.0.0.1:8000/_GET%20/health%20HTTP/1.1%0d%0aHost:%20127.0.0.1%0d%0a%0d%0a
@@ -92,8 +91,7 @@ Content-Length: 3
 
 ok
 ```
-
-Từ kẽ hở này, ta đã chính thức tạo ra một proxy HTTP gửi gói tin thô bên trong container, nắm trong tay toàn quyền nhào nặn method và header. Cũng từ thông tin phản hồi, ta bắt thóp được công nghệ mà máy chủ đang chạy: Werkzeug phiên bản 3.1.8 trên nền Python 3.13.7.
+Selector cho phép gửi HTTP request với method và header đã chọn từ container. Response xác định dịch vụ là Werkzeug 3.1.8 trên Python 3.13.7.
 
 **Bước 3 - Cú thọc sườn POST /report qua ngầm proxy.**
 
@@ -106,12 +104,12 @@ Content-Length: <n>
 content=<h1>Feb 2 Summary</h1>
 ```
 
-Phản hồi trả về `bytes=11230`, kèm theo JSON chứa đầy đủ các khoá `document`, `bytes`, `encoding`, `data`. Điều này chứng tỏ `wkhtmltopdf` đã thực sự bị kích hoạt. Nếu tiện tay nhét thêm `Metadata-Flavor: Google` vào khuôn request này, ta sẽ kéo được trọn vẹn cây siêu dữ liệu (metadata), qua đó chấm dứt ảo tưởng ở H10 rằng cờ nằm trong infra.
+Phản hồi trả về `bytes=11230`, kèm theo JSON chứa đầy đủ các khoá `document`, `bytes`, `encoding`, `data`. Điều này chứng tỏ `wkhtmltopdf` đã thực sự bị kích hoạt. Nếu tiện tay nhét thêm `Metadata-Flavor: Google` vào khuôn request này, ta sẽ kéo được trọn vẹn cây metadata, qua đó chấm dứt ảo tưởng ở H10 rằng cờ nằm trong infra.
 
 **Bước 4 - Khai thông kênh truyền văn bản.** 
-Sử dụng thẻ `<iframe src="file:///etc/passwd">` sinh ra một file PDF nhưng không chứa bất kỳ văn bản nào. Phân tích sâu hơn cho thấy file thực sự đã được thư viện đọc: gọi `file:///ctf/flag.txt` thì máy chủ báo lỗi `ContentNotFoundError` (vì không tìm thấy file), trong khi gọi `/etc/passwd` thì máy chủ im lặng nuốt gọn. Vấn đề cốt lõi là trình kết xuất (renderer) Qt từ chối vẽ loại nội dung text/plain bên trong khung con. Mọi nỗ lực dùng `<meta refresh>` hay `location=` để ép chuyển hướng đều vỡ mộng với thông báo `unknown error`.
+Sử dụng thẻ `<iframe src="file:///etc/passwd">` sinh ra một file PDF nhưng không chứa bất kỳ văn bản nào. Phân tích sâu hơn cho thấy file thực sự đã được thư viện đọc: gọi `file:///ctf/flag.txt` thì máy chủ báo lỗi `ContentNotFoundError` (vì không tìm thấy file), trong khi gọi `/etc/passwd` thì máy chủ im lặng nuốt gọn. Vấn đề cốt lõi là trình xuất (renderer) Qt từ chối vẽ loại nội dung text/plain bên trong khung con. Mọi nỗ lực dùng `<meta refresh>` hay `location=` để ép chuyển hướng đều vỡ mộng với thông báo `unknown error`.
 
-Bước ngoặt đến khi chèn thẻ `<script>document.title="JSWORKS123"</script>`. Mã nguồn PDF trả về hiển thị đoạn text này chình ình trong trường `/Title`. Nghĩa là mã JavaScript hoàn toàn có thể được thực thi ngầm, và trường dữ liệu metadata chính là kênh tuồn plaintext hoàn hảo. Ưu điểm chết người của chiêu này là chuẩn mã hoá UTF-16BE mặc định trong trường `/Title` giúp ta nhàn nhã trích xuất nội dung mà không phải hì hục giải mã hệ thống phông chữ (subset font) rối rắm trong luồng dữ liệu chính của PDF.
+Payload `<script>document.title="JSWORKS123"</script>` làm trường `/Title` trong PDF chứa marker này, xác nhận JavaScript chạy trong renderer. Có thể dùng `document.title` để đưa dữ liệu đọc được vào metadata; chuỗi trong `/Title` được mã hóa UTF-16BE.
 
 **Bước 5 - Ăn cắp file qua cửa hậu XHR (XMLHttpRequest).**
 
@@ -123,11 +121,10 @@ x.send();
 document.title = "OK:" + x.responseText;
 </script>
 ```
-
-Thử nghiệm trả về kết quả `OK:d89c16037bd5`, khớp hoàn hảo với nội dung tệp `/etc/hostname` của container. Lưu ý rằng XHR bị chặn đứng (báo lỗi `NETWORK_ERR`) nếu cố gọi ra ngoài bằng giao thức `http://`, chứng tỏ nó chỉ bị giới hạn bởi quyền truy cập file cục bộ (local file access). Một chi tiết kỹ thuật sắc bén: do phần thân POST bị ép kiểu `form-urlencoded`, dấu cộng `+` trong lệnh JS `"OK:"+x.responseText` sẽ bị máy chủ hiểu lầm là dấu cách, làm cú pháp JS gãy vụn. Khắc phục bằng cách bọc toàn bộ nội dung qua hàm mã hoá URL `quote(content, safe="")`, giúp toàn bộ 5 biến thể mã khai thác hoạt động trơn tru.
+Phép thử đọc `/etc/hostname` trả `OK:d89c16037bd5`. Trong môi trường này, XHR tới `http://` báo `NETWORK_ERR`, còn request tới file local hoạt động. Body POST dùng form-urlencoded, nên dấu `+` phải được percent-encode để tránh bị đổi thành dấu cách.
 
 **Bước 6 - Truy tìm kho báu.** 
-Tiến hành dò dẫm đường dẫn: Các ứng viên `/ctf/flag.txt` (đường dẫn đặc trưng của các bài pwn cùng kỳ), `/flag`, `/app/flag.txt`, `/opt/flag.txt` đều đâm đầu vào ngõ cụt `ContentNotFoundError`. Rút cục, vị trí `/flag.txt` chói loà trả về lá cờ trọn vẹn.
+dò dẫm đường dẫn: Các ứng viên `/ctf/flag.txt` (đường dẫn đặc trưng của các bài pwn cùng kỳ), `/flag`, `/app/flag.txt`, `/opt/flag.txt` đều đâm đầu vào hướng không cho kết quả `ContentNotFoundError`. Rút cục, vị trí `/flag.txt` chói loà trả về flag trọn vẹn.
 
 ## Flag
 ```
@@ -143,5 +140,4 @@ python analysis/ssrf.py                # Tung ra 5 phát súng mở màn, in th�
 python analysis/gopher.py              # Đóng gói và tuồn lậu (smuggle) các request GET /health và POST /report
 python analysis/pdfdump.py sanity      # Công cụ tự kiểm tra sức khoẻ của bộ trích xuất văn bản từ PDF
 ```
-
-Script `exploit.py` được thiết kế gọn nhẹ, chỉ phụ thuộc vào thư viện chuẩn (stdlib). Thư mục `analysis/` lưu vết chân thực quá trình đào bới: `ssrf.py` rồi đến `gopher.py`, `gopher2.py`, `js_check.py`, `js_lfi.py`, `pdfdump.py`, `pdfdebug.py`, và `readfile.py`. Thư mục `files/` đóng vai trò như nhà kho chứa các tang vật: `root.html` (comment lộ bí mật của đội ops), `station_index.txt` (tài liệu nội bộ), `first_post_report_response.txt` (phản hồi nguyên thuỷ của endpoint `/report`), cùng hàng loạt các biến thể PDF được sinh ra trong quá trình thử nghiệm như `sanity.pdf`, `xhr_hostname.pdf`, `lfi__etc_passwd.pdf`. Trạm mồi `station-canary-...qoder.website` được dựng lên phục vụ bài toán giờ đã được dọn dẹp ẩn đi.
+`exploit.py` dùng thư viện chuẩn. `analysis/` lưu các phép thử SSRF, gopher, JavaScript và đọc PDF: `ssrf.py`, `gopher.py`, `gopher2.py`, `js_check.py`, `js_lfi.py`, `pdfdump.py`, `pdfdebug.py`, `readfile.py`. `files/` giữ response HTML, tài liệu nội bộ và các PDF thử nghiệm như `root.html`, `station_index.txt`, `first_post_report_response.txt`, `sanity.pdf`, `xhr_hostname.pdf`, `lfi__etc_passwd.pdf`. Trạm thử bên ngoài đã được dọn dẹp sau bài.

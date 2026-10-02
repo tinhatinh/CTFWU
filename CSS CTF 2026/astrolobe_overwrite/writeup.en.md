@@ -5,13 +5,13 @@
 
 ## Problem Description
 
-The system provides an executable file `nexus_core` deployed as a service via the netcat protocol at `34.116.80.78:7654`. This service accepts input (payload) as a hex string, with a maximum capacity limit of 512 bytes. The entire execution process is constrained by an alarm function of under 45 seconds. The objective is to send a code sequence capable of satisfying 6 internal check gates (referred to as "harmonic resonance"). When the system passes these check rounds, the command to overwrite the system key will be triggered and return the flag.
+The challenge provides an executable file `nexus_core` deployed as a service via the netcat protocol at `34.116.80.78:7654`. This service accepts input (payload) as a hex string, with a maximum capacity limit of 512 bytes. The entire execution process is constrained by an alarm function of under 45 seconds. The objective is to send a code sequence capable of satisfying 6 internal check gates (referred to as "harmonic resonance"). When the system passes these check rounds, the command to overwrite the system key will be triggered and return the flag.
 
 Upon connection, the service will output a beacon signal as a hexadecimal string, then wait to receive input data. This data must be a hex string representing low-level machine code. The system does not provide accompanying technical documentation; if the check fails, it only responds with static error messages such as "COHERENCE FAULT", "THERMAL DETONATION", or "HARMONIC FAULT".
 
 ## Initial Analysis
 
-Evaluating the binary file:
+Evaluating the binary:
 ```text
 elf64 x86-64 PIE NX full-relro
 interpreter: /lib64/ld-linux-x86-64.so.2
@@ -21,7 +21,7 @@ strings: "flag.txt", "[!] COHERENCE FAULT: Quantum state cold",
          "[!] THERMAL DETONATION: Core runaway", "[+] TELEMETRY STABILIZED"
 ```
 
-Core point: The binary file calls the `time()` and `alarm(45)` functions. This imposes a requirement for real-time interaction with a strict time limit. The check logic blocks do not directly read the flag file; instead, the system requires internal state variables to satisfy complex mathematical conditions before allowing access.
+Core point: The binary calls the `time()` and `alarm(45)` functions. This imposes a requirement for real-time interaction with a strict time limit. The check logic blocks do not directly read the flag file; instead, the system requires internal state variables to satisfy complex mathematical conditions before allowing access.
 
 ## Exploitation Chain
 
@@ -42,7 +42,7 @@ The assembly decompilation process fragments the logic into three main equation 
 - Gate 4 group: Has the form `c1^2 = c0^3 + 17c0 + 43 mod M`.
 - Gate 5 group: Has the form `c3^2 = c2^3 + 17c2 + 43 mod M`.
 
-Build a verification function in Python (`model.py`), then initialize 200 random test samples and cross-reference with the oracle system. The result achieved 100% consistency.
+Implement the Python model in `model.py` and compare it with the oracle on 200 random samples. All 200 tested samples agree; this is a check of that sample set, not a proof for every input.
 
 **Step 3 - Solve the system of equations via the degenerate space.**  
 Based on the established mathematical model, a C source code optimized for multithreading (using OpenMP via the `-fopenmp` flag) is used to scan the variable space `t0 in [0..300]`:
@@ -57,7 +57,7 @@ done: qr=9892500 hits=1
 The system recorded the unique solution `(1, 218, 59611, 783)` in the first scan range. This solution was then proven correct by comparing it with the beacon parameters on the server.
 
 **Step 4 - Simulate the Assembly VM and set up the Payload.**  
-The service possesses a virtual machine (VM) that executes 8 opcodes. These opcodes are addressed via a self-referencing permutation table `P`. Specifically, each 4-byte instruction block is decoded according to the formula `opcode = P[(byte0 ^ z) & 7]`. Use the simulator `vm.py::build(beacon, TVEC)` to generate a 420-byte low-level machine code (including 105 instructions, Program Counter value pc=114). This machine code ensures proper initialization of the variable range `w[0..3] = (t_i + beacon) mod M`.
+The service possesses a virtual machine (VM) that executes 8 opcodes. These opcodes are addressed via a self-referencing permutation table `P`. Specifically, each 4-byte code is decoded according to the formula `opcode = P[(byte0 ^ z) & 7]`. Use the simulator `vm.py::build(beacon, TVEC)` to generate a 420-byte low-level machine code (including 105 instructions, Program Counter value pc=114). This machine code ensures proper initialization of the variable range `w[0..3] = (t_i + beacon) mod M`.
 
 ```python
 blob, v = vm.build(beacon, TVEC)

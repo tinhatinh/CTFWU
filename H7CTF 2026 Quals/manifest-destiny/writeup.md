@@ -9,8 +9,8 @@ Mục tiêu là khai thác hệ thống, nâng cấp đặc quyền (privilege e
 
 ## Phân tích ban đầu
 
-Giải nén tệp `manifest.zip`, trích xuất tệp thực thi chính (binary), cùng thư viện `libc.so.6` (phiên bản glibc 2.39, môi trường Ubuntu 24.04) và trình nạp (loader) đi kèm.
-Phân tích thông tin tập tin bằng công cụ `scripts/triage.cjs`:
+Giải nén file `manifest.zip`, trích xuất binary chính (binary), cùng thư viện `libc.so.6` (phiên bản glibc 2.39, môi trường Ubuntu 24.04) và trình nạp (loader) đi kèm.
+Phân tích thông tin file bằng công cụ `scripts/triage.cjs`:
 
 ```text
 Định dạng: ELF 64-bit, type=ET_EXEC (Địa chỉ cố định, không PIE), trình nạp interpreter=/lib64/ld-linux-x86-64.so.2

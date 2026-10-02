@@ -5,11 +5,11 @@
 
 ## Đề bài
 
-Tác giả gợi ý rằng có một thông điệp được cất giấu bên trong tệp tin, và yêu cầu người chơi phân tích kỹ lưỡng. Thử thách cung cấp tệp mã nguồn `invisible_text.py` (tệp được sinh riêng cho từng đội, ví dụ: `invisible_text_612.py`). Nhiệm vụ là trích xuất thông điệp ẩn bên trong mã nguồn và nộp. Thử thách không yêu cầu giao tiếp với dịch vụ từ xa.
+Tác giả gợi ý rằng có một thông điệp được cất giấu bên trong file, và yêu cầu người chơi phân tích kỹ lưỡng. Thử thách cung cấp file mã nguồn `invisible_text.py` (file được sinh riêng cho từng đội, ví dụ: `invisible_text_612.py`). Nhiệm vụ là trích xuất thông điệp ẩn bên trong mã nguồn và nộp. Thử thách không yêu cầu giao tiếp với dịch vụ từ xa.
 
 ## Phân tích ban đầu
 
-Tệp tin là mã Python, kích thước 4245 byte, bao gồm 81 dòng văn bản định dạng UTF-8. Phân tích nội dung cho thấy tệp chỉ chứa một ký tự ngoài dải ASCII chuẩn là dấu gạch ngang `-` trong phần bình luận (comment). Không ghi nhận các kỹ thuật giấu tin như Zero Width Space, BOM (Byte Order Mark), NBSP, hoặc ký tự đồng dạng (homoglyph).
+File là mã Python, kích thước 4245 byte, bao gồm 81 dòng văn bản định dạng UTF-8. Phân tích nội dung cho thấy file chỉ chứa một ký tự ngoài dải ASCII chuẩn là dấu gạch ngang `-` trong phần bình luận (comment). Không ghi nhận các kỹ thuật giấu tin như Zero Width Space, BOM (Byte Order Mark), NBSP, hoặc ký tự đồng dạng (homoglyph).
 
 Chi tiết đáng chú ý là **47 trên tổng số 81 dòng mã kết thúc bằng các khoảng trắng (whitespace) dư thừa**. Cụ thể:
 
@@ -28,7 +28,7 @@ dòng 47  SS                (chứa 2 ký tự)
 
 Các dòng lẻ có độ dài cố định là 12 ký tự (ngoại trừ dòng đầu tiên có 10 ký tự), trong khi các dòng chẵn chứa một ký tự tab. Dữ liệu ẩn nằm trong các khoảng trắng cuối dòng này.
 
-Mã nguồn bề mặt là một công cụ `diary_reader.py`, thực hiện nối 46 khối base64, giải mã bằng `b64decode`, bung nén với `zlib.decompress`, và in kết quả. Khi thực thi (yêu cầu ghi kết quả ra tệp UTF-8 để tránh lỗi `UnicodeEncodeError` trên môi trường Windows cp1252), đầu ra là 2145 ký tự braille (chữ nổi) trên 33 dòng. Đây là dữ liệu đánh lạc hướng (decoy).
+Mã nguồn bề mặt là một công cụ `diary_reader.py`, thực hiện nối 46 khối base64, giải mã bằng `b64decode`, bung nén với `zlib.decompress`, và in kết quả. Khi thực thi (yêu cầu ghi kết quả ra file UTF-8 để tránh lỗi `UnicodeEncodeError` trên môi trường Windows cp1252), đầu ra là 2145 ký tự braille (chữ nổi) trên 33 dòng. Đây là dữ liệu đánh lạc hướng (decoy).
 
 ## Quá trình phân tích
 
@@ -87,7 +87,7 @@ HTTP 200 :: {"correct":true,"message":"Correct."}
 POCTF{PIEMPAOSMHDLEGRT}
 ```
 
-Thông điệp bí mật được lưu trữ tại vùng **khoảng trắng cuối dòng** của tệp mã nguồn. Các lớp mã hóa cơ bản (base64, zlib, braille) chỉ có chức năng làm nhiễu thông tin.
+Thông điệp bí mật được lưu trữ tại vùng **khoảng trắng cuối dòng** của file mã nguồn. Các lớp mã hóa cơ bản (base64, zlib, braille) chỉ có chức năng làm nhiễu thông tin.
 
 ## Reproduce
 

@@ -6,7 +6,7 @@
 
 ## Đề bài
 
-Hệ thống cung cấp kết quả phân tích logic (logic analyzer) của bảng mạch "NoiseGate" trong quá trình khởi động (boot). Thông số cho biết thiết bị cung cấp khoá cấu hình (provisioning key) trong quá trình này, tuy nhiên không trả về toàn bộ mã tại một vị trí duy nhất. Yêu cầu của bài toán là phân tích tín hiệu điện để tổng hợp lại mã khóa hệ thống.
+Đề cung cấp kết quả phân tích logic (logic analyzer) của bảng mạch "NoiseGate" trong quá trình khởi động (boot). Thông số cho biết thiết bị cung cấp khoá cấu hình (provisioning key) trong quá trình này, tuy nhiên không trả về toàn bộ mã tại một vị trí duy nhất. Yêu cầu của bài toán là phân tích tín hiệu điện để tổng hợp lại mã khóa hệ thống.
 
 ## Phân tích ban đầu
 
@@ -35,7 +35,7 @@ Chu kỳ 8500 ns/bit tương đương với tốc độ 117.650 baud, phù hợp
 
 ### Bước 1: Trích xuất thông tin cấu hình từ luồng UART
 
-Tiến hành phân tích kênh `UART_TX` với cấu hình 8N1 (1 bit bắt đầu, 8 bit dữ liệu, không chẵn lẻ, 1 bit kết thúc). Quy luật phân tích: bit bắt đầu (start bit) định vị tại sườn âm (cạnh xuống), dữ liệu được đọc tại điểm giữa mỗi chu kỳ (`level(sym, start + 8500*(1.5+b))`). Chuỗi log hệ thống hiển thị:
+phân tích kênh `UART_TX` với cấu hình 8N1 (1 bit bắt đầu, 8 bit dữ liệu, không chẵn lẻ, 1 bit kết thúc). Quy luật phân tích: bit bắt đầu (start bit) định vị tại sườn âm (cạnh xuống), dữ liệu được đọc tại điểm giữa mỗi chu kỳ (`level(sym, start + 8500*(1.5+b))`). Chuỗi log hệ thống hiển thị:
 
 ```text
 [boot] NoiseGate bootloader v2.1
@@ -89,4 +89,4 @@ $ python solve_bus.py files/capture.vcd
 [+] FLAG: H7CTF{10d9b516-d19b-4895-9634-45b27a7591c3}
 ```
 
-Có ba cơ sở độc lập xác thực tính chính xác của phương pháp giải: Dữ liệu hai mảng A và B cung cấp chuẩn 43 byte theo yêu cầu; kết quả cuối theo định dạng cờ `H7CTF{uuid}` (chuẩn UUID 8-4-4-4-12); và các siêu dữ liệu cấu hình kênh truyền (như opcode `0x03`, địa chỉ `0x001A00`, slave `0x50` cùng bit read) đều đồng bộ dữ liệu trích xuất từ luồng UART.
+Có ba cơ sở độc lập xác thực tính chính xác của phương pháp giải: Dữ liệu hai mảng A và B cung cấp chuẩn 43 byte theo yêu cầu; kết quả cuối theo định dạng cờ `H7CTF{uuid}` (chuẩn UUID 8-4-4-4-12); và các metadata cấu hình kênh truyền (như opcode `0x03`, địa chỉ `0x001A00`, slave `0x50` cùng bit read) đều đồng bộ dữ liệu trích xuất từ luồng UART.

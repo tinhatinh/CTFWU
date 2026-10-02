@@ -1,14 +1,14 @@
 # Countersign - Rev (Insane)
 
 **Flag:** `H7CTF{011c87d4-b5c8-405d-923a-33dbed3e5bf7}` 
-**Files:** `countersign.zip` (Tệp ELF x86-64 PIE, tệp nhị phân đã loại bỏ thông tin gỡ lỗi - stripped, kích thước 22 KB) + `note.txt`
+**Files:** `countersign.zip` (File ELF x86-64 PIE, binary đã loại bỏ thông tin gỡ lỗi - stripped, kích thước 22 KB) + `note.txt`
 **Dịch vụ:** `nc pwn.h7tex.com 43708`
 
 ## Đề bài
 
 > Countersign is the attestation core of a licensed firmware module. Slide a pass under the glass and the clerk stamps whatever you hand him, but the core itself only ever walks a route it can vouch for. Find the input that walks it all the way to the flag.
 
-Tệp `note.txt` cung cấp mô tả giao thức mạng gồm 4 lệnh:
+File `note.txt` cung cấp mô tả giao thức mạng gồm 4 lệnh:
 
 ```text
 GET            Yêu cầu máy chủ trả về toàn bộ luồng nhị phân (image) của chương trình dưới định dạng hex.
@@ -21,7 +21,7 @@ RUN <hex>      Cung cấp đầu vào dài 24 byte cho lõi xử lý (core) và 
 
 ## Phân tích ban đầu
 
-Quá trình phân tích thực hiện thông qua công cụ `objdump -d`, `readelf` và các mã kịch bản hỗ trợ (như `fd.py`, `records.py`). Tệp nhị phân có dung lượng nhỏ, không bao gồm mã cản trở (anti-debug) hoặc tự sửa đổi (self-modifying code). Thử thách chủ yếu đến từ việc mã nguồn đã bị loại bỏ thông tin gỡ lỗi, yêu cầu suy luận kiến trúc hệ thống từ mã assembly.
+Quá trình phân tích thực hiện thông qua công cụ `objdump -d`, `readelf` và các script hỗ trợ (như `fd.py`, `records.py`). Binary có dung lượng nhỏ, không bao gồm mã cản trở (anti-debug) hoặc tự sửa đổi (self-modifying code). Thử thách chủ yếu đến từ việc mã nguồn đã bị loại bỏ thông tin gỡ lỗi, yêu cầu suy luận kiến trúc hệ thống từ mã assembly.
 
 Sơ đồ chức năng các hàm được phân tách như sau:
 
@@ -170,7 +170,7 @@ $ python solve_live.py
        H7CTF{011c87d4-b5c8-405d-923a-33dbed3e5bf7}
 ```
 
-## Các tệp tin liên quan
+## Các file liên quan
 
 ```text
 exploit.py            Công cụ tự động khai thác: kết nối, phân tích GET, xác thực MINT, nội suy ngược và kích hoạt RUN.

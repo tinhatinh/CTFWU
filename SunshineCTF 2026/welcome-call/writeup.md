@@ -7,43 +7,40 @@
 
 > "I just got a call from the flag factory, they said they were looking for their favorite CTFer?"
 
-Thử thách cung cấp duy nhất một tệp tin mạng định dạng `.pcap`.
+Thử thách cung cấp duy nhất một file mạng định dạng `.pcap`.
 
 ## Phân tích ban đầu
 
-Kiểm tra tệp tin cho thấy đây là luồng bắt gói (capture) của một phiên đàm thoại VoIP qua giao thức SIP. Cuộc gọi bắt đầu bằng bản tin `INVITE` từ địa chỉ `192.0.2.10` gửi tới `sip:board@192.0.2.20`, và lần lượt nhận được các phản hồi tiêu chuẩn như `100 Trying`, `180 Ringing`, `200 OK`, kết thúc bằng `ACK`. Giao thức mô tả phiên (SDP) của hai phía thống nhất thông số như sau:
+Kiểm tra file cho thấy đây là luồng bắt gói (capture) của một phiên đàm thoại VoIP qua giao thức SIP. Cuộc gọi bắt đầu bằng bản tin `INVITE` từ địa chỉ `192.0.2.10` gửi tới `sip:board@192.0.2.20`, và lần lượt nhận được các phản hồi tiêu chuẩn như `100 Trying`, `180 Ringing`, `200 OK`, kết thúc bằng `ACK`. Giao thức mô tả phiên (SDP) của hai phía thống nhất thông số như sau:
 
 ```
 m=audio 4000 RTP/AVP 0        a=rtpmap:0 PCMU/8000   a=ptime:20   a=sendonly   (người gọi)
 m=audio 4002 RTP/AVP 0        a=rtpmap:0 PCMU/8000   a=ptime:20   a=recvonly   (tổng đài)
 ```
+Dùng `scapy` để đọc pcap và ghép RTP payload; môi trường đã thử không có `tshark`.
 
-Điều này có nghĩa là phiên đàm thoại sử dụng luồng âm thanh chuẩn G.711 mu-law với tần số lấy mẫu 8 kHz, mỗi gói tin chứa 20 ms âm thanh, và tín hiệu chỉ truyền theo một chiều duy nhất (từ người gọi đến tổng đài). 
-Do hệ thống phân tích không cài đặt sẵn công cụ `tshark`, giải pháp tối ưu là sử dụng thư viện `scapy` để đọc tệp pcap và tự trích xuất nội dung phần tải trọng (payload).
-
-Sau khi kiểm tra kỹ lưỡng các trường dữ liệu của giao thức RTP và xác nhận không có bất kỳ kỹ thuật giấu tin (steganography) nào được áp dụng ở tầng mạng, bước tiếp theo là phân tích trực tiếp sóng âm thanh.
+Kiểm tra sequence number và timestamp để ghép các RTP payload theo thứ tự, rồi giải mã âm thanh theo thông số SDP.
 
 ## Chuỗi khai thác
 
-Tiến hành giải mã payload G.711 mu-law sang chuẩn PCM thô:
+Giải mã payload G.711 mu-law sang chuẩn PCM thô:
 
 ```python
 pcm = audioop.ulaw2lin(payload, 2)     # Tham số width là độ rộng mẫu ĐẦU RA; truyền số 1 sẽ ra chất lượng 8-bit
 ```
 
-Việc đối chiếu chéo bằng lệnh `ffmpeg -f mulaw -ar 8000 -i payload.raw` cho ra kết quả trùng khớp hoàn toàn: hệ số tương quan `corr(audioop, ffmpeg) = 1.0000`.
-*(Chú ý: Trong các lần thử nghiệm trước, do vô tình truyền `width=1` cho hàm giải mã, độ dài tệp âm thanh đã bị tính nhầm thành 7.78 giây thay vì con số chính xác là 15.56 giây).*
+Việc đối chiếu bằng lệnh `ffmpeg -f mulaw -ar 8000 -i payload.raw` cho ra kết quả trùng khớp: hệ số tương quan `corr(audioop, ffmpeg) = 1.0000`.
+*(Chú ý: Trong các lần thử nghiệm trước, do vô tình truyền `width=1` cho hàm giải mã, độ dài file âm thanh đã bị tính nhầm thành 7.78 giây thay vì con số chính xác là 15.56 giây).*
 
-Sau khi trích xuất được âm thanh nguyên bản, biểu đồ phổ âm (spectrogram) hiển thị rõ các dải sóng hài và tần số cộng hưởng (formant) liên tục. Tần số cơ bản dao động trong khoảng ~100-125 Hz, phân bổ thành 32 cụm âm riêng biệt, khẳng định chắc chắn đây là giọng nói của con người. Tuy nhiên, khi sử dụng công cụ whisper (với cấu hình model `base`/`small`, tham số `beam=5`, bật nhận diện ngôn ngữ tự động và thêm prompt CTF) kết hợp quét thử qua nhiều dải tốc độ (từ 0.6x đến 4x), kết quả trả về luôn là những câu văn vô nghĩa nhưng mang tính lặp lại ổn định. Điều này loại trừ khả năng model nhận diện lỗi, và cho thấy tín hiệu âm thanh đã bị cố tình biến đổi.
+Âm thanh giải mã dài 15.56 giây. Bản phát theo chiều ban đầu khó hiểu; đảo thứ tự sample bằng `x[::-1]` để nghe thông điệp. Các lần thử Whisper trước đó không cho nội dung có nghĩa, nhưng điều đó không tự loại trừ lỗi của model nhận dạng.
 
-Phép đo mang tính chất quyết định là phân tích tính bất đối xứng giữa sườn lên (onset) và sườn xuống (offset) của các cụm âm. Theo đặc điểm sinh học, tiếng nói con người (khi phát âm thuận chiều) luôn có sườn lên dốc (cường độ tăng đột ngột) và tắt âm chậm. Vì thế, năng lượng ở phần đầu mỗi cụm âm phải mạnh hơn so với phần cuối. Khi tiến hành đo trên toàn bộ 32 cụm âm, kết quả thu được:
+Nhật ký có phép đo đầu/cuối của 32 cụm âm như bên dưới. Đây là số liệu bổ sung, không phải tiêu chí chứng minh hướng thời gian của lời nói. Thông điệp được kiểm tra bằng bản audio đã đảo chiều:
 
 ```
 năng lượng trung bình ở 1/3 phần đầu cụm = 0.0539
 năng lượng trung bình ở 1/3 phần cuối cụm = 0.0649   -> tỉ lệ 0.83
 ```
-
-Chỉ số nghịch đảo này chứng minh âm thanh đã bị đảo ngược thời gian. Bằng cách đảo chiều mảng âm thanh (`x[::-1]`) rồi mới đưa vào công cụ phiên mã, văn bản thu được là:
+Bản audio sau khi đảo sample đọc thông điệp sau. Có thể nghe trực tiếp; transcript từ công cụ phiên mã được dùng để đối chiếu:
 
 ```
 Welcome to Bsides Orlando. The flag that you are looking for is Sun with a left curly
@@ -56,8 +53,7 @@ Cờ được giấu dưới dạng lời đọc mô tả trực tiếp: bắt �
 ```
 sun{thankyouforplaying}
 ```
-
-Khuôn dạng này hoàn toàn nhất quán với một bài tập khác của cùng tác giả trong hệ thống giải (`sun{praisethesun}`), tái khẳng định tính chính xác của tiền tố `sun{`.
+Lời đọc yêu cầu chữ thường và bỏ dấu cách, cho `sun{thankyouforplaying}`.
 
 ## Flag
 ```bash

@@ -22,7 +22,7 @@ signature is verified before the body is parsed, and `role` is what decides the 
 The weakness sits in the signing formula: `SHA256(secret || body)` is a prefix-style MAC over a Merkle - Damgård hash.
 For this kind of construction the published digest is exactly SHA-256's internal state after processing the whole
 padded message, so anyone holding (tag, original message length) can keep running the compression function over
-appended data and produce a valid tag for `body || padding || extra`  -  without knowing `secret`.
+appended data and produce a valid tag for `body || padding || extra` - without knowing `secret`.
 
 `/v2/webhook` uses HMAC-SHA256: a direct measurement shows the same SHA-256 signature gets a 401, i.e. the "next-gen"
 version closes exactly this hole (HMAC has inner and outer padding layers, so its state cannot be continued). The
@@ -81,7 +81,7 @@ for s_len in range(65):
 [+] /webhook -> 200 {"ok": true, "payout": "authorized", "flag": "H7CTF{786dff67-75cd-4d4e-8b74-55edb1353aad}"}
 ```
 
-The 8 length bytes in the spliced padding are `0x2d8` = 728 bit = 91 byte = 15 (secret) + 76 (body)  -  a
+The 8 length bytes in the spliced padding are `0x2d8` = 728 bit = 91 byte = 15 (secret) + 76 (body) - a
 self-verifying number: it points out the correct secret length without needing the server's response.
 
 ## Flag

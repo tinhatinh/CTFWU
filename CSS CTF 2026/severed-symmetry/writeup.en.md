@@ -5,7 +5,7 @@
 
 ## Problem Description
 
-The system provides an encryption source code `source.py` and a single data file `out.txt`. The `out.txt` file contains the public key structure comprising 34 polynomials along with 3 ciphertext blocks. The private key has been destroyed; thus, the challenge demands recovering the preimage of the ciphertext blocks based entirely on the public data. The flag is embedded directly within the plaintext block, its length strictly constrained by the standard `CSSCTF{...}` format.
+The challenge provides an encryption source code `source.py` and a single data file `out.txt`. The `out.txt` file contains the public key structure comprising 34 polynomials along with 3 ciphertext blocks. The private key has been destroyed; thus, the challenge demands recovering the preimage of the ciphertext blocks based entirely on the public data. The flag is embedded directly within the plaintext block, its length strictly constrained by the standard `CSSCTF{...}` format.
 
 ## Initial Analysis
 
@@ -18,15 +18,11 @@ central = w + [substitute(poly, w + z[t:], p) for poly in umap]
 
 With configuration `z = A2(x)`. Because the `U_j` function directly accepts the input parameter `w` (where `w` itself is quadratic), the polynomial `U_j(w, v)` has the capability to expand up to a maximum degree of 4. The data extracted from the `out.txt` file confirms this trait: Each exported public polynomial contains 49,320 terms belonging to the degree 4 group, and 5,626 terms belonging to the degree 3 group.
 
-The decoding and attack process relies on three core configuration parameters:
-- Parameter `t = 16`: Denotes the existence of exactly 16 degree-preserving analysis directions (degree <= 2) in the public span.
-- Parameter `s = 4`: Defines the search space limit, a valid decoding process only requires traversing `17^4 = 83521` cases.
-- Equation coefficient `m - t = 18` applied on 12 oil group variables: Ensures absolute statistical uniqueness for each obtained solution.
+The recovery uses `t = 16` degree-at-most-2 combinations, `s = 4` vinegar variables to enumerate (`17^4 = 83521` choices), and 18 equations in 12 oil variables. Candidate solutions are checked against the public polynomials rather than assumed to be unique from the equation count alone.
 
 ## Exploitation Chain
 
-**Step 1 - Recover the combinatorial space `W` (Degree <= 2 format).** 
-Establish a coefficient matrix for all monomials with degree >= 3 (Dimensions 34 rows, 70,906 columns), apply null space calculation. The system asserts: The degree 4 component of a linear combination is annihilated if and only if the `U` element of that combination is 0. Therefore, the null space perfectly coincides with the `span{w_a}` partition (dimension limit is 16).
+Build the coefficient matrix for monomials of degree at least 3, with 34 rows and 70,906 columns, and compute its null space. The resulting degree-at-most-2 combinations form `W = span{w_a}`, with dimension 16.
 
 ```python
 vec = {mon: c for mon, c in poly.items() if len(mon) >= 3}   # Preserve only terms with degree >= 3
@@ -60,7 +56,7 @@ Each obtained candidate set will have to undergo an independent check step by re
 
 ## Flag
 
-Executing the system script:
+Run the script:
 
 ```bash
 python exploit.py files/out.txt
@@ -83,14 +79,14 @@ FLAG: CSSCTF{P35T0_5CH3M3_4TT4CK2026}
 (33.9 s)
 ```
 
-To ensure solution consistency, the entire exploitation algorithm was cross-verified by running tests on two instances generated from the original `source.py` source code: Environment one established with small configuration parameters (`p=17, n=9, m=11, t=3, s=2`, producing 7 data blocks); environment two synced with the exact configuration required by the challenge (`n=32, m=34`, 3 data blocks and a known mock/bait flag). Both independent tests accurately recovered the original plaintext block. A supplementary test by re-encrypting the plaintext text with the public key extracted from `out.txt` also successfully outputted 3 ciphertext blocks equivalent to the provided challenge file.
+To ensure solution consistency, the entire exploitation algorithm was cross-verified by running tests on two instances generated from the original `source.py` source code: Environment one established with small parameters (`p=17, n=9, m=11, t=3, s=2`, producing 7 data blocks); environment two synced with the exact configuration required by the challenge (`n=32, m=34`, 3 data blocks and a known mock/bait flag). Both independent tests accurately recovered the original plaintext block. A supplementary test by re-encrypting the plaintext text with the public key extracted from `out.txt` also successfully outputted 3 ciphertext blocks equivalent to the provided challenge file.
 
 ## Reproduce
 
-Automated re-establishment process using script:
+Reproduce:
 
 ```bash
 python exploit.py files/out.txt
 ```
 
-Note: The environment mandatorily requires the `numpy` library. The execution runtime is approximately 35 seconds. The `analysis/` directory includes two auxiliary scripts `quartic.py` and `vinegar.py`; these are scripts responsible for the scanning operations in the preprocessing stage (surveying the degree 4 space and the linear function space of the variable `W`).
+Note: The script requires the `numpy` library. The execution runtime is approximately 35 seconds. The `analysis/` directory includes two auxiliary scripts `quartic.py` and `vinegar.py`; these are scripts responsible for the scanning operations in the preprocessing stage (surveying the degree 4 space and the linear function space of the variable `W`).

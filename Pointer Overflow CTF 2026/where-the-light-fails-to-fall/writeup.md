@@ -4,7 +4,7 @@
 **Cờ:** `POCTF{99.612.WTT7UHE5X3JIJMKQ.TO6LBQYYORFL6LLPF6Q22SRR2P}`
 
 **Artifact:** 
-Tệp gốc: `files/PXL_20260621_181159681.jpg` (kích thước 3.940.516 B, mã băm sha256 `42b362b6…520a14a`) 
+File gốc: `files/PXL_20260621_181159681.jpg` (kích thước 3.940.516 B, mã băm sha256 `42b362b6…520a14a`)
 Bản sao PNG: `files/photo.png` (độ phân giải 3000x4000, mã băm sha256 `2a25a576…a40339`). 
 Bức ảnh mô tả một con chim bồ câu trên nền đá khối, vệt bóng đổ sang phải, có thêm một vạch kẻ đỏ để biểu thị hướng Bắc thực (True North).
 
@@ -19,7 +19,7 @@ Quá trình phân tích bao gồm hai hướng tiếp cận chính:
 
 **Hướng 1: Trích xuất dữ liệu gốc (Original Artifact).** 
 Thẻ `<img>` của trang web sử dụng liên kết `/challenges/where-light-falls/photo`. Tuy nhiên, kết nối này yêu cầu xác thực bằng cookie phiên (session cookie), nên công cụ `browser-use` được dùng để kiểm tra dữ liệu từ tab đã đăng nhập. 
-Header phản hồi từ máy chủ chứa thông tin quan trọng: `content-disposition: inline; filename=PXL_20260621_181159681.jpg`. Định dạng tên file này cho thấy ảnh được chụp bởi thiết bị Google Pixel vào lúc 18:11:59 ngày 21-06-2026 theo giờ hệ thống thiết bị. Dữ kiện này có giá trị cao hơn nhiều so với tệp `photo.png` được cung cấp. Lỗi cấu hình trên máy chủ đã cho phép trích xuất siêu dữ liệu này dù không có đường dẫn hiển thị trực tiếp.
+Header phản hồi từ máy chủ chứa thông tin quan trọng: `content-disposition: inline; filename=PXL_20260621_181159681.jpg`. Định dạng tên file này cho thấy ảnh được chụp bởi thiết bị Google Pixel vào lúc 18:11:59 ngày 21-06-2026 theo giờ hệ thống thiết bị. Dữ kiện này có giá trị cao hơn nhiều so với file `photo.png` được cung cấp. Lỗi cấu hình trên máy chủ đã cho phép trích xuất metadata này dù không có đường dẫn hiển thị trực tiếp.
 
 **Hướng 2: Phân tích thông số trắc địa qua hình ảnh.** 
 Đường kẻ đỏ được thêm vào dưới dạng nét vẽ đồ họa nên có thể phân tách thông qua bộ lọc màu (`R > 120 && R-G > 55 && R-B > 55`). Áp dụng thuật toán phân tách thành phần liên thông (connected-component labeling) để loại bỏ nhiễu từ các vật thể lân cận. Kết quả đo đạc:

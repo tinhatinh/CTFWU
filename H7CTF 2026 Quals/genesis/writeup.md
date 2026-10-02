@@ -5,7 +5,7 @@
 
 ## Đề bài
 
-Hệ thống mô phỏng một kho lưu trữ tài sản (genesis vault) đã qua kiểm duyệt bảo mật. Một nhà đầu tư lớn (anchor investor) dự kiến nạp số vốn lớn vào hầm. Nhiệm vụ của bài toán là thao túng hệ thống để rút sạch tài sản, làm cho số dư cổ phần (share) của nhà đầu tư lớn hoàn toàn bằng không.
+Hệ thống mô phỏng một kho lưu trữ tài sản (genesis vault) đã qua kiểm duyệt bảo mật. Một nhà đầu tư lớn (anchor investor) dự kiến nạp số vốn lớn vào hầm. Mục tiêu là thao túng hệ thống để rút sạch tài sản, làm cho số dư cổ phần (share) của nhà đầu tư lớn hoàn toàn bằng không.
 
 Điều kiện chiến thắng được định nghĩa trong hàm `Setup.isSolved()`:
 
@@ -17,7 +17,7 @@ victimDeposited && vault.balanceOf(victim) == 0 && token.balanceOf(address(vault
 
 ## Phân tích ban đầu
 
-Kiểm tra tệp `Setup.sol`, định danh nhà đầu tư lớn (victim) được cố định vào một địa chỉ:
+Kiểm tra file `Setup.sol`, định danh nhà đầu tư lớn (victim) được cố định vào một địa chỉ:
 
 ```solidity
 address public constant victim = address(0xC0FFEE);
@@ -76,7 +76,7 @@ Kết quả thực thi tự động (sử dụng lệnh `CTF_PK=<private_key> no
 drained    tok(vault)= 0.0000 reserve= 0 supply= 0 share(victim)= 0 share(me)= 0 tok(me)= 300.0000 solved= true
 ```
 
-Khi trạng thái `isSolved() = true` được cập nhật, hệ thống cung cấp cờ qua API `GET /flag`:
+Khi trạng thái `isSolved() = true` được cập nhật, đề cung cấp cờ qua API `GET /flag`:
 
 ```text
 H7CTF{346df380-9ca8-41a7-8853-5a6f23c601ad}
@@ -88,4 +88,4 @@ H7CTF{346df380-9ca8-41a7-8853-5a6f23c601ad}
 node solve.mjs
 ```
 
-Script này tự động sử dụng cấu hình node mạng (RPC), địa chỉ contract `SETUP` và khoá riêng (private key) từ phần khai báo hệ thống. Thay đổi 3 tham số này để thực thi trên các instance mới.
+Script này tự động sử dụng cấu hình node mạng (RPC), địa chỉ contract `SETUP` và private key từ phần khai báo hệ thống. Thay đổi 3 tham số này để thực thi trên các instance mới.

@@ -2,7 +2,7 @@
 
 **Flag:** `H7CTF{174f034a-b318-49db-a3eb-24192b3d7ce2}`
 **Dịch vụ mạng:** `https://web-3285347d50d467ba.web.h7tex.com`
-*(Thử thách thực hiện tương tác trực tiếp với dịch vụ, không cung cấp tệp đính kèm).*
+*(Thử thách thực hiện tương tác trực tiếp với dịch vụ, không cung cấp file đính kèm).*
 
 ## Đề bài
 
@@ -13,7 +13,7 @@ Yêu cầu cụ thể là thay đổi hai trạng thái trong API:
 corroboration_status (Trạng thái đối chiếu):  unverified (Chưa kiểm chứng) -> corroborated (Đã chứng thực)
 diagnostic_depth (Mức độ chẩn đoán):          standard (Tiêu chuẩn)        -> deep (Chuyên sâu)
 ```
-Khi hai trạng thái này được đáp ứng, lệnh API `analyze` sẽ sinh ra báo cáo với nhãn `diagnostic_depth = deep`, đồng thời đính kèm tệp tin `process-environment.txt` chứa cờ.
+Khi hai trạng thái này được đáp ứng, lệnh API `analyze` sẽ sinh ra báo cáo với nhãn `diagnostic_depth = deep`, đồng thời đính kèm file `process-environment.txt` chứa cờ.
 
 ## Phân tích ban đầu
 
@@ -100,8 +100,8 @@ incident -> corroboration_status=corroborated  diagnostic_depth=deep
 reports  -> Khởi tạo RPT-0002 (Cấp độ deep)
 ```
 
-**Bước 3 - Trích xuất tệp đính kèm.** 
-Báo cáo mức "deep" cung cấp hai tệp đính kèm chứa thông số quan trọng:
+**Bước 3 - Trích xuất file đính kèm.**
+Báo cáo mức "deep" cung cấp hai file đính kèm chứa thông số quan trọng:
 
 ```json
 "process-environment.txt": "SERVICE=atlas-worker\nRUNTIME=StreamForge 4.8.x\nDEPLOYMENT=customer-production\nSUPPORT_INSTANCE_SECRET=H7CTF{174f034a-b318-49db-a3eb-24192b3d7ce2}\n"
@@ -133,7 +133,7 @@ Quá trình thực thi có các điểm kỹ thuật cần chú ý:
 - Hệ thống máy chủ **chỉ lưu trữ báo cáo mới nhất**. Yêu cầu truy cập các báo cáo cũ (như `RPT-0001` hay `RPT-0002`) sẽ trả về lỗi 404 khi có báo cáo mới hơn (`RPT-0003`). Do đó, không thể truy xuất và so sánh bản báo cáo standard (tiêu chuẩn) với bản deep sau khi tiến trình đã chạy.
 - Trạng thái vụ án được liên kết với chu kỳ hoạt động của container máy chủ, không làm mới (reset) khi đóng phiên trình duyệt. Nếu chạy kịch bản tự động trên cùng một hệ thống nhiều lần, trạng thái mặc định có thể bắt đầu ở mức `corroborated`, gây khó khăn cho việc quan sát tiến trình thay đổi. Tuy nhiên, quy trình (Nộp dữ liệu -> Yêu cầu phân tích -> Trích xuất báo cáo) vẫn hoạt động ổn định trên một instance mới.
 
-## Các tệp tin liên quan
+## Các file liên quan
 
 ```text
 exploit.py                 Kịch bản tự động hóa quy trình.

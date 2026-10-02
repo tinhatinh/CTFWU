@@ -5,12 +5,12 @@
 
 ## Đề bài
 
-Hệ thống cung cấp một tệp thực thi duy nhất mang tên `flappy_board` cùng với yêu cầu phải vượt qua ba khu vực chướng ngại vật (relay) trong giới hạn thời gian 20 phút. Thẻ đề không ghi kèm bất kỳ địa chỉ mạng (URL) nào.
-Phân tích chức năng: Tệp thực thi đóng vai trò là một ứng dụng máy khách (client) cho trò chơi tương tự mô hình "flappy-bird", hoạt động thông qua giao diện thiết bị cuối (terminal). Tuy nhiên, kết quả (điểm số) được đệ trình để hệ thống máy chủ (server) phê duyệt và trả về cờ (flag).
+Đề cung cấp một binary duy nhất mang tên `flappy_board` cùng với yêu cầu phải vượt qua ba khu vực chướng ngại vật (relay) trong giới hạn thời gian 20 phút. Thẻ đề không ghi kèm bất kỳ địa chỉ mạng (URL) nào.
+Phân tích chức năng: Binary đóng vai trò là một ứng dụng máy khách (client) cho trò chơi tương tự mô hình "flappy-bird", hoạt động thông qua giao diện thiết bị cuối (terminal). Tuy nhiên, kết quả (điểm số) được gửi để hệ thống máy chủ (server) phê duyệt và trả về cờ (flag).
 
 ## Phân tích ban đầu
 
-Đánh giá tệp nhị phân thông qua tiện ích `file`: Chương trình được đóng gói định dạng ELF 64-bit, có cấu trúc mã vị trí độc lập (PIE), đã loại bỏ bảng ký hiệu (stripped) và liên kết thư viện động. Mức độ entropy của tệp đo được là 4.700, mức này tương đương với cấu trúc tệp chuẩn, khẳng định không tồn tại việc ngụy trang hoặc nhúng khối dữ liệu (payload) nào bên trong cấu trúc tệp. 
+Đánh giá binary thông qua tiện ích `file`: Chương trình được đóng gói định dạng ELF 64-bit, có cấu trúc mã vị trí độc lập (PIE), đã loại bỏ bảng ký hiệu (stripped) và liên kết thư viện động. Mức độ entropy của file đo được là 4.700, mức này tương đương với cấu trúc file chuẩn, khẳng định không tồn tại việc ngụy trang hoặc nhúng khối dữ liệu (payload) nào bên trong cấu trúc file.
 Danh sách thư viện phụ thuộc (Imports) chia ứng dụng thành hai chức năng chính: Hệ thống render hình ảnh hiển thị gồm `XOpenDisplay`, `XDrawString`, `XNextEvent`, `XLoadQueryFont` (yêu cầu nền tảng X11, giới hạn việc chạy trực tiếp trên môi trường không có giao diện hiển thị); và hệ thống mạng `curl_easy_*` phục vụ tác vụ kết nối với máy chủ.
 Phân tích trích xuất dữ liệu mảng chuỗi tĩnh (`rabin2 -z`) tiết lộ toàn bộ kiến trúc giao thức truyền thông:
 
@@ -21,7 +21,7 @@ http://34.116.80.78:8765        Vị trí vùng nhớ .rodata 0x8920, và .data 
 Authorization: Bearer %s        round seed target wait_seconds remaining_seconds token flag
 ```
 
-Hướng dẫn (Help text) cài cắm bên trong máy khách đã đề cập tới một địa chỉ tĩnh (host), được định danh là "the configured event server". Tiến hành gửi yêu cầu `GET /` đến địa chỉ này trả về chuỗi phản hồi `error=Start+a+new+attempt+first.`. Phản hồi này chứng minh hệ thống máy chủ (endpoint) vẫn đang hoạt động, đồng thời khẳng định đề bài cung cấp đầy đủ thông tin để phân tích, không bị khuyết dữ kiện.
+Hướng dẫn (Help text) đặt bên trong máy khách đã đề cập tới một địa chỉ tĩnh (host), được định danh là "the configured event server". gửi yêu cầu `GET /` đến địa chỉ này trả về chuỗi phản hồi `error=Start+a+new+attempt+first.`. Phản hồi này chứng minh hệ thống máy chủ (endpoint) vẫn đang hoạt động, đồng thời khẳng định đề bài cung cấp đầy đủ thông tin để phân tích, không bị khuyết dữ kiện.
 
 Chức năng trò chơi được chi phối toàn diện bởi hai hàm hệ thống: Hàm `FUN_00106c0f` khởi tạo các biến trạng thái ban đầu, và hàm `FUN_00106cfe` mô phỏng sự tiến triển của một khung thời gian (tick). Các tương tác vật lý trong môi trường trò chơi sử dụng biến số nguyên dấu phẩy tĩnh (fixed-point) với tỷ lệ phân giải 1/256 pixel. Khung thời gian di chuyển ứng với 1/60 giây. Hệ thống chướng ngại vật (ống) được tạo ra bởi thuật toán sinh số ngẫu nhiên `xorshift32` (`FUN_00106b88`, `FUN_00106bc6`), trong đó hạt giống (seed) quy định bởi máy chủ. Nhờ cơ chế này, quá trình tái lập kịch bản (replay) chỉ yêu cầu tập hợp chuỗi dữ liệu nhị phân xác định thời điểm thao tác (flap ticks), qua đó máy chủ có đủ cơ sở để mô phỏng và xác nhận quá trình chạy trò chơi hoàn chỉnh.
 
@@ -73,7 +73,7 @@ body = "round=%d&wait_ms=%d&ticks=%d&score=%d&flaps=%s" % (
 
 ## Flag
 
-Quá trình thực thi mã kịch bản:
+Chạy script:
 
 ```bash
 python exploit.py

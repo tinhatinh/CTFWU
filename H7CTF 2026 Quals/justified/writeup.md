@@ -4,14 +4,14 @@
 
 ## Đề bài
 
-Marlowe & Sons, một cửa hàng sách truyền thống, cung cấp hệ thống "Instant Cover Proof" (Duyệt nháp trang bìa nhanh). Hệ thống xử lý thông tin biểu mẫu thông qua phần mềm nội bộ và trả về cho người dùng một tệp PDF đính kèm tệp log (nhật ký) để kiểm tra thông số in. 
-Thử thách có nhãn `CMDI` (Command Injection - Tiêm lệnh hệ thống). Hướng dẫn "hãy đọc những gì máy chế bản (typesetter) báo cáo" cung cấp gợi ý rõ ràng về việc sử dụng tệp log làm cơ sở khai thác.
+Marlowe & Sons, một cửa hàng sách truyền thống, cung cấp hệ thống "Instant Cover Proof" (Duyệt nháp trang bìa nhanh). Hệ thống xử lý thông tin biểu mẫu thông qua phần mềm nội bộ và trả về cho người dùng một file PDF đính kèm file log (nhật ký) để kiểm tra thông số in.
+Thử thách có nhãn `CMDI` (Command Injection - Tiêm lệnh hệ thống). Hướng dẫn "hãy đọc những gì máy chế bản (typesetter) báo cáo" cung cấp gợi ý rõ ràng về việc sử dụng file log làm cơ sở khai thác.
 
-Hệ thống được thiết kế cực kỳ tối giản: Không yêu cầu tài khoản, không hỗ trợ chức năng tải tệp. Phương thức duy nhất là một form gửi POST request đến `/proof.php`.
+Ứng dụng không yêu cầu tài khoản hoặc tải file. Form gửi POST request tới `/proof.php`.
 
 ## Phân tích ban đầu
 
-Kiểm tra biểu mẫu cho thấy có 9 trường dữ liệu: `title`, `author`, `degree`, `department`, `institution`, `supervisor`, `year`, `abstract`, và `reference`. Trường `reference` là tên tệp tải về, trong khi trường `title` (tiêu đề) cung cấp tài liệu hướng dẫn:
+Kiểm tra biểu mẫu cho thấy có 9 trường dữ liệu: `title`, `author`, `degree`, `department`, `institution`, `supervisor`, `year`, `abstract`, và `reference`. Trường `reference` là tên file tải về, trong khi trường `title` (tiêu đề) cung cấp tài liệu hướng dẫn:
 
 > Mẹo: Bạn có thể nhập các ký tự có dấu và biểu tượng bằng cú pháp LaTeX, ví dụ: `M\"uller`, `\'Etienne`, `\OE`. Máy chế bản của chúng tôi sẽ kết xuất (render) chúng thành hình cho bạn.
 
@@ -28,7 +28,7 @@ entering extended mode
 
 Các kết luận quan trọng từ log:
 
-1. Ứng dụng tự động khởi tạo tệp `main.tex` chứa dữ liệu người dùng, sau đó chuyển cho tiến trình `pdflatex` biên dịch.
+1. Ứng dụng tự động khởi tạo file `main.tex` chứa dữ liệu người dùng, sau đó chuyển cho tiến trình `pdflatex` biên dịch.
 2. Tham số `\write18 enabled.` cho biết tính năng thực thi lệnh vỏ (shell escape) đang được kích hoạt ở mức đầy đủ (full), không bị giới hạn (restricted mode).
 3. Toàn bộ thông tin từ quá trình xử lý (bao gồm luồng báo lỗi `stderr`) đều được ứng dụng web trả về và hiển thị trực tiếp cho người dùng.
 
@@ -54,23 +54,23 @@ Tận dụng tính năng `\write18`, hệ thống cho phép thực thi lệnh m�
 
 **Bước 3 - Truy xuất dữ liệu (Data Exfiltration).** 
 Kênh luân chuyển dữ liệu cần được điều hướng về người dùng. Có ba phương thức: 
-Lưu kết quả ra tệp và dùng `\input` để kết xuất vào PDF; 
+Lưu kết quả ra file và dùng `\input` để xuất vào PDF;
 Hoặc chuyển hướng (redirect) luồng dữ liệu sang `stderr` của pdflatex để hiển thị trực tiếp trong log. Phương án thứ hai được áp dụng:
 
 ```latex
 C\immediate\write18{cat /flag.txt 1>&2}
 ```
 
-Macro `\write18` khởi tạo tiến trình con được thừa kế cấu trúc mô tả tệp (file descriptor) từ `pdflatex`. Cấu trúc `1>&2` chuyển hướng đầu ra `stdout` sang `stderr`. Dữ liệu sẽ được truyền trực tiếp vào log hiển thị trên ứng dụng web mà không cần thao tác với tệp PDF trung gian.
+Macro `\write18` khởi tạo tiến trình con được thừa kế cấu trúc mô tả file (file descriptor) từ `pdflatex`. Cấu trúc `1>&2` chuyển hướng đầu ra `stdout` sang `stderr`. Dữ liệu sẽ được truyền trực tiếp vào log hiển thị trên ứng dụng web mà không cần thao tác với file PDF trung gian.
 
-Kết quả hiển thị trong tệp log:
+Kết quả hiển thị trong file log:
 
 ```text
 WEBVERSE{d5f60724dc9f1197140001fa4b24198e}
 ```
 
 **Bước 4 - Tự động hóa quá trình.** 
-Kịch bản Python `exploit.py` sử dụng thư viện `requests` để tương tác trực tiếp. Kịch bản thực thi một lệnh kiểm tra hệ thống (`id`) để xác thực tính khả dụng của shell escape trước khi tiến hành đọc tệp đích. 
+Python script `exploit.py` sử dụng thư viện `requests` để tương tác trực tiếp. Kịch bản thực thi một lệnh kiểm tra hệ thống (`id`) để xác thực tính khả dụng của shell escape trước khi đọc file đích.
 Trong quá trình phát triển kịch bản, các vấn đề về hiển thị thẻ HTML `<pre class=...>` được xử lý bằng biểu thức chính quy (regex) `<pre[^>]*>`, và header `User-Agent` hợp lệ được bổ sung để tránh hệ thống trả về lỗi.
 
 ## Flag

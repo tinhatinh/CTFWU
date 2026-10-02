@@ -102,6 +102,16 @@ RPC, instance và script bằng tiếng Anh khi rõ nghĩa hơn. Phân biệt qu
 không mô tả tính duy nhất, hiệu quả hoặc mức độ bảo mật như một bảo đảm khi chưa có bằng chứng.
 Chỉnh văn xuôi không được làm đổi code fence, lệnh, flag hoặc output đã ghi nhận.
 
+Ưu tiên thao tác trực tiếp, đơn giản khi artifact cho phép: đọc chữ rõ trên ảnh, nghe lời nói
+đã giải mã, đọc bảng chân lý hoặc lần theo mũi tên. Không thêm OCR/ASR hay brute-force để tạo
+một quy trình phức tạp nếu không cần. Script có thể dùng để reproduce nhưng không nên được
+mô tả như điều kiện bắt buộc cho thao tác người đọc làm trực tiếp được. Những phép thử phụ và
+nhánh đã loại chỉ cần tóm tắt trong writeup; giữ nhật ký chi tiết trong `notes.md`.
+
+Giới hạn kết luận theo bằng chứng: cosine similarity cao không chứng minh khôi phục nguyên văn;
+padding đúng không tự chứng minh key duy nhất; N/N test pass chỉ mô tả tập N mẫu đã kiểm tra.
+Không suy đoán ý đồ tác giả, tính an toàn tuyệt đối hoặc chất lượng của model từ một vài quan sát.
+
 Ảnh đề bài lấy từ các tham chiếu ảnh trong `de.md`; ảnh phân tích phải được tham chiếu trong
 writeup bằng Markdown hoặc đường dẫn file. Không copy tất cả ảnh trong thư mục artifact lên
 website. Generator giữ cấu trúc thư mục con và kiểm tra kích thước ảnh khi copy.

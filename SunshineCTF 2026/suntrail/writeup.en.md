@@ -10,9 +10,7 @@ A single file, no remote instance, no hint to open. Author oatzs.
 
 ## Initial Analysis
 
-`.klc` is a Microsoft Keyboard Layout Creator source file, not a Kaspersky license file as the
-name could mislead one to think. The file begins with `KBD kbdusx "US"`, then the `SHIFTSTATE`
-block, then `ENDKBD`.
+The file follows the Microsoft Keyboard Layout Creator format, beginning with `KBD kbdusx "US"`, followed by `SHIFTSTATE`, `LAYOUT` and `ENDKBD`.
 
 The `LAYOUT` block has 18 tab-separated lines, each line being one key:
 
@@ -32,12 +30,8 @@ two layers: a direction to travel and a character to collect.
 
 ## Approaches Ruled Out
 
-1. `.klc` being a Kaspersky license key: the content is ASCII following exactly the `KBD` /
-   `SHIFTSTATE` / `LAYOUT` / `ENDKBD` template. Ruled out.
-2. Hidden data in leftover bytes or trailing whitespace: the file ends with `ENDKBD\n`, plain LF,
-   no line has a trailing space or tab, no byte after EOF. Ruled out.
-3. The flag written plainly in the file: triage reports 0 hits for flag patterns; the characters in
-   the file are only lowercase letters and arrows. Ruled out.
+Triage confirms the keyboard-layout structure. The file ends with `ENDKBD
+` and has no trailing data after that marker. The flag is assembled by following the arrows, rather than read as a contiguous string in the file.
 
 The log of each branch is in `notes.md`.
 
@@ -47,12 +41,7 @@ The log of each branch is in `notes.md`.
 both states are a space so it carries nothing). Arrange the remaining 17 keys into three physical
 rows by scan code: top `Q W E R T`, home `A S D F G H`, bottom `Z X C V B N`.
 
-**Step 2 - pinning down the geometry by sweeping a small space.** A real keyboard is staggered, so
-which cell a diagonal arrow maps to cannot be guessed. `analysis/search_geometry.py` sweeps all 8³
-ways of assigning the three direction characters onto the eight neighboring cells, walks from every
-key under each assignment, and keeps the paths that produce a string containing both `{` and `}`.
-This grid does not give a single solution: `analysis/geometry_search_results.txt` stores 21 paths,
-most of them truncated strings or missing the leading character. The assignment set left after step 3:
+**Step 2 - Follow the arrows on the keys.** Use the three-row layout from step 1: right by one column, up one row or down one row, stopping at the black square. `analysis/search_geometry.py` records alternative mappings in `analysis/geometry_search_results.txt`; enumerating all 8³ mappings is not required to follow this puzzle’s path. The reproduction uses:
 
 ```
 U+2192 -> one column right

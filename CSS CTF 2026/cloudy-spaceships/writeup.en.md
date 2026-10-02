@@ -5,7 +5,7 @@
 
 ## Problem Description
 
-The system provides a web application built with SvelteKit at `http://34.116.80.78:9143/`. The interface displays a list of five spaceships and provides a "measure hull temperature" function via respective buttons. The attached hint for the problem is: "What's your forecast looking like?". The ultimate goal is to retrieve the flag in the standard format `CSSCTF{...}`.
+The challenge provides a web application built with SvelteKit at `http://34.116.80.78:9143/`. The interface displays a list of five spaceships and provides a "measure hull temperature" function via respective buttons. The attached hint for the problem is: "What's your forecast looking like?". The ultimate goal is to retrieve the flag in the standard format `CSSCTF{...}`.
 Technical characteristics: The interface completely lacks an input form. All user interactions trigger a network request to the address `/api/v1/ship/<name>/temperature`, after which the application will display a numeric value.
 
 ## Initial Analysis
@@ -97,8 +97,7 @@ Attempts to call the `cloudresourcemanager` service were blocked by a 403 error 
 [+] HTTP 403 response reveals Project Number 613713115850
 [+] Storage 403 error reveals identity: meteorologist@css-ctf-2026.iam.gserviceaccount.com and Project ID css-ctf-2026
 ```
-
-The service account using the keyword `meteorologist` perfectly matches the hypothetical context of the problem (the fleet's weather forecaster).
+The token identifies the service account as `meteorologist`.
 
 **Step 6 - Exploit Secret Manager.** 
 With privileges (scope) at the `cloud-platform` level, accessing the `secretmanager` system was successful. The entire project account has only one secret, one version. The direct `:access` call method returns the flag value:

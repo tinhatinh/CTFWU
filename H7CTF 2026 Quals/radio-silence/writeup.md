@@ -2,12 +2,12 @@
 
 **Flag:** `H7CTF{6780856d-db42-4cfa-8b56-c62109d8417c}`
 **Máy chủ mục tiêu:** `https://web-0350e37b217a0cbc.web.h7tex.com`
-**Tệp dữ liệu:** `capture.cf32` (kích thước 393544 B, mã băm sha256 `167a70fa…`) - Luồng dữ liệu giải mã băng gốc (interleaved float32 LE I/Q), tốc độ mẫu 1 Msps.
+**File dữ liệu:** `capture.cf32` (kích thước 393544 B, mã băm sha256 `167a70fa…`) - Luồng dữ liệu giải mã băng gốc (interleaved float32 LE I/Q), tốc độ mẫu 1 Msps.
 
 ## Đề bài
 
 Hệ thống ghi nhận phát xạ vô tuyến từ thiết bị không xác định: không có tài liệu kỹ thuật (datasheet), không có thông tin giao thức (protocol notes). 
-Hệ thống cung cấp file ghi baseband nguyên bản kèm yêu cầu: "Read it back" (Đọc nó đi). Nhiệm vụ là phân tích và đo đạc các thông số của một giao thức truyền tin chưa rõ ràng từ tín hiệu thô.
+Đề cung cấp file ghi baseband nguyên bản kèm yêu cầu: "Read it back" (Đọc nó đi). Nhiệm vụ là phân tích và đo đạc các thông số của một giao thức truyền tin chưa rõ ràng từ tín hiệu thô.
 
 ## Phân tích ban đầu
 
@@ -34,8 +34,7 @@ Mảng từ  46109 đến   151: Nhóm 0
 Mảng từ  46260 đến     1: Nhóm 1      - Tín hiệu đơn
 Mảng từ  46261 đến  2932: Nhóm 0      - Khoảng tĩnh cuối
 ```
-
-Đường bao biên độ (envelope) ổn định liên tục trong 43200 mẫu, đồng nghĩa tín hiệu mức "0" chỉ là tín hiệu tĩnh không có phát xạ. Đường bao biên độ không thay đổi và có sóng mang liên tục là đặc điểm của kỹ thuật FSK.
+Burst có biên độ ổn định trong 43200 mẫu; các đoạn mức 0 nằm trước và sau burst. FFT dưới đây cho hai tone, hỗ trợ cách giải mã 2-FSK.
 
 Xử lý khối tín hiệu qua thuật toán FFT (sử dụng cửa sổ Hanning, độ phân giải 23.1 Hz), hiển thị hai đỉnh tần số:
 
@@ -43,8 +42,7 @@ Xử lý khối tín hiệu qua thuật toán FFT (sử dụng cửa sổ Hannin
 Điểm +35.00 kHz  tại  0.00 dB
 Điểm +84.99 kHz  tại -2.68 dB
 ```
-
-Kết luận: Dải tone thực tế mang tần số 35 kHz và 85 kHz. Kết quả: sóng mang (carrier) nằm tại 60 kHz, với độ lệch pha sai số (deviation) là ±25 kHz.
+Hai tone ở 35 kHz và 85 kHz, có tần số trung tâm 60 kHz và frequency deviation ±25 kHz.
 
 ## Chuỗi khai thác
 
@@ -84,8 +82,7 @@ frame  = np.packbits(bits).tobytes()
 [*] Chuyển mã sang ascii: b'\xaa\xaa\xaa\xaa\xaa\xaa-\xd4+H7CTF{6780856d-db42-4cfa-8b56-c62109d8417c}ze'
 [*] Dữ liệu dư thừa    0 bit cuối cùng
 ```
-
-Giá trị `min margin 0.500` chứng minh độ tin cậy cao: không có hiện tượng can nhiễu tone nên việc đọc bit là tuyệt đối.
+`min margin 0.500` cho thấy các mẫu dùng trong mỗi symbol đều chọn cùng một tone. Trong bản ghi này, không có symbol bị chia đều giữa hai tone.
 
 ### Bước 3: Loại trừ các sai số
 
@@ -105,7 +102,7 @@ t35=1 nạp LSB   : Ký tự in được 18/54  -> Dữ liệu không hợp lệ
 | Preamble | `aa aa aa aa aa aa` | Tương đương với chuỗi `0b10101010`, dạng sóng đồng bộ hóa xung nhịp đồng hồ. |
 | Header | `2d d4 2b` | Chưa xác định, có khả năng là định danh kết hợp với mã nhóm lệnh. |
 | Payload | `48 37 43 54 46 7b … 7d` | Trích xuất cờ `H7CTF{6780856d-db42-4cfa-8b56-c62109d8417c}` (chiếm 43 B) |
-| Trailer | `7a 65` | Đoạn dữ liệu không giải mã được: Thử checksum `sum8=0x9f`, `xor8=0xf7`, sử dụng CRC16-CCITT = `0xdeea`/`0xd655`, hoặc CRC16 reflected = `0x2d08`/`0x9657`, các phương pháp trên đều không cho ra mã `0x7a65`. Khả năng cao đây là dữ liệu không hợp lệ hoặc nonce ngẫu nhiên. |
+| Trailer | `7a 65` | Chưa xác định ý nghĩa của trailer. Các phép thử sum8, xor8 và CRC16 được ghi dưới đây đều không khớp; chưa đủ dữ liệu để gán nó cho một trường cụ thể. sum8=0x9f · xor8=0xf7 · 0xdeea · 0xd655 · 0x2d08 · 0x9657 · 0x7a65 |
 
 Lưu ý hệ thống không gửi cờ qua HTTP: Hệ thống chỉ cung cấp file dữ liệu tĩnh (`Server: SimpleHTTP/0.6`), không có giao diện submit form. Yêu cầu gửi cờ trực tiếp lên hệ thống chấm điểm CTF.
 

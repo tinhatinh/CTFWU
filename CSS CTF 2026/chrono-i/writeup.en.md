@@ -5,14 +5,13 @@
 
 ## Problem Description
 
-The system provides a text message and its corresponding ciphertext:
+The challenge provides a text message and its corresponding ciphertext:
 
 ```text
 Message:    2026-09-21 14:35:07 - "As always, The time is always the key to unlock it"
 Ciphertext: ESUITO{gwfvb_xejqnf_nimgt_b_whhrlv}
 ```
-
-Based on the system's standard structure, the flag always starts with the `CSSCTF{...}` format. Accordingly, the first six characters of the ciphertext undoubtedly map to the string `CSSCTF`. This information is an explicit crib, requiring no predictive techniques.
+The stated format is `CSSCTF{...}`. Use the six letters `CSSCTF` as a known-plaintext crib to calculate the initial shifts.
 
 ## Initial Analysis
 
@@ -27,7 +26,7 @@ Perform a modulo 26 shift value check for each position based on the available c
 | 5 | T | O | 0 |
 | 6 | F | O | 9 |
 
-The obtained shift sequence is `2 0 2 6 0 9`. Comparing this number sequence with the input data, it can be seen that it perfectly matches the first six digits of the timestamp in the message: `20260921143507` (removing delimiter characters from `2026-09-21 14:35:07`). The instructional sentence "the time is always the key" has direct reference value: the decryption key is precisely the numerical character string of the timestamp, applied on a numerical Vigenère cipher scheme (Gronsfeld Cipher) with a period of 14.
+The obtained shift sequence is `2 0 2 6 0 9`. Comparing this number sequence with the input data, it matches the first six digits of the timestamp in the message: `20260921143507` (removing delimiter characters from `2026-09-21 14:35:07`). The instructional sentence "the time is always the key" has direct reference value: the decryption key is precisely the numerical character string of the timestamp, applied on a numerical Vigenère cipher scheme (Gronsfeld Cipher) with a period of 14.
 
 ## Exploitation Chain
 
@@ -58,15 +57,14 @@ for ch in text:
     base = 65 if ch.isupper() else 97
     out.append(chr((ord(ch) - base - k) % 26 + base))
 ```
-
-Running the entire ciphertext through the script, the system outputs the string: `CSSCTF{every_second_hides_a_secret}`. The result string possesses complete semantics, aligning with the challenge's overall hint.
+Applying the shifts to the full ciphertext gives `CSSCTF{every_second_hides_a_secret}`. Re-encrypting the plaintext with the recovered key checks it against the supplied ciphertext.
 
 **Step 4 - Verification stage.** 
 The execution process has uniform bidirectionality: if re-encrypting the plaintext using that same key, the system will return the exact original ciphertext. Furthermore, the body of the plaintext strictly adheres to the `[a-z0-9_]*` structure. To affirm the script code's reliability, injecting artificial errors (such as changing a letter to uppercase, modifying the hour parameter to `15:35:07`, or altering the crib `ESUITO` to `XSUITO`) all trigger the script's error reporting mechanism, verifying that the process does not operate based on a blind self-matching mechanism.
 
 ## Flag
 
-Executing the automated script:
+Run the script:
 
 ```bash
 $ python exploit.py

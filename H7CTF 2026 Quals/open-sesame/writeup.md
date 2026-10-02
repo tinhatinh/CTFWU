@@ -6,12 +6,12 @@
 
 ## Đề bài
 
-Mục tiêu là phân tích tín hiệu từ một remote điều khiển cửa gara thông dụng. Đặc tính của thiết bị là mỗi lần kích hoạt, nó phát ra một chuỗi mã mới. Hệ thống cung cấp bản ghi băng gốc (baseband) của 8 lần bấm phím liên tiếp. Kèm theo là một ghi chú quan trọng: "Cái không đoán ngẫu nhiên được (unguessable) không có nghĩa là cái không tính trước được (unpredictable)". 
+Mục tiêu là phân tích tín hiệu từ một remote điều khiển cửa gara thông dụng. Đặc tính của thiết bị là mỗi lần kích hoạt, nó phát ra một chuỗi mã mới. Đề cung cấp bản ghi băng gốc (baseband) của 8 lần bấm phím liên tiếp. Kèm theo là một ghi chú quan trọng: "Cái không đoán ngẫu nhiên được (unguessable) không có nghĩa là cái không tính trước được (unpredictable)".
 Nhiệm vụ: Tính toán dải mã mà thiết bị sẽ phát ra ở lần kích hoạt thứ 9 và gửi mã đó lên máy chủ để mở khóa.
 
 ## Phân tích ban đầu
 
-Phân tích tệp `capture.cf32`: Đây là tín hiệu I/Q định dạng float32, kiến trúc little-endian (LE), lấy mẫu ở tần số 1 MHz. Do môi trường làm việc bị hạn chế về phần mềm (không có GNU Radio hay urh), quá trình giải mã tín hiệu (demodulate) được thực hiện bằng script cục bộ.
+Phân tích file `capture.cf32`: Đây là tín hiệu I/Q định dạng float32, kiến trúc little-endian (LE), lấy mẫu ở tần số 1 MHz. Do môi trường làm việc bị hạn chế về phần mềm (không có GNU Radio hay urh), quá trình giải mã tín hiệu (demodulate) được thực hiện bằng script cục bộ.
 
 ## Quá trình khai thác
 

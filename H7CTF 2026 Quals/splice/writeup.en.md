@@ -72,9 +72,7 @@ Concat is a script format, every line must be `file '...'` or `duration n`. The 
 [concat @ 0x6145f8caea80] Line 1: unknown keyword 'WEBVERSE{fcb61c06cbb7cd020a371730b71521fe}'
 /flag.txt: Invalid data found when processing input
 ```
-
-The server packs all of stderr into `errors`, so the flag comes back in the response, no image render needed, no OCR
-needed, no writing files outside the workspace.
+The server includes stderr in `errors`, so the flag is read directly from the response.
 
 **Step 3 - Pinning down the flag path.** The same oracle distinguishes whether a file exists:
 

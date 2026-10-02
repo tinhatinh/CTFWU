@@ -6,7 +6,7 @@
 ## Challenge
 
 "genesis vault opened this morning: a fresh yield vault, the sort that's been audited a hundred
-times over. a big anchor investor is about to move in with a very large stake. ... by the time the
+times over. a big anchor investor is about to move in with a very large stake.... by the time the
 anchor's deposit settles, own the vault outright and leave their stake worth exactly nothing."
 
 The win condition in `Setup.isSolved()`:

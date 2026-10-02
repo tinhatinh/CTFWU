@@ -31,7 +31,7 @@ Khai thác: Chỉ cần thay đổi tỷ giá ảo trong quá trình này.
 ## Chuỗi khai thác
 
 **Bước 1 - Phân tích lỗ hổng trong hàm `removeLiquidity`.** 
-Lỗ hổng logic xuất hiện ở đây: Hệ thống tiến hành hủy (burn) LP và hoàn trả ETH trả trước, nhưng chuyển token sau.
+Lỗ hổng logic xuất hiện ở đây: Hệ thống hủy (burn) LP và hoàn trả ETH trả trước, nhưng chuyển token sau.
 
 ```solidity
 uint256 ethOut   = address(this).balance * lp / totalSupply;

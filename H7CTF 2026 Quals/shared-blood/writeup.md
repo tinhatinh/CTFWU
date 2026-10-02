@@ -19,7 +19,7 @@ Cổng GET /captured  -> Lấy được thông điệp: {"note": "RSA/PKCS1v1.5,
                        "serial": "VE-C1E90650", "e": 65537, "ciphertext": <128 byte mã hex>}
 ```
 
-Không thể khai thác qua decryption oracle: Hệ thống chỉ có một bản mã (ciphertext). Do đó phương pháp duy nhất là phân tích modulus của thiết bị đích. 
+Không thể khai thác qua decryption oracle: Hệ thống chỉ có một ciphertext. Do đó phương pháp duy nhất là phân tích modulus của thiết bị đích.
 Tuy nhiên, với số nguyên kích thước 1024 bit, phân tích thô không khả thi. Gợi ý "family resemblance runs deeper than you'd think" chỉ ra lỗi chia sẻ chung trong quá trình tạo khóa hàng loạt (fleet keygen): Tồn tại hai thiết bị sử dụng chung một số nguyên tố.
 
 ## Quá trình khai thác

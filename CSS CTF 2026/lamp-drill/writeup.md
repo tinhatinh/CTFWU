@@ -5,11 +5,11 @@
 
 ## Đề bài
 
-Hệ thống cung cấp một tệp tin hình ảnh tĩnh, không đi kèm các dịch vụ trực tuyến. Mô tả đề bài chỉ ra: "Warm-up. No spaces." và quy định định dạng cờ là `CSSCTF{}`. Yêu cầu của bài toán là phân tích và giải mã chuỗi ký tự ẩn giấu bên trong bức ảnh đồ họa này.
+Đề cung cấp `lampDrill.svg` và `lampDrill.png`, kèm gợi ý "Warm-up. No spaces.". Hàng trên mô tả phép toán trên hai bóng đèn; ba hàng dưới chứa dữ liệu để giải mã theo định dạng `CSSCTF{...}`.
 
 ## Phân tích ban đầu
 
-Đánh giá tệp tin SVG: Dựa trên siêu dữ liệu (metadata), tệp được tạo bằng thư viện Matplotlib 3.9.2 (`dc:date` 2026-09-30T07:31:34, thiết lập `viewBox 0 0 1180.8 662.4`). Cấu trúc vector SVG chứa các đối tượng có thuộc tính trực quan nguyên dạng, do đó việc áp dụng kỹ thuật nhận dạng ký tự quang học (OCR) lên ảnh Raster là không cần thiết. Quá trình phân tích thực hiện trực tiếp trên dữ liệu vector: mỗi bóng đèn được đại diện bởi một thẻ `<path>` vẽ đường cong Bezier tích hợp thuộc tính màu sắc `style="fill: ..."`. Phân loại đối tượng dựa vào thông số kích thước (đường kính) mang lại kết quả đồng nhất tuyệt đối:
+Có thể đọc các trạng thái trực tiếp trên ảnh: đèn tô đen là 1, đèn rỗng là 0. Để reproduce bằng script, đọc các `<path>` trong SVG và lấy màu `fill`. Phân loại theo đường kính cho các nhóm sau:
 
 | Đường kính | Số lượng | Định danh đối tượng |
 | --- | --- | --- |
@@ -17,10 +17,10 @@ Hệ thống cung cấp một tệp tin hình ảnh tĩnh, không đi kèm các 
 | 101.7 | 24 | Khung nền bo góc (ô lưới) |
 | ≈7.9 | 25 | Mũi tên định hướng (▶) |
 
-Tổng số 60 bóng đèn được phân luồng cấu trúc thành hai khu vực: Khu vực định nghĩa logic (hàng trên cùng, gồm 12 bóng đèn) và Khu vực ma trận dữ liệu (lưới 3 hàng × 8 ô × 2 đèn/ô, tổng 48 bóng).
-Dữ liệu trạng thái bóng đèn được biểu thị qua hai mã màu: `#1c1915` (sáng) và `#f7f4ee` (tắt - trùng khớp với màu nền tổng thể của đồ thị). Không tồn tại chuỗi văn bản ẩn, không có lớp (layer) ngụy trang, và không có các siêu dữ liệu đáng ngờ bổ sung.
+Ảnh có 60 bóng đèn: 12 ở hàng quy tắc và 48 ở lưới dữ liệu 3 hàng × 8 ô × 2 đèn. Script dùng `#1c1915` cho bit 1 và `#f7f4ee` cho bit 0.
 
-Khu vực định nghĩa logic phác thảo bảng chân lý (truth table) của phép toán áp dụng trên hai trạng thái đầu vào:
+
+Hàng trên chỉ cho đầu ra 1 khi cả hai đầu vào đều là 1, tương ứng phép AND:
 
 ```text
 ## -> #      #. -> .      .# -> .      .. -> .
@@ -30,11 +30,11 @@ Khu vực ma trận bên dưới bao gồm 3 dãy, mỗi dãy gồm 8 ô đượ
 
 ## Chuỗi khai thác
 
-**Bước 1 - Trích xuất dữ liệu mảng bóng đèn từ cấu trúc SVG.** 
-Triển khai thuật toán duyệt qua toàn bộ các thẻ `<path>` chứa thuộc tính `fill:`. Hệ thống tính toán hộp giới hạn (bounding box) dựa trên các hệ tọa độ được định nghĩa trong thuộc tính `d`. Dữ liệu sẽ được giữ lại đối với các đối tượng có kích thước đường kính dao động trong biên độ 22–24 (tương ứng với cấu trúc bóng đèn). Đối chiếu giá trị `fill` với mã màu `#1c1915` để định lượng thành bit nhị phân (sáng = 1, tắt = 0).
+**Bước 1 - Đọc trạng thái từng bóng đèn.**
+Script đọc bounding box của các `<path>`, giữ những đối tượng có đường kính 22–24, rồi chuyển màu `fill` thành bit. Đây là cách tự động đọc lại cùng dữ liệu nhìn thấy trên ảnh.
 
-**Bước 2 - Phân tích bảng chân lý bằng thuật toán tự động hóa (Không sử dụng Hard-code).** 
-Gom cụm các phần tử dựa trên hệ tọa độ trục hoành: Đối với hàng định nghĩa logic, hệ thống nhóm các ô thành bộ đôi (2 đèn đóng vai trò đầu vào) và bộ đơn (1 đèn đóng vai trò đầu ra), sắp xếp xen kẽ.
+**Bước 2 - Đọc bảng chân lý.**
+Ở hàng quy tắc, nhóm các bóng đèn theo tọa độ x thành cặp đầu vào và một đầu ra. Đoạn code dưới đây ghi lại bảng chân lý từ các nhóm đó:
 
 ```python
 cells = clusters(rows[0], gap=50.0)          # Kết quả phân rã mảng -> [2, 1, 2, 1, 2, 1, 2, 1]
@@ -43,10 +43,10 @@ for i in range(0, len(cells), 2):
     table[(a, b)] = int(cells[i + 1][0][2])
 ```
 
-Kết xuất ma trận logic: `00->0 01->0 10->0 11->1`. Đây là đặc tả chính xác của cổng logic AND. Việc tự động hóa quy trình giúp kịch bản này hoạt động bền vững ngay cả khi ban tổ chức thay đổi tham số thành cổng XOR hoặc OR trong các phiên bản bài toán khác.
+Bảng thu được là `00->0 01->0 10->0 11->1`, khớp phép AND quan sát được ở hàng trên.
 
-**Bước 3 - Tổng hợp Byte từ hệ thống Bit.**
-Áp dụng phép toán AND cho các cặp bit trong từng ô, tổng hợp 8 ô thành một byte dữ liệu nguyên mẫu.
+**Bước 3 - Ghép các bit thành byte.**
+Áp dụng AND cho hai bit trong mỗi ô, rồi đọc 8 ô từ trái sang phải để tạo một byte ASCII:
 
 ```text
 Dãy 1: bits=01100011 -> Hex: 0x63, ASCII: 'c'
@@ -55,11 +55,11 @@ Dãy 3: bits=01110011 -> Hex: 0x73, ASCII: 's'
 ```
 
 **Bước 4 - Xác thực tính toàn vẹn (Kiểm chứng).** 
-Khảo sát chéo số lượng: Tổng số 60 bóng đèn hoàn toàn khớp với phân rã cấu trúc (12 bóng logic + 48 bóng dữ liệu); mỗi ô trong ma trận đều thỏa mãn điều kiện sở hữu chính xác 2 bóng đèn; bảng chân lý xây dựng đủ 4 trường hợp mệnh đề; toàn bộ 3 byte giải mã đều hợp lệ trong bảng mã ASCII (ký tự in được). Phân tích chi tiết: Dãy 2 và dãy 3 chỉ khác biệt ở trạng thái tín hiệu ô đầu tiên (`.#` so với `..`), nhưng khi qua phép chiếu AND đều cho ra kết quả bit 0, dẫn tới việc giải mã cùng ra ký tự `s`. Khẳng định đây là đặc thù thiết kế cố ý của một bài khởi động (warm-up), không phải do sai lệch cảm biến đọc.
+Kiểm tra lại số lượng: 12 bóng ở hàng quy tắc và 48 bóng ở ba hàng dữ liệu. Mỗi ô có hai bóng. Hai hàng cuối khác trạng thái ở ô đầu (`.#` và `..`), nhưng AND đều cho 0, nên cả hai cùng giải mã thành `s`. Ba byte thu được là `css`.
 
 ## Cờ
 
-Quá trình thực thi mã kịch bản tự động hóa:
+Chạy script:
 
 ```bash
 python exploit.py files/lampDrill.svg
@@ -82,4 +82,4 @@ Kết quả:
 CSSCTF{css}
 ```
 
-*Lưu ý: Do tính chất không cung cấp dịch vụ mạng để xác thực, cấu trúc cờ này được xếp vào diện "Giải mã thành công dựa trên phân tích Artifact", chờ sự đối chiếu từ hệ thống điểm.*
+*Flag được suy ra từ artifact; bản ghi hiện tại chưa có xác nhận submit trên scoreboard.*

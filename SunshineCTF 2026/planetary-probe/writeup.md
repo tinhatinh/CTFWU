@@ -5,9 +5,9 @@
 
 ## Đề bài
 
-Ứng dụng web đóng vai trò như một sổ tay tra cứu hành tinh của "Galactic Federation". Khi người dùng nhập tên hành tinh để tra cứu, bảng điều khiển (console) chỉ phản hồi lại đúng một trong hai trạng thái, tương đương với một bit thông tin duy nhất: "signal detected" (tìm thấy tín hiệu) hoặc "no signal" (không có tín hiệu). Ứng dụng không hề hiển thị thông báo lỗi hệ thống và cũng không in lại chuỗi người dùng đã nhập.
+Ứng dụng web là một sổ tay tra cứu hành tinh của "Galactic Federation". Khi người dùng nhập tên hành tinh để tra cứu, bảng điều khiển (console) chỉ phản hồi lại đúng một trong hai trạng thái, tương đương với một bit thông tin duy nhất: "signal detected" (tìm thấy tín hiệu) hoặc "no signal" (không có tín hiệu). Ứng dụng không hiển thị thông báo lỗi hệ thống và cũng không in lại chuỗi người dùng đã nhập.
 
-Thực tế, tham số `planet` trên URL dính lỗ hổng SQL Injection nghiêm trọng tác động trực tiếp vào cơ sở dữ liệu PostgreSQL. Cờ (flag) không được lưu trữ trong cơ sở dữ liệu mà nằm dưới dạng một tệp văn bản trên hệ thống (file system). Vì user `probe` kết nối với cơ sở dữ liệu được phân quyền thuộc nhóm `pg_execute_server_program`, kẻ tấn công hoàn toàn có thể lợi dụng quyền hạn này để thực thi các lệnh hệ thống (shell command) thông qua mệnh đề `COPY ... TO PROGRAM`. Từ đó, dựa vào mã thoát (exit code) của lệnh shell làm phép thử mù (oracle), ta có thể lần mò đọc từng byte nội dung của tệp cờ.
+Thực tế, tham số `planet` trên URL dính lỗ hổng SQL Injection nghiêm trọng tác động trực tiếp vào cơ sở dữ liệu PostgreSQL. Cờ (flag) không được lưu trữ trong cơ sở dữ liệu mà nằm dưới dạng một file văn bản trên hệ thống (file system). Vì user `probe` kết nối với cơ sở dữ liệu được phân quyền thuộc nhóm `pg_execute_server_program`, người chơi hoàn toàn có thể lợi dụng quyền hạn này để thực thi các lệnh hệ thống (shell command) thông qua mệnh đề `COPY ... TO PROGRAM`. Từ đó, dựa vào mã thoát (exit code) của lệnh shell làm phép thử mù (oracle), ta có thể lần mò đọc từng byte nội dung của file cờ.
 
 ## Phân tích ban đầu
 
@@ -32,9 +32,9 @@ SELECT id FROM planets WHERE name = '<payload>'
 
 Ta có thể chuẩn hoá phép thử mù (oracle) dưới dạng: `MARS' AND (<expr>)-- `. Phản hồi sẽ là carrier khi và chỉ khi biểu thức `<expr>` mang giá trị đúng (true).
 
-**Lưu ý quan trọng:** Ứng dụng có cơ chế tự động chuyển đổi toàn bộ payload sang chữ in thường (lower-case) trước khi đưa vào cơ sở dữ liệu. Điều này khiến biểu thức `ascii('A')=65` trở thành sai vì nó đã bị ép thành `ascii('a')=65`, trong khi `ascii('A')=97` và `ascii(chr(65))=65` lại đánh giá là đúng. Chính vì vậy, tuyệt đối không được sử dụng ký tự in hoa trực tiếp trong chuỗi truy vấn; mọi phép so sánh đều phải được quy về các hàm toán học hoặc chuỗi như `ascii` và `length`.
+**Lưu ý quan trọng:** Ứng dụng có cơ chế tự động chuyển đổi toàn bộ payload sang chữ in thường (lower-case) trước khi đưa vào cơ sở dữ liệu. Điều này khiến biểu thức `ascii('A')=65` trở thành sai vì nó đã bị ép thành `ascii('a')=65`, trong khi `ascii('A')=97` và `ascii(chr(65))=65` lại đánh giá là đúng. Chính vì vậy, không sử dụng ký tự in hoa trực tiếp trong chuỗi truy vấn; mọi phép so sánh đều phải được quy về các hàm toán học hoặc chuỗi như `ascii` và `length`.
 
-Quá trình rà quét dữ liệu các bảng nội bộ (`pg_class`, `planets`, `zleak`) cho thấy chuỗi cờ `sun{` không hề tồn tại trong bất kỳ cột nào của CSDL. Do đó, cờ chắc chắn phải được giấu trên hệ thống tệp tin.
+Quá trình rà quét dữ liệu các bảng nội bộ (`pg_class`, `planets`, `zleak`) cho thấy chuỗi cờ `sun{` không tồn tại trong bất kỳ cột nào của CSDL. Do đó, cờ chắc chắn phải được giấu trên hệ thống file.
 
 ## Chuỗi khai thác
 
@@ -48,11 +48,11 @@ Khảo sát bảng `pg_auth_members` xác nhận tài khoản `probe` hiện t�
 MARS'; COPY (SELECT 1) TO PROGRAM '<cmd>'; SELECT 1; -- 
 ```
 
-Nếu câu lệnh `<cmd>` kết thúc thất bại (exit code khác 0), PostgreSQL sẽ ném ra ngoại lệ (exception) khiến ứng dụng trả về "no signal". Ngược lại, nếu thực thi thành công (exit code bằng 0), kết quả sẽ là "signal detected". Chẳng hạn: `test -f /etc/passwd` trả về carrier (vì file tồn tại), trong khi `test -f /no.such` trả về null. Phản ứng này tạo nên một phép thử mù (oracle) thứ hai vô cùng đắc lực, giúp ta tương tác và thăm dò hệ thống tệp.
+Nếu câu lệnh `<cmd>` kết thúc thất bại (exit code khác 0), PostgreSQL sẽ ném ra ngoại lệ (exception) khiến ứng dụng trả về "no signal". Ngược lại, nếu thực thi thành công (exit code bằng 0), kết quả sẽ là "signal detected". Chẳng hạn: `test -f /etc/passwd` trả về carrier (vì file tồn tại), trong khi `test -f /no.such` trả về null. Phản ứng này tạo nên một phép thử mù (oracle) thứ hai, giúp ta tương tác và thăm dò hệ thống file.
 
 Lệnh shell dùng để tìm vị trí file cờ: `find / -name "*flag*" -type f -exec grep -ls sun{ {} +`.
 
-### Bước 2 - Đọc nội dung tệp tin từng ký tự một
+### Bước 2 - Đọc nội dung file từng ký tự một
 
 Do máy chủ web có thể chạy trên hạ tầng gồm nhiều bản sao (replica), ta không thể lưu trữ trạng thái hay file tạm giữa hai request khác nhau. Mọi lệnh thực thi phải được đóng gói và trả về kết quả ngay trong một payload duy nhất:
 
@@ -61,8 +61,8 @@ f=$(find / -name "*flag*" -type f -exec grep -ls sun{ {} + 2>/dev/null | grep -v
 grep -aoE "sun[{][^}]*[}]" "$f" | head -1 | cut -c<K> | grep -qE "[class]"
 ```
 
-Các giải pháp kỹ thuật cụ thể đã được áp dụng để quá trình đọc tệp tin diễn ra ổn định:
-1. Tuyệt đối không luân chuyển dữ liệu trung gian qua thư mục `/tmp/` vì request tiếp theo có thể được điều hướng sang một máy chủ bản sao khác, nơi dữ liệu tạm không tồn tại.
+Các giải pháp kỹ thuật cụ thể đã được áp dụng để quá trình đọc file diễn ra ổn định:
+1. Không luân chuyển dữ liệu trung gian qua thư mục `/tmp/` vì request tiếp theo có thể được điều hướng sang một máy chủ bản sao khác, nơi dữ liệu tạm không tồn tại.
 2. Việc sử dụng `find -name` kết hợp `cut -c<K>` có ưu điểm là tối ưu hoá tốc độ. Nếu các probe chạy quá chậm, máy chủ sẽ xem như request bị lỗi và ngắt kết nối. Phương pháp tách rời từng byte (`index`) để truy vấn còn mở ra khả năng chạy đa luồng để tăng tốc độ khai thác.
 3. Cần hết sức thận trọng khi dùng các lớp phủ định (negative class) trong regex. Chẳng hạn, nếu dùng `[^d]` để suy luận một chữ cái có phải là viết hoa (vd: `D`) hay không, ta có thể dễ dàng bị đánh lừa bởi những lỗi timeout ngẫu nhiên khiến lệnh kết thúc sớm. Phương án an toàn là luôn phải kiểm tra trước xem nó có thuộc lớp chữ hoa `[[:upper:]]` hay không.
 

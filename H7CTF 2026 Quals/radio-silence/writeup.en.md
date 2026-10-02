@@ -35,9 +35,7 @@ total runs 5
 46260     1 1     blip đơn lẻ
 46261  2932 0     im lặng cuối
 ```
-
-The envelope is flat across 43200 samples, so the "0" parts are only whitespace before and after the emission.
-Constant envelope + a carrier present = 2-FSK.
+The burst has a stable envelope over 43200 samples; zero-amplitude regions occur before and after it. The two tones in the FFT below support a 2-FSK decoder.
 
 An FFT over the burst alone (Hanning, 23.1 Hz resolution) yields exactly two peaks:
 
@@ -93,9 +91,7 @@ frame  = np.packbits(bits).tobytes()
 [*] as ascii    b'\xaa\xaa\xaa\xaa\xaa\xaa-\xd4+H7CTF{6780856d-db42-4cfa-8b56-c62109d8417c}ze'
 [*] leftover    0 bits after the last whole byte
 ```
-
-`min margin 0.500` means every symbol has absolute consensus: there is no slot where the two tones contested each other,
-so no bit had to be guessed.
+`min margin 0.500` shows that the samples used for each symbol all select the same tone. No symbol in this capture has a tied decision between the two tones.
 
 ### Step 3: eliminating the other 3 bit assignments
 
@@ -115,7 +111,7 @@ t35=1 LSB   printable 18/54  rác
 | preamble | `aa aa aa aa aa aa` | `0b10101010`, the alternation string used for bit sync |
 | header | `2d d4 2b` | not identifiable, plausibly device id + command type |
 | message | `48 37 43 54 46 7b … 7d` | `H7CTF{6780856d-db42-4cfa-8b56-c62109d8417c}` (43 B) |
-| trailer | `7a 65` | unexplained: `sum8=0x9f`, `xor8=0xf7`, CRC16-CCITT init 0/FFFF = `0xdeea`/`0xd655`, CRC16 reflected 0x8005/0xA001 = `0x2d08`/`0x9657` none of which produce `0x7a65`. Most likely a nonce/serial. |
+| Trailer | `7a 65` | Meaning unknown. The recorded sum8, xor8 and CRC16 checks do not match; no specific field type is established. `sum8=0x9f` · `xor8=0xf7` · `0xdeea` · `0xd655` · `0x2d08` · `0x9657` · `0x7a65` |
 
 Nothing is submitted over HTTP: the instance serves exactly one static file (`Server: SimpleHTTP/0.6`), with no `<pre>`
 submission contract like the other web/hardware challenges of the same event, so the flag is pasted into the scoreboard.

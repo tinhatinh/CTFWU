@@ -5,7 +5,7 @@
 ## Đề bài
 
 Hệ thống mục tiêu là Certmarq, nền tảng dịch vụ cấp phát chứng chỉ khóa học. Quy trình hoạt động: nhà phát hành thiết kế mẫu cấu trúc chung, nền tảng tự động kết hợp (merge) thông tin học viên vào mẫu và tạo ra chứng chỉ. 
-Điểm yếu của hệ thống nằm ở tính năng: trình thiết kế (designer) cho phép nhà phát hành xem trước (preview) bản chứng chỉ bằng cách kết xuất (render) trực tiếp trên máy chủ. Đặc tính không giới hạn quyền của người thiết kế này là dấu hiệu cho thấy có lỗi trong quy trình.
+Điểm yếu của hệ thống nằm ở tính năng: trình thiết kế (designer) cho phép nhà phát hành xem trước (preview) bản chứng chỉ bằng cách render trực tiếp trên máy chủ. Đặc tính không giới hạn quyền của người thiết kế này là dấu hiệu cho thấy có lỗi trong quy trình.
 
 ## Phân tích ban đầu
 
@@ -48,5 +48,5 @@ Cấu trúc payload hoàn chỉnh và định dạng qua khối mã Javascript `
 WEBVERSE{8ba2f569dafeedea7f4f6848757e1917}
 ```
 
-Lưu ý: Không cung cấp tệp `exploit.py` để tự động hóa. Mã script sử dụng thư viện `requests` đã được thiết kế, tuy nhiên chưa được xác nhận tính ổn định: Khi chạy lệnh, môi trường (instance) đã bị máy chủ vô hiệu hóa (WebVerse quy định chỉ một instance hoạt động duy nhất), và định danh các tham số form chưa được đối soát. 
+Lưu ý: Không cung cấp file `exploit.py` để tự động hóa. Mã script sử dụng thư viện `requests` đã được thiết kế, tuy nhiên chưa được xác nhận tính ổn định: Khi chạy lệnh, môi trường (instance) đã bị máy chủ vô hiệu hóa (WebVerse quy định chỉ một instance hoạt động duy nhất), và định danh các tham số form chưa được kiểm tra.
 Tài liệu cung cấp chuỗi payload chuẩn và cấu trúc JS nhúng trong `analysis/payload.md`. Lệnh này được thiết kế để thực thi trực tiếp trên giao diện console của môi trường duyệt web hiện tại.

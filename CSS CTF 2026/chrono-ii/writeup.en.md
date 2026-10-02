@@ -5,7 +5,7 @@
 
 ## Problem Description
 
-The system provides a service at `http://34.116.80.78:8001`, along with information that the intercepted data segment has a "constantly changing" nature. The analyst's task is to collect ciphertexts from this service and reconstruct the original plaintext. 
+The challenge provides a service at `http://34.116.80.78:8001`, along with information that the intercepted data segment has a "constantly changing" nature. The analyst's task is to collect ciphertexts from this service and reconstruct the original plaintext.
 This problem is the sequel to "Chrono I". In the previous part, the cryptosystem was identified as a numeric Vigenère (Gronsfeld cipher with a period of 14) with a static key derived from a timestamp. In this upgraded version (Chrono II), the cryptographic model remains the same, but the encryption key is designed as a dynamic keystream that changes based on the progression of time (the clock).
 
 ## Initial Analysis
@@ -14,7 +14,7 @@ The service interface operates like a signal receiving station, displaying acces
 
 By randomly examining 60 data lines, two main technical characteristics were identified:
 
-- The ciphertext maintains a fixed format structure: `UUUUUU{lll_lllll_lllllllll_lllll_llllll}`. Numeric characters alternately appear at the exact same positional system across all lines. It is assumed that if the plaintext were constantly changing, the probability of maintaining such a rigid structural pattern is zero. Deduction: The plaintext is a static constant, only the encryption key linearly changes per second.
+- The ciphertext maintains a fixed format: `UUUUUU{lll_lllll_lllllllll_lllll_llllll}`. Numeric characters alternately appear at the exact same positional system across all lines. It is assumed that if the plaintext were constantly changing, the probability of maintaining such a rigid structural pattern is zero. Deduction: The plaintext is a static constant, only the encryption key linearly changes per second.
 - Separator characters such as `_`, `{`, and `}` appear intact and do not change positions. This proves the encryption stream is configured to ignore these characters.
 
 The processing system is split into three data domains: Uppercase letters (modulo 26), lowercase letters (modulo 26), and digits (modulo 10).
@@ -23,8 +23,7 @@ Since the plaintext is a static value and the flag format is a known standard (`
 
 ## Exploitation Chain
 
-**Step 1 - Build a data stream collection tool (Capture Windows).** 
-Standard network tools like `curl` or Python's socket library cannot establish a connection to the server (SYN packets are rejected/dropped, resulting in timeouts at the 8, 12, 30-second marks, whereas connecting to normal servers like `example.com:80` succeeds immediately). However, connecting via a web browser is viable. Therefore, the optimal approach is to extract data directly from the website's source code: The `app.js` file stores the fetch results in a variable named `capture`.
+In the recorded environment, requests with `curl` and Python sockets timed out, while the browser could load the page. The application stores its feed response in the `capture` variable, so the data was collected through the browser.
 
 ```javascript
 capture.map(r => r.timestamp + ' ' + r.ciphertext).join('\n')

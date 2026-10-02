@@ -7,11 +7,11 @@
 
 > "anon hasn't been outside in years, so he put the sun in his keyboard. find the flag he types to bring it out."
 
-Đề bài cung cấp cho chúng ta một tệp `.klc` duy nhất. Đây là định dạng mã nguồn cấu hình bàn phím trên hệ điều hành Windows, thường được tạo ra bởi phần mềm Microsoft Keyboard Layout Creator (MSKLC). Mục tiêu của bài toán là tìm ra chuỗi phím bấm chính xác mà "anon" đã cấu hình để gõ ra biểu tượng mặt trời (chính là chuỗi cờ mà ta cần tìm).
+Đề bài cung cấp cho chúng ta một file `.klc` duy nhất. Đây là định dạng mã nguồn cấu hình bàn phím trên hệ điều hành Windows, thường được tạo ra bởi phần mềm Microsoft Keyboard Layout Creator (MSKLC). Mục tiêu của bài toán là tìm ra chuỗi phím bấm chính xác mà "anon" đã cấu hình để gõ ra biểu tượng mặt trời (chính là chuỗi cờ mà ta cần tìm).
 
 ## Phân tích định dạng KLC
 
-Khi đọc tệp `.klc`, có hai quy tắc quan trọng về cơ chế hoạt động của bàn phím mà ta cần nắm bắt:
+Khi đọc file `.klc`, có hai quy tắc quan trọng về cơ chế hoạt động của bàn phím mà ta cần nắm bắt:
 
 1. Trong phần định nghĩa phím (`KEYS`), bất kỳ phím nào được đánh dấu bằng hậu tố `@` đều đóng vai trò là một "dead key" (phím chết/phím kết hợp - loại phím không in ra ký tự ngay lập tức mà chờ phím tiếp theo để tạo thành một ký tự phức tạp). Khi phân tích file này, ta thấy chỉ tồn tại duy nhất một phím dead key: `29 OEM_3 0 0060@ 007e -1` (tương ứng với phím backtick `` ` ``).
 2. Khi chương trình xử lý khối `DEADKEY <state>`, các dòng dữ liệu bên dưới có dạng `<src> <res>@` mang ý nghĩa: nếu người dùng gõ phím `<src>`, hệ thống sẽ tiếp tục chuyển sang trạng thái dead key `<res>` mới. Trong trường hợp `<res>` không đi kèm ký hiệu `@`, hệ thống sẽ hiểu rằng chuỗi kết hợp đã hoàn tất, in ký tự đó ra màn hình và thoát khỏi trạng thái dead key.
@@ -23,7 +23,7 @@ DEADKEY 02b0
 007d    2600          <- Không có ký hiệu @  =>  Trả về mã U+2600 (BLACK SUN WITH RAYS = ☀)
 ```
 
-Như vậy, toàn bộ cấu trúc bàn phím phức tạp này được thiết kế chỉ để in ra một biểu tượng mặt trời (☀) duy nhất thông qua một chuỗi phím kết hợp cực kỳ dài.
+Như vậy, toàn bộ cấu trúc bàn phím phức tạp này được thiết kế chỉ để in ra một biểu tượng mặt trời (☀) duy nhất thông qua một chuỗi phím kết hợp dài.
 
 ## Trích xuất cờ
 

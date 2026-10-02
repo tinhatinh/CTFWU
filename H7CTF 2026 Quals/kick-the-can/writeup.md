@@ -6,11 +6,11 @@
 
 ## Đề bài
 
-Hệ thống cung cấp tệp tin log mạng CAN bus trích xuất từ cổng OBD-II của một phương tiện. Hầu hết thông tin là tín hiệu nền (engine gossip). Bài toán yêu cầu phân tích dữ liệu, nhận diện hai thiết bị ECU có lưu lượng trao đổi cao và trích xuất dữ liệu đang được truyền tải.
+Đề cung cấp file log mạng CAN bus trích xuất từ cổng OBD-II của một phương tiện. Hầu hết thông tin là tín hiệu nền (engine gossip). Bài toán yêu cầu phân tích dữ liệu, nhận diện hai thiết bị ECU có lưu lượng trao đổi cao và trích xuất dữ liệu đang được truyền tải.
 
 ## Phân tích ban đầu
 
-Giao diện hệ thống đơn giản (sử dụng `Python SimpleHTTP/0.6`), cung cấp duy nhất tệp tin:
+Giao diện hệ thống đơn giản (sử dụng `Python SimpleHTTP/0.6`), cung cấp duy nhất file:
 
 ```text
 file: capture.log (SocketCAN candump log: định dạng (timestamp) can0 ID#DATA)
@@ -70,7 +70,7 @@ H7CTF{6360cbb3-73fc-4ba5-a9e6-0229a3b1a008}
 Luồng giao tiếp diễn ra chuẩn xác: Thiết bị kiểm tra khởi chạy phiên mở rộng, vượt qua xác thực SecurityAccess (cặp seed/key `47 0C 37 12` / `1D566D48`), và truy xuất cấu hình thiết bị. Trên thực tế, DID `0xF1A0` thường dùng lưu mã định danh phần cứng; trong môi trường thử thách, DID này trả về mã cờ.
 
 **Bước 3 - Tự động hóa quá trình phân tích.** 
-Kịch bản `solve.py` được thiết kế để đọc tệp log, nhận diện cấu trúc ISO-TP, lọc các mã dịch vụ `0x62` và áp dụng biểu thức chính quy `H7CTF\{[^}\n]*\}` để xuất cờ:
+Kịch bản `solve.py` được thiết kế để đọc file log, nhận diện cấu trúc ISO-TP, lọc các mã dịch vụ `0x62` và áp dụng biểu thức chính quy `H7CTF\{[^}\n]*\}` để xuất cờ:
 
 ```bash
 python solve.py --url https://web-5c6688f7ad7feac6.web.h7tex.com/capture.log

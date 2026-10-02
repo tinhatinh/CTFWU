@@ -29,7 +29,7 @@ The full log is in `notes.md`.
 
 1. **IDOR on `user(id:)`**: `user(id:"user_1")`, `user(id:"612")`, `user(id:"1")` all return `null`, no error. Ruled out.
 2. **SQLi in the `id` parameter** (the challenge name hints at "query"): `user_1' OR '1'='1`, `user_612' OR '1'='1`, `user_612'--`, `user_612 ` - every payload still returns `null` and the result shape is unchanged, meaning the resolver uses a parameterised query. Ruled out.
-3. **A hidden field at the `Query` root**: probing 46 commonly used names (`flag`, `secret`, `notes`, `token`, `debug`, `sql`, `exec`, `members`, ...) -> all 46 report `Cannot query field`. `Query` has only `me` and `user`. Ruled out.
+3. **A hidden field at the `Query` root**: probing 46 commonly used names (`flag`, `secret`, `notes`, `token`, `debug`, `sql`, `exec`, `members`,...) -> all 46 report `Cannot query field`. `Query` has only `me` and `user`. Ruled out.
 4. **Alias confusion / field order**: `{ one: user(id:"user_1"){...} six: user(id:"user_612"){...} }` and the reversed variant - each field is still resolved independently. Ruled out.
 5. **Query batching**: sending the body as an array of requests makes the server return **HTTP 500** (the Flask error page), no data. That is an implementation bug, not a way around the authorisation check. Ruled out (not exploited further).
 

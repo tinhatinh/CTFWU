@@ -39,7 +39,7 @@ Those two documents spell out the entire route (full version in `de.md`): analys
 
 ## Exploit Chain
 
-### Stage 1  -  recon
+### Stage 1 - recon
 
 `s3:ListAllMyBuckets` (`GET /`) lists 4 buckets: `deputy-analyst-scratch`, `deputy-runner-logs`, `deputy-flag-vault`, `deputy-crown-vault`. Analyst can only read the first bucket:
 
@@ -51,7 +51,7 @@ GET /deputy-analyst-scratch/welcome.txt
   Onboarding: our deploys run through a Lambda that executes as ci-runner-role.
 ```
 
-### Stage 2  -  PassRole into a Lambda (classic "pass a role you cannot wear")
+### Stage 2 - PassRole into a Lambda (classic "pass a role you cannot wear")
 
 Analyst cannot `sts:AssumeRole` the runner (its trust policy only accepts the Lambda service), but does have `iam:PassRole` for exactly that ARN. Create a function carrying the role, then invoke it:
 
@@ -71,7 +71,7 @@ POST /2015-03-31/functions/deputy-relay/invocations
 GET /deputy-runner-logs/build.log -> H7CTF{28f87391f8a228110839}
 ```
 
-### Stage 3  -  AssumeRole into the partner account
+### Stage 3 - AssumeRole into the partner account
 
 The runner's policy allows it, and `partner-admin-role` requires no additional condition:
 
@@ -90,7 +90,7 @@ s3://deputy-flag-vault/partner-config.json  -> {"secure_role":"arn:aws:iam::9999
                                                 "external_id":"Dc-2026-8f31a97c4b2e"}
 ```
 
-### Stage 4  -  confused-deputy control
+### Stage 4 - confused-deputy control
 
 `deputy-crown-vault` is still 403 for partner-admin. The `partner-secure-role` role is a "hardened" one: its trust policy requires `sts:ExternalId`. The mock distinguishes every failure clearly:
 

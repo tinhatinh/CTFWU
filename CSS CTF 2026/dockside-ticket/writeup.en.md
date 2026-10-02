@@ -9,9 +9,9 @@ The challenge is a software device system assisting in port ticket sales, design
 
 ## Initial Analysis
 
-Evaluating the binary file: 64-bit ELF format, the system does not apply the Position Independent Executable (PIE) mechanism, supports partial RELRO, has No-eXecute (NX) activated, and symbol tables are not stripped. The program structure focuses on six core functions with clear identifiers: `create_ticket`, `cancel_ticket`, `edit_ticket`, `use_ticket`, and two destination functions being `open_gate` and `deny_access`.
+Evaluating the binary: 64-bit ELF format, the system does not apply the Position Independent Executable (PIE) mechanism, supports partial RELRO, has No-eXecute (NX) activated, and symbol tables are not stripped. The program structure focuses on six core functions with clear identifiers: `create_ticket`, `cancel_ticket`, `edit_ticket`, `use_ticket`, and two destination functions being `open_gate` and `deny_access`.
 
-In the `create_ticket` function, the allocation process creates a memory chunk with a capacity of 0x28 bytes. Here, the system writes the format string `"GUEST"` to the beginning of the memory region. The structural crux is: **the system embeds a function pointer at offset position 0x20**, and this pointer is initialized by default pointing to the `deny_access` function:
+In the `create_ticket` function, the allocation process creates a memory chunk with a capacity of 0x28 bytes. Here, the system writes the format string `"GUEST"` to the beginning of the memory region. The relevant detail is: **the system embeds a function pointer at offset position 0x20**, and this pointer is initialized by default pointing to the `deny_access` function:
 
 ```assembly
 40137c:  mov    edi,0x28
@@ -33,7 +33,7 @@ Check the `cancel_ticket` function structure; this function solely executes a `f
 401401:  call   puts@plt                # Print message "Ticket cancelled."
 ```
 
-An overall survey of the binary file reveals that the global variable `active_ticket` is only assigned data by the system **exactly once** (at address `create_ticket+0x2f`). The consequence of this architecture is that after performing the ticket cancellation operation (calling the `free` function), the global variable `active_ticket` is not reset to null; instead, it continues to maintain its state pointing to the freed memory region. This is the classic Use-After-Free (UAF) vulnerability.
+An overall survey of the binary reveals that the global variable `active_ticket` is only assigned data by the system **exactly once** (at address `create_ticket+0x2f`). The consequence of this architecture is that after performing the ticket cancellation operation (calling the `free` function), the global variable `active_ticket` is not reset to null; instead, it continues to maintain its state pointing to the freed memory region. This is the classic Use-After-Free (UAF) vulnerability.
 
 **Step 2 - Manipulate the freed memory region.** 
 The `edit_ticket` function deploys an incomplete check mechanism: It only checks the condition that the pointer variable is non-zero, and then calls the `read(0, active_ticket, 0x28)` command. When sending a payload with a size of 40 bytes, this data amount completely fits within the chunk's capacity. Consequently, the data range from byte 32 to 39 (corresponding to the offset position 0x20 containing the function pointer) will be subject to complete control manipulation by the user:

@@ -4,9 +4,9 @@
 
 ## Phân tích ban đầu
 
-Tệp thực thi được bảo vệ bằng hàng loạt cơ chế bảo mật: PIE, NX, Partial RELRO và vẫn còn giữ nguyên bảng symbol. Đặc biệt, tệp không hề chứa bất kỳ gadget dạng `pop reg; ret` nào (`5f c3`, `5e c3`, `5a c3`), bảng PLT cũng hoàn toàn vắng bóng các hàm thực thi shell như `system` hay `execve`. Không những thế, mọi bộ đệm tiếp nhận dữ liệu đầu vào đều được kiểm soát kích thước cực kỳ chặt chẽ.
+Binary được bảo vệ bằng hàng loạt cơ chế bảo mật: PIE, NX, Partial RELRO và vẫn còn giữ nguyên bảng symbol. Đặc biệt, file không chứa bất kỳ gadget dạng `pop reg; ret` nào (`5f c3`, `5e c3`, `5a c3`), bảng PLT cũng hoàn toàn vắng bóng các hàm thực thi shell như `system` hay `execve`. Không những thế, mọi bộ đệm tiếp nhận dữ liệu đầu vào đều được kiểm soát kích thước.
 
-Cụ thể, hàm `raw_readline(buf, len)` giới hạn khắt khe số lượng byte được đọc và luôn tự động chốt hạ bằng ký tự null `\0` tại vị trí `buf[len-1]`. Áp dụng với cấu trúc `buf = rbp-0x100, len = 0x100`, byte cuối cùng ghi được sẽ dừng lại ở `rbp-0x01`. Vì con trỏ rbp lưu trữ (Saved RBP) nằm ngay tại vị trí `[rbp]`, cách vùng ghi tối đa đúng 1 byte, lỗ hổng tràn bộ đệm (buffer overflow) hay khai thác ROP truyền thống là hoàn toàn vô vọng.
+Cụ thể, hàm `raw_readline(buf, len)` giới hạn khắt khe số lượng byte được đọc và luôn tự động chốt hạ bằng ký tự null `\0` tại vị trí `buf[len-1]`. Áp dụng với cấu trúc `buf = rbp-0x100, len = 0x100`, byte cuối cùng ghi được sẽ dừng lại ở `rbp-0x01`. Vì con trỏ rbp lưu trữ (Saved RBP) nằm ngay tại vị trí `[rbp]`, cách vùng ghi tối đa đúng 1 byte, lỗ hổng buffer overflow hay khai thác ROP truyền thống là hoàn toàn vô vọng.
 
 ## Lỗ hổng đọc bộ nhớ
 
@@ -27,13 +27,12 @@ Nhánh thoát sớm này đã vô tình bỏ qua việc gán giá trị cho con 
 2f4b:  raw_print_int([rbp-0x204])      ; in ra ô nhớ chưa hề được ghi
 2f50:  print "\", are you sure?"
 ```
-
-Chính vì thế, nếu người dùng cố ý nhập vào một chuỗi không phải là số nguyên, chương trình sẽ in ra 4 byte dữ liệu rác trên stack dưới dạng số nguyên có dấu. Đây chính là primitive đọc bộ nhớ (memory leak) hoàn hảo để giải quyết thử thách.
+Khi input không phải số nguyên, chương trình in bốn byte đang có trên stack dưới dạng số nguyên có dấu. Dùng kết quả này làm memory leak cho bước sau.
 
 ## Khai thác
 
 **Bước 1 - Truy tìm vị trí cờ trên stack.** 
-Cờ không nằm gọn một chỗ mà đã bị xé lẻ trên stack bởi hàm `place_flag()` (hàm này được thực thi trước khi hiển thị menu):
+Cờ không nằm một chỗ mà đã bị xé lẻ trên stack bởi hàm `place_flag()` (hàm này được thực thi trước khi hiển thị menu):
 
 ```asm
 18f8:  open("flag.txt", 0)
@@ -71,6 +70,6 @@ Kịch bản thực thi một lượt gọi `cancel_plan` diễn ra như sau:
 - Ở Câu hỏi 2: Chương trình ngây thơ in ra giá trị biến -> qua đó làm rò rỉ thành công 4 byte cờ.
 - Để đào sâu hơn vào stack: Ta chọn đáp án theo thứ tự Câu 1 = `0`, Câu 2 = `1`, Câu 3 = `4` (nhằm kích hoạt gọi đệ quy).
 
-Mở tổng cộng 13 luồng kết nối tương ứng với 13 đường đi đã tính toán, lần lượt trích xuất và ghép mí 13 mảnh 4-byte lại với nhau để khôi phục trọn vẹn lá cờ.
+Mở tổng cộng 13 luồng kết nối tương ứng với 13 đường đi đã tính toán, lần lượt trích xuất và ghép mí 13 mảnh 4-byte lại với nhau để khôi phục trọn vẹn flag.
 
-Một mẹo tiết kiệm thời gian: Nhập `42` ngay tại dòng nhắc lệnh "Press enter to start." để vô hiệu hoá chế độ `nanosleep`, giúp cắt giảm đáng kể khoảng thời gian chờ chết của hàm `speak_with_an_operator`. Ngoài ra, mặc dù menu gợi ý "press 3 to speak with an operator", tuỳ chọn chính xác để rẽ sang mục khác trên thực tế lại là phím 2. Để tự động hoá, script sẽ đánh dấu đồng bộ (sync) dựa trên văn bản câu hỏi độc nhất (Ví dụ: `Press 8 for yes.`).
+Lưu ý khi chạy: Nhập `42` ngay tại dòng nhắc lệnh "Press enter to start." để vô hiệu hoá chế độ `nanosleep`, giúp cắt giảm đáng kể khoảng thời gian chờ chết của hàm `speak_with_an_operator`. Ngoài ra, mặc dù menu gợi ý "press 3 to speak with an operator", tuỳ chọn chính xác để rẽ sang mục khác trên thực tế lại là phím 2. Để tự động hoá, script sẽ đánh dấu đồng bộ (sync) dựa trên văn bản câu hỏi độc nhất (Ví dụ: `Press 8 for yes.`).

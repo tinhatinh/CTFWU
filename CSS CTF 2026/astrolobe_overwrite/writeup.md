@@ -5,13 +5,13 @@
 
 ## Đề bài
 
-Hệ thống cung cấp một tệp thực thi `nexus_core` được triển khai dưới dạng dịch vụ qua giao thức netcat tại địa chỉ `34.116.80.78:7654`. Dịch vụ này tiếp nhận đầu vào (payload) dưới dạng chuỗi hexa, với dung lượng giới hạn tối đa 512 byte. Toàn bộ quá trình thực thi bị khống chế thời gian bởi một hàm alarm dưới 45 giây. Mục tiêu là gửi một chuỗi mã có khả năng thỏa mãn 6 cổng kiểm tra nội bộ (được gọi là "harmonic resonance"). Khi hệ thống vượt qua các vòng kiểm tra này, lệnh ghi đè khóa hệ thống sẽ được kích hoạt và trả về cờ (flag).
+Đề cung cấp một binary `nexus_core` được triển khai dưới dạng dịch vụ qua giao thức netcat tại địa chỉ `34.116.80.78:7654`. Dịch vụ này tiếp nhận đầu vào (payload) dưới dạng chuỗi hexa, với dung lượng giới hạn tối đa 512 byte. Toàn bộ quá trình thực thi bị khống chế thời gian bởi một hàm alarm dưới 45 giây. Mục tiêu là gửi một chuỗi mã có khả năng thỏa mãn 6 cổng kiểm tra nội bộ (được gọi là "harmonic resonance"). Khi hệ thống vượt qua các vòng kiểm tra này, lệnh ghi đè khóa hệ thống sẽ được kích hoạt và trả về cờ (flag).
 
 Khi kết nối, dịch vụ sẽ xuất ra một mã tín hiệu (beacon) dưới dạng hệ thập lục phân, sau đó chờ nhận dữ liệu đầu vào. Dữ liệu này phải là một chuỗi hexa đại diện cho một chương trình mã máy cấp thấp. Hệ thống không cung cấp tài liệu kỹ thuật đi kèm; nếu kiểm tra thất bại, nó chỉ phản hồi bằng các thông báo lỗi tĩnh như "COHERENCE FAULT", "THERMAL DETONATION", hoặc "HARMONIC FAULT".
 
 ## Phân tích ban đầu
 
-Đánh giá tệp thực thi:
+Đánh giá binary:
 ```text
 elf64 x86-64 PIE NX full-relro
 interpreter: /lib64/ld-linux-x86-64.so.2
@@ -21,7 +21,7 @@ strings: "flag.txt", "[!] COHERENCE FAULT: Quantum state cold",
          "[!] THERMAL DETONATION: Core runaway", "[+] TELEMETRY STABILIZED"
 ```
 
-Điểm cốt lõi: Tệp nhị phân thực hiện gọi hàm `time()` và `alarm(45)`. Điều này áp đặt một yêu cầu tương tác theo thời gian thực (real-time) với một giới hạn khắt khe. Các khối logic kiểm tra không đọc trực tiếp tệp flag; thay vào đó, hệ thống yêu cầu các biến trạng thái nội bộ phải thỏa mãn các hệ điều kiện toán học phức tạp trước khi cho phép truy cập.
+Điểm cốt lõi: Binary thực hiện gọi hàm `time()` và `alarm(45)`. Điều này áp đặt một yêu cầu tương tác theo thời gian thực (real-time) với một giới hạn khắt khe. Các khối logic kiểm tra không đọc trực tiếp file flag; thay vào đó, hệ thống yêu cầu các biến trạng thái nội bộ phải thỏa mãn các hệ điều kiện toán học phức tạp trước khi cho phép truy cập.
 
 ## Chuỗi khai thác
 
@@ -42,7 +42,7 @@ Quá trình dịch ngược assembly phân mảnh logic thành ba nhóm phương
 - Nhóm Gate 4: Có dạng `c₁² = c₀³ + 17c₀ + 43 mod M`.
 - Nhóm Gate 5: Có dạng `c₃² = c₂³ + 17c₂ + 43 mod M`.
 
-Xây dựng một hàm xác minh bằng ngôn ngữ Python (`model.py`), sau đó khởi tạo 200 mẫu thử ngẫu nhiên và đối chiếu chéo với hệ thống oracle. Kết quả đạt độ đồng nhất 100%.
+Viết mô hình Python trong `model.py` và đối chiếu với oracle trên 200 mẫu ngẫu nhiên. Cả 200 mẫu đã thử cho kết quả khớp; đây là kiểm tra trên tập mẫu đó, không phải chứng minh cho mọi input.
 
 **Bước 3 - Giải hệ phương trình thông qua không gian suy biến.**  
 Dựa trên mô hình toán học đã thiết lập, một mã nguồn bằng ngôn ngữ C được tối ưu hóa đa luồng (sử dụng OpenMP qua cờ `-fopenmp`) được sử dụng để quét không gian biến `t₀∈[0..300]`:

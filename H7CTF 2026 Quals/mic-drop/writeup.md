@@ -64,7 +64,7 @@ python exploit.py https://web-021fc06a681e8dca.web.h7tex.com/boardroom 60   # Tr
 python exploit.py files/352f5b477507_main_seg15.ts                          # Trích xuất dữ liệu từ tệp phân đoạn offline
 ```
 
-Kết xuất thực thi đối với lệnh thứ 2 (trên file TS 159.048 B lưu trữ tại `files/`):
+Xuất thực thi đối với lệnh thứ 2 (trên file TS 159.048 B lưu trữ tại `files/`):
 
 ```text
 [*] Soi luồng offline TS từ files/352f5b477507_main_seg15.ts: 159048 B
@@ -74,4 +74,4 @@ Kết xuất thực thi đối với lệnh thứ 2 (trên file TS 159.048 B lư
 [+] flag: H7CTF{7f0cb1b6-34ee-46c0-945b-1f069dff2a29}   (Xác nhận bởi 1/1 mảng bursts)
 ```
 
-Qá trình thu thập hoàn thành trên máy chủ live với 7 phân đoạn (47.85 giây audio, chứa 9 khối burst). Sau khi máy chủ ngừng hoạt động, mã script được thiết kế để xử lý tệp dữ liệu đã lưu trữ. Báo cáo phân tích (8/9 burst khớp nhau) được lưu trong `notes.md` (mục H6) qua việc chạy phân tích `analysis/afsk.py` đối với file gốc 47.85s.
+Qá trình thu thập hoàn thành trên máy chủ live với 7 phân đoạn (47.85 giây audio, chứa 9 khối burst). Sau khi máy chủ ngừng hoạt động, mã script được thiết kế để xử lý file dữ liệu đã lưu trữ. Báo cáo phân tích (8/9 burst khớp nhau) được lưu trong `notes.md` (mục H6) qua việc chạy phân tích `analysis/afsk.py` đối với file gốc 47.85s.

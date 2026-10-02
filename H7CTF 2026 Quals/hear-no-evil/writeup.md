@@ -7,11 +7,11 @@
 
 ## Đề bài
 
-Hệ thống ghi lại luồng giao tiếp sóng Bluetooth (BLE) giữa tai nghe NoiseGate và ứng dụng điện thoại. Thử thách yêu cầu phân tích bản ghi sóng vô tuyến, loại bỏ các thiết bị gây nhiễu và trích xuất hai cờ bí mật: một cờ lộ ra trong quá trình đọc cấu hình hệ thống, và cờ còn lại được trả về sau khi ứng dụng hoàn tất bước xác thực (authenticate). Yêu cầu là lấy trọn vẹn cả hai cờ.
+Hệ thống ghi lại luồng giao tiếp sóng Bluetooth (BLE) giữa tai nghe NoiseGate và ứng dụng điện thoại. Thử thách yêu cầu phân tích bản ghi sóng vô tuyến, loại bỏ các thiết bị gây nhiễu và trích xuất hai flag: một cờ lộ ra trong quá trình đọc cấu hình hệ thống, và cờ còn lại được trả về sau khi ứng dụng hoàn tất bước xác thực (authenticate). Yêu cầu là lấy trọn vẹn cả hai cờ.
 
 ## Phân tích ban đầu
 
-Giao diện hệ thống cung cấp một thông điệp:
+Giao diện đề cung cấp một thông điệp:
 
 ```text
 Tải file capture.pcap (Hãy mở nó trong Wireshark: công cụ này có khả năng tự động phân tích cấu trúc btle / btatt).
@@ -48,7 +48,7 @@ vault@0x0033: released after auth; plaintext = ct XOR ks,
   nonce = notify@0x0031
 ```
 
-Hệ thống cung cấp cơ chế mã hóa (scheme) chi tiết: 
+Đề cung cấp cơ chế mã hóa (scheme) chi tiết:
 - Chuỗi `config` là phép XOR giữa `value` và mã gốc `provkey`. 
 - Dữ liệu `vault` sử dụng phép XOR giữa văn bản mã (ct) và chuỗi khoá phái sinh `ks`. Trong đó, `ks` được sinh ra từ hàm băm của `provkey` và `nonce` (lấy từ gói tin notify). Hệ thống không yêu cầu thủ tục challenge-response, chỉ cần phép XOR hợp lệ.
 
@@ -72,7 +72,7 @@ ks = b"".join(hashlib.sha256(provkey + nonce + bytes([i])).digest() for i in ran
 v2 = bytes(c ^ ks[i] for i, c in enumerate(ct_0x33))
 ```
 
-Hai khối văn bản mã (ciphertext) này đều có chiều dài 43 byte, phù hợp với kích thước chuỗi flag hợp lệ.
+Hai khối văn ciphertext này đều có chiều dài 43 byte, phù hợp với kích thước chuỗi flag hợp lệ.
 
 **Bước 5 - Xác thực chéo.** 
 Đoạn dữ liệu 322 byte của thẻ `0x0041` tạo thành một đoạn văn bản ASCII liền mạch. Việc ghép sai thứ tự hoặc lỗi trong trình ráp nối (reassemble) sẽ làm đoạn văn bản biến thành chuỗi ký tự lỗi. Văn bản đọc được hoàn chỉnh là bằng chứng xác thực thuật toán xử lý dữ liệu và offset hoàn toàn chính xác.

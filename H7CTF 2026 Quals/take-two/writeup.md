@@ -4,7 +4,7 @@
 
 ## Đề bài
 
-Hệ thống Helios được trang bị tính năng chỉ chấp nhận khởi động (boot) với firmware đã xác thực (notary). Vấn đề là, cơ chế xác thực (notary) kiểm tra nghiêm ngặt, từ chối ký bản build chứa chuỗi `BACKDOOR`. Chính vì thế, ta không thể yêu cầu chữ ký hợp lệ cho bản build mong muốn. 
+Hệ thống Helios được trang bị tính năng chỉ chấp nhận khởi động (boot) với firmware đã xác thực (notary). Vấn đề là, cơ chế xác thực (notary) kiểm tra, từ chối ký bản build chứa chuỗi `BACKDOOR`. Chính vì thế, ta không thể yêu cầu chữ ký hợp lệ cho bản build mong muốn.
 Gợi ý "it is not above a second take" (không ở trên mức quay lại lần hai) chỉ ra lỗ hổng của hệ thống: Tồn tại chữ ký dùng một lần (one-time) đang bị hệ thống sử dụng lại để ký lần hai.
 
 Phân tích mã nguồn `lms.py`, chú thích xác nhận: *"lỗ hổng mang tính vận hành (lỗi sử dụng lại lá do reset bộ đếm), không nằm trong code mật mã"*.

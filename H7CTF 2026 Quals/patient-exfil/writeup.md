@@ -6,15 +6,15 @@
 ## Đề bài
 
 Bối cảnh: Hệ thống giám sát ghi nhận một máy tính trong hệ thống gửi dữ liệu trái phép ra ngoài. Phần mềm mã độc này hoạt động với tần suất rất chậm - không gây ra bất kỳ cảnh báo nào trong suốt thời gian hoạt động. 
-Hệ thống cung cấp một tập tin mạng (`capture.pcap`) và yêu cầu trích xuất thông điệp mà mã độc truyền tải. 
+Đề cung cấp một file mạng (`capture.pcap`) và yêu cầu trích xuất thông điệp mà mã độc truyền tải.
 Định dạng của cờ thu được phải là `H7CTF{...}`.
 
 ## Phân tích ban đầu
 
 Phân tích file bằng công cụ `node ~/.qoder/skills/ctf-solve/scripts/triage.cjs`:
 
-- Hồ sơ tệp: `magic = libpcap capture (mã hoá little-endian)`, giá trị entropy = 5.084/8. Kiểm tra chuỗi cho thấy có 87 chuỗi hiển thị được, nhưng không có dữ liệu khớp định dạng cờ (flag-pattern hits = 0). 
-  Kết luận: Lá cờ không nằm trực tiếp trong file mạng. Dữ liệu đã bị mã hóa hoặc phân mảnh.
+- Hồ sơ file: `magic = libpcap capture (mã hoá little-endian)`, giá trị entropy = 5.084/8. Kiểm tra chuỗi cho thấy có 87 chuỗi hiển thị được, nhưng không có dữ liệu khớp định dạng cờ (flag-pattern hits = 0).
+  Kết luận: Flag không nằm trực tiếp trong file mạng. Dữ liệu đã bị mã hóa hoặc phân mảnh.
 - Trích xuất thông tin qua `survey.py`: Ghi nhận 1260 gói tin (packet) được ghi nhận trong 148,31 giây, tất cả đều kết nối đến địa chỉ loopback `127.0.0.1`. 
   Phân tích bao gồm 1080 gói TCP và 180 gói DNS. Không có gói ICMP hay các giao thức bất thường.
 - Phân tích cổng đích: Cổng `8080` (có 534 gói), cổng `8443` (có 114 gói), phần còn lại là cổng truy cập ngẫu nhiên, mỗi cổng ghi nhận khoảng 4 gói.

@@ -9,7 +9,7 @@
 
 Bối cảnh: Hệ thống Tapedeck cung cấp dịch vụ podcast hosting. Cổng Studio cho phép tải lên một đoạn âm thanh, xử lý để tạo audiogram (poster) và tải về. 
 Yêu cầu: *"Hãy kiểm tra quá trình render đặt tên và xử lý các tệp trả về như thế nào"*. Nền tảng gợi ý lỗi là CMDI (Command Injection - Tiêm lệnh hệ thống). 
-Lưu ý: Cờ (flag) lưu trữ trên máy chủ, người chơi không có tệp phân tích offline.
+Lưu ý: Cờ (flag) lưu trữ trên máy chủ, người chơi không có file phân tích offline.
 
 ## Phân tích ban đầu
 
@@ -58,7 +58,7 @@ Phản hồi lỗi errors: "Unrecognized option 'h.png'.
 
 Cụm `-h.png` xuất hiện như một tham số argv độc lập. Minh chứng: Chuỗi lệnh đã được phân tách bằng dấu khoảng trắng trước khi chuyển vào `ffmpeg`. Và vì phần tên file `slug + ".png"` không bị bao bọc trong ngoặc kép (quote), dữ liệu phía sau dấu cách sẽ trở thành tham số điều khiển mới cho `ffmpeg`.
 
-**Bước 2 - Khai thác trích xuất tệp.** 
+**Bước 2 - Khai thác trích xuất file.**
 Sử dụng các cờ của tham số tiêm, ta có 2 phương pháp: dùng `-i` để chỉ định file đầu vào (input), hoặc dùng `-f` để thay đổi demuxer. Sử dụng tính năng concat demuxer của `ffmpeg` là phương pháp hiệu quả nhất để đọc file đích:
 
 ```text
@@ -71,8 +71,7 @@ Payload: slug = "a.png -f concat -i /flag.txt b.png"
 [concat @ 0x6145f8caea80] Dòng 1 (Line 1): từ khóa không nhận diện 'WEBVERSE{fcb61c06cbb7cd020a371730b71521fe}'
 /flag.txt: Invalid data found when processing input
 ```
-
-Hệ thống trả toàn bộ thông báo `stderr` trong trường `errors`, cờ được hiển thị trực tiếp trong phản hồi (response). Ta không cần render ảnh, không cần OCR, không cần trích xuất thủ công các file trong workspace.
+Server đưa `stderr` vào trường `errors`, nên có thể đọc flag trực tiếp trong response.
 
 **Bước 3 - Xác định đường dẫn của cờ.** 
 Cùng một phương thức tiêm, ta có thể kiểm tra một file có tồn tại hay không thông qua phản hồi lỗi của hệ thống:

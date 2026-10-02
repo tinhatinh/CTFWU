@@ -8,11 +8,11 @@
 ## Đề bài
 
 Hệ thống tính toán thống kê "DecryptoStat" ứng dụng một phiên bản rút gọn của cơ chế mã hóa đồng cấu CKKS, đảm bảo dữ liệu đầu vào không bị truy cập trực tiếp.
-Hệ thống cung cấp hai cổng dịch vụ chạy song hành: một bản gốc (v1) và một bản có cấu hình bảo mật cao hơn (hardened rewrite - v2). Mục tiêu của thử thách là trích xuất khoá bí mật (secret key) của cả hai hệ thống, gửi chúng vào cổng `/v1/recover` và `/v2/recover` để xác nhận cờ.
+Đề cung cấp hai cổng dịch vụ chạy song hành: một bản gốc (v1) và một bản có cấu hình bảo mật cao hơn (hardened rewrite - v2). Mục tiêu của thử thách là trích xuất secret key của cả hai hệ thống, gửi chúng vào cổng `/v1/recover` và `/v2/recover` để xác nhận cờ.
 
 ## Phân tích ban đầu
 
-Truy vấn GET vào thư mục gốc `/` trả về bảng thông số kỹ thuật liệt kê các hàm API và cấu hình mạng tinh thể (hệ mật): `N=8`, `Q=2^40-87`, độ nhiễu `DELTA=2^25`. Thông tin đáng chú ý nhất là điểm yếu hệ thống: *khoá bí mật là một vector bậc 3 (ternary vector) có độ dài 8 phần tử*.
+Truy vấn GET vào thư mục gốc `/` trả về bảng thông số kỹ thuật liệt kê các hàm API và cấu hình mạng tinh thể (hệ mật): `N=8`, `Q=2^40-87`, độ nhiễu `DELTA=2^25`. Điểm cần chú ý là điểm yếu hệ thống: *khoá bí mật là một ternary vector có độ dài 8 phần tử*.
 
 Phân tích mã nguồn `ckks.py`:
 
@@ -32,14 +32,14 @@ def decrypt(ct, s, smudge=0):
 Tổng hợp các thông tin trên, ta xác định phương pháp tiếp cận:
 
 1. Không gian khoá (Keyspace) chỉ có `3^8 = 6561` khả năng. Số lượng này thuận lợi cho việc kiểm tra vét cạn trong thời gian ngắn.
-2. Cổng `POST /vN/encrypt` cho phép nhập bản rõ (plaintext) tùy chọn, hệ thống trả về cặp mã (b, a).
+2. Cổng `POST /vN/encrypt` cho phép nhập plaintext tùy chọn, hệ thống trả về cặp mã (b, a).
 3. Sai số nhiễu được cấu hình `e = small(3)`, tức là mọi hệ số của đa thức dư `b + a*s - m` bị giới hạn trong khoảng [-3 đến 3]. Quy mô gốc của một ciphertext có kích thước ~Q = 2^40. Sự chênh lệch tỷ lệ này biến giới hạn nhiễu thành một phương pháp kiểm tra khoá (test) chuẩn xác.
 
-Một bình luận trong `ckks.py` mô tả: *"Lỗ hổng không nằm ở cấu trúc mã này; lỗ hổng nằm ở việc service trả về kết quả giải mã mang tính xấp xỉ (chứa nhiễu)"*. Đây là hướng đi sai lầm dẫn dắt người chơi tấn công qua lỗ hổng Decryption Oracle (đó cũng là lý do vì sao bản v2 cố tình tích hợp kỹ thuật nhiễu `smudge` vào hàm decrypt để phòng thủ). Bỏ qua hướng tấn công này, có phương pháp khai thác hiệu quả hơn.
+Comment trong `ckks.py` đề cập decryption oracle, và v2 thêm `smudge` vào output của decrypt. Lời giải ở đây dùng keyspace nhỏ để kiểm tra các secret key từ ciphertext do `/vN/encrypt` trả về; không cần gọi decryption oracle.
 
 ## Quá trình khai thác
 
-### Bước 1: Yêu cầu một bản mã (ciphertext) có giá trị 0 tuyệt đối
+### Bước 1: Yêu cầu mã hóa plaintext bằng 0
 
 Thiết lập mảng `values = [0,0,0,0]`, khi mã hoá, biến `m = encode(0)` sẽ bị triệt tiêu về 0. Phương trình `b + a*s - m = e` sẽ rút gọn thành `b + a*s = e` (với e mang giá trị siêu nhỏ).
 
@@ -62,7 +62,7 @@ for s in itertools.product((-1,0,1), repeat=8):
 
 Để đảm bảo tính toàn vẹn toán học (tránh sai số), kịch bản sử dụng trực tiếp module `ckks.py` của tác giả (`sys.path.insert(0,"files"); import ckks`). Nhờ đó, các hàm `ring_mul`, `encode`, `_center` hoạt động đồng nhất với hệ thống máy chủ.
 
-Kết quả: Chỉ với một ciphertext, lưới lùng sục đã gạn lọc được chính xác một khoá duy nhất cho cả hai phiên bản, không yêu cầu phân loại bổ sung:
+Với ciphertext đã lấy, phép duyệt giữ lại một key cho mỗi phiên bản:
 
 ```text
 === Phiên bản v1 ===
@@ -93,9 +93,7 @@ Gửi dữ liệu lên cổng `POST /v1/recover` và `POST /v2/recover`:
 
 ### Phân tích bổ sung: Cơ chế làm nhiễu (hardened) ở bản v2 không hiệu quả
 
-Kỹ thuật bơm nhiễu `smudge` chỉ được cài đặt trong hàm giải ngược `decrypt`: Mục đích là làm nhiễu kết quả của oracle, ngăn cản việc tính toán giá trị `s` từ kết quả `/v2/decrypt`. 
-Tuy nhiên, hướng tiếp cận của mã khai thác đã bỏ qua thao tác đó: Dữ liệu mã hóa `(b, a)` được lấy trực tiếp từ `/v2/encrypt`, sau đó thuật toán giải mã tuyệt đối được thực thi cục bộ. 
-Kết quả kiểm tra xác nhận một ciphertext xử lý qua `/v2/decrypt` chỉ gây sai số 2.94e-07, tương đương mức 1.95e-07 của v1. Điều này chứng minh rằng kỹ thuật nhiễu không ảnh hưởng đến quy trình này; lượng nhiễu được bổ sung không tác động đến cơ sở thuật toán gốc đã bị bẻ khóa.
+Sai số đo được khi gọi `/v2/decrypt` là 2.94e-07, so với 1.95e-07 ở v1. Phép thử này ghi nhận hành vi của oracle; việc tìm key ở trên không phụ thuộc vào output decrypt của server.
 
 ## Flag
 ```text
@@ -103,4 +101,4 @@ Cổng v1  H7CTF{08a5c5eb-7571-4a3d-a80d-599ddd46c5ad}   (Khóa truy cập: [1,-
 Cổng v2  H7CTF{89c0e6b2-9fca-49fd-a02f-07a70e359363}   (Khóa truy cập: [1, 0, 0,-1,-1,-1, 0, 1])
 ```
 
-Sử dụng kịch bản trích xuất: `python solve_lips.py` (Kịch bản lấy cả 2 cờ, lưu vào file `flags.txt`).
+Sử dụng script trích xuất: `python solve_lips.py` (Kịch bản lấy cả 2 cờ, lưu vào file `flags.txt`).

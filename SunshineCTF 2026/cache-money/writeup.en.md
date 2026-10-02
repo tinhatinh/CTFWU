@@ -14,7 +14,7 @@
 The `wallets[16]` array lives in `.bss` at `0x4040c0` (the binary is non-PIE, so the address is
 fixed). Three primitives, exactly as the hint "the books haven't been audited" suggests:
 
-- `deposit(i)` = `read(0, wallets[i]->ledger, wallets[i]->size)`  -> writes into the chunk
+- `deposit(i)` = `read(0, wallets[i]->ledger, wallets[i]->size)` -> writes into the chunk
 - `withdraw(i)` = `write(1, wallets[i]->ledger, wallets[i]->size)` -> reads out of the chunk
 - `open` = `calloc(0x30)` for the struct then `malloc(size)` for the ledger
 

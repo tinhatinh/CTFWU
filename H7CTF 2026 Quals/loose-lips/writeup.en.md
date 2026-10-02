@@ -32,18 +32,13 @@ def decrypt(ct, s, smudge=0):
 
 Three facts combine into the solution:
 
-1. The key's keyspace is `3^8 = 6561`, fully enumerable in a few seconds.
-2. `POST /vN/encrypt` lets us pick the plaintext and returns exactly the pair (b, a).
-3. `e = small(3)`, so every coefficient of `b + a*s - m` lies in [-3, 3]; the ciphertext's natural magnitude is ~Q =
-   2^40, which makes this an almost absolute test.
+3. `e = small(3)`, so every coefficient of `b + a*s - m` must lie in [-3, 3]. With modulus near `Q = 2^40`, this bound is used to filter the 6561 candidate keys.
 
-The opening comment of `ckks.py` says "the flaw is not in this code; it is that the service returns the approximate
-(noisy) decryption": that is the attack path the author intended (and the reason v2 pours extra noise into decrypt).
-There is no need to follow it.
+The comment in `ckks.py` discusses a decryption oracle, and v2 adds `smudge` to decryption output. This solution instead enumerates the small keyspace and checks candidates against ciphertext from `/vN/encrypt`; it does not call the decryption oracle.
 
 ## Exploit Chain
 
-### Step 1: ask for a ciphertext of zero
+### Step 1: request encryption of a zero plaintext
 
 With `values = [0,0,0,0]` we get `m = encode(0) = 0`, so the only remaining condition is that `b + a*s = e` be small:
 
@@ -98,11 +93,7 @@ generated itself.
 
 ### Why the "hardened" build does not save v2
 
-`smudge` is only added to the decrypt result: it dirties the oracle's output so you cannot infer `s` from calls to
-`/v2/decrypt`. But the attack above never calls the decrypt oracle: it takes `(b, a)` from `/v2/encrypt` itself and
-checks candidate solutions with exact arithmetic on its own machine. Measured in practice, `/v2/decrypt` on a
-just-requested ciphertext gives an error of 2.94e-07, the same order as v1's 1.95e-07, so the flooding is negligible
-along that path; and even if it were large, it would have nothing to do with the primitive actually used.
+`smudge` affects the server’s decrypt result. The attack uses `(b, a)` from `/v2/encrypt` and checks keys locally, so that noise is outside the recovery path. The measured decrypt errors, 2.94e-07 in v2 and 1.95e-07 in v1, are additional observations of the oracle, not inputs to key recovery.
 
 ## Flag
 ```

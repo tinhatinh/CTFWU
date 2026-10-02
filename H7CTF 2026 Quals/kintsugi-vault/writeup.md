@@ -4,7 +4,7 @@
 
 Hệ thống lõi `vmrun` là một máy ảo (VM) nội bộ sử dụng tập lệnh gồm 14 opcode. Mỗi điểm dữ liệu (node, file `.shard`) lưu trữ một bảng hoán vị opcode 256 byte (đóng vai trò "từ điển biên dịch") và một mã nhị phân dài 649 byte. Chương trình tiếp nhận 8 byte khóa (key), xử lý qua cấu trúc 3 tầng thuật toán `LUT` kết hợp trộn XOR tuyến tính, và đối chiếu 8 thanh ghi với 8 hằng số đích. Chuỗi 32 byte seed dùng để xác thực hệ thống là tổ hợp 8 byte khóa trích xuất từ 4 node. Quy trình thực hiện:
 
-1. Phân tích cấu trúc tệp shard và tập lệnh ISA từ tệp `vmrun` (Đây là tệp nhị phân tĩnh, bị loại bỏ thông tin debug (stripped). Do yêu cầu nền tảng, hệ thống mô phỏng được phát triển lại bằng Python).
+1. Phân tích cấu trúc file shard và tập lệnh ISA từ file `vmrun` (Đây là binary tĩnh, bị loại bỏ thông tin debug (stripped). Do yêu cầu nền tảng, hệ thống mô phỏng được phát triển lại bằng Python).
 2. Tái tạo bảng biên dịch cho các node thiếu bảng mã (mô phỏng thuật ngữ "chất keo" của Kintsugi).
 3. Thực hiện phân tích ngược quá trình tính toán để truy xuất khoá (key). Thao tác này đòi hỏi tính toán tất cả các nhánh nhị phân phát sinh từ các lệnh bị loại bỏ bit (`ANDI`).
 4. Sắp xếp 4 mảnh khóa, đối chiếu (verify) với thuật toán Ed25519 sử dụng `pubkey.bin`.
@@ -16,7 +16,7 @@ Kết quả: Chuỗi `seed = f860622f78adc147 0aba129efad830d8 1b091cc9cc9b71ee 
 H7CTF{9df8f215-6ef3-4ee2-a336-42d628680738}
 ```
 
-Lưu ý quan trọng nằm ở mục 7: Tệp đính kèm trên trang chủ là phiên bản thử nghiệm tĩnh; hệ thống thực tế yêu cầu bộ dữ liệu tải qua `GET /handout.tar.gz`.
+Lưu ý quan trọng nằm ở mục 7: File đính kèm trên trang chủ là phiên bản thử nghiệm tĩnh; hệ thống thực tế yêu cầu bộ dữ liệu tải qua `GET /handout.tar.gz`.
 
 ## 1. Phân tích định dạng Shard
 
@@ -36,7 +36,7 @@ Lưu ý quan trọng nằm ở mục 7: Tệp đính kèm trên trang chủ là 
 0x232 649 byte  Khối mã thực thi
 ```
 
-Hệ thống xử lý (`main` tại `0x402fd0`) chỉ xác nhận: kích thước tệp `size > 0x31`, đúng magic bytes, và `size >= 0x132 + tablelen + proglen`. Nếu bảng decode tải từ ngoài có `size > 0xff`, 256 byte sẽ được sao chép trực tiếp vào bộ nhớ stack (`0x4030cb`), không yêu cầu xác thực. 
+Hệ thống xử lý (`main` tại `0x402fd0`) chỉ xác nhận: kích thước file `size > 0x31`, đúng magic bytes, và `size >= 0x132 + tablelen + proglen`. Nếu bảng decode tải từ ngoài có `size > 0xff`, 256 byte sẽ được sao chép trực tiếp vào bộ nhớ stack (`0x4030cb`), không yêu cầu xác thực.
 Lỗ hổng nghiêm trọng: Người dùng có quyền kiểm soát nội dung bảng decode, quyết định trực tiếp hành vi thực thi lệnh của VM.
 
 Cấu trúc Key: 16 ký tự hex, xử lý qua lệnh SSE và phân bổ 8 byte vào bộ nhớ tại `rsp+0x58`.
@@ -69,7 +69,7 @@ Mã máy ảo được mô phỏng hoàn thiện tại script `vm.py`, đảm b�
 
 ## 3. Phân loại cấu trúc xử lý Node
 
-Phân tích mã vận hành 7 tệp shard cho thấy có 2 phương pháp tổ chức cấu trúc lệnh:
+Phân tích mã vận hành 7 file shard cho thấy có 2 phương pháp tổ chức cấu trúc lệnh:
 
 - Nhóm A (chứa ID `f6f11ad1`, `080ec62d`, `3e3a0fc9`, `cfa1fa34`): Thực thi 3 lớp `LUT` lồng ghép ma trận XOR, chốt bằng 8 lệnh `CMP` với hằng số thuộc chuẩn 1 byte. Cấu trúc mã là hệ thuật toán 64-bit chắc chắn.
 - Nhóm B (chứa ID `3df10ef4`, `63bafd7f`, `f14ad4e2`): Vận hành theo chu trình đơn giản `KEY -> LUT -> ADD -> ROL -> MUL -> OR -> XORI -> CMP` với hằng số 32-bit. Lệnh `MUL` và `OR` là các hàm phân rã dữ liệu, dẫn đến tỷ lệ lỗi phân tích cao (mã `3df10ef4` có thể chấp nhận hơn 500 key). Chúng là các node trung gian cho cấu trúc mạng mesh, không lưu cờ đích.
@@ -78,13 +78,13 @@ Phân tích mã vận hành 7 tệp shard cho thấy có 2 phương pháp tổ c
 
 `vmrun` từ chối thực thi các shard nhóm A nếu cờ bit0 bị tắt và bảng decode không được cung cấp. Bảng tích hợp của chúng bị làm rối (random 158..163 byte độc nhất).
 
-Quy trình tái thiết lập bảng decode:
+Quy trình chạy lại bảng decode:
 
 1. Mỗi khối mã thực thi sử dụng 8 opcode. Vì bảng decode là ma trận hoán vị, mỗi raw byte yêu cầu một lệnh opcode duy nhất.
-2. Dữ liệu tập lệnh: Lệnh `KEY` đặt tại chỉ số pc = 0, 3, ..., 21 kết hợp đối số `(i,i)`. Ở phần kết, 49 byte cuối yêu cầu 8 cấu trúc `CMP` cho thanh ghi `r0..r7` (so sánh hằng số 1 byte) và kết thúc bằng `HALT`.
+2. Dữ liệu tập lệnh: Lệnh `KEY` đặt tại chỉ số pc = 0, 3,..., 21 kết hợp đối số `(i,i)`. Ở phần kết, 49 byte cuối yêu cầu 8 cấu trúc `CMP` cho thanh ghi `r0..r7` (so sánh hằng số 1 byte) và kết thúc bằng `HALT`.
 3. Mọi lệnh có quy ước kích thước 3 hoặc 6 byte (`pc % 3 == 0`). Thực hiện ánh xạ (brute-force) 5 raw byte có tần suất cao tại các khoảng pc cho 5 opcode `{MOV, XOR, LUT, ANDI, XORI}`. Tiêu chí xác nhận: luồng điều khiển kết thúc bằng HALT, có đủ 8 lệnh CMP, thanh ghi `<= 11`, và tương thích khi tính toán đảo chiều (reverse).
 
-Hai ID `080ec62d` và `3e3a0fc9` có cấu trúc tương đồng, có thể sao chép ánh xạ `(pc, op)` từ tệp `f6f11ad1`. ID `cfa1fa34` có vòng lặp biến đổi khác nên phải xử lý bằng thuật toán tự động. Bảng decode thu được:
+Hai ID `080ec62d` và `3e3a0fc9` có cấu trúc tương đồng, có thể sao chép ánh xạ `(pc, op)` từ file `f6f11ad1`. ID `cfa1fa34` có vòng lặp biến đổi khác nên phải xử lý bằng thuật toán tự động. Bảng decode thu được:
 `f7=KEY 79=XORI 4e=ANDI d6=LUT 4c=XOR c1=MOV bc=CMP 44=HALT`.
 
 ## 5. Phân tích ngược tính toán khóa
@@ -114,8 +114,7 @@ ID quản lý:          Thuộc f6f11ad1 | Thuộc 3e3a0fc9 | Thuộc 080ec62d |
 Xử lý Ed25519_pubkey(seed) = 5a0239a82fba9d2d5c6c5418e237ed8a888baeced6f4c32aa71e7be3805775ee
 Đối chiếu pubkey.bin       = 5a0239a82fba9d2d5c6c5418e237ed8a888baeced6f4c32aa71e7be3805775ee  -> Khớp hoàn toàn
 ```
-
-Cơ sở xác thực (oracle) ở đây là hệ mã hóa nội tại: Khi khóa công khai xuất từ seed khớp với bảng `pubkey`, thông tin seed và hoán vị tương ứng là chính xác 100%, không yêu cầu gửi xác thực về máy chủ. Việc thử nghiệm với thư viện `cryptography` bản 50.0.1 (OpenSSL) và thuật toán tự biên dịch `ed25519/ed.py` xác minh độ tin cậy.
+Tính public key từ seed candidate rồi so sánh với `pubkey` để kiểm tra candidate tại local. Đã đối chiếu kết quả giữa `cryptography` 50.0.1 (OpenSSL) và `ed25519/ed.py`; kiểm tra này không cần gọi server.
 
 Các phỏng đoán trước đó bao gồm lấy 8 byte mục tiêu CMP, sử dụng thông số XORI, hoặc sửa định dạng endian đều cho kết quả sai.
 
@@ -128,7 +127,7 @@ Nguyên nhân lỗi: Máy chủ trả về cùng một mã thông báo lỗi cho
 
 Phân tích trạng thái dẫn đến suy luận sai lầm: Phiên bản file đính kèm trên trang chủ không đồng bộ với máy chủ cấu hình.
 
-Xác thực phiên bản qua lệnh `GET /handout.tar.gz` trên instance live. Phản hồi trả về tệp nén dung lượng 318.172 byte (khác biệt với tệp tĩnh 347.257 byte trên trang chủ). Phiên bản này chứa tệp `pubkey.bin` mới, ID của 7 node được cập nhật, với định danh node mốc là `35e266269ee5...`. Tệp đính kèm gốc là phiên bản thử nghiệm cục bộ (tham chiếu nội dung `MANIFEST.txt` ghi `team: team-local`).
+Xác thực phiên bản qua lệnh `GET /handout.tar.gz` trên instance live. Phản hồi trả về file nén dung lượng 318.172 byte (khác biệt với file tĩnh 347.257 byte trên trang chủ). Phiên bản này chứa file `pubkey.bin` mới, ID của 7 node được cập nhật, với định danh node mốc là `35e266269ee5...`. File đính kèm gốc là phiên bản thử nghiệm cục bộ (tham chiếu nội dung `MANIFEST.txt` ghi `team: team-local`).
 
 Vận hành mã kiểm tra `analysis/live_solve.py` cho hệ thống live:
 
