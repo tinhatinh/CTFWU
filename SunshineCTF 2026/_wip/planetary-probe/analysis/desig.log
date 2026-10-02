@@ -1,5 +1,0 @@
-[*] first comma at 3  (120s)
-[*] second comma at 9 -> designation is chars 4..8
-[*] designation length 5
-[1/5] v[2/5] ve[3/5] ven[4/5] venu[5/5] venus
-[+] designation = 'venus'  (660s)
