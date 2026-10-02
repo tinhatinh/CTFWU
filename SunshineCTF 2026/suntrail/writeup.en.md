@@ -41,7 +41,7 @@ The log of each branch is in `notes.md`.
 both states are a space so it carries nothing). Arrange the remaining 17 keys into three physical
 rows by scan code: top `Q W E R T`, home `A S D F G H`, bottom `Z X C V B N`.
 
-**Step 2 - Follow the arrows on the keys.** Use the three-row layout from step 1: right by one column, up one row or down one row, stopping at the black square. `analysis/search_geometry.py` records alternative mappings in `analysis/geometry_search_results.txt`; enumerating all 8³ mappings is not required to follow this puzzle’s path. The reproduction uses:
+**Step 2 - Follow the arrows on the keys.** Use the three-row layout from step 1: move right by one column, up one row or down one row, and stop at the black square. The reproduction uses:
 
 ```
 U+2192 -> one column right
@@ -50,10 +50,7 @@ U+2198 -> one row down
 U+25A0 -> stopping point
 ```
 
-**Step 3 - the start point inferred from the graph.** With the geometry from step 2, count the keys
-that no arrow points into: only `Q` remains. Walking from `Q` along the arrows until the black
-square, that path goes through exactly 17/17 keys, each key once, and is the only one of the 21
-paths that reads out a complete string.
+**Step 3 - Follow the path from Q.** Only `Q` has no incoming arrow. Follow the arrows from `Q` to the black square at `H`; the path visits all 17 keys once. Collect the state-1 characters in that order:
 
 ```
 Q A Z X S W E D C V F R T G B N H

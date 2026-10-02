@@ -35,13 +35,13 @@ Parse 18 dòng `LAYOUT` và bỏ `SPACE` (`0x39`) vì hai state của phím này
 
 **Bước 2 - Theo hướng trên các phím.**
 
-Đọc mũi tên theo cách sắp ba hàng ở trên: sang phải một cột, lên một hàng hoặc xuống một hàng; ô vuông đen là điểm dừng. `analysis/search_geometry.py` ghi lại phép thử các ánh xạ khác trong `analysis/geometry_search_results.txt`, nhưng phép duyệt 8³ ánh xạ không phải điều kiện để đọc đường đi của bài này. Cách ánh xạ dùng để reproduce là:
+Đọc mũi tên theo ba hàng phím ở trên: sang phải một cột, lên một hàng hoặc xuống một hàng; ô vuông đen là điểm dừng. Cách ánh xạ để reproduce là:
 
-Đọc mũi tên theo cách sắp ba hàng ở trên: sang phải một cột, lên một hàng hoặc xuống một hàng; ô vuông đen là điểm dừng. `analysis/search_geometry.py` ghi lại phép thử các ánh xạ khác trong `analysis/geometry_search_results.txt`, nhưng phép duyệt 8³ ánh xạ không phải điều kiện để đọc đường đi của bài này. Cách ánh xạ dùng để reproduce là:
+Đọc mũi tên theo ba hàng phím ở trên: sang phải một cột, lên một hàng hoặc xuống một hàng; ô vuông đen là điểm dừng. Cách ánh xạ để reproduce là:
 
-Đọc mũi tên theo cách sắp ba hàng ở trên: sang phải một cột, lên một hàng hoặc xuống một hàng; ô vuông đen là điểm dừng. `analysis/search_geometry.py` ghi lại phép thử các ánh xạ khác trong `analysis/geometry_search_results.txt`, nhưng phép duyệt 8³ ánh xạ không phải điều kiện để đọc đường đi của bài này. Cách ánh xạ dùng để reproduce là:
+Đọc mũi tên theo ba hàng phím ở trên: sang phải một cột, lên một hàng hoặc xuống một hàng; ô vuông đen là điểm dừng. Cách ánh xạ để reproduce là:
 
-Đọc mũi tên theo cách sắp ba hàng ở trên: sang phải một cột, lên một hàng hoặc xuống một hàng; ô vuông đen là điểm dừng. `analysis/search_geometry.py` ghi lại phép thử các ánh xạ khác trong `analysis/geometry_search_results.txt`, nhưng phép duyệt 8³ ánh xạ không phải điều kiện để đọc đường đi của bài này. Cách ánh xạ dùng để reproduce là:
+Đọc mũi tên theo ba hàng phím ở trên: sang phải một cột, lên một hàng hoặc xuống một hàng; ô vuông đen là điểm dừng. Cách ánh xạ để reproduce là:
 
 ```text
 U+2192 -> Dịch sang phải một cột
@@ -49,7 +49,7 @@ U+2196 -> Lên một hàng
 U+2198 -> Xuống một hàng
 U+25A0 -> Dừng (Stop)
 ```
-Với cách ánh xạ ở bước 2, chỉ `Q` có indegree 0. Đi từ `Q` theo mũi tên tới ô vuông đen đi qua 17/17 phím, mỗi phím một lần. Trong 21 ứng viên đã thử, đường này cho chuỗi đầy đủ.
+Với cách ánh xạ ở bước 2, chỉ `Q` có indegree 0. Đi từ `Q` theo mũi tên tới ô vuông đen đi qua 17/17 phím, mỗi phím một lần. Ghép các ký tự state 1 trên đường này để lấy flag.
 
 ```text
 Q A Z X S W E D C V F R T G B N H
