@@ -7,8 +7,13 @@
 Đề bài gợi ý chúng ta theo dõi kênh mạng xã hội của cuộc thi để tìm manh mối. 
 
 1. Tìm kiếm và truy cập vào trang Instagram chính thức của ban tổ chức sự kiện: `@cybersecuritysydney`.
+
+   ![Trang Instagram chính thức](files/ig_page.png)
+
 2. Trong các bài đăng trên trang, tìm bài viết có tựa đề "General Meeting 01!".
 3. Đọc phần bình luận của bài viết này, chúng ta sẽ thấy một bình luận công khai từ người dùng `harrysalvesen` chứa trực tiếp flag.
+
+   ![Bình luận chứa flag](files/flag_comment.png)
 
 ```text
 harrysalvesen  8h
