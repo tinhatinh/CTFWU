@@ -345,8 +345,8 @@ def write_post(stage, ev, p, lang, base):
         dst_dir = os.path.join(stage, "assets", "writeups", ev["slug"], p["case"])
         os.makedirs(dst_dir, exist_ok=True)
         shutil.copyfile(src, os.path.join(dst_dir, os.path.basename(src)))
-        return "![%s](%s/assets/writeups/%s/%s/%s)" % (
-            alt, base, ev["slug"], p["case"], quote(os.path.basename(src)))
+        return "![%s](/assets/writeups/%s/%s/%s)" % (
+            alt, ev["slug"], p["case"], quote(os.path.basename(src)))
 
     body = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", hold, body)
     if p.get("fallback"):
