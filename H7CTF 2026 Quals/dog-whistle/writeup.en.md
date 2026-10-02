@@ -1,4 +1,4 @@
-# Dog Whistle — Hardware (Insane)
+# Dog Whistle - Hardware (Insane)
 
 **Flag:** `H7CTF{3c48f268-6761-422b-9df0-e652f6b2c4d0}` · **Service:** `nc pwn.h7tex.com 40918` · **Files:** `dog_whistle.zip` (firmware `aria` r7.2)
 

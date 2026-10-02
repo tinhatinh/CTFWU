@@ -1,4 +1,4 @@
-# You Cut Me Off — Forensics (Medium)
+# You Cut Me Off - Forensics (Medium)
 
 **Flag:** `sun{totallyoriginalchallengeidea}` · **Files:** `HEREYOUGO.PNG`, 38759 B, a Discord image 492x382 RGBA
 

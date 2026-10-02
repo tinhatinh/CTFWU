@@ -1,4 +1,4 @@
-# Parcel Bomb — Pwn (Medium)
+# Parcel Bomb - Pwn (Medium)
 
 **Flag:** `H7CTF{0b79ca94-3b66-4509-9365-34d224d5cfe2}`
 **Remote:** `nc pwn.h7tex.com 41136`

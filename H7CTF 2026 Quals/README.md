@@ -47,7 +47,7 @@ Flag format: `H7CTF{uuid}` or `H7CTF{hex}`; WebVerse Labs challenges (web catego
 | `help-yourself` | Has artifacts, no writeup yet |
 | `public-domain` | Has artifacts, no writeup yet |
 | `signed-sealed-delivered` | Has artifacts, no writeup yet |
-| `_wip/*` | Partial work — scripts and captures exist but no flag obtained |
+| `_wip/*` | Partial work - scripts and captures exist but no flag obtained |
 
 ## Challenge Structure
 

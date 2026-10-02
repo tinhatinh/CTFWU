@@ -1,4 +1,4 @@
-# Deputy — Cloud (Hard)
+# Deputy - Cloud (Hard)
 
 Sứ mệnh này gồm 4 cờ (flag) ẩn giấu theo cấp độ thâm nhập (objective):
 

@@ -1,4 +1,4 @@
-# Signed, Sealed, Delivered — Mobile (Medium)
+# Signed, Sealed, Delivered - Mobile (Medium)
 
 ## Đề bài (nguyên văn từ thẻ challenge)
 

@@ -1,4 +1,4 @@
-# Open Sesame — Hardware (Hard)
+# Open Sesame - Hardware (Hard)
 
 **Flag:** `H7CTF{f6091c17-1155-4d06-8a90-b826fd758185}` (Máy chủ trả về qua cổng `/unlock`, lưu tại file `flag.txt`)
 **Mục tiêu:** `https://web-7a56034b5423964c.web.h7tex.com` 

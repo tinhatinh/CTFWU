@@ -1,4 +1,4 @@
-# Radio Silence — Hardware (Medium)
+# Radio Silence - Hardware (Medium)
 
 **Flag:** `H7CTF{6780856d-db42-4cfa-8b56-c62109d8417c}`
 **Máy chủ mục tiêu:** `https://web-0350e37b217a0cbc.web.h7tex.com`

@@ -1,4 +1,4 @@
-# Deputy — Cloud (Hard)
+# Deputy - Cloud (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

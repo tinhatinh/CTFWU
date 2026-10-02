@@ -1,4 +1,4 @@
-# Suntrail — Misc (Medium)
+# Suntrail - Misc (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

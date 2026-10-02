@@ -1,4 +1,4 @@
-# Colour Shift — Forensics (Beginner)
+# Colour Shift - Forensics (Beginner)
 
 **Flag:** `CSSCTF{SHINE ON}`
 **File đính kèm:** `colorshiftctf.bmp` (Kích thước: 1.083.738 B, SHA256: `689f33baf1acdef5c58b61a493977a44384694ef87f07a1f0606f1f34035ef92`)

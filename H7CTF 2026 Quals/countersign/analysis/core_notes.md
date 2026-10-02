@@ -1,4 +1,4 @@
-# countersign — core primitives: transcribed pseudocode + verified models
+# countersign - core primitives: transcribed pseudocode + verified models
 
 Artifact: `unpacked/countersign` (ELF x86-64 PIE, stripped, 22768 B).
 Disassembly: `cs.asm` = `objdump -D -M intel --section=.text` (regenerated; 2113 insns, 0x1140–0x368d).
@@ -17,7 +17,7 @@ comparing against an independent Python model. Marked **[R]** = read off the
 disassembly only.
 
 Corrections to the assumptions in the brief (all [V]):
-* `0x17c0` is **not** a rolling/MAC primitive — it is a 6-byte append to a byte log.
+* `0x17c0` is **not** a rolling/MAC primitive - it is a 6-byte append to a byte log.
 * `0x1af0` is the MAC (a SipHash-shaped ARX), not a helper.
 * `0x1810` is a bytecode interpreter, `0x1d50` is the authenticated chain step.
 * `0x16c0` is glibc/crt boilerplate (`deregister_tm_clones`), not challenge code.
@@ -38,10 +38,10 @@ genuine traps that pure reading had me get wrong (op 7 rotate amount is an
 | 0x460b0 | 8 | scratch qword (@0x2ce7) |
 | **0x460c0** | **0x50 = 40 × u16** | random-permutation table `T[]`, distinct, non-zero [V] |
 | 0x46104 / 0x4610a / 0x4610c / 0x4610e | 2 | = T[34] T[37] T[38] T[39] (alias addresses used as cursors) |
-| 0x46110 | — | end-of-table sentinel pointer (r9 @0x2077), **no data here** |
+| 0x46110 | - | end-of-table sentinel pointer (r9 @0x2077), **no data here** |
 | 0x462c0 | 8 | PRNG state A (written 0x2123, overwritten 0x2c0e) |
 | 0x462c8 | 8 | PRNG state B, resumable (0x26d9, 0x2ad1, 0x3003, 0x35a6) |
-| 0x462d0 | 2 | T[39] — terminal/sink node id |
+| 0x462d0 | 2 | T[39] - terminal/sink node id |
 | 0x462d2 | 2 | T[38] |
 | **0x462d4** | 2 | T[0] = **walk start node id** (read by GET 0x128e and RUN 0x1525) |
 | 0x462d8 | 4 | record count `nrec` (=40 for the 40-entry table) [V] |
@@ -50,7 +50,7 @@ genuine traps that pure reading had me get wrong (op 7 rotate amount is an
 | **0x76ee0** | 8 | `seed` = 2nd urandom read; also = NONCE output |
 | **0x76ef0 / 0x76ef8** | 8+8 | MAC key `k0,k1` = **raw** first 16 urandom bytes |
 
-## 2. `0x1fa0` — boot: image/key generation (one function, 0x1fa0–0x35d7, 1255 insns)
+## 2. `0x1fa0` - boot: image/key generation (one function, 0x1fa0–0x35d7, 1255 insns)
 
 Called once from `main` @0x116d; returns 0 = ok, non-zero → `main` prints
 "boot error" (0x4022) and exits 1. Frame `sub rsp,0x10488` (canary at rsp+0x10478).
@@ -157,18 +157,18 @@ sink = `T[39]` (rec38). Node programs mix `in[0..23]` into `r[0..7]`; `r[6]` is 
 prelude accumulator, and the terminal node (rec39) tests `bit 0 of r[6]`.
 The remaining **74 entries are decoys**: their 6-byte `mac` fields come from a stream
 that is **invariant under a change of the MAC key and under a change of `s2`, and
-changes only when `seed` (0x76ee0) changes** — i.e. decoy bytes = PRNG(seed). Proved by
+changes only when `seed` (0x76ee0) changes** - i.e. decoy bytes = PRNG(seed). Proved by
 three differential generations (only-key / only-s2 / only-seed varied): 74/125 mac
 fields byte-identical across key change, 0/125 across seed change, and the valid/invalid
 *position pattern* identical in all three.
-Consequence: the 128-bit key is **not** needed to know which edges are live — but a
+Consequence: the 128-bit key is **not** needed to know which edges are live - but a
 client-side reimplementation of stream B is. (Whether the decoy stream is reproducible
 from the transmitted `seed` alone is the one thing I did **not** finish; see §8.)
 Key recovery from the oracle: the tag is 48 bits truncated, the key is 128 raw random
 bits, the primitive has no known related-key weakness here ⇒ infeasible; and MINT only
 signs attacker-chosen messages, so it is not a verification oracle.
 
-## 3. `0x1af0` — the MAC [V] (called from 0x14d5 MINT, 0x1e36 chain-step, 0x2b3a, 0x307d)
+## 3. `0x1af0` - the MAC [V] (called from 0x14d5 MINT, 0x1e36 chain-step, 0x2b3a, 0x307d)
 
 ```
 void mac(rdi = tag/*DEAD*/, rsi = msg, edx = len, rcx = out /*6 bytes*/)
@@ -179,7 +179,7 @@ v0 = k0 ^ 0x736f6d6570736575                          ; 0x1b38/0x1b49/0x1b6b   (
 v1 = k1 ^ 0x646f72616e646f6d                          ; 0x1b3f/0x1b61/0x1b71   (rax)
 v2 = k0 ^ 0x6c7967656e657261                          ; 0x1b6e/0x1b74          (r12)
 v3 = k1 ^ 0x7465646279746573                          ; 0x1b81                 (rdx)
-; "somepseudorandomlygeneratedbytes" — SipHash c/d IV, keys k0=[0x76ef0] k1=[0x76ef8]
+; "somepseudorandomlygeneratedbytes" - SipHash c/d IV, keys k0=[0x76ef0] k1=[0x76ef8]
 mfin = (len & 0xff) << 56                             ; 0x1b46,0x1b5d  (rbx)
 if len >= 8:  for off in {8,16}: v3 ^= LE64(buf[off-8:off]); 2×ROUND; v0 ^= LE64(buf[...])
               ; 0x1b84,0x1bbf,0x1bc4,0x1bc9,0x1bcc–0x1bfd, loop ctrl 0x1ba0–0x1bbd
@@ -228,7 +228,7 @@ def mac(k0,k1,msg,out=6):                       # needs len(msg)<24
     for _ in range(4): v=R(*v)
     return (v[0]^v[1]^v[2]^v[3]&M64).to_bytes(8,'little')[:out]
 ```
-Notes [V]: the `tag` argument is **dead** — it lands only in `buf[0]`, which the copy
+Notes [V]: the `tag` argument is **dead** - it lands only in `buf[0]`, which the copy
 loop overwrites for `len>0`; verified `mac(...)` is identical for tag 0x45/0x4d/0x00/0xff.
 Therefore **MINT (≤16 bytes, tag 0x4d @0x14d0) is a direct signing oracle for the exact
 9-byte chain-edge messages**. Two latent bugs, unreachable from the shipped callers:
@@ -236,9 +236,9 @@ the block loop can never advance past a 2nd block (`mov r10d,0x10` @0x1ba9 is a 
 threshold fixed at 24 @0x1bb2) ⇒ `len >= 24` **hangs**; and the clamp is 63 bytes into a
 32-byte stack buffer @0x1b22–0x1b36.
 Width: input = arbitrary bytes (`edx`), output = **6 bytes / 48 bits**.
-**Not** established to be bit-identical to published SipHash-2-4 — see §8.
+**Not** established to be bit-identical to published SipHash-2-4 - see §8.
 
-## 4. `0x17c0` — transcript appender [V] (0x21bb, 0x26b8, 0x26d4, 0x2801, 0x28fd, 0x2e7b)
+## 4. `0x17c0` - transcript appender [V] (0x21bb, 0x26b8, 0x26d4, 0x2801, 0x28fd, 0x2e7b)
 ```
 append6(rdi = rec, esi = a, edx = b, ecx = c):     ; a,b = low bytes only, c = u32 LE
     w = rec.len16                                  ; movzx edx,WORD [rdi+6]  @0x17c3
@@ -250,7 +250,7 @@ append6(rdi = rec, esi = a, edx = b, ecx = c):     ; a,b = low bytes only, c = u
 No length check; buffer is `0x30c-8 = 772 B`, `len` is u16. Verified against a Python
 model on 200 random (buffer, w, a, b, c) cases. Not a MAC/rolling function.
 
-## 5. `0x1810` — the VM / interpreter [V] (0x15b6 RUN, 0x2ca3 self-check)
+## 5. `0x1810` - the VM / interpreter [V] (0x15b6 RUN, 0x2ca3 self-check)
 ```
 int run(rdi = rec, rsi = regfile/*u32[]*/, rdx = in24, rcx = outbuf128, r8 = haltflag)
     if rec.len16 == 0: return 0                    ; 0x1810–0x1815, 0x1ae5
@@ -278,22 +278,22 @@ execution, and a Python model matched the emulator on 1600 random programs):
 | 0x4 | 3 | `r[b1] ^= r[b2]` | 0x1a48 |
 | 0x5 | 3 | `r[b1] &= r[b2]` | 0x1a20 |
 | 0x6 | 3 | `r[b1] \|= r[b2]` | 0x19f8 |
-| 0x7 | 3 | `r[b1] = ROTL32(r[b1], b2 & 31)` — **rotate amount is the immediate byte**, not `r[b2]` (0x19e2 loads only the byte, 0x19e8 `rol …,cl`) | 0x19d0 |
+| 0x7 | 3 | `r[b1] = ROTL32(r[b1], b2 & 31)` - **rotate amount is the immediate byte**, not `r[b2]` (0x19e2 loads only the byte, 0x19e8 `rol …,cl`) | 0x19d0 |
 | 0x8 | 3 | `r[b1] = (b2 > 31) ? 0 : r[b1] >> b2` (explicit zero, unlike x86 `shr`) | 0x1980 |
 | 0x9 | 6 | `r[b1] += imm32` | 0x1960 |
 | 0xa | 6 | `r[b1] ^= imm32` | 0x19b0 |
 | 0xb | 6 | `r[b1] &= imm32` | 0x1940 |
-| 0xc | 3 | `r[b1] = (b2 <= 0x17) ? in24[b2] : 0` — the only input read, 24 bytes | 0x1910 |
+| 0xc | 3 | `r[b1] = (b2 <= 0x17) ? in24[b2] : 0` - the only input read, 24 bytes | 0x1910 |
 | 0xd | 1 | `strncpy(outbuf128, getenv("FLAG") ?: "unavailable", 0x7f)`; zeroes the 128 B first | 0x1898 |
 | 0xe | 1 | `*haltflag = 1` (accept marker) | 0x1870 |
 | 0xf | 1 | `return 1` (main maps this to "denied") | 0x1860 |
 
 op 0xd: `lea rdi,[rip+0x2771] # 4010` = `"FLAG"`, default `[rip+0x274a] # 4004` =
 `"unavailable"`; `cmovne rsi,rax` @0x18cc picks the env value when set.
-Operand reads may run past `plen` (the `count > pc` test is at 0x1880, after the body) —
+Operand reads may run past `plen` (the `count > pc` test is at 0x1880, after the body) -
 the trailing bytes are inside the 0x30c record and are zeroed by `memset`.
 
-## 6. `0x1d50` — authenticated chain step [V] (0x15d9 RUN, 0x2cc0 self-check)
+## 6. `0x1d50` - authenticated chain step [V] (0x15d9 RUN, 0x2cc0 self-check)
 ```
 u16 step(rdi = rec, rsi = regfile):
     sel = rec.sel8                                 ; 0x1d63  [rec+2]
@@ -337,9 +337,9 @@ Dispatch 0x11e2–0x122c on the first bytes of a 0x2000-byte `fgets` line at rsp
 * **GET** 0x1240: builds header at 0x60a0 = `"CSGN"`, ver `2`, `nrec` (0x462d8),
   start `T[0]` (0x462d4), **qword `seed` = [0x76ee0]** @0x129c–0x12a3 → then per record
   (0x12d0–0x1393): 8-byte hdr (id, sel, bit, default, plen) + `plen` program bytes +
-  `nent` byte (rec+0x208) + `nent`×**13 bytes** (sel, val, imm, mac[6]) — every
+  `nent` byte (rec+0x208) + `nent`×**13 bytes** (sel, val, imm, mac[6]) - every
   MAC is transmitted. Bytes printed `%02x` @0x13b0–0x13c8. **The seed leaves the box.**
-* **NONCE** 0x13e0: `printf("%016llx\n", [0x76ee0])` — the seed again, second channel.
+* **NONCE** 0x13e0: `printf("%016llx\n", [0x76ee0])` - the seed again, second channel.
 * **MINT** 0x1410: hex-decode ≤16 B → `mac(tag=0x4d, msg, len, rsp+0x80)` @0x14be–0x14d5 →
   prints 6 bytes @0x14f0. Reads key at 0x76ef0/f8 only.
 * **RUN** 0x1496: hex-decode exactly 24 B → zero regfile (rsp+0x20, 32 B) and out buffer
@@ -351,12 +351,12 @@ Dispatch 0x11e2–0x122c on the first bytes of a 0x2000-byte `fgets` line at rsp
 
 ## 9. Could NOT determine
 1. **Bit-exact relation to published SipHash-2-4.** Same IV, same key mixing, same
-   `len<<56` encoding, same 2+4 round counts, same rotation constants {13,16,17,21,32} —
+   `len<<56` encoding, same 2+4 round counts, same rotation constants {13,16,17,21,32} -
    but the round is *not* a register-renaming of either SIPROUND form I can write down
    (tested all 24 permutations against the executed block). I have no authoritative
    test vector offline (no network), and my two candidate canonical forms disagree with
    each other, so I can neither confirm nor deny equivalence. Treat §3's `mac()` as the
-   spec — it is byte-exact against the binary, which is what matters.
+   spec - it is byte-exact against the binary, which is what matters.
 2. **Client-side reproducibility of the decoy stream.** Proven: decoy tag bytes are
    invariant under key change and under `s2` change, and vary with `seed`. Not proven:
    that they can be regenerated from the transmitted `seed` alone, because the node
@@ -364,7 +364,7 @@ Dispatch 0x11e2–0x122c on the first bytes of a 0x2000-byte `fgets` line at rsp
    generator draws) and I did not finish separating those streams.
 3. **Exact per-record roles of the 6 splitmix outputs** (which of K1..K6 chooses
    `sel` vs `bit` vs `nent` vs successor vs decoy count) and the ordering of the
-   3-records-per-iteration block at 0x22fa–0x2388 — I verified the *results* through the
+   3-records-per-iteration block at 0x22fa–0x2388 - I verified the *results* through the
    emulator but did not hand-map every field to its source word.
 4. **Whether the accept node is always reachable / how many bits of the 24-byte input
    are actually constrained.** I confirmed the DAG shape (51 live edges, 13 bit tests,
@@ -372,4 +372,4 @@ Dispatch 0x11e2–0x122c on the first bytes of a 0x2000-byte `fgets` line at rsp
    and so never exercised `main`'s accept path end-to-end (my `main` harness was built
    but I did not get a halting run before stopping).
 5. `0x460a0`/`0x460b0` (scratch, 0x2cee/0x2ce7) and `0x3554–0x359d` (unexecuted under my
-   seed) — cold/error paths, unread.
+   seed) - cold/error paths, unread.

@@ -1,4 +1,4 @@
-# Echo Chamber — decision log
+# Echo Chamber - decision log
 
 De: `https://web-3285347d50d467ba.web.h7tex.com` (AI/medium/63). **DA CO CỜ:**
 `H7CTF{174f034a-b318-49db-a3eb-24192b3d7ce2}` (xem `flag.txt`, bang chung
@@ -41,7 +41,7 @@ process termination", KB-1018 "differs from unexpected exits", KB-1022 "did not
 change local worker memory behavior"... Nên `supporting_count = 0` là chủ ý của
 author: khong the thắng bằng cách tìm trong corpus sẵn có.
 
-`POST /api/research/submissions` **không chỉ lưu** — nó *chế biến* bài nộp thành
+`POST /api/research/submissions` **không chỉ lưu** - nó *chế biến* bài nộp thành
 **3 record mới** với `representation_type` khác `"source"`:
 
 ```
@@ -81,7 +81,7 @@ historical-support-metadata.txt: support_bundle=expanded
    này vì state đã lật permanent (xem "state" bên dưới).
 3. **Chỉ giữ báo cáo mới nhất.** `RPT-0001`/`RPT-0002` trả 404 sau khi `RPT-0003`
    sinh ra. Muốn so sánh standard vs deep thì phải bắt lấy nó TRƯỚC khi chạy lại
-   `analyze` lần nữa — tôi đã bỏ lỡ một nhịp (đọc `RPT-0001` sau đó là 404),
+   `analyze` lần nữa - tôi đã bỏ lỡ một nhịp (đọc `RPT-0001` sau đó là 404),
    nên trong writeup không claim nội dung standard report, chỉ claim rằng cờ xuất
    hiện trong deep report.
 

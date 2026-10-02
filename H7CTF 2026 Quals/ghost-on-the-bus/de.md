@@ -1,4 +1,4 @@
-# Ghost on the Bus — Hardware (Medium)
+# Ghost on the Bus - Hardware (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

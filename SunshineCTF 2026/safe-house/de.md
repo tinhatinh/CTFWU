@@ -1,4 +1,4 @@
-# Safe House — Pwn (Hard)
+# Safe House - Pwn (Hard)
 
 ## Đề bài (nguyên văn từ thẻ challenge)
 

@@ -1,4 +1,4 @@
-# Severed Symmetry — Crypto (Expert)
+# Severed Symmetry - Crypto (Expert)
 
 **Flag:** `CSSCTF{P35T0_5CH3M3_4TT4CK2026}`
 **File đính kèm:** `source.py` (Kích thước: 10.103 B, SHA256: `b1945c90...`), `out.txt` (Kích thước: 31.778.814 B, SHA256: `5bd759a0...`)
@@ -25,7 +25,7 @@ Quy trình giải mã và tấn công phụ thuộc vào ba thông số cấu h�
 
 ## Chuỗi khai thác
 
-**Bước 1 — Khôi phục không gian tổ hợp `W` (Định dạng bậc ≤ 2).** 
+**Bước 1 - Khôi phục không gian tổ hợp `W` (Định dạng bậc ≤ 2).** 
 Thiết lập ma trận hệ số cho toàn bộ các đơn thức có bậc ≥ 3 (Kích thước 34 hàng, 70.906 cột), áp dụng phép tính không gian null (null space). Hệ thống khẳng định: Phần thành phần bậc 4 của một tổ hợp tuyến tính chỉ bị triệt tiêu khi và chỉ khi thành tố `U` của tổ hợp đó bằng 0. Do vậy, không gian null hoàn toàn trùng khớp với phân vùng `span{w_a}` (số chiều giới hạn là 16).
 
 ```python
@@ -33,7 +33,7 @@ vec = {mon: c for mon, c in poly.items() if len(mon) >= 3}   # Chỉ bảo lưu 
 dep, comb = reduce_track(pivots, vec, comb)                   # Khử Gauss (elimination) tích hợp cơ chế theo dõi cấu trúc tổ hợp
 ```
 
-**Bước 2 — Nội suy khung cấu trúc `(u, v)`.** 
+**Bước 2 - Nội suy khung cấu trúc `(u, v)`.** 
 Mỗi phần tử thuộc mảng `W_a` được phân rã thành biểu thức `const_a + u_a - q_a(v)`. Tại đây, phần tuyến tính (bậc nhất) đại diện cho 16 biến đổi tuyến tính `u`, và phần bậc hai cung cấp 16 dạng toán học `q_a(v)`. Tiến hành thử nghiệm các tổ hợp ngẫu nhiên của tập hợp `q_a` cho tới khi tạo thành một ma trận 32x32 có hạng (rank) bằng 16. Nhân hạt (kernel) của ma trận này xác định chính xác tập `{x : v(x) = 0}`. Từ đó, bộ triệt tiêu (annihilator) của kernel sẽ cung cấp không gian bao trùm của biến `v`.
 
 ```text
@@ -41,10 +41,10 @@ step2  Hạng ma trận bậc 2 (quadric) đạt 16 chỉ sau 1 lần thử; s�
 step2  Xác thực khung (frame): t=16 số chiều v (dim(v))=16
 ```
 
-**Bước 3 — Hạ bậc hệ phương trình độc lập với `A1`.** 
+**Bước 3 - Hạ bậc hệ phương trình độc lập với `A1`.** 
 Đa thức `W_a` là biểu diễn hiện theo biến `x`. Tính chất toán học quy định: Giá trị của đa thức trên ảnh ngược (preimage) phải đồng nhất với giá trị của tổ hợp đó tính trên khối bản mã. Biểu thức tương đương: `t_a = (comb_a . c) - const_a`. Khi thế `u_a = t_a + q_a(v)` ngược vào hệ phương trình gốc, mọi số hạng thuộc bậc 3 và bậc 4 sẽ triệt tiêu (Bản chất là quá trình tiêu biến của `U_j(t, v)`). Hệ phương trình rút gọn duy trì ở bậc 2 với 16 ẩn `v`. Giải pháp kỹ thuật áp dụng cơ chế nội suy hàm (thay vì nội suy đa thức truyền thống): Sử dụng 153 điểm đánh giá (`0`, `e_i`, `2e_i`, `e_i+e_j`), cung cấp đủ cơ sở để dựng lại toàn bộ 153 hệ số của phương trình bậc hai.
 
-**Bước 4 — Khai phá không gian Oil.** 
+**Bước 4 - Khai phá không gian Oil.** 
 Định danh `E_g` là ma trận khối bậc hai (phụ thuộc biến `v`) cấu thành từ 18 phương trình thu được. Theo cấu trúc lý thuyết: Với `o` thuộc phân vùng không gian oil `O`, tích `E_g o` bắt buộc rơi vào không gian vinegar có số chiều bằng 4. Ngược lại, nếu `v` không thuộc `O`, các vector `E_g v` sẽ phát sinh cấu trúc sinh ra từ 12 chiều trở lên. Công thức quy nạp: `O = {v : dim span{E_g v} <= 4}`. Hệ thống sẽ tiến hành thử ngẫu nhiên `17^4` mẫu đánh giá (xác suất mẫu chạm chuẩn vào `O` là `17^-4`) nhằm cô lập và gom không gian ảnh `Vtil`. Cuối cùng, biểu thức `O = {v : E_g v ⊂ Vtil}` sẽ được giản lược thành một hệ phương trình tuyến tính chuẩn.
 
 ```text
@@ -52,7 +52,7 @@ step4  Phân vùng họ quadric đạt số chiều 18, hạng tối đa 8 => th
 step4  Không gian oil khôi phục thành công (thử nghiệm 0, 2 mẫu đánh giá trùng khớp)
 ```
 
-**Bước 5 — Quét phân vùng Vinegar qua cơ chế mô phỏng hợp lệ.** 
+**Bước 5 - Quét phân vùng Vinegar qua cơ chế mô phỏng hợp lệ.** 
 Trên mỗi khối dữ liệu, tiến hành cố định cụm `t*` và áp dụng phương pháp duyệt toàn bộ `17^4` giá trị vinegar. Mỗi giá trị sinh ra một hệ phương trình tuyến tính kích thước 18x12 tương ứng với 12 biến oil. Hệ phương trình được giải bằng phương pháp khử Gauss được vector hóa trên các lô dữ liệu (batch) kích thước 4096 tham số mỗi lô.
 
 **Khâu tự kiểm chứng (Verification).** 

@@ -1,4 +1,4 @@
-# Papers Please — Pwn (Easy)
+# Papers Please - Pwn (Easy)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
@@ -58,7 +58,7 @@ Dạng flag:H7CTF{}
 | --- | --- |
 | Challenge | Papers Please |
 | Category | Pwn (easy) |
-| Artefact | `files/checkpoint.zip` — 1077085 B, sha256 `737ceea6141bae312961246233581a00dd3f36789fff2bfce38d396aa209da0b` |
+| Artefact | `files/checkpoint.zip` - 1077085 B, sha256 `737ceea6141bae312961246233581a00dd3f36789fff2bfce38d396aa209da0b` |
 | Bên trong | `checkpoint` (ELF x86-64, 16344 B), `libc.so.6` (2129424 B), `ld-linux-x86-64.so.2` (236616 B), `README.txt` |
 | Remote | `pwn.h7tex.com:42578` (TCP) |
 | Flag format | `H7CTF{...}` |

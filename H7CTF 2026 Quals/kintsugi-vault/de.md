@@ -1,4 +1,4 @@
-# Kintsugi Vault — Rev (Hard)
+# Kintsugi Vault - Rev (Hard)
 
 - Sự kiện: H7TEX 2026 (nền tảng WebVerse / ctf.h7tex.com)
 - Thể loại: Rev (Docker), độ khó hard, 500 điểm

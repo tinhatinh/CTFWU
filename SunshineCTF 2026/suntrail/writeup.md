@@ -1,4 +1,4 @@
-# Suntrail — Misc (Medium)
+# Suntrail - Misc (Medium)
 
 **Flag:** `sun{qwerty_sucks}`
 **Files:** `files/suntrail.klc` (419 byte ASCII, sha256 `abe7590751412fe5607bacd7bfc4a3131e5c108bf2eedbbe78d438e96dc8c6ff`)

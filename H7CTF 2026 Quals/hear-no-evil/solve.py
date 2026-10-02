@@ -1,4 +1,4 @@
-"""Hear No Evil — BLE pcap (fmt tự chế) : lấy provkey từ ADV rồi giải hai đặc tính.
+"""Hear No Evil - BLE pcap (fmt tự chế) : lấy provkey từ ADV rồi giải hai đặc tính.
 
 Đặc tả do chính capture chép ra ở handle 0x0041:
   provkey          = 16 byte manufacturer data (company 0x0f39) ngay sau byte 0x01

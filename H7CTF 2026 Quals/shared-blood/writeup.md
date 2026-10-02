@@ -1,4 +1,4 @@
-# Shared Blood — Crypto (Medium)
+# Shared Blood - Crypto (Medium)
 
 **Flag:** `H7CTF{a727587f-67d5-4246-b7c3-e57798659fac}`
 **Máy chủ mục tiêu:** `https://web-bd09e5c5af420bbc.web.h7tex.com`

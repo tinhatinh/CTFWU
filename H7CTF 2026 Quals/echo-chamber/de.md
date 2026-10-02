@@ -1,4 +1,4 @@
-# Echo Chamber — AI (Medium)
+# Echo Chamber - AI (Medium)
 
 ```
 Echo Chamber

@@ -1,4 +1,4 @@
-# Trompe-l'œil — Web3 (Hard)
+# Trompe-l'œil - Web3 (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

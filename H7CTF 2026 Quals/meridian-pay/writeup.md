@@ -1,4 +1,4 @@
-# Meridian Pay — Mobile (Hard)
+# Meridian Pay - Mobile (Hard)
 
 **Flag:** Thu thập được ba trong tổng số bốn cờ (objective)
 **File cung cấp:** `meridian-pay-3.2.1.apk.zip`, 12771 B (chứa file APK 16885 B, mã băm sha256 `447c3cd07770cfd78c6601f9076167208e5b670f3708be085cb69d08f741efa1`)

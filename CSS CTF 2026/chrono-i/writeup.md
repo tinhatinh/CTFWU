@@ -1,4 +1,4 @@
-# Chrono I — Crypto (Beginner)
+# Chrono I - Crypto (Beginner)
 
 **Flag:** `CSSCTF{every_second_hides_a_secret}`
 **Tài nguyên:** Không có tệp đính kèm. Dữ kiện phân tích được cung cấp trực tiếp trong văn bản mô tả của đề bài.

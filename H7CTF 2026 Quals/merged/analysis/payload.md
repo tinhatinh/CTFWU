@@ -22,7 +22,7 @@ Sau khi đăng nhập, session có `uid` và `org`; `/designer` mở ra với m�
 | `${7*7}` | không đổi -> không phải Twig/EJS |
 | `{{config.items()}}` | in hết Flask config, **lộ `SECRET_KEY`** |
 | `{{session}}` | `{'email': ..., 'org': '{{7*7}}', 'uid': 2}` |
-| `{{ ''.__class__ }}` | `Template rejected by our safety filter — the pattern "__" is not allowed` |
+| `{{ ''.__class__ }}` | `Template rejected by our safety filter - the pattern "__" is not allowed` |
 
 Kết luận: Jinja2/Flask, bộ lọc **chỉ cấm đúng chuỗi `__`**, mọi thứ khác (kể cả `|attr`, `['os']`,
 `popen`, `request.args`) đều đi qua.

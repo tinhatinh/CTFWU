@@ -1,4 +1,4 @@
-# Chrono I — Crypto (Beginner)
+# Chrono I - Crypto (Beginner)
 
 **Flag:** `CSSCTF{every_second_hides_a_secret}` · **Files:** none, every fact sits on the challenge card
 
@@ -34,19 +34,19 @@ numeric Vigenère (Gronsfeld) with period 14.
 
 ## Exploit Chain
 
-**Step 1 — Take the key from the message.** Drop every non-digit character:
+**Step 1 - Take the key from the message.** Drop every non-digit character:
 
 ```python
 key = re.sub(r"\D", "", "2026-09-21 14:35:07")   # '20260921143507'
 ```
 
-**Step 2 — Confirm the crib.** Shift the first six ciphertext characters by the first six digits:
+**Step 2 - Confirm the crib.** Shift the first six ciphertext characters by the first six digits:
 
 ```
 CSSCTF -> ESUITO : shift [2, 0, 2, 6, 0, 9]   # khop key[0:6]
 ```
 
-**Step 3 — Decrypt the body with a counter that only advances on letters.** Counting `{` and `_`
+**Step 3 - Decrypt the body with a counter that only advances on letters.** Counting `{` and `_`
 as key positions yields garbage, so the key walks the letters only while the punctuation stays:
 
 ```python
@@ -62,7 +62,7 @@ for ch in text:
 This returns `CSSCTF{every_second_hides_a_secret}`, which is exactly the sentence the card hinted
 at.
 
-**Step 4 — Verify.** Both directions agree: re-encrypting the plaintext with the same key returns
+**Step 4 - Verify.** Both directions agree: re-encrypting the plaintext with the same key returns
 the original ciphertext, and the body is plain `[a-z0-9_]*`. Three mutations were tried (last body
 letter capitalised, the message hour changed to `15:35:07`, `ESUITO` changed to `XSUITO`) and the
 script stops at the corresponding check, so this is not a self-confirming loop.

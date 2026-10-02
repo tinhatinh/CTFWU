@@ -1,4 +1,4 @@
-# Loose Lips — Crypto (Hard)
+# Loose Lips - Crypto (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

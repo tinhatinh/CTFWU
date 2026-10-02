@@ -1,4 +1,4 @@
-# Safe House — Pwn (Hard)
+# Safe House - Pwn (Hard)
 
 **Flag:** `sun{n3gat1ve_h4ndl3s_0pen_s3cret_d00rs}`
 **Tác giả:** Oreomeister

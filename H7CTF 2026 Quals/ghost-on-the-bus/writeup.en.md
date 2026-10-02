@@ -1,4 +1,4 @@
-# Ghost on the Bus — Hardware (Medium)
+# Ghost on the Bus - Hardware (Medium)
 
 **Flag:** `H7CTF{10d9b516-d19b-4895-9634-45b27a7591c3}`
 **Instance:** `https://web-c2656e4339a3659c.web.h7tex.com`

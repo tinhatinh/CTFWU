@@ -1,4 +1,4 @@
-# Planetary Probe — Web (Hard)
+# Planetary Probe - Web (Hard)
 
 **Flag:** `sun{bl1nd_psqli_2_rc3_p4Nd0FyZt8k2}`
 **URL:** `https://planetary.web.2026.sunshinectf.games/`, không có file đi kèm.

@@ -1,4 +1,4 @@
-# Justified — Web (Medium)
+# Justified - Web (Medium)
 
 **Flag:** `WEBVERSE{d5f60724dc9f1197140001fa4b24198e}` · Đã nộp thành công trên hệ thống WebVerse (trang trạng thái trả về SOLVED).
 

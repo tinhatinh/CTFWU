@@ -1,4 +1,4 @@
-# Flappy Board — Misc (Intermediate)
+# Flappy Board - Misc (Intermediate)
 
 **Flag:** `CSSCTF{birdddd}`
 **File đính kèm:** `flappy_board` (Kích thước: 43.736 B, SHA256: `c07bd450...`)
@@ -27,7 +27,7 @@ Chức năng trò chơi được chi phối toàn diện bởi hai hàm hệ th�
 
 ## Chuỗi khai thác
 
-**Bước 1 — Mô phỏng hóa khung thời gian thao tác (Tick).** 
+**Bước 1 - Mô phỏng hóa khung thời gian thao tác (Tick).** 
 Cần sao chép quy trình giả lập thứ tự thực thi nguyên trạng từ hàm `FUN_00106cfe`. Sự sai lệch nhỏ nhất (ngay cả 1 đơn vị điện toán) sẽ gây bất đồng bộ, khiến máy chủ tính toán ra điểm số sai lệch:
 
 ```python
@@ -46,14 +46,14 @@ for p in w.pipes:                  # Công thức: khoảng cách = max(x) + 691
     if p[0] < RECYCLE: ...
 ```
 
-**Bước 2 — Quy hoạch không gian trạng thái bằng thuật toán tìm kiếm Beam Search.** 
+**Bước 2 - Quy hoạch không gian trạng thái bằng thuật toán tìm kiếm Beam Search.** 
 Vì vị trí và cấu trúc của ống hoàn toàn tất định thông qua biến `seed` và số tick, quá trình này hoàn toàn độc lập với tương tác của người chơi. Từ đó, toàn bộ lưới trạng thái thu gọn thành một ma trận gồm hai chiều `(y, v)` (độ cao và vận tốc). Thiết lập không gian tìm kiếm (Beam) ở mức 600 trạng thái, đưa hệ số ưu tiên cao cho các ứng cử viên hướng tới tâm của ống chướng ngại vật gần nhất:
 
 ```python
 flaps, msg = solve(seed, target)   # Danh sách các frame tick yêu cầu kích hoạt lệnh flap
 ```
 
-**Bước 3 — Xác thực mô phỏng bằng API Oracle hỗ trợ tập luyện (Practice).** 
+**Bước 3 - Xác thực mô phỏng bằng API Oracle hỗ trợ tập luyện (Practice).** 
 Kênh điểm cuối `POST /api/practice` cho phép người chơi khai thác cấu trúc biến `seed` (hoạt động đồng bộ trên phiên session). Theo đó, `/api/practice/check` sẽ trả về `verified_score` (kết quả điểm đã được hệ thống máy chủ tự tính toán xác thực). Phương pháp này đem lại giải pháp đánh giá chi phí thấp nhất để chứng thực hệ thống:
 
 ```text
@@ -61,7 +61,7 @@ Chỉ tiêu target=5  Mô phỏng: 715 ticks, 45 flaps  -> Xác thực server: v
 Chỉ tiêu target=9  Mô phỏng: 1100 ticks, 50 flaps -> Xác thực server: verified_score=9&complete=1&cheated=0
 ```
 
-**Bước 4 — Khai thác hệ thống qua 3 phiên bản ghi (Round).** 
+**Bước 4 - Khai thác hệ thống qua 3 phiên bản ghi (Round).** 
 Tham số `wait_seconds` cho các vòng lần lượt là 180, 360, và 600 giây. Tổng thời gian trễ này tích lũy lên tới 1140 giây (trên ngưỡng trần cho phép là 1200 giây). Biện pháp kỹ thuật là tuân thủ chặt chẽ việc chờ thời gian khởi tạo (departure timer) và lập tức gửi tín hiệu hoàn tất (complete) để bỏ qua thời gian trôi mô phỏng (bay). Cấu trúc lệnh gửi:
 
 ```python

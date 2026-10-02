@@ -1,4 +1,4 @@
-# Splice — Web (Hard)
+# Splice - Web (Hard)
 
 **Flag:** `WEBVERSE{fcb61c06cbb7cd020a371730b71521fe}` · 300 pts · H7TEX 2026 on WebVerse
 **Target:** `https://ced0f13a-5765-splice-5ba63.mystery-challenges.webverselabs-pro.com` (an Express instance, sitting behind Cloudflare)

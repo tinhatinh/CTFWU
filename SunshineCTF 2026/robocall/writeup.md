@@ -1,4 +1,4 @@
-# RoboCall — Pwn (Hard)
+# RoboCall - Pwn (Hard)
 
 **Flag:** `sun{you_must_be_some_sort_of_nimble_space_navigator}`
 

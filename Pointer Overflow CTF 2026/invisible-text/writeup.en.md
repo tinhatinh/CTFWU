@@ -1,4 +1,4 @@
-# invisible-text — STEG (200 pts)
+# invisible-text - STEG (200 pts)
 
 **Flag:** `POCTF{PIEMPAOSMHDLEGRT}` · **Files:** `invisible_text.py`, 4245 B, sha256 `f027442b37a521f4a775ec56d37336df446d83e7acd641042e28af030f745320`
 
@@ -8,7 +8,7 @@ The author says the file contains a secret message, and that you will see it if 
 
 ## Initial Analysis
 
-The file is plain Python, 4245 bytes, 81 lines, UTF-8. A byte inventory shows the whole file has exactly one character outside ASCII, the `—` in a comment. No Zero Width Space, no BOM, no NBSP, no lookalike characters.
+The file is plain Python, 4245 bytes, 81 lines, UTF-8. A byte inventory shows the whole file has exactly one character outside ASCII, the `-` in a comment. No Zero Width Space, no BOM, no NBSP, no lookalike characters.
 
 The single remaining anomaly: **47/81 lines end in whitespace**. Concretely:
 
@@ -40,9 +40,9 @@ The full log is in `notes.md`. Summary:
 
 ## Exploit Chain
 
-**Step 1 — Notice the fixed group length.** Every data line carries 12 whitespace characters, and the sixth position is **always a tab**. That is the signature of a 7-bit scheme: the first five spaces are column padding, the last seven characters are the code.
+**Step 1 - Notice the fixed group length.** Every data line carries 12 whitespace characters, and the sixth position is **always a tab**. That is the signature of a 7-bit scheme: the first five spaces are column padding, the last seven characters are the code.
 
-**Step 2 — Cut out the last seven characters, `tab = 1`, `space = 0`.** A printable ASCII character always has MSB equal to 1, so the 7-bit group beginning with 1 is precisely the region holding its own name - this is the anchoring point:
+**Step 2 - Cut out the last seven characters, `tab = 1`, `space = 0`.** A printable ASCII character always has MSB equal to 1, so the 7-bit group beginning with 1 is precisely the region holding its own name - this is the anchoring point:
 
 ```python
 for line in src.split("\n"):
@@ -67,9 +67,9 @@ The real output:
 MESSAGE: POCTF{PIEMPAOSMHDLEGRT}
 ```
 
-**Step 3 — Verify it is no coincidence.** Three matches: (a) 22/22 of the 12-character groups have the tab at exactly one position (the group's leading bit), (b) the number of data lines = 23 = the length of `POCTF{` + 16 + `}`, (c) the 16 uppercase flag body matches the event's flag format. The surplus leading spaces (5 spaces, only 3 on line 1 because that line starts earlier) are just column alignment and carry no information.
+**Step 3 - Verify it is no coincidence.** Three matches: (a) 22/22 of the 12-character groups have the tab at exactly one position (the group's leading bit), (b) the number of data lines = 23 = the length of `POCTF{` + 16 + `}`, (c) the 16 uppercase flag body matches the event's flag format. The surplus leading spaces (5 spaces, only 3 on line 1 because that line starts earlier) are just column alignment and carry no information.
 
-**Step 4 — Submit.**
+**Step 4 - Submit.**
 
 ```
 POST /challenges/invisible-text/submit

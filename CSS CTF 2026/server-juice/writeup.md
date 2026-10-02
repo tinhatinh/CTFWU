@@ -1,4 +1,4 @@
-# Server Juice — OSINT (Beginner)
+# Server Juice - OSINT (Beginner)
 
 **Flag:** `CSSCTF{premiumreserve}`
 **Tài nguyên:** Không có tệp đính kèm phân tích, dữ liệu khảo sát dựa trên một nguồn mở công cộng. Tài liệu lưu trữ hỗ trợ bao gồm hai ảnh tĩnh trong thư mục `files/`.

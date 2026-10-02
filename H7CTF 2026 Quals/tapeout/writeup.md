@@ -1,4 +1,4 @@
-# Tapeout — Misc (Hard)
+# Tapeout - Misc (Hard)
 
 **Flag:** `H7CTF{afd4beac-e86e-409b-907d-b519bb748599}`
 

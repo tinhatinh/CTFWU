@@ -1,4 +1,4 @@
-# Splice — Web (Hard)
+# Splice - Web (Hard)
 
 **Flag:** `WEBVERSE{fcb61c06cbb7cd020a371730b71521fe}` (Điểm: 300 pts) 
 **Môi trường:** H7TEX 2026 host trên nền tảng WebVerse

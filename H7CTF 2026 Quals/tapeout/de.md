@@ -1,4 +1,4 @@
-# Tapeout — Misc (Hard)
+# Tapeout - Misc (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

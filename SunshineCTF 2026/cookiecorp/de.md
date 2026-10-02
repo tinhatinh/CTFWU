@@ -1,4 +1,4 @@
-# CookieCorp — Web (Medium)
+# CookieCorp - Web (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

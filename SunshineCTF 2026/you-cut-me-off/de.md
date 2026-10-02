@@ -1,4 +1,4 @@
-# You Cut Me Off — Forensics (Medium)
+# You Cut Me Off - Forensics (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

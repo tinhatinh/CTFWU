@@ -1,4 +1,4 @@
-# Echo Chamber — AI (Medium)
+# Echo Chamber - AI (Medium)
 
 **Flag:** `H7CTF{174f034a-b318-49db-a3eb-24192b3d7ce2}` · **Instance:** `https://web-3285347d50d467ba.web.h7tex.com` · No files provided; everything below was read from the live service itself.
 

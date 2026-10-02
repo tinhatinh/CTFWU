@@ -1,4 +1,4 @@
-# Countersign — Rev (Insane)
+# Countersign - Rev (Insane)
 
 **Flag:** `H7CTF{011c87d4-b5c8-405d-923a-33dbed3e5bf7}` 
 **Files:** `countersign.zip` (Tệp ELF x86-64 PIE, tệp nhị phân đã loại bỏ thông tin gỡ lỗi - stripped, kích thước 22 KB) + `note.txt`

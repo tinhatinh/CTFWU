@@ -1,4 +1,4 @@
-# Kuiper Belt Relay Core — pwn (50 points, Beginner)
+# Kuiper Belt Relay Core - pwn (50 points, Beginner)
 
 **Flag:** `CSSCTF{s1gn4l_r3c0v3r3d_fr0m_th3_v01d}` · **Files:** `echo.c`, 774 bytes, sha256 `c1a3f6e2d4b8a9c7e3f1d5b2a8c4e6f9d1b3a7c5e8f2d4b6a9c1e3f5d7b9a2c4`
 
@@ -54,7 +54,7 @@ int main() {
 
 ## Exploitation Chain
 
-**Step 1 — Identify return address boundary.**
+**Step 1 - Identify return address boundary.**
 
 Send progressively longer payloads and observe when `Goodbye!` disappears from response:
 
@@ -66,7 +66,7 @@ Send progressively longer payloads and observe when `Goodbye!` disappears from r
 
 Return address at offset 72.
 
-**Step 2 — Oracle-based scanning to find `win()` address.**
+**Step 2 - Oracle-based scanning to find `win()` address.**
 
 No binary available for static address calculation, so scan server directly in `.text` range: 0x401000–0x401500.
 
@@ -76,13 +76,13 @@ Oracle: response contains "hijacked" or "CSSCTF".
 
 Hit at addr: **0x401216**.
 
-**Step 3 — Construct exploit payload.**
+**Step 3 - Construct exploit payload.**
 
 Address 0x401216 < 0x1000000, requiring only 3 bytes: `0x16 0x12 0x40`.
 
 Final payload: `b"A"*72 + b"\x16\x12\x40"`.
 
-**Step 4 — Verification.**
+**Step 4 - Verification.**
 
 Tested 3 times, all successful.
 

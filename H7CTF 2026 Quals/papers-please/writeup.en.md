@@ -1,4 +1,4 @@
-# Papers Please — Pwn (Easy)
+# Papers Please - Pwn (Easy)
 
 **Flag:** `H7CTF{b66621cc-c85c-4042-b908-0d3dd36a71e5}` · **Target:** `pwn.h7tex.com:42578`
 **Files:** `checkpoint.zip` (1077085 B, sha256 `737ceea6...a209da0b`) containing `checkpoint` (ELF x86-64, 16344 B, sha256 `b04ebc61...`), `libc.so.6`, `ld-linux-x86-64.so.2`, `README.txt`.

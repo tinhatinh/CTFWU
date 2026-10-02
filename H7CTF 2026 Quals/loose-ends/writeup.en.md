@@ -1,4 +1,4 @@
-# Loose Ends — Pwn (Hard)
+# Loose Ends - Pwn (Hard)
 
 **Flag:** `H7CTF{4d0e9693-88bd-4749-87d8-c64dd2ef80ab}` · 248 pts · H7TEX 2026
 **Target:** `pwn.h7tex.com:42589` · **Files:** `ledger.zip` → `ledger` (ELF x86-64), `libc.so.6` (glibc 2.39-0ubuntu8.9), `ld-linux-x86-64.so.2`

@@ -1,4 +1,4 @@
-# Dog Whistle — decision log
+# Dog Whistle - decision log
 
 Đích: `nc pwn.h7tex.com 40918`. Cờ dạng `H7CTF{}` (đọc từ thẻ đề, không suy ra).
 Artefact: `files/dog_whistle.zip` → `aria` (ELF PIE, stripped), `SPEC.md`, `eq.cfg`,
@@ -54,7 +54,7 @@ Heap: `g_cal = malloc(0x20)` (32 byte), chunk kế tiếp `g_cal_desc` (0x30).
   (bin 10,13,16,19,22 → nibble 2,5,8,b,e) ⇒ không đủ bảng chữ hex. Bỏ.
 - **Carrier bin thấp (≤9) lấy tổng 2 tone**: chỉ với được bin 10..18 ⇒ nibble 0..8,
   thiếu nửa trên. Bỏ; dùng hiệu ở bin cao.
-- **Nghi ngờ "state không đổi giữa các kết nối"**: sai, mỗi kết nối là tiến trình mới —
+- **Nghi ngờ "state không đổi giữa các kết nối"**: sai, mỗi kết nối là tiến trình mới -
   `CAL ECHO` ra trị khác nhau mỗi phiên, và `count` tăng dần vẫn chạy đúng.
 - **Đoán offset hàm theo bản trong zip**: `inc32`/`show_flag` zip là `0x2690`/`0x26a0`,
   nhưng bản deploy là `0x2570`/`0x2580` (lệch 0x120). Viết `0xa0,0x26` vào `desc.fn`

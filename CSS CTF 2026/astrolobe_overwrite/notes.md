@@ -1,4 +1,4 @@
-# Astrolobe Overwrite — analysis log
+# Astrolobe Overwrite - analysis log
 
 ## Hypothesis tree (dạng bảng để đọc nhanh)
 
@@ -35,12 +35,12 @@
 
 ## Files in writeup
 
-- `exploit.py` — socket client: connect → banner → beacon → payload (hex) → recv flag
-- `vm.py` — VM simulator + assembler: `VM.beacon`, `VM.step()`, `encode()`, `build()`
-- `model.py` — gate verifier: `gates(w,beacon)`, `gatevals()`, `Ofunc()`, residue targets
-- `one.c` — oracle (native): trích khối check sang Windows, redirect mỗi nhánh tới stub tag
-- `search.c` — C enumerator (OMP) liệt kê nghiệm trong F_65521^4
-- `flag.txt` — `CSSCTF{0ur0b0r0s_g00d_j0b_b01s_heh3_67}`
+- `exploit.py` - socket client: connect → banner → beacon → payload (hex) → recv flag
+- `vm.py` - VM simulator + assembler: `VM.beacon`, `VM.step()`, `encode()`, `build()`
+- `model.py` - gate verifier: `gates(w,beacon)`, `gatevals()`, `Ofunc()`, residue targets
+- `one.c` - oracle (native): trích khối check sang Windows, redirect mỗi nhánh tới stub tag
+- `search.c` - C enumerator (OMP) liệt kê nghiệm trong F_65521^4
+- `flag.txt` - `CSSCTF{0ur0b0r0s_g00d_j0b_b01s_heh3_67}`
 
 ## Time budget
 

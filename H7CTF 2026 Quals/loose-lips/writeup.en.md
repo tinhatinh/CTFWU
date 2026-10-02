@@ -1,4 +1,4 @@
-# Loose Lips — Crypto (Hard)
+# Loose Lips - Crypto (Hard)
 
 **Flag v1:** `H7CTF{08a5c5eb-7571-4a3d-a80d-599ddd46c5ad}`
 **Flag v2:** `H7CTF{89c0e6b2-9fca-49fd-a02f-07a70e359363}`

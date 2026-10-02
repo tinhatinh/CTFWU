@@ -1,4 +1,4 @@
-# Manifest Destiny — Pwn (Medium)
+# Manifest Destiny - Pwn (Medium)
 
 **Flag:** `H7CTF{a2b24085-c670-4a87-93cb-293cfec6196c}`
 

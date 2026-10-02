@@ -1,4 +1,4 @@
-# <Challenge Name> — <Category> (<Difficulty>)
+# <Challenge Name> - <Category> (<Difficulty>)
 
 **Flag:** `<PREFIX>{...}` · **Files:** `<artifact>`, <size>, sha256 `<hash>`
 
@@ -20,19 +20,19 @@ Trước khi chốt đã kiểm tra và loại các kênh sau (log đầy đủ 
 
 ## Chuỗi khai thác
 
-**Bước 1 — <việc làm>.** <kỹ thuật + vì sao làm bước này>
+**Bước 1 - <việc làm>.** <kỹ thuật + vì sao làm bước này>
 
 ```bash
 <lệnh>
 ```
 
-**Bước 2 — <việc làm>.** <code hoặc lệnh, kèm output thật>
+**Bước 2 - <việc làm>.** <code hoặc lệnh, kèm output thật>
 
 ```python
 <đoạn code quyết định>
 ```
 
-**Bước N — Kiểm chứng.** <bằng chứng kết quả không phải trùng hợp:
+**Bước N - Kiểm chứng.** <bằng chứng kết quả không phải trùng hợp:
 độ dài chẵn, magic hợp lệ, toàn bộ dữ liệu khớp, v.v.>
 
 ## Flag

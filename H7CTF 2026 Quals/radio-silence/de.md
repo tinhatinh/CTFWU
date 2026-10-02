@@ -1,4 +1,4 @@
-# Radio Silence — Hardware (Medium)
+# Radio Silence - Hardware (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

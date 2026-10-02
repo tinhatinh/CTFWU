@@ -1,4 +1,4 @@
-# Manifest Destiny — Pwn (Medium)
+# Manifest Destiny - Pwn (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

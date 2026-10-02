@@ -1,4 +1,4 @@
-# Dockside Ticket Office — Pwn (Beginner)
+# Dockside Ticket Office - Pwn (Beginner)
 
 **Flag:** `CSSCTF{us3_4ft3r_fr33_d0cks1d3}`
 **File đính kèm:** `dockside_ticket` (Kích thước: 16.664 B, SHA256: `b275a7c2...49dd`)

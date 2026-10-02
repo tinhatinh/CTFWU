@@ -12,7 +12,7 @@ evidence:
 - `cancel_ticket` @0x4013c3: `free(active_ticket)` rồi chỉ `puts("Ticket cancelled.")`.
 - `edit_ticket` @0x401408: `if (!active_ticket) puts("No active ticket.")` ngược lại
   `read(0, active_ticket, 0x28)` -> 40 byte attacker kiểm soát.
-- `use_ticket` @0x401466: `rdx = [active_ticket+0x20]; call rdx` — gọi thẳng, không kiểm tra gì.
+- `use_ticket` @0x401466: `rdx = [active_ticket+0x20]; call rdx` - gọi thẳng, không kiểm tra gì.
 result: PENDING -> UAF, chốt ở H2.
 
 ## H2 - Con tro con trỏ co bi xoa sau khi free khong

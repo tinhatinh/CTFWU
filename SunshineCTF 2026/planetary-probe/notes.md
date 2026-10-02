@@ -1,11 +1,11 @@
-# notes.md — Planetary Probe (SunshineCTF, web 498đ, tác giả valiumaggelein)
+# notes.md - Planetary Probe (SunshineCTF, web 498đ, tác giả valiumaggelein)
 
 URL: `https://planetary.web.2026.sunshinectf.games/` (instance riêng, chỉ 1 endpoint).
 
 ## Bề mặt tấn công
 
-* `GET /` — trang console, form `GET /probe?planet=<x>`.
-* `GET /probe` — trả về đúng MỘT BIT: `readout--carrier` ("Signal detected") hoặc
+* `GET /` - trang console, form `GET /probe?planet=<x>`.
+* `GET /probe` - trả về đúng MỘT BIT: `readout--carrier` ("Signal detected") hoặc
   `readout--null` ("No signal"). Không echo input, không lỗi verbose.
 * `OPTIONS /probe` -> `Allow: HEAD, OPTIONS, GET`; các route khác 404 (207 byte = Flask mặc định).
   Header lạ (`X-Response: debug`, `X-Admin`, `X-Forwarded-For`), cookie, tham số thừa (`debug`,
@@ -35,7 +35,7 @@ SELECT id FROM planets WHERE name = '<payload>'
   chỉ có 1 chỗ (dấu gạch dài trong mô tả của earth) -> không có stego điều khiển.
 * Không có bảng/ràng buộc/view/khối nào khác: pg_class, pg_attribute (kể cả `attmissingval`),
   pg_proc (`prosrc`), pg_description/pg_shdescription, pg_seclabel, pg_enum, pg_indexes,
-  pg_policies, pg_foreign_*, pg_subscription, pg_largeobject, pg_statistic (stavalues 1..4) —
+  pg_policies, pg_foreign_*, pg_subscription, pg_largeobject, pg_statistic (stavalues 1..4) -
   quét bằng `position(chr(115)||chr(117)||chr(110)||chr(123) in ...)`, có control dương.
   `pg_db_role_setting`/`reloptions` từng "dương" chỉ vì array cast in ra `{...}`.
 * `pg_stat_activity` từng báo chứa `sun{` -> **positive giả**: query của chính user. Phải

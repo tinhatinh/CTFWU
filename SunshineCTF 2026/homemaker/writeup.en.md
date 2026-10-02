@@ -1,4 +1,4 @@
-# Homemaker — Pwn (Hard)
+# Homemaker - Pwn (Hard)
 
 **Flag:** `sun{the_future_is_now_today_well_wait_how_are_you_reading_this}`
 **Instance:** `nc sunshinectf.games 26008`, the attachment is only the `homemaker` binary, no libc.

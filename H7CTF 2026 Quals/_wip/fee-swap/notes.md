@@ -1,4 +1,4 @@
-# Fee Swap — decision log
+# Fee Swap - decision log
 
 **Trạng thái: CHƯA có cờ.** `web3.h7tex.com:42600` ngừng trả banner (connect OK,
 0 byte, đóng ngay) kể từ sau ~25 phiên dò protocol. Đã dừng sau 3 lần failure
@@ -13,7 +13,7 @@ Khi dịch hồi phục, chạy đúng thứ tự: `python exploit.py health`, r
 Bài Countersign trong cùng session cũng dính đúng mẫu này nên đây là hạn mức của
 nền tảng, không phải tín hiệu bài sai.
 
-### Banner (mỗi phiên sinh bộ key khác nhau — đã thấy 3 bộ khác nhau)
+### Banner (mỗi phiên sinh bộ key khác nhau - đã thấy 3 bộ khác nhau)
 ```
 program / user / authority / pool / mint_a / mint_b / vault_a / vault_b /
 user_a / user_b / token_program / reserve_b
@@ -60,7 +60,7 @@ Không có chi tiết này thì bài gần như không giải được bằng đ
 
 Hai hệ quả:
 1. `mint_src` không bị đối chiếu với `p.mint_a`, và `user_src` không bị bắt buộc
-   là tài khoản do user sở hữu theo nghĩa "thật" — spl-token chỉ kiểm tra
+   là tài khoản do user sở hữu theo nghĩa "thật" - spl-token chỉ kiểm tra
    `user_src.mint == mint_src == vault_src.mint`, `decimals == 6`, và
    `AccountOwner == user` (là signer). **Một token account tự dựng
    (mint_a, owner=user, amount khổng lồ) thỏa mãn tất cả.**
@@ -79,7 +79,7 @@ Vòng lặp: `1e8 → 1e6 → 1e4 → 100 → 1 → 0`, vì khi `amount < 100` t
 1. **"Không swap nào chạy được" là kết luận sai.** Mẫu chứng minh `ix len:` là
    `<addr> <owner>` (2 field). Nhưng mọi dòng mà tôi ghi nhận là "có account list
    → ra ngay verdict, không thấy `swap reverted`" lại đến từ các thử nghiệm
-   **1 field** (`<pubkey>` trần) — tức là submit sai cú pháp, bị từ chối trước khi
+   **1 field** (`<pubkey>` trần) - tức là submit sai cú pháp, bị từ chối trước khi
    chạy. Nói cách khác tôi đã lấy kết quả của input hỏng để phủ nhận primitive.
    Đường đi đúng (`10` + 10 dòng 2-field → `ix len` → data) **chưa bao giờ được
    gửi lên dịch** vì ngay sau đó tôi vướng bug parse banner rồi dịch chết.
@@ -92,7 +92,7 @@ Vòng lặp: `1e8 → 1e6 → 1e4 → 100 → 1 → 0`, vì khi `amount < 100` t
    **`a = 100*(R//99) + (R % 99)`** ta có `payout == R` CHÍNH XÁC, và `a <= 1.0102*R`.
    Ví dụ `R = 1e8 -> a = 101010101 -> payout = 100000000` -> reserve về 0.
    Đã kiểm 5000 giá trị liên tiếp + 30000 giá trị ngẫu nhiên tới 2^63: 0 lỗi.
-   (Lần kiểm đầu tôi tìm `a` trong cửa sổ `R..R+300` nên báo "không có nghiệm" —
+   (Lần kiểm đầu tôi tìm `a` trong cửa sổ `R..R+300` nên báo "không có nghiệm" -
    cửa sổ sai, không phải hàm sai.)
 
 ## B3. BA KE HOACH, THU TU CHI PHI (da mo phong bang `analysis/simulate.py`)
@@ -104,12 +104,12 @@ Ket qua tren duoc luu o `analysis/simulate.txt`.
 
 | # | Ke hoach | Dependency | Ket qua model |
 |---|---|---|---|
-| 1 | `honest` — swap 1:1 bang A that, `amount = exact_amount(reserve)` | chi can `user_a` du A | `1e8 -> 0` DRAINED |
-| 2 | `rich` — khai bao token account gia (mint_a, owner=user, 1e15) lam nguon | harness dung `data-hex`; MOT nuoc | `1e8 -> 0` DRAINED |
-| 3 | `rogue` — pool gia + self-transfer `user_a -> user_a` | 2 nuoc + spl-token cho self-transfer | `1e8 -> 0`, `user_a` giu nguyen |
+| 1 | `honest` - swap 1:1 bang A that, `amount = exact_amount(reserve)` | chi can `user_a` du A | `1e8 -> 0` DRAINED |
+| 2 | `rich` - khai bao token account gia (mint_a, owner=user, 1e15) lam nguon | harness dung `data-hex`; MOT nuoc | `1e8 -> 0` DRAINED |
+| 3 | `rogue` - pool gia + self-transfer `user_a -> user_a` | 2 nuoc + spl-token cho self-transfer | `1e8 -> 0`, `user_a` giu nguyen |
 
 **Reframe quan trong:** `honest` chay duoc nghia la bai nay co the KHONG co loi
-trien khai nao ca — de bai noi "a clean 1:1 desk with a healthy B reserve it's sure
+trien khai nao ca - de bai noi "a clean 1:1 desk with a healthy B reserve it's sure
 it can always cover", va neu `user_a` duoc an trieu nhieu A hon reserve B (100 B
 so voi >=101.01 A) thi "walk out with the entire B reserve" chi la... mua het hang.
 Do la gia thiet toi da bo qua vi cho rang "phai co bug", trong khi no la nuoc re
@@ -119,7 +119,7 @@ nhat va tra loi luan duoc. Neu no thanh cong thi `rich`/`rogue` chi la bo nhoi.
 
 1. **Chưa lần nào chạy được một swap hợp lệ.** Mọi phiên có account list đều kết
    thúc bằng verdict mà không thấy `swap reverted`, nghĩa là nhiều khả năng
-   harness *bỏ qua* instruction khi nó không parse được danh sách của tôi — chứ
+   harness *bỏ qua* instruction khi nó không parse được danh sách của tôi - chứ
    chưa chắc chương trình đã chạy. Cần một lần `vault_b remaining:` **khác**
    `100000000` để chứng minh primitive hoạt động.
 2. **Chưa biết harness có thực sự tạo account từ `data-hex` hay không** (hay chỉ

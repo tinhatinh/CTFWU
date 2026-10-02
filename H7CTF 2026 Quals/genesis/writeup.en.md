@@ -1,4 +1,4 @@
-# Genesis — Web3 (Medium)
+# Genesis - Web3 (Medium)
 
 **Flag:** `H7CTF{346df380-9ca8-41a7-8853-5a6f23c601ad}`
 **Files:** `GenesisVault.sol`, `Setup.sol`, `Token.sol`

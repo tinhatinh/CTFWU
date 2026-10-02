@@ -1,4 +1,4 @@
-# Groundhog Day — Web (Hard)
+# Groundhog Day - Web (Hard)
 
 **Flag:** `sun{s1x_m0r3_w33ks_0f_g0ph3r_ssrf}` · **Files:** none · **Instance:** `https://odyssey.web.2026.sunshinectf.games`
 

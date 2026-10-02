@@ -12,7 +12,7 @@ function renderEvidence(record, target) {
     content: record.content,
   };
   for (const [field, value] of Object.entries(values)) {
-    fragment.querySelector(`[data-field="${field}"]`).textContent = value ?? "—";
+    fragment.querySelector(`[data-field="${field}"]`).textContent = value ?? "-";
   }
   target.replaceChildren(fragment);
 }

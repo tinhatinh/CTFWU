@@ -1,4 +1,4 @@
-# Code Breaker — Crypto/Pwn (Hard)
+# Code Breaker - Crypto/Pwn (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

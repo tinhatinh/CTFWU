@@ -1,4 +1,4 @@
-# Take Two — Crypto (Hard)
+# Take Two - Crypto (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

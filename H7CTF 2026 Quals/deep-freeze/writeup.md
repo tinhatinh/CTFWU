@@ -1,4 +1,4 @@
-# Deep Freeze — Forensics (Hard)
+# Deep Freeze - Forensics (Hard)
 
 **Flag:** `H7CTF{bf3a8e98115450c654b4}`
 **Files cung cấp:** `memory.lime.zst` (kích thước 1.438.796.330 B, sha256 `dcd7cb45...b8810`), và tệp tin bị mã hóa `Q3_patient_records.pdf.locked` (kích thước 672 B, sha256 `5b8701fa...274d6b`).

@@ -1,4 +1,4 @@
-# Mad Libs — Pwn (Medium)
+# Mad Libs - Pwn (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

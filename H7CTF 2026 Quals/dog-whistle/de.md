@@ -1,4 +1,4 @@
-# Dog Whistle — Hardware (Insane)
+# Dog Whistle - Hardware (Insane)
 
 ```
 Dog Whistle

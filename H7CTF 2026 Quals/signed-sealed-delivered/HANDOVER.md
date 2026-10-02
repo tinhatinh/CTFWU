@@ -1,4 +1,4 @@
-# HANDOVER — Signed, Sealed, Delivered (mobile) — đồng đội đã nhận, mình dừng ở đây
+# HANDOVER - Signed, Sealed, Delivered (mobile) - đồng đội đã nhận, mình dừng ở đây
 
 ## Đã xác định được
 - `fleetlink-4.1.0.apk.zip` (10768 B, sha256 `d724d2397d09744c…`) chứa `fleetlink-4.1.0.apk`
@@ -23,7 +23,7 @@ Mình đang viết `analysis/dexdis.py` (parser DEX tự đủ: string/type/prot
 để đọc chính xác thứ tự ghép chuỗi trong `Signer.sign()` thay vì đoán. Đã verify: TYPES_N=63,
 `Lcom/fleetlink/Signer;` = type[25], `Signer$Signed` = type[24], DEFS_N=13 @0x2916. Bug còn lại của script:
 vòng `for t in range(TYPES_N): if desc(t)==TARGET` không in ra gì -> cần kiểm tra lại `methods_of()`
-(class_data_off ở `base+0x18`, và `desc()` đang nhận `u32(base)` là type idx — đúng), nhiều khả năng
+(class_data_off ở `base+0x18`, và `desc()` đang nhận `u32(base)` là type idx - đúng), nhiều khả năng
 `yield` trong generator lẫn `return` sớm làm mất output.
 
 ## Chạy tiếp (nếu cần)

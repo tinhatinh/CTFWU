@@ -1,4 +1,4 @@
-# Countersign — Rev (Insane)
+# Countersign - Rev (Insane)
 
 ```
 Countersign

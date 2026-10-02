@@ -1,4 +1,4 @@
-# RoboCall — Pwn (Hard)
+# RoboCall - Pwn (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

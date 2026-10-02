@@ -1,10 +1,10 @@
-# SiteCheck — Web (Hard)
+# SiteCheck - Web (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
 ![de](files/de.png)
 
-## Đề bài (verbatim, nguyên văn từ page — phần cuối bị cắt khi paste)
+## Đề bài (verbatim, nguyên văn từ page - phần cuối bị cắt khi paste)
 
 ```
 SiteCheck
@@ -16,7 +16,7 @@ Welcome to SiteCheck, the SkyCity fleet's favorite web-diagnostics service since
 Enlist for a free inspector account and put any website through its paces: our
 autonomous inspection drone flies out to the address you provide, clocks how long
 the page takes to load, tallies how many files it pulls down, and beams back a
-crisp viewport snapshot — all without you lifting a finger.
+crisp viewport snapshot - all without you lifting a finger.
 
 Kick the tires on the future of web monitoring.
 
@@ -32,8 +32,8 @@ The drone politely reflec   <-- CUT OFF HERE IN THE PASTE
 | Category | web |
 | Points | 498 |
 | Solves (visible) | 3, 100% liked |
-| Flag format | `sun{...}` — **pinned, confirmed on the challenge page (NAS coal dùng cùng prefix)** |
-| Instance URL | **CHƯA CÓ** — cần user dán |
+| Flag format | `sun{...}` - **pinned, confirmed on the challenge page (NAS coal dùng cùng prefix)** |
+| Instance URL | **CHƯA CÓ** - cần user dán |
 | Source/zip | chưa có |
 | Solved nghĩa là | lấy được `sun{...}` từ phía server (nội bộ) qua drone |
 

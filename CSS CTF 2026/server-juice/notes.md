@@ -108,7 +108,7 @@ evidence: header chỉ là Cloudflare + CTFd chuẩn (`Server: cloudflare`, `cf-
 result: DEAD.
 
 ## Kết luận tạm thời
-Hint trỏ tới `instagram.com/cybersecuritysociety`, nhưng handle đó **không thuộc về ban tổ chức** — bài AGM của họ ("selecting a refreshed society name, some sweet rebranding") cho thấy society vừa rebrand sang "Cybersecurity Society Sydney" và phải lấy handle `@cybersecuritysydney` vì `@cybersecuritysociety` đã bị chiếm từ 2018. Mọi thứ đọc được trên các kênh công khai của họ đều sạch cờ, nên nhiều khả năng cờ nằm ở nơi cần một trong hai thứ mà agent không tự có: (a) một tài khoản Instagram chị em chưa đoán được handle, hoặc (b) nội dung chỉ hiển thị sau khi follow/tương tác.
+Hint trỏ tới `instagram.com/cybersecuritysociety`, nhưng handle đó **không thuộc về ban tổ chức** - bài AGM của họ ("selecting a refreshed society name, some sweet rebranding") cho thấy society vừa rebrand sang "Cybersecurity Society Sydney" và phải lấy handle `@cybersecuritysydney` vì `@cybersecuritysociety` đã bị chiếm từ 2018. Mọi thứ đọc được trên các kênh công khai của họ đều sạch cờ, nên nhiều khả năng cờ nằm ở nơi cần một trong hai thứ mà agent không tự có: (a) một tài khoản Instagram chị em chưa đoán được handle, hoặc (b) nội dung chỉ hiển thị sau khi follow/tương tác.
 
 Việc còn mở: tab Reels và Tagged của @cybersecuritysydney (fetch thô chỉ ra shell, phải render thật), 13/13 video TikTok (đã đọc 12), ảnh poster chưa OCR (máy chưa có `pytesseract`), và trang Facebook `profile.php?id=61552628758945`.
 

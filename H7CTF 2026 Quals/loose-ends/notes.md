@@ -1,4 +1,4 @@
-# Notes — Loose Ends
+# Notes - Loose Ends
 
 ## Cấu trúc chương trình
 

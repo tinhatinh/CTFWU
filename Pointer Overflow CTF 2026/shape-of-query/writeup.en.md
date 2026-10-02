@@ -1,4 +1,4 @@
-# shape-of-query — WEB (300 pts)
+# shape-of-query - WEB (300 pts)
 
 **Flag:** `POCTF{81.612.EB7ZOZUZT7FJHWR2.YQXWHGRFYSBYU46VGKVYD22DNN}` · **Target:** `https://shape-of-query.pointeroverflowctf.com`
 

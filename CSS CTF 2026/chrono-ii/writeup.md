@@ -1,4 +1,4 @@
-# Chrono II — Crypto (Intermediate)
+# Chrono II - Crypto (Intermediate)
 
 **Flag:** `CSSCTF{th3_cl0ck_r3m3mb3rs_3very_s3c0nd}`
 **Tài nguyên:** Không có tệp đính kèm. Dữ liệu cần thiết được trích xuất trực tiếp từ một dịch vụ trực tuyến đang vận hành.
@@ -23,7 +23,7 @@ Vì bản rõ là một giá trị tĩnh và định dạng cờ (flag) là mộ
 
 ## Chuỗi khai thác
 
-**Bước 1 — Xây dựng công cụ thu thập luồng dữ liệu (Capture Windows).** 
+**Bước 1 - Xây dựng công cụ thu thập luồng dữ liệu (Capture Windows).** 
 Các công cụ mạng tiêu chuẩn như `curl` hay thư viện socket của Python không thể thiết lập kết nối tới máy chủ (các gói tin SYN bị từ chối/drop, dẫn đến timeout ở các mốc 8, 12, 30 giây, trong khi kết nối tới các máy chủ thông thường như `example.com:80` lại thành công ngay lập tức). Tuy nhiên, kết nối thông qua trình duyệt web lại khả thi. Do đó, phương pháp tiếp cận tối ưu là trích xuất dữ liệu trực tiếp từ mã nguồn trang web: Tệp `app.js` lưu trữ kết quả fetch trong một biến có tên `capture`.
 
 ```javascript
@@ -32,7 +32,7 @@ capture.map(r => r.timestamp + ' ' + r.ciphertext).join('\n')
 
 Việc cố gắng gọi lệnh `fetch('/api/feed')` từ bảng điều khiển của trang web sẽ bị chặn bởi chính sách bảo mật CSP (Content Security Policy). Điều hướng trực tiếp tới `/capture.json` cũng trả về lỗi `ERR_FAILED`. Trích xuất trực tiếp giá trị của biến `capture` trong bộ nhớ của ứng dụng là phương pháp thu thập dữ liệu an toàn và hiệu quả nhất.
 
-**Bước 2 — Xác định tính chu kỳ của Keystream.** 
+**Bước 2 - Xác định tính chu kỳ của Keystream.** 
 Tiến hành phân tích chéo hai khung thời gian thu thập: Cửa sổ A (06:38:27 - 06:39:26) và Cửa sổ B (07:00:51 - 07:01:50). Kết quả cho thấy có 43 bản mã trùng lặp hoàn toàn giữa hai khung thời gian. Độ lệch thời gian (delta) của các bản mã này chỉ rơi vào hai giá trị cố định: 1309 giây và 1386 giây.
 
 ```text
@@ -43,7 +43,7 @@ Tiến hành phân tích chéo hai khung thời gian thu thập: Cửa sổ A (0
 
 Dựa trên kết quả này, hàm vị trí keystream có tính tuần hoàn: `o(t + 77) = o(t)`, xác nhận chu kỳ của hệ thống là 77. Con số 77 cũng phù hợp với dữ kiện thống kê: Trong một cửa sổ thu thập 60 giây, sẽ có 17 dòng không có dữ liệu tiếp nối tương ứng, bởi `77 - 60 = 17` khoảng trống (offset).
 
-**Bước 3 — Tính toán bước nhảy của hàm tịnh tiến theo thời gian.** 
+**Bước 3 - Tính toán bước nhảy của hàm tịnh tiến theo thời gian.** 
 Đối với mọi cặp dòng dữ liệu mà chuỗi 6 ký tự của chúng có thể xếp chồng lên nhau với một độ dịch (shift offset) `d` nhất định (trong khoảng 1 đến 5), tiến hành chạy mô hình hồi quy tuyến tính theo công thức `d == (g * dt) mod 77`, với biến `g` chạy từ 1 đến 76.
 
 ```text
@@ -52,7 +52,7 @@ Bước nhảy tối ưu g = (43, 460)   # Kết quả: 460/965 cặp dữ liệ
 
 Kết luận hàm vị trí của keystream: `o(T) = (43 * T) mod 77`.
 
-**Bước 4 — Tái lập Keystream toàn phần.** 
+**Bước 4 - Tái lập Keystream toàn phần.** 
 Mỗi dòng dữ liệu cung cấp 6 giá trị (symbol) cho keystream tại các vị trí từ `o(T)` đến `o(T)+5`. Sử dụng tập dữ liệu 120 dòng thu thập từ hai cửa sổ, hệ thống có khả năng phủ kín toàn bộ 77 vị trí mà không ghi nhận bất kỳ sự xung đột nào.
 
 ```python
@@ -64,7 +64,7 @@ for T, ct in rows:
 # Quá trình hoàn tất: Khôi phục 77/77 symbol, tỷ lệ xung đột bằng 0
 ```
 
-**Bước 5 — Thiết kế thuật toán giải mã.** 
+**Bước 5 - Thiết kế thuật toán giải mã.** 
 Điểm mấu chốt của thuật toán: Chỉ số con trỏ của khóa (key index) chỉ tiến lên khi hệ thống xử lý một ký tự thực sự bị mã hóa. Các ký tự như `_`, `{`, và `}` sẽ được chuyển tiếp thẳng ra bản rõ mà không tiêu tốn bất kỳ một ký tự nào từ keystream.
 
 ```python
@@ -84,7 +84,7 @@ def dec(T, ct):
 
 Toàn bộ 120 bản mã đều giải mã thành công và hội tụ về một bản rõ duy nhất.
 
-**Bước 6 — Xác thực mô hình trên tập dữ liệu độc lập (Validation).** 
+**Bước 6 - Xác thực mô hình trên tập dữ liệu độc lập (Validation).** 
 Để đảm bảo tính toàn vẹn của mô hình giải mã, một bộ dữ liệu mới (chưa qua huấn luyện) từ cửa sổ thời gian 07:09:46 - 07:10:45 (gồm 60 dòng) được thu thập. Áp dụng keystream đã tái lập từ bước trước để tiến hành giải mã:
 
 ```text

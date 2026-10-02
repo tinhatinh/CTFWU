@@ -1,4 +1,4 @@
-# Mic Drop — Hardware (Medium)
+# Mic Drop - Hardware (Medium)
 
 **Flag:** `H7CTF{7f0cb1b6-34ee-46c0-945b-1f069dff2a29}`
 

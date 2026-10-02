@@ -1,4 +1,4 @@
-# A Star Trail — Misc/OSINT (Beginner)
+# A Star Trail - Misc/OSINT (Beginner)
 
 **Flag:** `CSSCTF{P1JT-21.0}` · **Files:** `A_Star_Trail.png` (3780x1890, sha256 `a3584ca6…c3d33ed`)
 
@@ -20,11 +20,11 @@ enough.
 
 ## Exploit Chain
 
-**Step 1 — Read all 20 edges.** The image was cut into four overlapping bands so that each dashed
+**Step 1 - Read all 20 edges.** The image was cut into four overlapping bands so that each dashed
 line and its label fit inside one frame (the bands are stored in `files/band_*.png`). The edge table
 came out with all 20 labels.
 
-**Step 2 — Run Dijkstra.**
+**Step 2 - Run Dijkstra.**
 
 ```python
 path, cost = dijkstra(g)
@@ -32,14 +32,14 @@ path, cost = dijkstra(g)
 # 10.7   + 1.8         + 0.4          + 5.5         + 2.6            = 21.0 ngay
 ```
 
-**Step 3 — Check the optimum is unique.** Enumerating every simple path under 25 days: five of them,
+**Step 3 - Check the optimum is unique.** Enumerating every simple path under 25 days: five of them,
 21.0 / 21.6 / 22.7 / 22.9 / 24.3. The 21.0 optimum appears once, so no further crib is needed.
 
-**Step 4 — Verify.** Re-summing each edge of the Dijkstra path gives exactly 21.0; every edge on the
+**Step 4 - Verify.** Re-summing each edge of the Dijkstra path gives exactly 21.0; every edge on the
 path exists in the table read from the image; the number of edges used equals the number of labels on
 the map.
 
-**Step 5 — Assemble the flag.** "each planet/oid in your path" here means the intermediate stops,
+**Step 5 - Assemble the flag.** "each planet/oid in your path" here means the intermediate stops,
 excluding the origin and the destination. The full route is
 `EARTH -> PALLUS-XA -> 12-PUCK-8 -> JIP-REIA -> TAYLOR-3489 -> LANCER-RXKRD`, the four middle stops
 give P (PALLUS-XA), 1 (12-PUCK-8), J (JIP-REIA), T (TAYLOR-3489) → `P1JT`, then `-21.0`.

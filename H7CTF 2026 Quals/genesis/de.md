@@ -1,4 +1,4 @@
-# Genesis — Web3 (Medium)
+# Genesis - Web3 (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

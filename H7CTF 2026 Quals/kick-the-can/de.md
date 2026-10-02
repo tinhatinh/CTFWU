@@ -1,4 +1,4 @@
-# Kick the CAN — Hardware (Medium)
+# Kick the CAN - Hardware (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

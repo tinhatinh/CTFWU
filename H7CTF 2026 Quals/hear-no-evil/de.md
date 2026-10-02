@@ -1,4 +1,4 @@
-# Hear No Evil — Hardware (Medium)
+# Hear No Evil - Hardware (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
@@ -57,5 +57,5 @@ Extensions
 | Challenge | Hear No Evil |
 | Category | Hardware, medium, 130 pts, 2 objective (v1 40%, v2 60%) |
 | Đích | `https://web-2c53753bcbf2c207.web.h7tex.com` (`Python SimpleHTTP/0.6`) |
-| Artifact | `/capture.pcap` — 2220 B, 50 packet, pcap magic `d4c3b2a1`, DLT ghi là 251 |
+| Artifact | `/capture.pcap` - 2220 B, 50 packet, pcap magic `d4c3b2a1`, DLT ghi là 251 |
 | Flag | `H7CTF{...}`, hai giá trị |

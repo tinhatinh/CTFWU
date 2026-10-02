@@ -1,4 +1,4 @@
-# Print Print Revolution — Pwn (Hard)
+# Print Print Revolution - Pwn (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

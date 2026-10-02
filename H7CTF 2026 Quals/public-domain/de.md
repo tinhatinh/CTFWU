@@ -1,4 +1,4 @@
-# Public Domain — OSINT (Hard)
+# Public Domain - OSINT (Hard)
 
 ## Đề bài (nguyên văn từ thẻ challenge)
 

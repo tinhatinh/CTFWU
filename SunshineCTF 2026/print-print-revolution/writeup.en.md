@@ -1,4 +1,4 @@
-# Print Print Revolution — Pwn (Hard)
+# Print Print Revolution - Pwn (Hard)
 
 **Flag:** `sun{cust0m_fmtstr_n0_t00ls_4ll0wed}` · Files: `revolution`, 14520 bytes, sha256 `918483831ef0b27d0cfb8afa9e0341f38d0a296931ccc5f73ef80f5d610f8fa5` · Service: `nc chal.sunshinectf.games 26002`
 

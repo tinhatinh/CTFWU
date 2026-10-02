@@ -1,4 +1,4 @@
-# Trace Amounts — Hardware (Medium)
+# Trace Amounts - Hardware (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

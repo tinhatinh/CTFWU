@@ -1,4 +1,4 @@
-# Deep Freeze — Forensics (Hard)
+# Deep Freeze - Forensics (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

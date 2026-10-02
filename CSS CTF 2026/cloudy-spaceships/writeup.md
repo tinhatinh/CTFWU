@@ -1,4 +1,4 @@
-# Cloudy with a Chance of Spaceships — Web (67 pts)
+# Cloudy with a Chance of Spaceships - Web (67 pts)
 
 **Flag:** `CSSCTF{your_forecast_says_love_is_on_its_way}`
 **Tài nguyên:** Không có tập tin đính kèm. Toàn bộ dữ liệu được trích xuất trực tiếp từ máy chủ dịch vụ đang vận hành (thông qua tệp `files/index.html` kích thước 1827 B và tệp mã nguồn `files/2.CftUi-UM.js` kích thước 5694 B, SHA256 `2cc74b92...b97e173`).

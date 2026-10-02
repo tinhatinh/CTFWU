@@ -1,4 +1,4 @@
-# Countersign — Rev (Insane)
+# Countersign - Rev (Insane)
 
 **Flag:** `H7CTF{011c87d4-b5c8-405d-923a-33dbed3e5bf7}` · **Files:** `countersign.zip` (ELF x86-64 PIE, stripped, 22 KB) + `note.txt` · Service: `nc pwn.h7tex.com 43708`
 
@@ -155,7 +155,7 @@ the entry record, each step `pre = invert(rec.program, post)`; at the entry reco
 
 At each step the forward condition must also be checked: does `step(rec, post)` really select the edge we are
 stepping back over? Because `emit` takes the *first matching* edge, this condition is extremely strong and prunes
-almost every branch. Path search takes under 0.1 seconds. The root of the path search is the fold record itself — we
+almost every branch. Path search takes under 0.1 seconds. The root of the path search is the fold record itself - we
 cannot step back through it, because it uses `MOV`/`OR`/`SHR` and loses information.
 
 **Step 3 - Classifying edges with `MINT`.** To check the forward constraint we must know which edges carry a valid
@@ -167,7 +167,7 @@ but `MINT` is an absolute signing oracle: it takes at most 16 bytes and returns 
 MINT( tag(u16) || target(u16) || sel(u8) || tweak(u32) )[:6] == edge.sig
 ```
 
-On my boot: 51/129 edges valid, 78 edges carrying forged signatures. Those forged edges are not noise — it is precisely
+On my boot: 51/129 edges valid, 78 edges carrying forged signatures. Those forged edges are not noise - it is precisely
 `emit` skipping them that opens the winning path. For instance the fold record sits right behind the 12-byte records
 with `sel_reg=0xff`, and their first edge (which always matches on `sel`) is a forged edge, so the core jumps to the
 second edge.

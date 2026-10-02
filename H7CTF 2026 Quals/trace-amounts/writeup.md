@@ -1,4 +1,4 @@
-# Trace Amounts — Hardware (Medium)
+# Trace Amounts - Hardware (Medium)
 
 **Flag:** `H7CTF{48333086-d56b-41f5-b24b-a1d53fb122ec}`
 **Khoá bí mật (AES-128) trích xuất được:** `f937e70cf8f9f6f287a14b0da829ba47`

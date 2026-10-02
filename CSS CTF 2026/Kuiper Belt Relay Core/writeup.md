@@ -64,7 +64,7 @@ int main() {
 
 ## Chuỗi khai thác
 
-**Bước 1 — Định vị chính xác ranh giới của địa chỉ trả về.**
+**Bước 1 - Định vị chính xác ranh giới của địa chỉ trả về.**
 
 Truyền lần lượt các payload có kích thước tịnh tiến và giám sát phản hồi máy chủ để tìm ngưỡng phá vỡ quy trình in chuỗi `Goodbye!`:
 
@@ -76,7 +76,7 @@ Chuỗi "A"*72 → Trạng thái bất thường, chỉ phản hồi ký tự ng
 
 Cơ sở này củng cố kết luận return address bắt đầu ở giới hạn byte thứ 72.
 
-**Bước 2 — Quét rà phản hồi (Oracle-based scanning) để trích xuất địa chỉ hàm `win()`.**
+**Bước 2 - Quét rà phản hồi (Oracle-based scanning) để trích xuất địa chỉ hàm `win()`.**
 
 Trong điều kiện không có file thực thi cục bộ để trích xuất danh mục địa chỉ tĩnh, quy trình dò quét bắt buộc tiến hành trực tiếp đối với máy chủ trong phạm vi phân đoạn mã `.text` (Kéo dài từ `0x401000` đến `0x401500`).
 
@@ -85,13 +85,13 @@ Trong điều kiện không có file thực thi cục bộ để trích xuất d
 
 Kết quả quét tự động phát hiện hàm `win()` tồn tại tại địa chỉ: **0x401216**.
 
-**Bước 3 — Kiến trúc Payload khai thác (Exploit Payload).**
+**Bước 3 - Kiến trúc Payload khai thác (Exploit Payload).**
 
 Bởi địa chỉ `0x401216` nhỏ hơn ngưỡng `0x1000000`, hệ thống chỉ yêu cầu ghi đè 3 byte thấp nhất: `0x16 0x12 0x40`.
 
 Cấu trúc Payload hoàn thiện: `b"A"*72 + b"\x16\x12\x40"`.
 
-**Bước 4 — Thử nghiệm thực tiễn (Kiểm chứng).**
+**Bước 4 - Thử nghiệm thực tiễn (Kiểm chứng).**
 
 Triển khai Payload lên máy chủ mục tiêu trong 3 phiên độc lập. Cả 3 phiên đều vượt qua hàng rào bảo vệ, chiếm quyền điều khiển và trả về cờ thành công.
 

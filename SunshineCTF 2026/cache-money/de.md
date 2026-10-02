@@ -1,4 +1,4 @@
-# Cache Money — Pwn (Hard)
+# Cache Money - Pwn (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

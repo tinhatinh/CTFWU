@@ -1,4 +1,4 @@
-# STATUS — CookieCorp: ĐÃ GIẢI
+# STATUS - CookieCorp: ĐÃ GIẢI
 
 `https://tomorrow.web.2026.sunshinectf.games/` · web 479đ · cờ `sun{c00kie_jar_0verfl0w_ev1cts_the_chief}`
 

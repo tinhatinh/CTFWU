@@ -1,4 +1,4 @@
-# Total Recall — Pwn (Medium)
+# Total Recall - Pwn (Medium)
 
 **Flag:** `sun{r3caLl_ev3Ry_reGist3r_sR0p}`
 **Tác giả:** Oreomeister

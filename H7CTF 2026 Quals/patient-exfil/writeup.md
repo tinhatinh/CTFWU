@@ -1,4 +1,4 @@
-# Patient Exfil — Forensics (Medium)
+# Patient Exfil - Forensics (Medium)
 
 **Flag:** `H7CTF{6787b86cc777f426b9c0}`
 **File cung cấp:** `capture (2).pcap`, dung lượng 108.604 byte, mã băm sha256 `3ab17689659f80efadceea1adc2eea5e9bddfcc3254ad85e89c4c75ee20bbb76`

@@ -1,4 +1,4 @@
-# Total Recall — Pwn (Medium)
+# Total Recall - Pwn (Medium)
 
 `Can you recall how to get out of this one?`
 

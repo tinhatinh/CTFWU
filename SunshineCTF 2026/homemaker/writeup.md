@@ -1,4 +1,4 @@
-# Homemaker — Pwn (Hard)
+# Homemaker - Pwn (Hard)
 
 **Flag:** `sun{the_future_is_now_today_well_wait_how_are_you_reading_this}`
 **Instance:** `nc sunshinectf.games 26008`, file đính kèm chỉ bao gồm binary `homemaker`, không cung cấp thư viện `libc`.

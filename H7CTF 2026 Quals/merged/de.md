@@ -1,4 +1,4 @@
-# Merged — Web (Medium)
+# Merged - Web (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

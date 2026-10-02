@@ -1,4 +1,4 @@
-# Help Yourself — Mobile (Medium)
+# Help Yourself - Mobile (Medium)
 
 ## Đề bài (nguyên văn từ thẻ challenge)
 

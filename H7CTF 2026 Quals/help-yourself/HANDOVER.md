@@ -1,4 +1,4 @@
-# HANDOVER — Help Yourself (mobile) — đồng đội đã giải, không đào sâu tiếp
+# HANDOVER - Help Yourself (mobile) - đồng đội đã giải, không đào sâu tiếp
 
 Trạng thái: chưa có cờ. Instance chưa trả lời được route nào (xem mục 4).
 
@@ -37,7 +37,7 @@ Hướng备选: cài APK lên MuMu/emulator rồi đọc `SharedPreferences` + `
 
 ## 4. Vì sao chưa đi tiếp
 Mọi path trên `https://web-c575bd9f84a3e065.web.h7tex.com` (kể cả `/`) trả đúng
-`404 page not found`, `X-Content-Type-Options: nosniff`, **không có header `Server:`** —
+`404 page not found`, `X-Content-Type-Options: nosniff`, **không có header `Server:`** -
 đó là 404 của router nền tảng chứ không phải của app (app thật ở các bài trước trả
 `Server: BaseHTTP/0.6`/`SimpleHTTP/0.6` riêng). Nhiều khả năng instance chưa được Start,
 hoặc mobile task chỉ định mở APK offline. Đã kiểm tra hostname khớp từng ký tự với message

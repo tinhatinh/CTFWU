@@ -1,4 +1,4 @@
-"""Kick the CAN — reassemble ISO-TP (ISO 15765-2) từ candump log, giải UDS ReadDataByIdentifier.
+"""Kick the CAN - reassemble ISO-TP (ISO 15765-2) từ candump log, giải UDS ReadDataByIdentifier.
 
 Dùng:
     python solve.py <capture.log>

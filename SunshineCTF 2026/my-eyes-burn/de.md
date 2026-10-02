@@ -1,4 +1,4 @@
-# My Eyes Burn — Misc (Medium)
+# My Eyes Burn - Misc (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

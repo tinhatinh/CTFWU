@@ -1,4 +1,4 @@
-# Parcel Bomb — Pwn (Medium)
+# Parcel Bomb - Pwn (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
@@ -14,7 +14,7 @@
 - Category: Pwn, medium, 96 points, Docker
 - Remote: `nc pwn.h7tex.com 41136` (TCP)
 - Files: `dispatch.zip` (1.03 MiB, sha256 `72f6e078440a9a49fbad1d25bd8b17759c55a94f230ec3405ca9fd91104a5011`)
-- Objective: lấy `flag` (1 objective, flag format theo đề bài — kiểm chứng bằng regex trên bytes nhận được)
+- Objective: lấy `flag` (1 objective, flag format theo đề bài - kiểm chứng bằng regex trên bytes nhận được)
 
 ## Bundle
 
@@ -31,7 +31,7 @@ README.txt                  Ubuntu 24.04 / glibc 2.39
 === Sparrow Freight dispatch terminal ===
 dispatch> enter waybill number:
 ```
-Sau khi gửi 70 ký tự: `waybill logged.` — chuỗi khớp 100% với binary đã cho, tức instance chạy đúng file này.
+Sau khi gửi 70 ký tự: `waybill logged.` - chuỗi khớp 100% với binary đã cho, tức instance chạy đúng file này.
 
 ## Checksec (từ triage + readelf)
 
@@ -84,5 +84,5 @@ main @0x4011bb:
 
 1. `read` cho 512 byte vào buffer 64 byte, **không canary**, một lần duy nhất, **không có lệnh in nội dung buffer** → không tự thân nào leak được libc.
 2. Không PIE → mọi gadget/địa chỉ trong `dispatch` đã biết trước; Full RELRO → không sửa GOT được; NX → không shellcode.
-3. Hướng đi: **ROP hai stage trong cùng một payload** — stage 1 dùng `pop_rdi_ret` + `puts@plt` in chính GOT slot đã resolve của `puts` (0x404000) để lấy libc base, rồi `ret` về `vuln` (0x401178) để overflow lần hai; stage 2 dùng libc base vừa leak gọi `system("/bin/sh")`.
+3. Hướng đi: **ROP hai stage trong cùng một payload** - stage 1 dùng `pop_rdi_ret` + `puts@plt` in chính GOT slot đã resolve của `puts` (0x404000) để lấy libc base, rồi `ret` về `vuln` (0x401178) để overflow lần hai; stage 2 dùng libc base vừa leak gọi `system("/bin/sh")`.
 4. Căn chỉnh stack: tại `ret` của `vuln`, `rsp ≡ 0 (mod 16)` **sau khi** pop địa chỉ trả về đầu tiên, nên mỗi gadget `pop_rdi_ret` làm lệch 8 byte. Dùng một `ret` (0x401177) chèn trước `puts@plt` để đưa `rsp ≡ 8 (mod 16)` ở đầu callee, tránh `movaps` của printf làm crash.

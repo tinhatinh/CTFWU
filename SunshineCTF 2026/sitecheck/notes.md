@@ -1,4 +1,4 @@
-# Decision log — SiteCheck
+# Decision log - SiteCheck
 
 Target: `https://spaceship.web.2026.sunshinectf.games` (URL as supplied by the user). Flag prefix pinned from the challenge page: `sun{`.
 
@@ -14,7 +14,7 @@ Target: `https://spaceship.web.2026.sunshinectf.games` (URL as supplied by the u
 | 8 | `http://localtest.me/`, `http://127.0.0.1.nip.io/` also reach loopback | scan | ALLOWED → **hostnames are never resolved before the check**, second independent bypass |
 | 9 | `host.docker.internal` → `ERR_NAME_NOT_RESOLVED` | scan | no docker DNS alias; no sidecar by that name |
 | 10 | `http://[::1]:3000/` → **200, 10 files** | scan | the Express app itself listens on 3000; port 80 closed |
-| 11 | Screenshot of `[::1]:3000/dashboard` renders **"Logged in as: admin — CLEARANCE: OMEGA"** | visual | app treats a loopback peer socket as an authenticated admin session (no cookie involved) |
+| 11 | Screenshot of `[::1]:3000/dashboard` renders **"Logged in as: admin - CLEARANCE: OMEGA"** | visual | app treats a loopback peer socket as an authenticated admin session (no cookie involved) |
 | 12 | IP-spoof headers on our own session: `X-Forwarded-For`, `X-Real-IP`, `Client-Ip` = `127.0.0.1`/`::1` | GET `/profile` | still `h7tex_probe01` / REDACTED → trust is the real peer address, not a header |
 | 13 | `/profile` has `.flag-plate` ("Restricted personnel token"), REDACTED for BRONZE; page ends with `<div class="spacer" style="height:1400px">` pushing the plate below 1280x800 | GET `/profile` | a plain screenshot of the admin profile shows only the top of the page |
 | 14 | **URL fragment makes Chromium scroll the anchor into view before the shot** | scan `http://[::1]:3000/profile#clearance` | plate visible → `sun{fr4gm3nt3d_r3fl3ct10ns_1n_th3_futur3}` |

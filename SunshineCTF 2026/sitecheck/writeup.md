@@ -1,4 +1,4 @@
-# SiteCheck — Web (Hard)
+# SiteCheck - Web (Hard)
 
 Điểm: 498 · **Flag:** `sun{fr4gm3nt3d_r3fl3ct10ns_1n_th3_futur3}`
 **Instance:** `https://spaceship.web.2026.sunshinectf.games` (no files provided nguồn)

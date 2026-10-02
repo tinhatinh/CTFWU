@@ -1,4 +1,4 @@
-# Welcome Call — Forensics (Medium)
+# Welcome Call - Forensics (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

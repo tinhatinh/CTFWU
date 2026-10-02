@@ -24,7 +24,7 @@ evidence: cặp đèn trong cùng một ô cách nhau ~30 đơn vị, nhưng ô 
 ~81 nên `(129 -> 210)` và `(420 -> 501)` không phân biệt được; hàm báo
 "cum khong co 3 den" và tách nhầm thành `[2,1,2,1,...]`.
 result: DEAD - clustering thuần khoảng cách không dùng được cho hàng luật.
-Cách sửa: đọc cấu trúc tế bào — ô 2 đèn = cặp vào, ô 1 đèn = kết quả, rồi đi xen kẽ.
+Cách sửa: đọc cấu trúc tế bào - ô 2 đèn = cặp vào, ô 1 đèn = kết quả, rồi đi xen kẽ.
 Với lưới thì khoảng cách vẫn tách tốt (8 ô × 2 đèn).
 
 ## H4 - Phép toán là AND

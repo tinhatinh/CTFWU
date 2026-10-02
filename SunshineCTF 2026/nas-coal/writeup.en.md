@@ -1,4 +1,4 @@
-# NAS Coal — Forensics (Medium)
+# NAS Coal - Forensics (Medium)
 
 **Flag:** `sun{yup_issa_gem}` · Files: `gem_collection.pptm`, 2229848 bytes, sha256 `929726804037cc9b2e8779814aabf88361a6f4035ca1d93803662bdee543e855`
 

@@ -1,9 +1,9 @@
-# countersign — attestation core: function transcription
+# countersign - attestation core: function transcription
 
 Artifact: `analysis/unpacked/countersign` (Linux ELF x86-64, PIE, stripped, `.text` 0x1140-0x3692,
 `.rodata` 0x4000-0x410e, `.bss` 0x6080-0x76f00).
 Method: `objdump -D -M intel` only (fresh `analysis/full_text.asm`; `cs.asm` is byte-identical in
-mnemonics — compared programmatically, 0 mismatches). **No network, no execution.**
+mnemonics - compared programmatically, 0 mismatches). **No network, no execution.**
 All addresses are vma == file offset for `.text`/`.rodata` (verified with `readelf -S`).
 
 Cross-check material used (all local, from teammate captures): `grab.out` (a real `GET` image,
@@ -25,7 +25,7 @@ first 200 bytes), `oracle_results.txt` + `mint_vectors.txt` (4386 `MINT` replies
 | `record.done` byte | there is no `done` byte. `record+0x208` (called `n` below) does double duty: table length **and** the "this record can continue the walk" test | `0x15cb cmp BYTE [rdi+0x208],0` ; `0x1d95 test al,al` |
 | `>0xf` halts and sets the completion flag | `>0xf` merely advances pc by 1 (same as opcode 0). Setting the flag is **opcode 0xe**; halting-with-return-1 is **opcode 0xf** | `0x184d ja 0x1877` ; `0x1870 mov [rbp],1` ; `0x1860 mov eax,1;ret` |
 
-`0x5010`/`0x5018` — confirmed not referenced by any program instruction (ld.so artifacts).
+`0x5010`/`0x5018` - confirmed not referenced by any program instruction (ld.so artifacts).
 
 ## 1. Data map (all `.bss`, filled at startup by `0x1fa0`)
 
@@ -36,13 +36,13 @@ first 200 bytes), `oracle_results.txt` + `mint_vectors.txt` (4386 `MINT` replies
 0x460c0  80 bytes  40 distinct, non-zero random u16 = the "key" / id pool  [0x460c0 .. 0x46110)
                    0x460c0 = start id, 0x460c2..0x46109 = chain ids (read 3 u16 per iteration),
                    0x4610a = loop terminator, 0x4610c = FLAG-record id, 0x4610e = decoy id
-0x462c0   8 bytes  splitmix state snapshot — write-only (dead)
+0x462c0   8 bytes  splitmix state snapshot - write-only (dead)
 0x462c8   8 bytes  running splitmix state used to seed the entry-`x` streams (read at
                    0x2a94, 0x2fac, 0x3139; written at 0x26d9, 0x2ad1, 0x3003, 0x35a6)
-0x462d0   2 bytes  = u16 @0x4610e (decoy id)      — write-only
-0x462d2   2 bytes  = u16 @0x4610c (FLAG-record id) — write-only
-0x462d4   2 bytes  start id = u16 @0x460c0        — written once @0x217f, read @0x128e, @0x1525
-0x462d8   4 bytes  record count (int)             — written @0x2834/@0x2dac, read @0x1268/@0x1553
+0x462d0   2 bytes  = u16 @0x4610e (decoy id)      - write-only
+0x462d2   2 bytes  = u16 @0x4610c (FLAG-record id) - write-only
+0x462d4   2 bytes  start id = u16 @0x460c0        - written once @0x217f, read @0x128e, @0x1525
+0x462d8   4 bytes  record count (int)             - written @0x2834/@0x2dac, read @0x1268/@0x1553
 0x462e0  stride 0x30c record array (see §2)
 0x60a0   18 bytes  GET response header scratch
 0x76ee0   8 bytes  nonce (public: printed by NONCE, embedded in the GET header)
@@ -65,7 +65,7 @@ Verified field-by-field against the captured GET image (record 0: `0b48 ff 00 66
 +0x20c       entry[0]
              ...           16 bytes per entry, i = 0 .. n-1, entry i at +0x20c + 16*i
 +0x308..    unused tail of the record
-entry (16 bytes, 13 used — exactly the 13 bytes GET emits per entry, 0x1340-0x1382):
+entry (16 bytes, 13 used - exactly the 13 bytes GET emits per entry, 0x1340-0x1382):
   +0x00 u8   bit      required value of that bit (generator emits 0, 1, or 0xff)
   +0x02 u16  tgt      next record id
   +0x04 u32  x        per-link nonce/tag salt (splitmix-derived)
@@ -77,9 +77,9 @@ GET stream (`0x1261`-`0x13d4`): `u32 magic "CSGN"`, `u16 ver`(=2), `u16 count`, 
 `u64 nonce`, then per record: `id,slot,bitidx,alt_id,code_len` (8B) + `code[code_len]` + `n` +
 `n` x 13-byte entries; every byte printed as `%02x`, then `\n`. Capture decoded cleanly:
 `CSGN ver=2 count=40 start_id=0x480b nonce=0x81c7ad957a5c8aa9` == the `NONCE` reply `81c7ad957a5c8aa9`
-(same session) — this is the strongest confirmation of the header/layout reading.
+(same session) - this is the strongest confirmation of the header/layout reading.
 
-## 3. The VM — `0x1810`
+## 3. The VM - `0x1810`
 
 ```c
 /* rdi=record, rsi=regs(u32*), rdx=input(24B), rcx=flagbuf(128B), r8=state(u32*) */
@@ -119,7 +119,7 @@ which is itself a consistency check. Script: `analysis/jtbl.py`.)
 
 ### Opcode table
 
-`D = code[pc+1]` (destination register index, u8, **no bound check** — index up to 255 reaches
+`D = code[pc+1]` (destination register index, u8, **no bound check** - index up to 255 reaches
 `regs+1020`), `S = code[pc+2]`, `imm32 = LE u32 at code[pc+2]` (unaligned).
 
 ```
@@ -145,7 +145,7 @@ op  mnem   operands            pc+=  handler  semantics (exact)
  >f NOP    -                   1     0x1877   (dispatched at 0x184d, never reaches the table)
 ```
 
-Operand order for 2/3/4/5/6: **`D` is `code[pc+1]`, `S` is `code[pc+2]`** — confirmed twice:
+Operand order for 2/3/4/5/6: **`D` is `code[pc+1]`, `S` is `code[pc+2]`** - confirmed twice:
 (a) raw bytes at `0x1a70`: `movzx ecx,[r9+r10+8]` (r10 = pc+1) then `movzx edx,[r9+rdx+8]`
 (rd = pc+2) then `add DWORD [r8+rcx*4], edx`; (b) the captured record-0 program decodes to
 self-consistent `LBI r6,in[j]; ROL r6,8*j; OR r(i),r6` only under this order (§8).
@@ -190,7 +190,7 @@ Note `regs`, `in` and `state` are **not** reset per step: the chain is a sequenc
 sharing one 32-register file (only the first 8 registers are pre-zeroed, and the 24-byte input
 aliases regs[8..13]).
 
-## 5. `0x1d50` — step emitter / link verifier
+## 5. `0x1d50` - step emitter / link verifier
 
 ```c
 /* rdi = record R, rsi = regs */
@@ -219,23 +219,23 @@ u16 link(record *R, u32 *regs)
 }
 ```
 It **prints nothing** (the only output of the whole RUN path is `denied` or the flag buffer, in
-`main`). It returns the next id, which `main` puts in `esi` — **not** written to `0x462d4`.
+`main`). It returns the next id, which `main` puts in `esi` - **not** written to `0x462d4`.
 
 Ordering of checks, exactly as executed: `slot==0xff` -> bit extraction -> `n==0` -> per-entry:
 `e->bit == bit` (first match only, no look-ahead: a stamp mismatch falls through to the *next*
 entry, 0x1dc0) -> 4-byte compare -> 2-byte compare. All entries failing -> `alt_id`.
 
 The 4 SSE instructions at `0x1e03-0x1e30` build `buf[0..3]` = `id`(u16 LE) followed by `tgt`(u16
-LE) — verified two ways: (i) raw-byte decode `66 0f 6e c0 / 66 0f 6f d0 / 66 0f 6e c8 / 66 0f 60 d1
+LE) - verified two ways: (i) raw-byte decode `66 0f 6e c0 / 66 0f 6f d0 / 66 0f 6e c8 / 66 0f 60 d1
 / 66 0f 60 c1 / 66 0f 70 d2 41 / 66 0f 60 c2 / 66 0f 7e 44 24 0c` gives
 `A = id | (id_hi<<16)`, `B = tgt | (tgt_hi<<16)`, `X = punpcklbw(A,B)`,
 `buf[0..3] = movd(punpcklbw(X, pshufd(X,0x41)))` = `[A0,A2,B0,B2]` = `[id_lo,id_hi,tgt_lo,tgt_hi]`;
-(ii) the generator's stamping pass writes the *same* buffer with plain stores — `mov WORD[rsp+0x3f0],di`
+(ii) the generator's stamping pass writes the *same* buffer with plain stores - `mov WORD[rsp+0x3f0],di`
 (id, 0x304a) and `mov WORD[rsp+0x3f2],si` (tgt, 0x2adb/0x2aed), `mov BYTE[rsp+0x3f4],dl` (bit),
 `mov DWORD[rsp+0x3f5],eax` (x), `mov edx,0x9`, `mov edi,0x45`. Both paths must agree, so the
 layout is confirmed.
 
-## 6. `0x1af0` — the 6-byte stamp (the real one)
+## 6. `0x1af0` - the 6-byte stamp (the real one)
 
 ```c
 /* rdi = tweak byte (dil), rsi = data, rdx = len, rcx = out6 */
@@ -276,7 +276,7 @@ void stamp(u8 tweak, const u8 *data, u64 len, u8 out[6])
     b ^= tail;                         /* 0x1c5b / 0x1bc9-equivalent for the last block */
     ROUND(x,a,b,c4); ROUND(x,a,b,c4);   /* 0x1c63 twice, edi gate 0x1c97/0x1d38 */
     a ^= tail;                         /* 0x1ca0 */
-    c4 ^= 0xff;                        /* 0x1ca3 xor cl,0xff — flips the low byte of the 4th word
+    c4 ^= 0xff;                        /* 0x1ca3 xor cl,0xff - flips the low byte of the 4th word
                                           (rcx still aliases the c4 written by the last ROUND) */
     for (i=0;i<4;i++) ROUND2(x,a,b,c4);        /* 0x1cac-0x1ce6 */
     x ^= c4; x ^= rdi;                         /* 0x1ce8/0x1ced  (rdi = rotl21 of the last rdx) */
@@ -303,7 +303,7 @@ rotl amounts 13 (`0x1bd3`.. via `rol rax,0xd`), 16 (`rol rdx,0x10`), 32 (`rol rs
 4 tail rounds (`mov r8d,4` `0x1ca6`); output 6 bytes (`cmp rdx,6` `0x1d15`).
 **Input length:** `rdx` bytes, of which `len & 63` are copied, but the absorption reads at most
 `buf[0..15]` -> effectively `len in 0..16` (and only `len<=16` is ever exercised).
-**Output length: exactly 6 bytes** — matches 4385/4386 observed `MINT` replies being 12 hex chars
+**Output length: exactly 6 bytes** - matches 4385/4386 observed `MINT` replies being 12 hex chars
 (the one 8-byte outlier, `mint_vectors.txt` line 1, is a capture stream-sync artifact).
 
 No table, no key array: the only key material is the 16 secret bytes at `0x76ef0`. The 26-byte-key
@@ -313,7 +313,7 @@ No table, no key array: the only key material is the 16 secret bytes at `0x76ef0
 * The `tweak` argument (`0x45` 'E' for links, `0x4d` 'M' for MINT, `0x4d` also at `0x14d5`) is
   **dead**: it lands in `buf[0]` which any `len>=1` copy overwrites, and for `len==0` `buf` is
   never read at all (only `tail = 0<<56`). So `MINT <9 hex-bytes>` returns *exactly* the stamp the
-  link verifier expects — a legal stamp oracle over the secret.
+  link verifier expects - a legal stamp oracle over the secret.
 * MINT's own output proves the stamp is length-sensitive only through `tail = len<<56` and the
   absorbed words.
 
@@ -327,7 +327,7 @@ non-hex byte, requires an even number of digits (`test dl,dl @0x1f4a` -> second 
 `mov BYTE [r9+rsi],dl`. Callers: `0x142e` (MINT, `cmp eax,0x10; ja -> puts "bad"` @0x404b) and
 `0x14a3` (RUN, `cmp eax,0x18; jne -> puts "need 24 bytes"` @0x4054).
 
-`0x23f0` / `0x2403`: `imul rax,r15` / `imul rax,r10` — the two multiplies of a **SplitMix64
+`0x23f0` / `0x2403`: `imul rax,r15` / `imul rax,r10` - the two multiplies of a **SplitMix64
 finalizer** applied to `rbp + K`:
 ```
 h = rbp + K;  h ^= h>>30;  h *= 0xbf58476d1ce4e5b9;  h ^= h>>27;  h *= 0x94d049bb133111eb;
@@ -337,10 +337,10 @@ with `K` = `0x700cb87a8661a343` (0x23ae), `0x0e44323405ac1f58` (0x23c2), `0xac7b
 (0x2427), `0x4ab325a704411782` (0x245b), `0xe8ea9f60838b9397` (0x248f), `0x8722191a02d60fac`
 (0x24c3) and `rbp` advancing by `0x2e2ac13ef8e8d8d2` per record (0x235f/0x2372). Results land in
 `[rsp+0x50/0x48/0x40/0x30/0x60/0x58]` and feed code bytes and `entry.x`. `0x23f0` is "called"
-only by `jmp 0x23f0`-free fallthrough — i.e. it is not a function and has no call sites (grep of
+only by `jmp 0x23f0`-free fallthrough - i.e. it is not a function and has no call sites (grep of
 all `call` targets: 0x1030-0x1100 plt, 0x16c0, 0x17c0, 0x1810, 0x1af0, 0x1d50, 0x1eb0, 0x1fa0 only).
 
-## 8. `0x1fa0` — what is actually random at startup (and what is per-connection)
+## 8. `0x1fa0` - what is actually random at startup (and what is per-connection)
 
 One function `0x1fa0..0x35d7` (`sub rsp,0x10488`, canary at `rsp+0x10478`). Called once from
 `main` at `0x116d`; `if (eax) -> puts "boot error" (@0x4022); return 1`.
@@ -357,24 +357,24 @@ Then:
 2. `0x20c0-0x2111` **u16 pool**: state (rbp, seeded from the 2nd read) `+= 0x2545f4914f6cdd1d`,
    murmur3-finalize (`^= >>33; *= 0xff51afd7ed558ccd; ^= >>33; *= 0xc4ceb9fe1a85ec53; ^= >>33`),
    take the low 16 bits, reject 0 and duplicates (bitmap at `rsp+0x470+val`), store to
-   `0x460c0 .. 0x4610f` — **40 distinct non-zero u16**. `0x462c0 = final state` (dead).
+   `0x460c0 .. 0x4610f` - **40 distinct non-zero u16**. `0x462c0 = final state` (dead).
 3. `0x2113-0x215e`: `0x462d2 = u16@0x4610c` (FLAG record id), `0x462d0 = u16@0x4610e` (decoy id),
    `0x462d4 = u16@0x460c0` (start id, also staged at `[rsp+0x86]`).
 4. `0x2165-0x227c` **preamble record** (index 0, id = `0x460c0`): `memset(rec,0,0x30c)`,
    `slot = bitidx = 0xff` (`mov WORD[rec+2],0xffff` @0x21a7), 6 x `MOVI r(i),0` (`call 0x17c0`
    @0x21bb), then for i = 0..5, j = 0..3: `LBI r6,in[4i+j] ; ROL r6,8j ; OR r(i),r6`
    (`code[+0]=0xc,code[+1]=6,code[+2]=4i+j, code[+3]=7,code[+4]=6,code[+5]=8j,
-     code[+6]=6,code[+7]=i,code[+8]=6`) — this is exactly what the captured record 0 decodes to.
+     code[+6]=6,code[+7]=i,code[+8]=6`) - this is exactly what the captured record 0 decodes to.
    `code_len += 0x24` per i (`0x2240`) => 0xd8, later extended by `0x17c0`.
    Its single table entry: `bit = 0xff` (0x2263), `n = 1` (0x2271), `tgt = u16@0x460c2` (0x228c).
-   **This is only the state at build time** — later passes extend every record's table (§12).
+   **This is only the state at build time** - later passes extend every record's table (§12).
 5. `0x2293-0x237c` chain loop over the id pool: `r8` walks `0x460c2 -> 0x4610a` in steps of 6
    (3 u16 per iteration, 12 iterations x 3 records); `rbp = 0x2e2ac13ef8e8d8d2 + r14`
    (0x22a2) seeds the SplitMix64 stream of step 7's constants; 3 records per iteration get ids
    from consecutive pool words, `slot`/`bitidx` = `(mix & 3)` and `(mix & 0x1f)`
    (`0x2549-0x2576`), and `n`/entries written at `+0x208/+0x20c/+0x21c/...` (0x22fa-0x237c).
    `0x1fa0` writes **every byte of the array**: `memset(rec,0x30c)` @0x251f/0x27b3 then field
-   stores — so the randomised region is `0x462e0 .. 0x462e0 + 0x30c*count` (count = 40 gives
+   stores - so the randomised region is `0x462e0 .. 0x462e0 + 0x30c*count` (count = 40 gives
    `0x462e0 + 0x79e0 = 0x4dcc0`; the 199-record figure would end at `0x6c134`), i.e.
    id/slot/bitidx/alt_id/code_len/code/
    n/entry.bit/entry.tgt/entry.x, **plus** entry.stamp which is written by the stamping pass.
@@ -391,7 +391,7 @@ Then:
 8. `0x2a32-0x2b58` + `0x2fac-0x3093` stamping passes: for every record and every entry, compute
    `entry.x` from the `0x462c8` splitmix state (`+= 0x9e3779b97f4a7c15`, finalizer
    `>>30/*0xbf58..>>27/*0x94d0..>>31`), store it at `entry+4`, build the 9-byte buffer
-   `[id,tgt,bit,x]` and `stamp(0x45, buf, 9, &entry.stamp_lo)` — i.e. **the expected stamps are
+   `[id,tgt,bit,x]` and `stamp(0x45, buf, 9, &entry.stamp_lo)` - i.e. **the expected stamps are
    computed by the same `0x1af0` that verifies them**.
 9. `0x2c03-0x2cf5` **self-walk at startup**: finds the record whose id == `[rsp+0x86]` (= start
    id), runs the VM with regs at `[rsp+0x1b0]` and the witness 24 bytes at `[rsp+0x3d0]`, calls
@@ -406,7 +406,7 @@ Then:
 Per-connection vs reproducible: ids and the 40-u16 pool come from the **private** 8-byte seed;
 `slot`, `bitidx`, code bytes, shift amounts and `entry.x` come from streams seeded with the
 **public** nonce (`rbp = 0x2e2ac13ef8e8d8d2 + (nonce ^ 0xa5a5a5a5a5a5a5a5)`, and `0x462c8`);
-stamps come from the **private** 16-byte key. Nothing is randomised lazily per `RUN` — the whole
+stamps come from the **private** 16-byte key. Nothing is randomised lazily per `RUN` - the whole
 image is built once at `0x116d`, so a `GET` is the exact image that `RUN` uses.
 
 ## 9. Success path
@@ -425,7 +425,7 @@ So the condition for the walk to emit the flag is exactly:
   within `0x30d40` steps, with every intermediate record having `n != 0` and a matching entry.
 Anything else prints `denied` (`0x15ea`). The flag itself comes from the environment variable
 `FLAG` (`getenv` at `0x18ae`), truncated to 127 chars; unset => the literal `"unavailable"`
-(`0x4004`) — so an empty reply of `unavailable` would mean the env var is missing, not that the
+(`0x4004`) - so an empty reply of `unavailable` would mean the env var is missing, not that the
 walk failed.
 
 ## 10. Verification ledger
@@ -448,7 +448,7 @@ Byte/constant-verified (I dumped the raw bytes or matched independent data):
 * `denied` assembled from immediates `0x696e6564` + `0x646569` (0x15ea/0x15fd) -> "denied";
 * §12: the whole record/entry layout + the advance table validated against **three** complete
   served images already present in the directory (`image.txt`, `imgA.bin`, `imgG.bin`, captured by
-  the teammate — I fetched nothing): exact byte consumption, `count=40`, zero misaligned pc, zero
+  the teammate - I fetched nothing): exact byte consumption, `count=40`, zero misaligned pc, zero
   illegal opcodes, `entry.bit` confined to {0x00,0x01,0xff}, all 126 `tgt`/`alt_id` resolving.
 * command keywords and format strings from `.rodata` (`FLAG`,`/dev/urandom`,`unavailable`,
   `GET`,`%02x`,`NONCE`,`%016llx\n`,`MINT `,`bad`,`RUN `,`need 24 bytes`,`%s`,`QUIT`,`?`).
@@ -456,7 +456,7 @@ Byte/constant-verified (I dumped the raw bytes or matched independent data):
 Read off the disassembly only (not independently re-derived):
 * the exact record-count arithmetic (I confirmed count==40 empirically from the capture and the
   12 x 3 chain loop bound at `0x4610a`, but did not fully unwind the unrolled `+3/+6` updates);
-* the precise semantics of the tail/gadget records (`0x2e36-0x2f61`) — I read their emitted byte
+* the precise semantics of the tail/gadget records (`0x2e36-0x2f61`) - I read their emitted byte
   patterns, not their intended algebraic role;
 * which of the 3 candidate `slot`-selection folds is used where (the `&3` / `&0x1f` masks at
   `0x2549-0x2576` are verified, their input qword provenance is inferred from the stack slots);
@@ -465,11 +465,11 @@ Read off the disassembly only (not independently re-derived):
 
 ## 11. Still unknown / open
 
-1. **Which entries are actually signed** — see §12: in the served image the FLAG record is never
+1. **Which entries are actually signed** - see §12: in the served image the FLAG record is never
    the first bit-matching entry of any record, so stamp validity (not the bit) must be what
    selects the edge. I cannot decide statically which entries carry a genuine stamp: that needs
    either the 16 secret bytes or one `MINT` probe per candidate edge.
-2. `0x460a0` (24-byte witness) is write-only in bss and not in the GET range — the witness itself
+2. `0x460a0` (24-byte witness) is write-only in bss and not in the GET range - the witness itself
    is not retrievable; only its baked-in `XORI` immediates leak through the tail records.
 3. `0x462d0`/`0x462d2` (FLAG/decoy ids) are write-only globals; they leak only via the image
    (`0x4610c`/`0x4610e` are also outside the GET range).
@@ -483,7 +483,7 @@ Read off the disassembly only (not independently re-derived):
 ## 12. Structural findings from three real images (added after the first draft)
 
 `image.txt`, `imgA.bin`, `imgG.bin` (three different sessions) were parsed with the §2 layout by a
-throwaway script. Results — all three:
+throwaway script. Results - all three:
 
 * **the parse consumes the stream exactly** (3037 / 3076 / 3115 bytes, zero leftover),
 * `count = 40` in every instance (so the "199 records" figure is wrong; 40 is fixed),
@@ -499,7 +499,7 @@ throwaway script. Results — all three:
   in `image.txt`) => **any failed link drops straight into the HALT record => `denied`**,
 * 25 records have `slot == 0xff` with all-`0xff` entry bits (unconditional: `entry[0]` is taken
   whenever its stamp verifies), 14 have `slot in {0,1,2,3}`, `bitidx in 0..31` (bit branch), and
-  record 39 has `slot = 6`, `bitidx = 0` — `slot=6`/`bitidx=0` is written explicitly by
+  record 39 has `slot = 6`, `bitidx = 0` - `slot=6`/`bitidx=0` is written explicitly by
   `mov eax,6; mov WORD[rec+2],ax` at `0x2e1b/0x2e2d`, not by the `&3` fold.
 
 Record 39 (`0x2e36`-`0x2f61` builder) is the **witness gate**; its program is
@@ -509,7 +509,7 @@ for i in 0..5:  MOV r7,r(i) ; XORI r7, witness[i] ; OR r6,r7        ; r6 |= regs
 then:           MOV r7,r6 ; SHR r7,16 ; OR r6,r7 ; SHR 8 ; OR ; SHR 4 ; OR ; SHR 2 ; OR ; SHR 1 ; OR
 ```
 so `bit0(regs[6]) == (the six input words are NOT all equal to the witness words)`; its entries
-are `00>rec26, 01>rec38(deny), 00>..., 01>..., 01>..., 00>rec37(FLAG)` — i.e. the *equality*
+are `00>rec26, 01>rec38(deny), 00>..., 01>..., 01>..., 00>rec37(FLAG)` - i.e. the *equality*
 branch is entry 0, and the FLAG edge (entry 5) is shadowed by it under "first bit match wins".
 
 That shadowing is the crux: in `image.txt` the FLAG record has in-edges only from `rec6.entry[2]`

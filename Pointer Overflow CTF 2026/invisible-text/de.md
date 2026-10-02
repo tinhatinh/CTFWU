@@ -29,7 +29,7 @@ Team: 612. Điểm: 200. Nhãn: STEG 200 · WAVE 1.
 | `Content-Disposition` | `attachment; filename=invisible_text_612.py` (có hậu tố `_612` = id team, file sinh riêng cho team) |
 | kích thước | 4245 byte |
 | sha256 | `f027442b37a521f4a775ec56d37336df446d83e7acd641042e28af030f745320` khớp card |
-| format code page | UTF-8, 81 dòng, chỉ có 1 ký tự ngoài ASCII (`—` em dash trong comment) |
+| format code page | UTF-8, 81 dòng, chỉ có 1 ký tự ngoài ASCII (`-` em dash trong comment) |
 | endpoint nộp | `POST /challenges/invisible-text/submit`, body `{"flag": "..."}`, trả `{"correct":bool,"message":str}` |
 | ý nghĩa "solved" | server xác nhận `{"correct":true,"message":"Correct."}`; không trả về xâu flag nào khác |
 

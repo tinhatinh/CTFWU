@@ -1,4 +1,4 @@
-# Papers Please — Pwn (Easy)
+# Papers Please - Pwn (Easy)
 
 **Flag:** `H7CTF{b66621cc-c85c-4042-b908-0d3dd36a71e5}`
 **Máy chủ mục tiêu:** `pwn.h7tex.com:42578`

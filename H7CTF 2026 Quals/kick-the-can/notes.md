@@ -1,4 +1,4 @@
-# Notes — Kick the CAN
+# Notes - Kick the CAN
 
 ## Tín hiệu ban đầu
 

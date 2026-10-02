@@ -1,6 +1,6 @@
-# Kuiper Belt Relay Core — Exploration Log
+# Kuiper Belt Relay Core - Exploration Log
 
-## H1 — Boundary detection via output termination
+## H1 - Boundary detection via output termination
 
 **cmd:** `python fine.py` (scan offsets 63–96)
 
@@ -15,11 +15,11 @@ n= 73 echoedA= 73 gb=0 extra_hex=b'0a'
 n= 74 echoedA= 74 gb=0 extra_hex=b'0a'
 ```
 
-**result:** PASS — Return address boundary confirmed at offset 72 (64 buffer + 8 saved RBP).
+**result:** PASS - Return address boundary confirmed at offset 72 (64 buffer + 8 saved RBP).
 
 ---
 
-## H2 — Stack leak attempt via printf format string
+## H2 - Stack leak attempt via printf format string
 
 **cmd:** Attempt `b"A"*n + b"%s%s%s..."` pattern to leak stack bytes after echoed buffer
 
@@ -27,13 +27,13 @@ n= 74 echoedA= 74 gb=0 extra_hex=b'0a'
 
 **result:** DEAD - NUL terminator from gets()
 
-`gets()` writes `\x00` immediately after user input. With 64-bit addresses starting at 0x40xxxxxx, writing the low byte first causes `gets()` to inject NUL exactly at LSB(return_address), truncating any subsequent `%s` read. Not a sign of null bytes in memory — inherent behavior of gets().
+`gets()` writes `\x00` immediately after user input. With 64-bit addresses starting at 0x40xxxxxx, writing the low byte first causes `gets()` to inject NUL exactly at LSB(return_address), truncating any subsequent `%s` read. Not a sign of null bytes in memory - inherent behavior of gets().
 
 Alternative approach: oracle-based scanning on live service (confirmed successful).
 
 ---
 
-## H3 — Oracle-based scanning for win() address
+## H3 - Oracle-based scanning for win() address
 
 **cmd:** `python sweep.py sanity` (test known addresses)  
 **cmd:** `python sweep.py 64` (full range 0x401000–0x401500)
@@ -42,13 +42,13 @@ Alternative approach: oracle-based scanning on live service (confirmed successfu
 
 Oracle hit: "hijacked" + flag text in response.
 
-**result:** HIT — win() = 0x401216
+**result:** HIT - win() = 0x401216
 
 Confirmed by 3/3 reproducibility runs.
 
 ---
 
-## H4 — Final payload construction and verification
+## H4 - Final payload construction and verification
 
 **cmd:** `python exploit.py` (3 consecutive runs)
 
@@ -59,7 +59,7 @@ Here's your flag:
 CSSCTF{s1gn4l_r3c0v3r3d_fr0m_th3_v01d}
 ```
 
-**result:** PASS — Exploit reproducible, flag captured consistently.
+**result:** PASS - Exploit reproducible, flag captured consistently.
 
 ---
 

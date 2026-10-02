@@ -1,4 +1,4 @@
-# Dockside Ticket Office — Pwn (Beginner)
+# Dockside Ticket Office - Pwn (Beginner)
 
 **Flag:** `CSSCTF{us3_4ft3r_fr33_d0cks1d3}` · **Files:** `dockside_ticket` (16664 B, sha256 `b275a7c2…49dd`)
 
@@ -14,7 +14,7 @@ goal: turn a cancelled ticket into emergency harbour access.
 `create_ticket`, `cancel_ticket`, `edit_ticket`, `use_ticket`, and the two destinations `open_gate` /
 `deny_access`.
 
-`create_ticket` allocates a 0x28-byte chunk, writes `"GUEST"` at the start and — this is the crux —
+`create_ticket` allocates a 0x28-byte chunk, writes `"GUEST"` at the start and - this is the crux -
 **a function pointer at offset 0x20**, initialised to `deny_access`:
 
 ```asm

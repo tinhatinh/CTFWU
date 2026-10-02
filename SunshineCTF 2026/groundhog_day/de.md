@@ -1,4 +1,4 @@
-# Groundhog Day — Web (Hard)
+# Groundhog Day - Web (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

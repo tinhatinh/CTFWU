@@ -1,4 +1,4 @@
-# A Star Trail — Misc/OSINT (Beginner)
+# A Star Trail - Misc/OSINT (Beginner)
 
 **Flag:** `CSSCTF{P1JT-21.0}`
 **File đính kèm:** `A_Star_Trail.png` (Kích thước: 3780x1890, SHA256: `a3584ca6...c3d33ed`)

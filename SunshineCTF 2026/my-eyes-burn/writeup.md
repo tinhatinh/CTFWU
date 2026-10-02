@@ -1,4 +1,4 @@
-# My Eyes Burn — Misc (Medium)
+# My Eyes Burn - Misc (Medium)
 
 **Flag:** `sun{praisethesun}`
 **Files:** `boardwriter.klc` (3562 B, UTF-16LE, CRLF)

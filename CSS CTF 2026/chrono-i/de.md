@@ -26,7 +26,7 @@ Flag Format: CSSCTF{...}
 | Nguồn | Thẻ đề do người dùng dán trong phiên, 30/09/2026 (không có file đính kèm) |
 | Giải | CSS CTF 2026: Return of Nexus |
 | Điểm / độ khó | 75 / Beginner |
-| Artifact | không có — dữ kiện nằm hết trong thẻ đề |
+| Artifact | không có - dữ kiện nằm hết trong thẻ đề |
 | Nhiệm vụ | thu được `CSSCTF{...}` từ `ESUITO{...}` |
 | Định dạng cờ | `CSSCTF{...}` |
 | Trạng thái nộp | cờ kiểm chứng cục bộ (mã hoá ngược ra đúng ciphertext gốc); chưa có xác nhận đã được chấm chấp nhận |
@@ -37,7 +37,7 @@ Hai dữ kiện đề cho thẳng: prefix cờ đã biết (`CSSCTF`) và một 
 ## Hướng giải (tóm tắt)
 
 Crib `CSSCTF` -> `ESUITO` cho ra đúng sáu chữ số `2 0 2 6 0 9`, tức six first digits của
-`20260921143507` — chuỗi số lấy từ mốc thời gian trong đề. Mã là Gronsfeld (Vigenère số)
+`20260921143507` - chuỗi số lấy từ mốc thời gian trong đề. Mã là Gronsfeld (Vigenère số)
 chu kỳ 14, key chạy theo thứ tự chữ cái còn `{`, `}`, `_` giữ nguyên. Giai mã phần thân
 thì ra `CSSCTF{every_second_hides_a_secret}`.
 

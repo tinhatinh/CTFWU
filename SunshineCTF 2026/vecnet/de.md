@@ -1,4 +1,4 @@
-# VecNet — Web (Hard)
+# VecNet - Web (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

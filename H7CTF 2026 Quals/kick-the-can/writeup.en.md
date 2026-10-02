@@ -1,4 +1,4 @@
-# Kick the CAN — Hardware (Medium)
+# Kick the CAN - Hardware (Medium)
 
 **Flag:** `H7CTF{6360cbb3-73fc-4ba5-a9e6-0229a3b1a008}` · 125 pts · H7TEX 2026
 **Target:** `https://web-5c6688f7ad7feac6.web.h7tex.com` · Artifact: `/capture.log` (candump with 132 frames, 5248 bytes)

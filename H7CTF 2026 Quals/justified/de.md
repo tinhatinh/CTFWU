@@ -1,4 +1,4 @@
-# Justified — Web (Medium)
+# Justified - Web (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

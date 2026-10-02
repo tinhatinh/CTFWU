@@ -1,9 +1,9 @@
-# Aria front-end DSP — transcription of `unpacked/aria` (.text)
+# Aria front-end DSP - transcription of `unpacked/aria` (.text)
 
 Stripped PIE ELF. `.text` = vma 0x1180..0x29a9. `.rodata` vma 0x3000 = file offset 0x3000
 (so `# 32xx` comments are directly readable from the file). `.data` vma 0x5000 = offset 0x4000.
 `.bss` vma 0x5020..0x5180 (NOBITS). **The EQ band table (0x5060) and the band count (0x5040)
-live in .bss — they are runtime state, not file contents.**
+live in .bss - they are runtime state, not file contents.**
 
 Call chain in `main` (0x13e0..0x15f7), buffer `[rbp-0x160]` = `double *x`, `[rbp-0x158]` = `size_t n`:
 
@@ -20,31 +20,31 @@ Call chain in `main` (0x13e0..0x15f7), buffer `[rbp-0x160]` = `double *x`, `[rbp
 15bd  0x2790  dispatch(payload, len)
 ```
 
-## Constants (.rodata) — resolved
+## Constants (.rodata) - resolved
 
 | vma | value | used at |
 |---|---|---|
-| 0x32b8 | `2**-23` = 1.1920928955078125e-07 | 0x1876 (in 0x1710) — 24-bit → double scale |
+| 0x32b8 | `2**-23` = 1.1920928955078125e-07 | 0x1876 (in 0x1710) - 24-bit → double scale |
 | 0x32c0 | 1.0 | 0x1a53, 0x1b38/40/48, 0x1b7d, 0x1c04 (0x1940) |
 | 0x32c8 | 40.0 | 0x19c5 `gain/40` |
 | 0x32d0 | 10.0 | 0x19bd `pow(10, …)` |
 | 0x32d8 | 2π = 6.283185307179586 | 0x19e8 (0x1940), 0x21b9 (0x2070) |
-| 0x32e0 | 96000.0 | 0x19f6 — EQ sample rate |
+| 0x32e0 | 96000.0 | 0x19f6 - EQ sample rate |
 | 0x32e8 | −2.0 | 0x1a5b, 0x1b30, 0x1bbf, 0x1c14 |
 | 0x32f0 | 4.0 | 0x1f86, 0x2019 (0x1f70 only) |
 | 0x32f8 | 0.05 | 0x1f8e, 0x2026 |
 | 0x3300 | 0.98 | 0x1f9c, 0x202e |
 | 0x3308 | 0.005 | 0x1fa4, 0x2046 |
-| 0x3310 | 0.9510565162951535 = cos(2π·800/16000) | 0x20d5 — Goertzel seed for k=0 |
-| 0x3318 | −1.0 | 0x20e0 — running-max power initialiser |
-| 0x3320 / 0x3328 / 0x3330 | 80.0 / 800.0 / 16000.0 | 0x21a9 / 0x21b1 / 0x21c1 — modem tone law, codec fs |
+| 0x3310 | 0.9510565162951535 = cos(2π·800/16000) | 0x20d5 - Goertzel seed for k=0 |
+| 0x3318 | −1.0 | 0x20e0 - running-max power initialiser |
+| 0x3320 / 0x3328 / 0x3330 | 80.0 / 800.0 / 16000.0 | 0x21a9 / 0x21b1 / 0x21c1 - modem tone law, codec fs |
 | 0x3338 | 0.0 | unreferenced |
 | 0x3340..0x33b7 | 3 × {b0,b1,b2,a1,a2} | 0x1e6b (0x1e30 only) |
 | 0x33c0/0x33c8 | (1.0, 0.0) | 0x2727, unrelated ctor |
 
 **0x2550 itself references none of the 0x32b8.. doubles** (see §4).
 
-## 1. `0x1940` — parametric EQ / biquad cascade
+## 1. `0x1940` - parametric EQ / biquad cascade
 
 `void eq_apply(double *x /*rdi*/, size_t n /*rsi*/)`. Lazy config load:
 `edx = (int32)[0x5010]`; if `edx < 0` (`.data` init = −1) → 0x1c8f sets `[0x5010]=1`,
@@ -65,7 +65,7 @@ type: 0=peak 1=notch 2=lowshelf 3=highshelf (strcmp chain 0x1d51..0x1e1a; an
 ```
 
 Band loop 0x19a0..0x1b03 iterates bands in file order `i = 0 .. n_bands-1`.
-Skip test (0x19a0): `if (gain_db == 0.0 && type == 0) continue;` — only *peak* at 0 dB is
+Skip test (0x19a0): `if (gain_db == 0.0 && type == 0) continue;` - only *peak* at 0 dB is
 skipped (NaN gain is not skipped, `jp` at 0x19ae goes to the design path).
 
 Per band, 0x19bd/0x19e8:
@@ -106,7 +106,7 @@ stable over f0∈[50,20000], Q∈[0.4,4], gain∈[−12,12].
 The shipped `eq.cfg` (8 bands, all `gain_db = 0.0`) is therefore an **exact identity**
 (cascade = 0.000e+00 dB at 1 Hz … 47 kHz).
 
-**Application — Direct Form II, cascade, in place, zero state.** The sample loop 0x1ab0..0x1afa
+**Application - Direct Form II, cascade, in place, zero state.** The sample loop 0x1ab0..0x1afa
 (`xmm0` = s0, `xmm3` = s1, both zeroed at 0x1a94/0x1a9b):
 
 ```
@@ -120,11 +120,11 @@ x[n−2] as the states; these hold the filtered/feedback combination). Initial s
 and is **re-zeroed for every band**. Loop order = outer loop over bands, inner full pass over
 all n samples; band i's output is band i+1's input, in the same buffer. `n == 0` skips the
 sample loop (0x1a8a `test r12,r12`) but the coefficients are still computed. The biquad sample
-loops in **0x1940 and 0x1e30 are scalar** (`mulsd/addsd/subsd`, 1 sample/iteration — no SIMD
+loops in **0x1940 and 0x1e30 are scalar** (`mulsd/addsd/subsd`, 1 sample/iteration - no SIMD
 despite the SSE registers); only 0x1f70 is vectorised 2 doubles wide, and only 0x1e30's
 `memcpy` and 0x2070's checksum use packed SSE (`movdqu/pxor`).
 
-## 2. `0x1e30` — 7 kHz anti-alias LPF + decimate ×6  (not the 24-bit conversion)
+## 2. `0x1e30` - 7 kHz anti-alias LPF + decimate ×6  (not the 24-bit conversion)
 
 `double *antialias_decimate(double *x /*rdi*/, size_t n /*rsi*/, double *out /*rdx*/)`.
 Returns the output sample count in `rax` (`0x1f3e`/`0x1f40`; 0 if `malloc` failed or n==0).
@@ -138,7 +138,7 @@ Returns the output sample count in `rax` (`0x1f3e`/`0x1f40`; 0 if `malloc` faile
 1f39  free(tmp); return j = ceil(n/6)
 ```
 
-Decimation factor 6 = 96000/16000. **Picks every 6th sample starting at index 0 — no
+Decimation factor 6 = 96000/16000. **Picks every 6th sample starting at index 0 - no
 group-delay/phase compensation**, so the 6th-order filter's delay shows up as a fractional
 delay in the 16 kHz stream.
 
@@ -167,11 +167,11 @@ aliasing into 1000 Hz (the modem band).
 `rate==96000` (0x17700), data chunk > 2 bytes; if the data chunk exceeds 0x8ca02 (576002)
 bytes it is clamped to 0x177000 bytes = 192000 samples (2 s) at 0x18f0.
 
-## 3. `0x1f70` — analog gain + transducer response (memoryless polynomial, in place)
+## 3. `0x1f70` - analog gain + transducer response (memoryless polynomial, in place)
 
 `void transducer(double *x /*rdi*/, size_t n /*rsi*/)`. n==0 → return; n==1 → tail path only
 (0x2069). Vectorised 2 doubles/iteration (0x1fd0..0x200f, `n>>1` iterations), remainder handled
-scalar at 0x2019..0x205e. Restated scalar maths — for every sample, in place:
+scalar at 0x2019..0x205e. Restated scalar maths - for every sample, in place:
 
 ```
 u = 4.0 * x[n]                          (0x32f0)
@@ -179,13 +179,13 @@ x[n] = 0.98*u + 0.05*u^2 + 0.005*u^3    (0x3300, 0x32f8, 0x3308)
      = 3.92*x + 0.80*x^2 + 0.32*x^3
 ```
 
-Small-signal gain 3.92 (= +11.8657 dB). No clipping, no saturation, no state, no filtering —
+Small-signal gain 3.92 (= +11.8657 dB). No clipping, no saturation, no state, no filtering -
 pure memoryless 3rd-order nonlinearity, asymmetric (even term) → even-harmonic distortion.
 On x∈[−1,1] the output spans [−3.440, +5.040]; x=+0.25 → +1.035 (so the "flat" input of
-`reference_ping.wav`, peak 0.25, is pushed to 1.035 — full scale is exceeded).
+`reference_ping.wav`, peak 0.25, is pushed to 1.035 - full scale is exceeded).
 This is SPEC steps 2+3 combined; it contains no resampling.
 
-## 4. `0x2550` — "SAFETY LOCKOUT" — it is NOT a spectral check
+## 4. `0x2550` - "SAFETY LOCKOUT" - it is NOT a spectral check
 
 `int safety_check(double *x /*rdi*/, size_t n /*rsi*/)`. **There are no frequency bins, no
 300..3400 Hz window, no thresholds, and no tone-signature detector in this function.** It
@@ -239,11 +239,11 @@ frame accept test: byte0==0xA5 (0x225b), byte1==0x5A (0x2268), byte2==LEN,
   returns 0 = ok, -1 = reject.
 ```
 
-**No energy threshold exists anywhere in 0x2070** — every 200-sample window yields some tone
+**No energy threshold exists anywhere in 0x2070** - every 200-sample window yields some tone
 index by argmax, including pure silence. So the interlock has no "is there a tone at all"
 test; the only gates are sync/LEN/checksum, and the opcode test in 0x2550.
 The 16 modem tones span 800..2000 Hz (all inside the claimed 300..3400 Hz window, and all
-inside the 7 kHz LPF passband); nothing in the front end is specialised to 300 or 3400 Hz —
+inside the 7 kHz LPF passband); nothing in the front end is specialised to 300 or 3400 Hz -
 those two numbers appear nowhere in the binary as constants.
 
 ## Unknowns / not determined
@@ -252,6 +252,6 @@ those two numbers appear nowhere in the binary as constants.
   variant: the implementation is self-consistent (0 dB ⇒ exactly flat, correct asymptotic
   gains, stable), so this is only a naming-variant question, not a defect.
 - The `0x2790` opcode handler and the `0x5160..0x5178` globals (capture budget / region list /
-  the `FLAG` path at 0x26a0) were not transcribed — out of scope.
+  the `FLAG` path at 0x26a0) were not transcribed - out of scope.
 - Nothing observed at runtime: analysis is static + a Python model only (`_model.py`,
   `_verify.py` in this directory). The binary was never executed.

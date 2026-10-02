@@ -1,4 +1,4 @@
-# Take Two — Crypto (Hard)
+# Take Two - Crypto (Hard)
 
 **Flag:** `H7CTF{63b0dde3-3edd-4a95-92d3-4e8c26e38483}`
 

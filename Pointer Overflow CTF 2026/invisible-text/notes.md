@@ -11,7 +11,7 @@
 
 | # | Giả thuyết | Lệnh kiểm tra | Kết quả |
 |---|---|---|---|
-| H1 | Message nằm trong Unicode vô hình (U+200B..U+200F, U+FEFF, NBSP) | đếm tần suất từng codepoint trên toàn file | **DEAD**: cả file chỉ có 1 ký tự ngoài ASCII, là `—` em dash trong comment |
+| H1 | Message nằm trong Unicode vô hình (U+200B..U+200F, U+FEFF, NBSP) | đếm tần suất từng codepoint trên toàn file | **DEAD**: cả file chỉ có 1 ký tự ngoài ASCII, là `-` em dash trong comment |
 | H2 | Payload base64 + zlib là nơi cất flag (script là công cụ đọc chính) | `exec` module rồi gọi `_reconstruct()` + `_decode()` | **DEAD**: trả về braille art 33 dòng, 2145 ký tự U+2800-U+28FF, không chứa chữ |
 | H3 | Braille art giấu dữ liệu ở số chấm từng ô | histogram của `ord(c) - 0x2800` | **DEAD**: 115 ô = 255 (tròn 8 chấm), 85 ô = 251, 79 ô = 253, 75 ô = 16/4 -> vùng tô đặc của một bức tranh, không phải mã |
 | H4 | Whitespace cuối dòng là nhị phân 8 bit nối liền | ghép 299 ký tự whitespace, `space=0/tab=1` và đảo lại, cắt theo 8 bit (kèm cả trường hợp đảo bit) | **DEAD**: cả bốn biến thể ra byte rác, không có `POCTF` |

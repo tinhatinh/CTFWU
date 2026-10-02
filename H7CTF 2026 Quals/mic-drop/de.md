@@ -1,4 +1,4 @@
-# Mic Drop — Hardware (Medium)
+# Mic Drop - Hardware (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

@@ -1,4 +1,4 @@
-# Welcome Call — Forensics (Medium)
+# Welcome Call - Forensics (Medium)
 
 **Flag:** `sun{thankyouforplaying}`
 **Files:** `welcomecall.pcap` (181952 B, sha256 `7e0effd30dbd6fd0…`)

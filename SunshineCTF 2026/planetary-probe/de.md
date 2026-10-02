@@ -1,4 +1,4 @@
-# Planetary Probe — Web (Hard)
+# Planetary Probe - Web (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
@@ -11,7 +11,7 @@
 > of known planets and their telemetry signatures. Your mission is to interface with the probe
 > console and uncover hidden data the Federation would rather keep secret.
 >
-> The console seems… minimal. No verbose errors, no detailed output — just "signal detected" or
+> The console seems… minimal. No verbose errors, no detailed output - just "signal detected" or
 > "no signal". Can you find a way to communicate with the system, bypass its limited responses,
 > and recover the hidden flag?
 
@@ -23,9 +23,9 @@
 
 ## Bề mặt tiếp cận
 
-* `GET /` — trang console retro, một form duy nhất: `<form action="/probe" method="get">` với
+* `GET /` - trang console retro, một form duy nhất: `<form action="/probe" method="get">` với
   input `planet`.
-* `GET /probe?planet=<x>` — chỉ trả về MỘT BIT:
+* `GET /probe?planet=<x>` - chỉ trả về MỘT BIT:
 
   ```html
   <body class="is-carrier"> ... readout--carrier ... "Signal detected"

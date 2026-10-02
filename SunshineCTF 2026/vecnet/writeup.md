@@ -1,4 +1,4 @@
-# VecNet — Web (Hard)
+# VecNet - Web (Hard)
 
 **Flag:** `sun{k33p_your_emb3ddings_secur3!}`
 

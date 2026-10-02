@@ -1,4 +1,4 @@
-# Gateway — Web3 (199 points)
+# Gateway - Web3 (199 points)
 
 **Flag:** `CSSCTF{CSS{B451C_BL0CKCH41N_5K1LL5}}`
 **File đính kèm:** `Gate.sol`, `Setup.sol`
@@ -17,7 +17,7 @@ Hệ thống Gateway thiết lập hệ thống bảo vệ ba lớp bên trong h
 
 ## Chuỗi khai thác
 
-**Bước 1 — Phân tích môi trường mạng và truy xuất bộ thông số chứng thực (Credentials).**
+**Bước 1 - Phân tích môi trường mạng và truy xuất bộ thông số chứng thực (Credentials).**
 
 ```bash
 echo -e "3\nR3:TURИ" | nc 34.116.80.78 31337
@@ -36,7 +36,7 @@ echo -e "1\nR3:TURИ" | nc 34.116.80.78 31337
 #   setup contract: 0x1ACF30FAB13942fBf5581E8fbDb72D01e2Ad5D3b
 ```
 
-**Bước 2 — Xác thực giá trị băm mật khẩu từ khe nhớ trạng thái (Storage slot).**
+**Bước 2 - Xác thực giá trị băm mật khẩu từ khe nhớ trạng thái (Storage slot).**
 
 ```python
 >>> from web3 import Web3
@@ -45,7 +45,7 @@ echo -e "1\nR3:TURИ" | nc 34.116.80.78 31337
 >>> # Phép tính: eth_getStorageAt(gate, 1) => 0x90cd83d7...9234d70b === TRÙNG KHỚP
 ```
 
-**Bước 3 — Triển khai Hợp đồng Phá vỡ bảo vệ (Breaker contract).**
+**Bước 3 - Triển khai Hợp đồng Phá vỡ bảo vệ (Breaker contract).**
 
 Hợp đồng Breaker được xây dựng với mục tiêu vượt qua hệ thống kiểm duyệt cơ bản `tx.origin != msg.sender`:
 
@@ -71,7 +71,7 @@ contract Breaker {
 
 Thực hiện lệnh triển khai (Deploy) với giá trị 3 ETH, truyền các tham số khởi tạo (constructor args) là `(GATE_ADDR, password_hash)`.
 
-**Bước 4 — Kích hoạt hàm thực thi run() và tiến hành xác thực dữ liệu.**
+**Bước 4 - Kích hoạt hàm thực thi run() và tiến hành xác thực dữ liệu.**
 
 ```json
 {
@@ -83,7 +83,7 @@ Thực hiện lệnh triển khai (Deploy) với giá trị 3 ETH, truyền các
 
 Kiểm tra phân vùng nhớ trạng thái (Gate slots) 2, 3, và 4, kết quả chỉ thị `0x010101` (xác nhận ba cờ logic `stepped`, `funded`, và `solved` đều thiết lập trạng thái true).
 
-**Bước 5 — Truy xuất cờ dữ liệu (Flag).**
+**Bước 5 - Truy xuất cờ dữ liệu (Flag).**
 
 ```bash
 echo -e "3\nR3:TURИ" | nc 34.116.80.78 31337

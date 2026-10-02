@@ -1,4 +1,4 @@
-# notes.md — Homemaker (SunshineCTF, pwn/reverse 498đ)
+# notes.md - Homemaker (SunshineCTF, pwn/reverse 498đ)
 
 **KẾT THÚC: ĐÃ CÓ CỜ.** `sun{the_future_is_now_today_well_wait_how_are_you_reading_this}`
 (chạy `python exploit_homemaker.py`, khớp 2/2 lần liên tiếp). Đọc `writeup.md` để xem lời giải,

@@ -1,4 +1,4 @@
-# Deputy — Cloud (Hard)
+# Deputy - Cloud (Hard)
 
 4 flags (in objective order):
 

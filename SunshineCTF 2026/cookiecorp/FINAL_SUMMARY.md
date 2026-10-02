@@ -2,7 +2,7 @@
 
 **SunshineCTF 2026, Web 489pts, tác giả geo**  
 URL: `https://tomorrow.web.2026.sunshinectf.games`  
-Flag format: `sun{}` — chỉ xuất hiện trong `<div class="seal gold">...<div class="flag">` của Golden Seal
+Flag format: `sun{}` - chỉ xuất hiện trong `<div class="seal gold">...<div class="flag">` của Golden Seal
 
 ---
 

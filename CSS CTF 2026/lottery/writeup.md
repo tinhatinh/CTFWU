@@ -1,4 +1,4 @@
-# lottery — Web3 (299 pts)
+# lottery - Web3 (299 pts)
 
 **Flag:** `CSSCTF{CSS{U5E_4_R4ND0M_FUNCT10N}}`
 **File đính kèm:** `Lottery.sol` (1153 B, SHA256: `38f58ac2...`), `Setup.sol` (314 B, SHA256: `ebb2b795...`)

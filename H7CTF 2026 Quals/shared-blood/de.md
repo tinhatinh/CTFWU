@@ -1,4 +1,4 @@
-# Shared Blood — Crypto (Medium)
+# Shared Blood - Crypto (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

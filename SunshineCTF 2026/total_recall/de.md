@@ -1,4 +1,4 @@
-# Total Recall — Pwn (Medium)
+# Total Recall - Pwn (Medium)
 
 ![Đề bài](files/de.png)
 

@@ -1,4 +1,4 @@
-# Kuiper Belt Relay Core — pwn (50 points, Beginner)
+# Kuiper Belt Relay Core - pwn (50 points, Beginner)
 
 Service echo ret2code: redirect execution into dead `win()` function.
 
@@ -7,7 +7,7 @@ Flag format: CSSCTF{...}
 
 ## Nguyên văn đề
 
-The Relay rebooted an old diagnostic process — it just echoes back whatever you send it. Simple by design.
+The Relay rebooted an old diagnostic process - it just echoes back whatever you send it. Simple by design.
 
 But it's still carrying dead code from before the blackout: a function that's never called, sitting untouched in memory. Redirect the program into it.
 

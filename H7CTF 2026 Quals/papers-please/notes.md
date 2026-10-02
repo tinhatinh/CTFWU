@@ -1,4 +1,4 @@
-# Notes — Papers Please
+# Notes - Papers Please
 
 ## Môi trường
 
@@ -42,26 +42,26 @@ Bất biến ABI: tại instruction đầu tiên của một hàm, `rsp % 16 == 
 Gọi thường: `call checkpoint` đẩy return address → rsp vào `checkpoint` ≡ 8 mod 16.
 Nhưng khi thoát bằng `leave; ret`, `ret` để `rsp = rbp_checkpoint + 8 = rbp_main`,
 mà `rbp_main` ≡ **0 mod 16** (main chỉ `push rbp`). Nghĩa là nhảy thẳng tới
-`grant_access` cho vào hàm với `rsp ≡ 0 mod 16` — lệch 8 byte. `grant_access` gọi
+`grant_access` cho vào hàm với `rsp ≡ 0 mod 16` - lệch 8 byte. `grant_access` gọi
 `fopen`/`fgets`/`printf` của glibc 2.39, mấy đường này load/`movaps` trên stack và
 sẽ `SIGSEGV` khi stack lệch.
 
 Cách sửa: chèn một gadget `ret` để shift rsp thêm 8 byte. Chọn `_fini @ 0x401334`
-(`endbr64; sub rsp,8; add rsp,8; ret`) vì nó mở đầu bằng `endbr64` — vừa làm đúng
+(`endbr64; sub rsp,8; add rsp,8; ret`) vì nó mở đầu bằng `endbr64` - vừa làm đúng
 việc trượt stack, vừa không vi phạm IBT nếu CPU bật CET.
 
 Tính lại: vào gadget rsp ≡ 0 → `ret` pop 8 → rsp ≡ 8 → vào `grant_access` đúng ABI.
 
 ## Hypothesis log
 
-- H1 — format string qua tên: định dạng nằm trong `.rodata`, tên chỉ là `%s` argument
+- H1 - format string qua tên: định dạng nằm trong `.rodata`, tên chỉ là `%s` argument
   → **DEAD** (tên in nguyên văn, không có `%n`/leak).
-- H2 — overflow `read(0,buf,0x100)` vào buffer 64 byte đè return address → ret2win
+- H2 - overflow `read(0,buf,0x100)` vào buffer 64 byte đè return address → ret2win
   `grant_access`: **CONFIRMED bằng phân tích tĩnh**; không PIE nên địa chỉ tuyệt đối,
   không cần leak; không canary nên một phát ăn ngay.
-- H3 — cần `ret` slide cho căn chỉnh 16 byte: kiểm chứng bằng cách chạy cả hai biến thể.
+- H3 - cần `ret` slide cho căn chỉnh 16 byte: kiểm chứng bằng cách chạy cả hai biến thể.
 
 ## Kết quả
 
-- H2: **CONFIRMED on target** — payload 88 byte (`slide`) cho ra `ACCESS GRANTED: H7CTF{...}` ở kết nối đầu tiên. Flag ghi vào `flag.txt`.
+- H2: **CONFIRMED on target** - payload 88 byte (`slide`) cho ra `ACCESS GRANTED: H7CTF{...}` ở kết nối đầu tiên. Flag ghi vào `flag.txt`.
 - H3: **KHÔNG kiểm chứng được, và lý do ghi ở lần đầu là sai**. Hai lần chạy biến thể `direct` chết ở `getaddrinfo` không phải do DNS chập chờn: `exploit.py` lấy `sys.argv[1]` làm host, còn lệnh là `python exploit.py --payload direct`, nên host nhận giá trị `"direct"`. Lỗi ở phía script, phép thử chưa từng chạm tới đích. Kết luận "cần ret slide" vì thế vẫn chỉ là suy luận từ ABI + disassembly, chưa có bằng chứng thực nghiệm nào cả hai chiều.

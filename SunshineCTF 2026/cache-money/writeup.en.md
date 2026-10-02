@@ -1,4 +1,4 @@
-# Cache Money — Pwn (Hard)
+# Cache Money - Pwn (Hard)
 
 **Flag:** `sun{s4fe_l1nk1ng_w0nt_s4ve_y0ur_tc4che}`
 

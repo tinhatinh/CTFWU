@@ -1,4 +1,4 @@
-# Owner's Draw — Crypto (Medium)
+# Owner's Draw - Crypto (Medium)
 
 **Flag:** `H7CTF{786dff67-75cd-4d4e-8b74-55edb1353aad}`
 **Instance:** `https://web-b39cfff63c4c78b9.web.h7tex.com`

@@ -1,4 +1,4 @@
-# Meridian Pay — Mobile (Hard)
+# Meridian Pay - Mobile (Hard)
 
 **Flag:** three of the four objectives · **Files:** `meridian-pay-3.2.1.apk.zip`, 12771 B, inside it a 16885 B APK sha256 `447c3cd07770cfd78c6601f9076167208e5b670f3708be085cb69d08f741efa1` · **Service:** `https://web-3f25599ac74e8a91.web.h7tex.com`
 

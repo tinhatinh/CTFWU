@@ -1,4 +1,4 @@
-# A Star Trail 2 — Misc/Graph (Intermediate)
+# A Star Trail 2 - Misc/Graph (Intermediate)
 
 **Flag:** `CSSCTF{STARmaPdElAUNaYTriaNGulATioNDIjKStrAVoRonoiGrAPHSdetERmiNaNTcolineaRALGOrITHmSLeEandsCHAcHTERTANgEnTSmErGECirCuMcIrcLEcOnVEXhuLLgeOMeTRy}`
 **File đính kèm:** `map.zip` (Kích thước: 2.663.657 B, SHA256: `31c44f1b...a97525f9`)

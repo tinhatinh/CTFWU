@@ -1,4 +1,4 @@
-# Hear No Evil — Hardware (Medium)
+# Hear No Evil - Hardware (Medium)
 
 **Flag:** 2/2
 `v1 = H7CTF{38b0e71c-6126-49f7-8692-3f0bf6bf31b0}` · `v2 = H7CTF{11945790-f241-4644-9e45-e19819bdc996}`

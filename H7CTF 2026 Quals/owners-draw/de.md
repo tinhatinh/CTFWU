@@ -1,4 +1,4 @@
-# Owner's Draw — Crypto (Medium)
+# Owner's Draw - Crypto (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

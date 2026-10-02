@@ -1,4 +1,4 @@
-# Astrolobe Overwrite — PWN/Reverse (746pts)
+# Astrolobe Overwrite - PWN/Reverse (746pts)
 
 **Flag:** `CSSCTF{0ur0b0r0s_g00d_j0b_b01s_heh3_67}`
 **File đính kèm:** `ouroboros.7z` (Kích thước: 4121 bytes, SHA256: `e7aecc224f6ead512639a33f42f9aa0464ce309ea758b180764ec8dd053e5f2e`)
@@ -25,7 +25,7 @@ strings: "flag.txt", "[!] COHERENCE FAULT: Quantum state cold",
 
 ## Chuỗi khai thác
 
-**Bước 1 — Trích xuất khối kiểm tra và chạy độc lập qua Assembly Trampoline.**  
+**Bước 1 - Trích xuất khối kiểm tra và chạy độc lập qua Assembly Trampoline.**  
 Do không thể biên dịch mã phân tích ELF Linux trực tiếp cho môi trường giả lập, toàn bộ khối mã kiểm tra (từ địa chỉ `0x15AD` đến `0x1966`) được trích xuất thẳng vào vùng nhớ của một ứng dụng kiểm thử trên Windows thông qua lệnh `VirtualAlloc(..., PAGE_EXECUTE_READWRITE)`. Đoạn mã này được kích hoạt thông qua một trampoline Assembly: sao lưu các thanh ghi (`push registers`), lưu con trỏ stack `rsp` vào `r14`, cấp phát stack tạm, và `jmp` thẳng vào khối mã. Khi đoạn mã gặp nhánh trả về, nó sẽ thoát ra stub và xuất thẻ định danh lỗi (tag: 0, 1, 2, 3, v.v.). Kỹ thuật này giúp phân lập và xác nhận chính xác điều kiện của từng nhánh lỗi, loại bỏ hoàn toàn việc đoán mò.
 
 ```bash
@@ -36,7 +36,7 @@ seg 15AD-15C8 -> 51 want 51
 ...
 ```
 
-**Bước 2 — Mô hình hóa hệ thống 6 phương trình đồng dư modulo 65521.**  
+**Bước 2 - Mô hình hóa hệ thống 6 phương trình đồng dư modulo 65521.**  
 Quá trình dịch ngược assembly phân mảnh logic thành ba nhóm phương trình chính:
 - Nhóm Gates 0–3: Có dạng `(X·C + T_i) mod 2^64 ≤ K`, trong đó `C = 0x58862fdccdf01111` và `K = 2^64 // M`. Dựa trên tính chất đại số `C·M ≡ 1 mod 2^64`, phương trình này thực chất là thao tác quy đổi về thặng dư nhỏ nhất (least residue) trên trường hữu hạn `F_M`.
 - Nhóm Gate 4: Có dạng `c₁² = c₀³ + 17c₀ + 43 mod M`.
@@ -44,7 +44,7 @@ Quá trình dịch ngược assembly phân mảnh logic thành ba nhóm phương
 
 Xây dựng một hàm xác minh bằng ngôn ngữ Python (`model.py`), sau đó khởi tạo 200 mẫu thử ngẫu nhiên và đối chiếu chéo với hệ thống oracle. Kết quả đạt độ đồng nhất 100%.
 
-**Bước 3 — Giải hệ phương trình thông qua không gian suy biến.**  
+**Bước 3 - Giải hệ phương trình thông qua không gian suy biến.**  
 Dựa trên mô hình toán học đã thiết lập, một mã nguồn bằng ngôn ngữ C được tối ưu hóa đa luồng (sử dụng OpenMP qua cờ `-fopenmp`) được sử dụng để quét không gian biến `t₀∈[0..300]`:
 
 ```bash
@@ -56,7 +56,7 @@ done: qr=9892500 hits=1
 
 Hệ thống ghi nhận nghiệm duy nhất `(1, 218, 59611, 783)` trong dải quét đầu tiên. Nghiệm này sau đó được chứng minh tính chính xác thông qua đối chiếu với thông số beacon trên máy chủ.
 
-**Bước 4 — Mô phỏng máy ảo Assembly (Assembler VM) và thiết lập Payload.**  
+**Bước 4 - Mô phỏng máy ảo Assembly (Assembler VM) và thiết lập Payload.**  
 Dịch vụ sở hữu một máy ảo (VM) thực thi 8 mã lệnh (opcode). Các opcode này được đánh địa chỉ thông qua bảng hoán vị tự tham chiếu `P`. Cụ thể, mỗi khối lệnh 4 byte được giải mã theo công thức `opcode = P[(byte0 ^ z) & 7]`. Sử dụng bộ mô phỏng `vm.py::build(beacon, TVEC)` để sinh ra một mã máy cấp thấp dung lượng 420 byte (bao gồm 105 lệnh, giá trị Program Counter pc=114). Mã máy này đảm bảo khởi tạo đúng dải biến `w[0..3] = (t_i + beacon) mod M`.
 
 ```python
@@ -65,7 +65,7 @@ hexstr = binascii.hexlify(blob).decode()
 s.sendall(hexstr.encode() + b"\n")
 ```
 
-**Bước 5 — Triển khai và Kiểm chứng.** 
+**Bước 5 - Triển khai và Kiểm chứng.** 
 Dịch vụ trả về mã beacon `0x13D6`. Hệ thống khởi tạo payload tương ứng với mức `PC=114`, nằm trong khoảng an toàn `[112,128]` để tránh kích hoạt alarm. Gửi dữ liệu tới dịch vụ, nhận phản hồi `[+] TELEMETRY STABILIZED` và thu hồi flag.
 
 ## Flag

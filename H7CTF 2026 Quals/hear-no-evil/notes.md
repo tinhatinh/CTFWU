@@ -1,4 +1,4 @@
-# Notes — Hear No Evil
+# Notes - Hear No Evil
 
 ## Cấu trúc capture
 
@@ -53,5 +53,5 @@ Cả hai đều 43 byte và khớp mẫu `H7CTF{uuid}`. Blob 0x0041 ghép lại 
 
 ## Nhánh đã loại / đã sửa
 
-- Tìm LL Encryption Request / Start Encryption để lấy LTK rồi decrypt: **DEAD** — capture không có PDU pairing hay encryption nào, toàn bộ "mã hoá" là XOR theo đặc tả ở 0x0041.
+- Tìm LL Encryption Request / Start Encryption để lấy LTK rồi decrypt: **DEAD** - capture không có PDU pairing hay encryption nào, toàn bộ "mã hoá" là XOR theo đặc tả ở 0x0041.
 - Bản reassemble đầu tiên phân loại nhầm chunk 20 byte thành "handle + data" (điều kiện `len>=11` đặt trước), làm handle 0x0021 chỉ còn 3 byte và sinh ra các handle rác `0x6F4E`, `0x9D51`... Sửa bằng thứ tự: data-nối-trước, request, rồi notify.

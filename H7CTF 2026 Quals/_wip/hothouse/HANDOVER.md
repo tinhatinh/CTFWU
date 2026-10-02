@@ -1,4 +1,4 @@
-# Hothouse — ghi chú dở dang (chuyển cho đồng đội)
+# Hothouse - ghi chú dở dang (chuyển cho đồng đội)
 
 Đã dừng ở đây, chưa `FIRE` lần nào (budget FIRE 1 lần còn nguyên).
 
@@ -44,7 +44,7 @@ còn dư 19874 trong budget 20000). Nên: đọc `s0` trước khi seed, rồi g
 `M·x = target XOR s0`.
 
 `analysis/ca.py` mô phỏng đúng hình thức (đã khớp dạng quy tắc), `analysis/matrix.py`
-dựng ma trận GF(2) 1024×1024 bằng cách truyền basis vector qua 7 thế hệ — **chưa chạy**,
+dựng ma trận GF(2) 1024×1024 bằng cách truyền basis vector qua 7 thế hệ - **chưa chạy**,
 và còn một vòng lặp chết dòng 15–18 cần xoá.
 
 ## seccomp của FIRE (12 lệnh cBPF)

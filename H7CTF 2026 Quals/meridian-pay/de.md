@@ -1,4 +1,4 @@
-# Meridian Pay — Mobile (Hard)
+# Meridian Pay - Mobile (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

@@ -1,4 +1,4 @@
-# Invisible Text — STEG (200 pts)
+# Invisible Text - STEG (200 pts)
 
 **Flag:** `POCTF{PIEMPAOSMHDLEGRT}`
 **Files:** `invisible_text.py` (4245 B, sha256 `f027442b37a521f4a775ec56d37336df446d83e7acd641042e28af030f745320`)
@@ -9,7 +9,7 @@ Tác giả gợi ý rằng có một thông điệp được cất giấu bên t
 
 ## Phân tích ban đầu
 
-Tệp tin là mã Python, kích thước 4245 byte, bao gồm 81 dòng văn bản định dạng UTF-8. Phân tích nội dung cho thấy tệp chỉ chứa một ký tự ngoài dải ASCII chuẩn là dấu gạch ngang `—` trong phần bình luận (comment). Không ghi nhận các kỹ thuật giấu tin như Zero Width Space, BOM (Byte Order Mark), NBSP, hoặc ký tự đồng dạng (homoglyph).
+Tệp tin là mã Python, kích thước 4245 byte, bao gồm 81 dòng văn bản định dạng UTF-8. Phân tích nội dung cho thấy tệp chỉ chứa một ký tự ngoài dải ASCII chuẩn là dấu gạch ngang `-` trong phần bình luận (comment). Không ghi nhận các kỹ thuật giấu tin như Zero Width Space, BOM (Byte Order Mark), NBSP, hoặc ký tự đồng dạng (homoglyph).
 
 Chi tiết đáng chú ý là **47 trên tổng số 81 dòng mã kết thúc bằng các khoảng trắng (whitespace) dư thừa**. Cụ thể:
 
@@ -32,10 +32,10 @@ Mã nguồn bề mặt là một công cụ `diary_reader.py`, thực hiện n�
 
 ## Quá trình phân tích
 
-**Bước 1 — Phân tích mẫu dữ liệu (Fixed-length groups).** 
+**Bước 1 - Phân tích mẫu dữ liệu (Fixed-length groups).** 
 Các dòng lẻ chứa 12 ký tự khoảng trắng, trong đó vị trí thứ sáu **luôn là một dấu tab**. Đây là mô hình mã hoá 7-bit: 5 ký tự space đầu tiên đóng vai trò đệm (padding) căn lề, và 7 ký tự cuối mang dữ liệu.
 
-**Bước 2 — Trích xuất dữ liệu, quy ước `tab = 1`, `space = 0`.** 
+**Bước 2 - Trích xuất dữ liệu, quy ước `tab = 1`, `space = 0`.** 
 Ký tự ASCII in được có bit cao nhất (MSB) bằng 1. Việc nhóm 7 bit luôn bắt đầu bằng tab (tương đương bit 1) hỗ trợ xác định ranh giới bit.
 
 ```python
@@ -62,14 +62,14 @@ Thực thi đoạn mã trên trả về kết quả:
 MESSAGE: POCTF{PIEMPAOSMHDLEGRT}
 ```
 
-**Bước 3 — Đánh giá kết quả.** 
+**Bước 3 - Đánh giá kết quả.** 
 Phương pháp được xác nhận qua ba yếu tố:
 (a) 22/22 nhóm 12 ký tự đều có tab tại vị trí thứ sáu.
 (b) Tổng số dòng chứa thông điệp là 23, tương đương độ dài cờ: `POCTF{` (6 ký tự) + thân cờ (16 ký tự) + `}` (1 ký tự).
 (c) Chuỗi ký tự khớp với định dạng cờ tiêu chuẩn của hệ thống.
 Các dấu cách ở phần đầu dòng (padding) không chứa thông tin.
 
-**Bước 4 — Xác thực cờ.**
+**Bước 4 - Xác thực cờ.**
 
 ```http
 POST /challenges/invisible-text/submit

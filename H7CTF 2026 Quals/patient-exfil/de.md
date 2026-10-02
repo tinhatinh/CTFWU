@@ -1,4 +1,4 @@
-# Patient Exfil — Forensics (Medium)
+# Patient Exfil - Forensics (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge (thẻ "Low and Slow", Forensics):
 

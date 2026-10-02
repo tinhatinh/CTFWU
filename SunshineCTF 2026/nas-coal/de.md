@@ -1,4 +1,4 @@
-# NAS Coal — Forensics (Medium)
+# NAS Coal - Forensics (Medium)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

@@ -1,4 +1,4 @@
-# CookieCorp — Web (Medium)
+# CookieCorp - Web (Medium)
 
 **Flag:** `sun{c00kie_jar_0verfl0w_ev1cts_the_chief}`
 **URL:** `https://tomorrow.web.2026.sunshinectf.games/` · author geo

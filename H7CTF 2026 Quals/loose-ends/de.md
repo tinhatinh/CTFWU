@@ -1,4 +1,4 @@
-# Loose Ends — Pwn (Hard)
+# Loose Ends - Pwn (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 
@@ -56,7 +56,7 @@ Extensions
 
 | Field | Value |
 | --- | --- |
-| Artefact | `files/ledger.zip` — 1077634 B, sha256 `26e8a464...ca81c1726` |
+| Artefact | `files/ledger.zip` - 1077634 B, sha256 `26e8a464...ca81c1726` |
 | Bên trong | `ledger` (ELF x86-64 16680 B, sha256 `55c19caf7d6630c7`), `libc.so.6`, `ld-linux-x86-64.so.2`, `README.txt` |
 | Target | Ubuntu 24.04, glibc 2.39-0ubuntu8.9 |
 | Remote | `pwn.h7tex.com:42589` |

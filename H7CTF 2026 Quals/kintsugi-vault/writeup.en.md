@@ -1,4 +1,4 @@
-# Kintsugi Vault — Rev (Hard)
+# Kintsugi Vault - Rev (Hard)
 
 ## 0. Summary
 

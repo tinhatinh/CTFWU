@@ -1,4 +1,4 @@
-# Splice — Web (Hard)
+# Splice - Web (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

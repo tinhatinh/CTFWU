@@ -1,4 +1,4 @@
-# Patient Exfil — Forensics (Medium)
+# Patient Exfil - Forensics (Medium)
 
 **Flag:** `H7CTF{6787b86cc777f426b9c0}` · Files: `capture (2).pcap`, 108,604 bytes, sha256 `3ab17689659f80efadceea1adc2eea5e9bddfcc3254ad85e89c4c75ee20bbb76`
 

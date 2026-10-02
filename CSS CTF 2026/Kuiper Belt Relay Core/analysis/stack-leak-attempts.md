@@ -25,6 +25,6 @@ n= 74 echoedA= 74 gb=0 extra_hex=b'0a'
 
 `gets()` writes `\x00` immediately after user input. With 64-bit addresses starting at 0x40xxxxxx, the low byte (e.g., 0x16) occupies position 72. Writing this byte first causes `gets()` to inject NUL at LSB(return_address), truncating any subsequent `%s` read.
 
-This explains why no stack leak is possible — not a sign of null bytes in memory, but the inherent behavior of `gets()` on non-null-terminated payloads.
+This explains why no stack leak is possible - not a sign of null bytes in memory, but the inherent behavior of `gets()` on non-null-terminated payloads.
 
 Alternative: oracle-based scanning on live service (confirmed successful).

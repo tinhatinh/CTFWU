@@ -1,4 +1,4 @@
-# Notes — Code Breaker
+# Notes - Code Breaker
 
 ## Giao thức
 

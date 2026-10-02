@@ -1,4 +1,4 @@
-# Loose Ends — Pwn (Hard)
+# Loose Ends - Pwn (Hard)
 
 **Flag:** `H7CTF{4d0e9693-88bd-4749-87d8-c64dd2ef80ab}`
 **Máy chủ mục tiêu:** `pwn.h7tex.com:42589` 

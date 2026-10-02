@@ -1,4 +1,4 @@
-# Homemaker — Pwn (Hard)
+# Homemaker - Pwn (Hard)
 
 Ảnh đề bài gốc, chụp từ thẻ challenge:
 

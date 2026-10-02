@@ -1,9 +1,9 @@
-# Countersign — decision log (kiem chung truc tiep, khong tin agent)
+# Countersign - decision log (kiem chung truc tiep, khong tin agent)
 
 De: `nc pwn.h7tex.com 43708`.  **DA CO CỜ:** `H7CTF{011c87d4-b5c8-405d-923a-33dbed3e5bf7}`
 (xem `flag.txt`, bang chung trong `analysis/livewin.txt`).
 
-## Ket luan cu DA SAI — giu lai de khong lap lai
+## Ket luan cu DA SAI - giu lai de khong lap lai
 
 | Y cu (cũ) | That |
 |---|---|
@@ -33,7 +33,7 @@ lap toi da 0x30d40 = 200000 buoc:
 "denied"
 ```
 
-### `exec_program` `0x1810` — VM straight-line, khong co lenh nhan
+### `exec_program` `0x1810` - VM straight-line, khong co lenh nhan
 Bang nhay tai `0x406c`, `handler = 0x406c + int32(0x406c + 4*op)`.  `op > 15`: `pc += 1`.
 Vong lap dung khi `pc >= pay_len` (khong can `pc == pay_len`, nen code thieu 1-2 byte
 dang 6-byte van chay binh thuong).
@@ -49,7 +49,7 @@ dang 6-byte van chay binh thuong).
 ```
 `rD = code[pc+1]`, `rS/K/k = code[pc+2]` cho TAT CA op 2..8 va 12.
 
-### `emit` `0x1d50` — day la "countersign"
+### `emit` `0x1d50` - day la "countersign"
 ```
 bpl = (rec.sel_reg == 0xff) ? 0xff : (regs[rec.sel_reg] >> (rec.sel_bit & 31)) & 1
 for i in 0..n_link-1:                    # link tai rec+0x20c+16i
@@ -88,13 +88,13 @@ Toan bo walk **tinh tien** theo input, nen khong the brute force 2^192. Nhung:
 
 → **DI NGUOC**: dat (r0..r5) = (C0..C5) o cua record fold, toi lui tung canh
 nguoc cua do thi, moi buoc `pre = invert(rec.ops, post)`.  O moi buoc KIEM
-`step(rec, post)` thuan cung cho ra dung canh ay (neu khong thi loai) — day la
+`step(rec, post)` thuan cung cho ra dung canh ay (neu khong thi loai) - day la
 dieu kien "first matching valid link", rat manh vi no quyet dinh nhanh.
 Den entry `30137` thi `input = pack(r0..r5)`; chay `walk()` thuan de xac nhan.
 
 So canh hop le lay bang cach **goi `MINT` tren cung ket noi**:
 `MINT(tag||target||sel||tweak)[:6] == link.sig` ↔ chu ky dat.  Trong boot cua toi
-co **51/129** link hop le — 78 link kia la chu ky gia, va chinh viec chung BI BOC BO
+co **51/129** link hop le - 78 link kia la chu ky gia, va chinh viec chung BI BOC BO
 tao ra duong dan (vi du: record fold nam sau `23316`/`41275` chi vi link `sel=255`
 dau tien cua chung chu ky xau).
 
@@ -103,7 +103,7 @@ dau tien cua chung chu ky xau).
   → solve → RUN **tren cung 1 socket**.
 * ~102 ms/lenh; 129 MINT ~13.5 s; solve < 0.1 s; tong < 20 s / lan nop.
 * Khong co budget lenh.  `RUN` tra ve "denied" cho moi input sai (khong co du lieu
-  trung gian), nen khong the leo duong (hill-climb) — bat buoc phai giai bang mo hinh.
+  trung gian), nen khong the leo duong (hill-climb) - bat buoc phai giai bang mo hinh.
 * 3/3 lan `RUN` lien tiep cung input deu ra co → khong may mo.
 
 ## File

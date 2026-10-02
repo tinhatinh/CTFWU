@@ -1,4 +1,4 @@
-# Notes — Splice
+# Notes - Splice
 
 ## Mục tiêu do platform cung cấp
 

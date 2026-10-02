@@ -65,7 +65,7 @@ Each challenge directory follows a consistent layout:
 
 - Flags are recorded only when they appear verbatim in command output. No guessing.
 - Every claim in `writeup.md` traces back to a command logged in `notes.md`.
-- Dead-end hypotheses are preserved in the "Eliminated hypotheses" section — these are often the most educational parts.
+- Dead-end hypotheses are preserved in the "Eliminated hypotheses" section - these are often the most educational parts.
 - Solve scripts are self-contained and can be re-run against a live instance.
 - Flag prefixes vary between challenges (even within the same event). Always verify before scanning.
 

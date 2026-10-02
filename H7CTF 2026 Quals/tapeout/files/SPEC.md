@@ -1,4 +1,4 @@
-# FoundryProof — Tiny-HDL sign-off
+# FoundryProof - Tiny-HDL sign-off
 
 FoundryProof certifies that a candidate combinational design is equivalent to our golden
 reference before tape-out. A certified design is then probed once, on the post-fab audit
