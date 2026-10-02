@@ -12,7 +12,7 @@ We need to recover the contents of `Q3_patient_records.pdf.locked`.
 
 Two files, each with one role:
 
-- `Q3_patient_records.pdf.locked`: 672 bytes, unrecognised by `file`, entropy 7.681/8, not a single meaningful printable string. This is pure ciphertext, with no wrapping header.
+- `Q3_patient_records.pdf.locked`: 672 bytes, not recognized by `file`, entropy 7.681/8. Entropy alone does not identify an encryption format; the IV/ciphertext layout is checked against source recovered from RAM.
 - `memory.lime.zst`: no `zstd` CLI, the machine's `7z` ships no zstd codec, Python has no `zstandard`. `Git\mingw64\bin\libzstd.dll` (1.5.7) was found, so it was bound directly with `ctypes` - nothing installed (`analysis/zstd_ctypes.py`).
 
 The zstd header self-declares its content size: `Frame_Content_Size = 17.175.761.051` bytes. Decompressing yields exactly that number, `frame 1 complete`, no errors → the downloaded file is complete even though the challenge page says "661.3 MB".
@@ -33,7 +33,7 @@ volatility3 is not needed for this challenge; everything was done with the self-
 
 **Step 1 - Reading the `.locked` file's structure.** 672 bytes, and because of CBC + PKCS#7 the length must be a multiple of 16. Split `IV = file[:16] = 866f319940024339a78be5b443ed8289`, `C = file[16:]` (656 bytes). This is confirmed by the very line `f.write(iv + ct)` in the source found in RAM.
 
-**Step 2 - Real known plaintext.** The plaintext is a PDF, so its first 16 bytes are always `%PDF-1.4\n1 0 obj`. To be sure, PDFs were carved from the page cache in RAM (region `0x10b021a90`): the full PDF structure is there, only the tail is missing because a file's pages are not contiguous in RAM. The plaintext length inferred from the ciphertext: `656 - pad(9) = 647` bytes.
+**Step 2 - Establish known plaintext.** A PDF carved from the RAM page cache at `0x10b021a90` begins with `%PDF-1.4\n1 0 obj`. Use the first 16 bytes of that observed sample, not an assumption about every PDF. Its tail is incomplete because the pages are not contiguous in the dump. The ciphertext implies `656 - pad(9) = 647` plaintext bytes.
 
 **Step 3 - Building a one-block oracle.** With CBC: `P1 = D_K(C1) XOR IV`, so for each 32-byte window `K` in RAM a single one-block ECB decryption is enough:
 
