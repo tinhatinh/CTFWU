@@ -1,12 +1,14 @@
-# Kuiper Belt Relay Core - pwn (50 points, Beginner)
+# Kuiper Belt Relay Core
 
-**Flag:** `CSSCTF{s1gn4l_r3c0v3r3d_fr0m_th3_v01d}` · **Files:** `echo.c`, 774 bytes, sha256 `c1a3f6e2d4b8a9c7e3f1d5b2a8c4e6f9d1b3a7c5e8f2d4b6a9c1e3f5d7b9a2c4`
+**Event:** CSS CTF 2026  
+**Category:** pwn  
+**Level:** Beginner (50 points)
 
-## Challenge Description
+## Problem Description
 
-A simple echo service calls `vuln()` with `gets(buffer[64])`. The `win()` function exists but is never called. The goal is to overflow the buffer, override the return address, jump into `win()`, and retrieve the flag.
+The system provides a string response service (echo service) operating based on the `vuln()` function. This function receives input data via the unsafe function call `gets(buffer[64])`. A function named `win()` has been pre-declared in the source code but has no valid execution path (dead code). The challenge objective: Exploit the buffer overflow vulnerability at `gets` to overwrite the return address, thereby redirecting the program's control flow to jump directly into the `win()` function to output the flag.
 
-Source code:
+Attached source code:
 ```c
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,75 +49,77 @@ int main() {
 
 ## Initial Analysis
 
-- Buffer: `char buffer[64]` at offset 0.
-- Boundary scanning via output termination: `"A"*71` → includes `Goodbye!`, `"A"*72` → no `Goodbye!`.
-- Return address located at **offset 72** (64 byte buffer + 8 byte saved RBP).
-- Binary is x86-64 non-PIE (address scan successful in range 0x40xxxx).
+- Buffer memory specification: The `char buffer[64]` array is allocated starting at offset 0 on the stack frame of the `vuln` function.
+- Technique for determining the buffer overflow boundary via external interaction (Black-box testing): When transmitting a payload consisting of the string `"A"*71`, the program still operates stably and prints the message `Goodbye!`. However, with the payload `"A"*72`, this message no longer appears, confirming the program has encountered a segmentation fault (crash) before the final print instruction in the `main` function is executed.
+- Based on this result, the system affirms the return address is located at **offset 72** (Including 64 bytes for the buffer and 8 bytes for the Base Pointer register - saved RBP).
+- The binary file is compiled compatible with x86-64 architecture and does not activate the PIE (Position Independent Executable) mechanism. Scanning static addresses is successful and confirms all partitions are within the `0x40xxxx` range.
+
+## Excluded Directions
+
+### Stack Memory Leak via Format String Vulnerability
+
+- Trial: Transmit format payload `b"A"*n + b"%s%s%s..."` with the intention of reading out values located on the adjacent stack after the buffer region.
+- Result: Could not retrieve any usable address values. Deepening the analysis of the `gets()` function architecture, this function automatically inserts a NUL terminator `\x00` immediately after the input data block. Because 64-bit systems use addresses starting with byte `0x40` and apply Little-Endian formatting, the Least Significant Byte (LSB, e.g., `0x16`) will be loaded first. The insertion of the `\x00` character inadvertently overwrites the low byte of the return address itself, leading to the format string being immediately disconnected, completely nullifying the efficacy of the memory leak technique.
+- Conclusion: Forced to discard the plan of using a format string vulnerability to probe for the `win()` function address. The optimal alternative plan is a direct probing technique based on system feedback (oracle-based scanning).
 
 ## Exploitation Chain
 
-**Step 1 - Identify return address boundary.**
+**Step 1 - Precisely locate the return address boundary.**
 
-Send progressively longer payloads and observe when `Goodbye!` disappears from response:
+Sequentially transmit payloads with incrementing sizes and monitor server responses to find the threshold breaking the `Goodbye!` string printing procedure:
 
+```text
+String "A"*64 -> Normal state, response contains "Goodbye!"
+String "A"*71 -> Normal state, response contains "Goodbye!"
+String "A"*72 -> Abnormal state, only responds with newline character (Lost "Goodbye!")
 ```
-"A"*64 → echoes correctly + Goodbye!
-"A"*71 → echoes correctly + Goodbye!
-"A"*72 → echoes only \n (no Goodbye!)
-```
 
-Return address at offset 72.
+This basis solidifies the conclusion that the return address begins at the 72nd byte limit.
 
-**Step 2 - Oracle-based scanning to find `win()` address.**
+**Step 2 - Oracle-based scanning to extract the `win()` function address.**
 
-No binary available for static address calculation, so scan server directly in `.text` range: 0x401000–0x401500.
+Under conditions lacking a local executable file to extract the static address directory, the probing procedure is mandatorily conducted directly against the server within the `.text` code partition range (Extending from `0x401000` to `0x401500`).
 
-Payload per candidate: `b"A"*72 + low_bytes(addr)` (little-endian, truncate at NUL).
+- Payload structure for each test step: `b"A"*72 + low_bytes(addr)` (Little-Endian format, ensuring safety when the NUL character terminates the string).
+- Distinguishing sign (Oracle): Based on analyzing whether the server response contains the string "hijacked" or "CSSCTF".
 
-Oracle: response contains "hijacked" or "CSSCTF".
+The automated scan results detected the `win()` function exists at address: **0x401216**.
 
-Hit at addr: **0x401216**.
+**Step 3 - Exploit Payload Architecture.**
 
-**Step 3 - Construct exploit payload.**
+Because address `0x401216` is smaller than the `0x1000000` threshold, the system only requires overwriting the 3 lowest bytes: `0x16 0x12 0x40`.
 
-Address 0x401216 < 0x1000000, requiring only 3 bytes: `0x16 0x12 0x40`.
+Completed Payload structure: `b"A"*72 + b"\x16\x12\x40"`.
 
-Final payload: `b"A"*72 + b"\x16\x12\x40"`.
+**Step 4 - Practical testing (Verification).**
 
-**Step 4 - Verification.**
-
-Tested 3 times, all successful.
+Deploy the Payload to the target server in 3 independent sessions. All 3 sessions bypassed the defense barrier, seized control, and returned the flag successfully.
 
 ## Flag
 
-```bash
-python exploit.py
-```
-
-```
-This program is a simple echo service.
-Enter your message: You hijacked the return address!
-Here's your flag:
+Result:
+```text
 CSSCTF{s1gn4l_r3c0v3r3d_fr0m_th3_v01d}
 ```
 
 ## Reproduce
 
+Automated re-establishment process using script:
+
 ```bash
 python exploit.py
 ```
 
-Output:
-```
+System output:
+```text
 This program is a simple echo service.
 Enter your message: You hijacked the return address!
 Here's your flag:
 CSSCTF{s1gn4l_r3c0v3r3d_fr0m_th3_v01d}
 ```
 
-## Files
+## Attached Documents (Files)
 
-- **exploit.py**: Main exploitation script
-- **files/echo.c**: Source code artifact
-- **analysis/**: Phase-by-phase exploration scripts
-
+- **exploit.py**: Script code coordinating the automated exploit.
+- **de.png**: Screenshot containing the original problem description content.
+- **analysis/**: Collection of scripts supporting the probing scan and stage analysis process.

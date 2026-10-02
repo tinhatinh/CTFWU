@@ -1,69 +1,61 @@
 # A Star Trail - Misc/OSINT (Beginner)
 
-**Flag:** `CSSCTF{P1JT-21.0}` · **Files:** `A_Star_Trail.png` (3780x1890, sha256 `a3584ca6…c3d33ed`)
+**Flag:** `CSSCTF{P1JT-21.0}`
+**Attached file:** `A_Star_Trail.png` (Size: 3780x1890, SHA256: `a3584ca6...c3d33ed`)
 
-## Challenge
+## Problem Description
 
-The card is a star map: "POLARIS LOGISTICS STAR MAP - NO. CA-S08-R11" draws 13 celestial bodies
-joined by 20 dashed routes, each labelled with a number of days. The delivery has to go from EARTH
-to LANCER-RXKRD along existing routes only, in under 25 days. The flag is the first letter of each
-body on the path, joined to the total number of days (one decimal place) with a dash.
+The system provides a map titled "POLARIS LOGISTICS STAR MAP - NO. CA-S08-R11". This map depicts 13 celestial bodies connected to each other via 20 dashed lines, each line annotated with the corresponding number of travel days. The requirement is to find a travel route from the celestial body `EARTH` to the celestial body `LANCER-RXKRD`, moving along the given lines such that the total number of days does not exceed 25.
+The flag structure is assembled from the first letter of each celestial body on the route (counting only intermediate stations), concatenated with the total travel days (formatted with one decimal place) using a hyphen `-`.
 
 ## Initial Analysis
 
-The PNG is an Inkscape export with the standard chunk layout `IHDR / pHYs / tEXt / 74xIDAT / IEND`,
-no bytes after IEND and nothing suspicious inside the data, so there is no stego channel: the task
-is purely to read the graph and find the shortest path.
+Checking the PNG file structure: The file was exported from Inkscape software, strictly adhering to the format with standard chunks (`IHDR`, `pHYs`, `tEXt`, 74 `IDAT` chunks, and `IEND`). No extraneous data was detected after the `IEND` chunk, nor were there any abnormal text strings in the data structure. Therefore, the possibility of the file using steganography techniques can be ruled out. The problem reduces to a pure form: read data from the graph and find the shortest path.
 
-13 nodes, 20 edges, real weights. Small enough that reading it by eye and re-checking in code is
-enough.
+The graph consists of 13 vertices and 20 edges, with real number weights. The size of this graph is small enough that data can be manually extracted via visual reading, and then programming code can be used to automate the calculation process.
 
-## Exploit Chain
+## Exploitation Chain
 
-**Step 1 - Read all 20 edges.** The image was cut into four overlapping bands so that each dashed
-line and its label fit inside one frame (the bands are stored in `files/band_*.png`). The edge table
-came out with all 20 labels.
+**Step 1 - Extract all 20 edges from the map.** 
+Proceed to split the image into four overlapping bands, ensuring each dashed line and corresponding number label completely fits within an image frame (these bands are stored at `files/band_*.png`). From there, tabulate and confirm the collection of all 20 weight labels.
 
-**Step 2 - Run Dijkstra.**
+**Step 2 - Apply Dijkstra's algorithm.**
+Set up the graph and run Dijkstra's algorithm to find the shortest path:
 
 ```python
 path, cost = dijkstra(g)
-# EARTH -> PALLUS-XA -> 12-PUCK-8 -> JIP-REIA -> TAYLOR-3489 -> LANCER-RXKRD
-# 10.7   + 1.8         + 0.4          + 5.5         + 2.6            = 21.0 ngay
+# Route: EARTH -> PALLUS-XA -> 12-PUCK-8 -> JIP-REIA -> TAYLOR-3489 -> LANCER-RXKRD
+# Cost: 10.7 + 1.8 + 0.4 + 5.5 + 2.6 = 21.0 days
 ```
 
-**Step 3 - Check the optimum is unique.** Enumerating every simple path under 25 days: five of them,
-21.0 / 21.6 / 22.7 / 22.9 / 24.3. The 21.0 optimum appears once, so no further crib is needed.
+**Step 3 - Verify the route's uniqueness.** 
+Use a traversal algorithm to list all simple paths with a cost under 25 days. The results show a total of 5 valid paths, with respective costs of: 21.0, 21.6, 22.7, 22.9, and 24.3 days. The route taking 21.0 days is the shortest path and appears only once, requiring no additional condition (crib) for classification.
 
-**Step 4 - Verify.** Re-summing each edge of the Dijkstra path gives exactly 21.0; every edge on the
-path exists in the table read from the image; the number of edges used equals the number of labels on
-the map.
+**Step 4 - Verify data integrity.** 
+Perform an addition check of the weights on the obtained Dijkstra path, the total exactly equals 21.0. Every edge on the route is present in the data table extracted from the original image, and the number of utilized edges matches the number of labels on the map.
 
-**Step 5 - Assemble the flag.** "each planet/oid in your path" here means the intermediate stops,
-excluding the origin and the destination. The full route is
-`EARTH -> PALLUS-XA -> 12-PUCK-8 -> JIP-REIA -> TAYLOR-3489 -> LANCER-RXKRD`, the four middle stops
-give P (PALLUS-XA), 1 (12-PUCK-8), J (JIP-REIA), T (TAYLOR-3489) → `P1JT`, then `-21.0`.
-The variant that includes both endpoints (`EP1JTL-21.0`) was submitted and rejected.
+**Step 5 - Extract and assemble the Flag.** 
+The data point "each planet/oid in your path" is interpreted as the intermediate stop stations, excluding the starting point (`EARTH`) and the destination point (`LANCER-RXKRD`). 
+The full route is: `EARTH -> PALLUS-XA -> 12-PUCK-8 -> JIP-REIA -> TAYLOR-3489 -> LANCER-RXKRD`. 
+Taking the first letter of the four intermediate stations, we have: `P` (PALLUS-XA), `1` (12-PUCK-8), `J` (JIP-REIA), `T` (TAYLOR-3489). Assembling them yields the string `P1JT`, concatenated with the total days as `-21.0`. (The testing process showed that if both endpoints are included as `EP1JTL-21.0`, the system rejects it).
 
-The sensitivity worth remembering: the runner-up is only 0.6 days behind, so misreading one small
-weight (0.4 or 1.8) flips the flag to `EPBJTL-21.6`. The script tries those two variants and shows
-the result really does change, which means the image reading is the fragile part, not the arithmetic.
+A notable point regarding data sensitivity: The second shortest route has a cost of 21.6 days, a mere 0.6 days difference from the optimal route. If there is any error in reading the small weight labels (such as misreading 0.4 or 1.8), the flag string could change to `EPBJTL-21.6`. The test script verified this change if incorrect parameters were input, proving the data reading step from the image is the highest-risk phase, demanding absolute precision.
 
 ## Flag
 
-```
+Executing the automated script:
+```bash
 $ python exploit.py
-1) do thi: 13 nut, 20 canh (doc tu anh)
-2) Dijkstra: EARTH -> PALLUS-XA -> 12-PUCK-8 -> JIP-REIA -> TAYLOR-3489 -> LANCER-RXKRD = 21.0 ngay
-3) cong lai tung canh: 21.0 - khop
-4) duong duoi 25 ngay: 5, ngan nhat 21.0, thu nhi 21.6
-5) dinh dang CSSCTF{<ky tu dau moi nut>-<ngay>}
+1) graph: 13 nodes, 20 edges (read from image)
+2) Dijkstra: EARTH -> PALLUS-XA -> 12-PUCK-8 -> JIP-REIA -> TAYLOR-3489 -> LANCER-RXKRD = 21.0 days
+3) sum each edge: 21.0 - match
+4) paths under 25 days: 5, shortest 21.0, runner-up 21.6
+5) format CSSCTF{<first char of each node>-<days>}
 
 FLAG: CSSCTF{P1JT-21.0}
 ```
 
-## Reproduce
-
-```bash
-python exploit.py
+Result:
+```text
+CSSCTF{P1JT-21.0}
 ```

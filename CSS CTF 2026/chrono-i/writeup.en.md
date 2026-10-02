@@ -1,24 +1,24 @@
 # Chrono I - Crypto (Beginner)
 
-**Flag:** `CSSCTF{every_second_hides_a_secret}` · **Files:** none, every fact sits on the challenge card
+**Flag:** `CSSCTF{every_second_hides_a_secret}`
+**Resources:** No attached files. Analytical data is provided directly in the problem description text.
 
-## Challenge
+## Problem Description
 
-The card gives one message and one ciphertext:
+The system provides a text message and its corresponding ciphertext:
 
 ```text
 Message:    2026-09-21 14:35:07 - "As always, The time is always the key to unlock it"
 Ciphertext: ESUITO{gwfvb_xejqnf_nimgt_b_whhrlv}
 ```
 
-The flag format is `CSSCTF{...}`, so the first six ciphertext characters correspond to
-`CSSCTF`. That crib is handed to us, nothing to guess.
+Based on the system's standard structure, the flag always starts with the `CSSCTF{...}` format. Accordingly, the first six characters of the ciphertext undoubtedly map to the string `CSSCTF`. This information is an explicit crib, requiring no predictive techniques.
 
 ## Initial Analysis
 
-Comparing the crib position by position:
+Perform a modulo 26 shift value check for each position based on the available crib:
 
-| position | plain | cipher | shift mod 26 |
+| Position | Plaintext (Plain) | Ciphertext (Cipher) | Modulo 26 Shift |
 |---|---|---|---|
 | 1 | C | E | 2 |
 | 2 | S | U | 0 |
@@ -27,62 +27,60 @@ Comparing the crib position by position:
 | 5 | T | O | 0 |
 | 6 | F | O | 9 |
 
-The shift sequence `2 0 2 6 0 9` is the first six digits of `20260921143507`, which is the
-message timestamp with the separators removed: `2026-09-21 14:35:07`. When the card says "the
-time is always the key" it means it literally: the key is that timestamp, the cipher is a
-numeric Vigenère (Gronsfeld) with period 14.
+The obtained shift sequence is `2 0 2 6 0 9`. Comparing this number sequence with the input data, it can be seen that it perfectly matches the first six digits of the timestamp in the message: `20260921143507` (removing delimiter characters from `2026-09-21 14:35:07`). The instructional sentence "the time is always the key" has direct reference value: the decryption key is precisely the numerical character string of the timestamp, applied on a numerical Vigenère cipher scheme (Gronsfeld Cipher) with a period of 14.
 
-## Exploit Chain
+## Exploitation Chain
 
-**Step 1 - Take the key from the message.** Drop every non-digit character:
+**Step 1 - Extract the key from the message.** 
+Use a regular expression to eliminate all non-numeric characters, retaining the pure numeric string as the key:
 
 ```python
-key = re.sub(r"\D", "", "2026-09-21 14:35:07")   # '20260921143507'
+key = re.sub(r"\D", "", "2026-09-21 14:35:07")   # Result: '20260921143507'
 ```
 
-**Step 2 - Confirm the crib.** Shift the first six ciphertext characters by the first six digits:
+**Step 2 - Validate with the initial crib.** 
+Perform a trial encryption of the first six plaintext characters using the first six digits of the key to verify the model:
 
-```
-CSSCTF -> ESUITO : shift [2, 0, 2, 6, 0, 9]   # khop key[0:6]
+```text
+CSSCTF -> ESUITO : Apply shift [2, 0, 2, 6, 0, 9]   # Matches perfectly with key[0:6]
 ```
 
-**Step 3 - Decrypt the body with a counter that only advances on letters.** Counting `{` and `_`
-as key positions yields garbage, so the key walks the letters only while the punctuation stays:
+**Step 3 - Decrypt the entire ciphertext.** 
+Design the decryption logic: The key index counter only advances when encountering alphabetical characters. Special characters like `{`, `}`, and `_` will be bypassed in the shift calculation step and preserved in the final result. Incorrectly applying the counter (including special characters) will lead to faulty decryption.
 
 ```python
 for ch in text:
     if not ch.isalpha():
-        out.append(ch)          # giu nguyên '{', '}', '_'
+        out.append(ch)          # Preserve intact the characters '{', '}', '_'
         continue
-    k = int(key[i % len(key)]); i += 1
+    k = int(key[i % len(key)])
+    i += 1
     base = 65 if ch.isupper() else 97
     out.append(chr((ord(ch) - base - k) % 26 + base))
 ```
 
-This returns `CSSCTF{every_second_hides_a_secret}`, which is exactly the sentence the card hinted
-at.
+Running the entire ciphertext through the script, the system outputs the string: `CSSCTF{every_second_hides_a_secret}`. The result string possesses complete semantics, aligning with the challenge's overall hint.
 
-**Step 4 - Verify.** Both directions agree: re-encrypting the plaintext with the same key returns
-the original ciphertext, and the body is plain `[a-z0-9_]*`. Three mutations were tried (last body
-letter capitalised, the message hour changed to `15:35:07`, `ESUITO` changed to `XSUITO`) and the
-script stops at the corresponding check, so this is not a self-confirming loop.
+**Step 4 - Verification stage.** 
+The execution process has uniform bidirectionality: if re-encrypting the plaintext using that same key, the system will return the exact original ciphertext. Furthermore, the body of the plaintext strictly adheres to the `[a-z0-9_]*` structure. To affirm the script code's reliability, injecting artificial errors (such as changing a letter to uppercase, modifying the hour parameter to `15:35:07`, or altering the crib `ESUITO` to `XSUITO`) all trigger the script's error reporting mechanism, verifying that the process does not operate based on a blind self-matching mechanism.
 
 ## Flag
 
-```
+Executing the automated script:
+
+```bash
 $ python exploit.py
-1) key = chu so cua message : 20260921143507 (14 chu so)
+1) key = message digits : 20260921143507 (14 digits)
 2) crib CSSCTF -> ESUITO : shift [2, 0, 2, 6, 0, 9]
-   khop 100% so chu cai dau cua key -> Gronsfeld voi key = 20260921143507
-3) giai ma toan bo : CSSCTF{every_second_hides_a_secret}
-4) phep giai la nghich dao dung cua phep ma hoa
-5) du dinh dang CSSCTF{...}, than co la snake_case
+   100% match with key's first digits -> Gronsfeld with key = 20260921143507
+3) decrypt all : CSSCTF{every_second_hides_a_secret}
+4) solution is the exact inverse of encryption
+5) complies with CSSCTF{...} format, body is snake_case
 
 FLAG: CSSCTF{every_second_hides_a_secret}
 ```
 
-## Reproduce
-
-```bash
-python exploit.py
+Result:
+```text
+CSSCTF{every_second_hides_a_secret}
 ```
