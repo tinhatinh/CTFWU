@@ -42,6 +42,9 @@ H7CTF 2026 Quals/public-domain/files/h7-tex.github.io.tar.gz
 # Misc
 .env
 
+# Local agent instructions, kept out of the public repo
+AI_README.md
+
 # Callback captures: header cua request di ra, chua credential song (OAuth Bearer)
 **/analysis/auth.log
 

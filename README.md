@@ -103,12 +103,6 @@ out ends the session. The local HttpOnly-cookie session still lasts up to eight 
 navigation. Local saves do not commit or push automatically. A Content Security Policy blocks
 inline scripts from writeup content; keep the permitted theme-script hash synchronized if it changes.
 
-## Adding writeups with another AI
-
-Read [AI_README.md](AI_README.md) for the source layout, new-competition checklist, bilingual
-content rules, solve timestamps, verification commands, and deployment conventions. New
-competitions without a cover image receive a generated placeholder automatically.
-
 ## Competitions
 
 | Event | Date | Writeups | Categories |
