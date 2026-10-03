@@ -14,6 +14,7 @@ from http.server import ThreadingHTTPServer
 from serve_site import EditorStore, EditError, handler_for
 from fetch_ctftime import parse
 from build_site import write_portfolio
+from build_site import validate_certificates
 import build_site
 from unittest.mock import patch
 from serve_site import verify_owner
@@ -209,6 +210,47 @@ class CTFTimeTests(unittest.TestCase):
             record = json.loads((stage / "_data/portfolio.json").read_text(encoding="utf-8"))["events"][0]
             self.assertEqual(record["count"], 1)
             self.assertTrue((stage / record["cover"].lstrip("/")).is_file())
+
+
+class CertificateTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.stage = Path(self.temp.name)
+        (self.stage / "_data").mkdir()
+        (self.stage / "assets/certificates").mkdir(parents=True)
+        (self.stage / "assets/certificates/proof.png").write_bytes(b"fixture image")
+        (self.stage / "assets/certificates/course.pdf").write_bytes(b"%PDF fixture")
+        self.types = {"participation":{"vi":"Tham gia", "en":"Participation"}, "course":{"vi":"Khóa học", "en":"Course"}}
+        self.record = {"id":"example-2026", "title":"Example", "type":"participation", "recipient":"tinhatinh", "issuer":"Example issuer", "date":"2026-10-03", "image":"/assets/certificates/proof.png"}
+
+    def tearDown(self):
+        self.temp.cleanup()
+
+    def write(self, records):
+        (self.stage / "_data/certificates.json").write_text(json.dumps(records), encoding="utf-8")
+        (self.stage / "_data/certificate_types.json").write_text(json.dumps(self.types), encoding="utf-8")
+
+    def test_catalog_accepts_multiple_types_and_pdf_without_inventing_date(self):
+        course = {**self.record, "id":"course-2026", "type":"course", "document":"/assets/certificates/course.pdf"}
+        course.pop("image");course.pop("date")
+        self.write([self.record, course]);validate_certificates(str(self.stage))
+        records=json.loads((self.stage / "_data/certificates.json").read_text())
+        self.assertEqual(records[1]["date"], "")
+        self.assertEqual(len(records),2)
+
+    def test_duplicate_ids_and_unknown_type_are_rejected(self):
+        for records in [[self.record,self.record], [{**self.record,"type":"unknown"}]]:
+            self.write(records)
+            with self.assertRaises(ValueError):validate_certificates(str(self.stage))
+
+    def test_asset_traversal_is_rejected(self):
+        self.write([{**self.record,"image":"/assets/certificates/../../_data/certificates.json"}])
+        with self.assertRaises(ValueError):validate_certificates(str(self.stage))
+
+    def test_invalid_date_or_unsafe_verification_url_is_rejected(self):
+        for field,value in [("date","2026-13-45"),("verification_url","javascript:alert(1)")]:
+            self.write([{**self.record,field:value}])
+            with self.assertRaises(ValueError):validate_certificates(str(self.stage))
 
 
 class ImageTests(unittest.TestCase):

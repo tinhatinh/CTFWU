@@ -103,6 +103,19 @@ out ends the session. The local HttpOnly-cookie session still lasts up to eight 
 navigation. Local saves do not commit or push automatically. A Content Security Policy blocks
 inline scripts from writeup content; keep the permitted theme-script hash synchronized if it changes.
 
+## Certificates and credentials
+
+The Achievements page at `/competitions/` includes certificates alongside competition writeups
+and team results. Entries live in `site/_data/certificates.json`; bilingual type labels live in
+`site/_data/certificate_types.json`. Add original images/PDFs to `site/assets/certificates/` and
+append a catalog entry. No layout change is needed. Participation, professional certifications,
+courses and awards are supported. Search/type filters appear as the collection grows.
+
+Required fields: unique `id`, `title`, `type`, `recipient`, `issuer`, and `image` or `document`.
+Optional fields: ISO `date`, `date_kind` (`issued`/`event`), `event_period` (`vi`/`en` labels),
+`certificate_id`, `verification_url` (HTTPS), `signatory` and `verified_on`. Omit dates without
+evidence; set `verified_on` only after checking the issuer. The build validates IDs, assets and dates.
+
 ## Competitions
 
 | Event | Date | Writeups | Categories |

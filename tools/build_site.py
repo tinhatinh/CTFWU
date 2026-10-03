@@ -36,7 +36,7 @@ INK = "#2d3748"
 CONTEST_TZ = dt.timezone(dt.timedelta(hours=7), "UTC+7")
 
 UI = {
-    "vi": {"competitions": "Các cuộc thi", "posts": "bài writeup", "view": "Xem writeup",
+    "vi": {"competitions": "Thành tích", "posts": "bài writeup", "view": "Xem writeup",
            "tagline": "Writeup CTF của tinhatinh, đội R3:TURИ",
            "description": "Writeup CTF của Danh Phan trong đội R3:TURИ: H7TEX, SunshineCTF, Pointer Overflow",
            "hint": "Mỗi cuộc thi là một mục. Bên trong là các bài giải, xếp theo chuyên mục.",
@@ -44,7 +44,7 @@ UI = {
            "ach_hint": "Bảng dưới là kết quả của [{team}]({url}) trên CTFTime, số liệu lấy ngày {date}. "
                        "Chỉ những giải đăng ký trên CTFTime mới có trong bảng.",
            "place": "Hạng", "event": "Giải", "ctf_points": "Điểm CTF", "rating_points": "Điểm rating"},
-    "en": {"competitions": "Competitions", "posts": "writeups", "view": "Read writeups",
+    "en": {"competitions": "Achievements", "posts": "writeups", "view": "Read writeups",
            "tagline": "CTF writeups by tinhatinh, team R3:TURИ",
            "description": "CTF writeups by Danh Phan of team R3:TURИ: H7TEX, SunshineCTF, Pointer Overflow",
            "hint": "One card per event. Inside each one, the solutions grouped by category.",
@@ -566,12 +566,75 @@ def write_portfolio(stage, events, lang):
         json.dump({"events": records, "results": ctftime_team(), "assets": assets}, out, ensure_ascii=False, indent=2)
 
 
+def validate_certificates(stage):
+    """Validate the extensible certificate catalog before publishing any assets."""
+    path = os.path.join(stage, "_data", "certificates.json")
+    if not os.path.isfile(path):
+        return
+    with open(path, encoding="utf-8") as source:
+        records = json.load(source)
+    with open(os.path.join(stage, "_data", "certificate_types.json"), encoding="utf-8") as source:
+        types = json.load(source)
+    if not isinstance(records, list):
+        raise ValueError("certificates.json must be an array")
+    seen = set()
+    for record in records:
+        if not isinstance(record, dict):
+            raise ValueError("Each certificate must be an object")
+        identifier = record.get("id", "")
+        if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", identifier) or identifier in seen:
+            raise ValueError("Certificate IDs must be unique lowercase slugs")
+        seen.add(identifier)
+        for field in ("title", "issuer", "recipient"):
+            if not isinstance(record.get(field), str) or not record[field].strip():
+                raise ValueError("Certificate requires " + field)
+        if record.get("type") not in types:
+            raise ValueError("Unknown certificate type: " + str(record.get("type")))
+        labels = types[record["type"]]
+        if not all(isinstance(labels.get(lang), str) and labels[lang] for lang in ("vi", "en")):
+            raise ValueError("Certificate type requires VI and EN labels")
+        record.setdefault("date", "")
+        record.setdefault("date_kind", "issued")
+        if record["date_kind"] not in ("issued", "event"):
+            raise ValueError("Certificate date_kind must be issued or event")
+        if record.get("event_period"):
+            period = record["event_period"]
+            if not isinstance(period, dict) or not all(isinstance(period.get(lang), str) and period[lang] for lang in ("vi", "en")):
+                raise ValueError("Certificate event_period requires VI and EN labels")
+        for field in ("date", "verified_on"):
+            if record.get(field):
+                dt.date.fromisoformat(record[field])
+        if not record.get("image") and not record.get("document"):
+            raise ValueError("Certificate requires an image or a document")
+        for field in ("image", "document"):
+            if not record.get(field):
+                continue
+            asset = record[field]
+            if not isinstance(asset, str) or not asset.startswith("/assets/certificates/"):
+                raise ValueError("Certificate assets must be in /assets/certificates/")
+            extensions = (".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp") if field == "image" else (".pdf",)
+            if os.path.splitext(asset)[1].lower() not in extensions:
+                raise ValueError("Certificate image must be raster; document must be PDF")
+            target = os.path.realpath(os.path.join(stage, asset.lstrip("/")))
+            folder = os.path.realpath(os.path.join(stage, "assets", "certificates"))
+            if os.path.commonpath([target, folder]) != folder or not os.path.isfile(target):
+                raise ValueError("Missing certificate asset: " + asset)
+        if record.get("verification_url"):
+            from urllib.parse import urlsplit
+            url = urlsplit(record["verification_url"])
+            if url.scheme != "https" or not url.netloc or url.username or url.password:
+                raise ValueError("Certificate verification link must use HTTPS")
+    with open(path, "w", encoding="utf-8", newline="\n") as output:
+        json.dump(records, output, ensure_ascii=False, indent=2)
+
+
 def build(lang):
     stage = os.path.join(ROOT, "_site_src" if lang == "vi" else "_site_src_en")
     base = "/CTFWU" if lang == "vi" else "/CTFWU/en"
     if os.path.isdir(stage):
         shutil.rmtree(stage)
     shutil.copytree(os.path.join(ROOT, "site"), stage)
+    validate_certificates(stage)
     cfg = os.path.join(stage, "_config.yml")
     t = open(cfg, encoding="utf-8").read()
     if lang == "en":

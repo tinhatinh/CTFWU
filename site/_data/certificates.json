@@ -1,0 +1,17 @@
+[
+  {
+    "id": "h7ctf-2026-participation",
+    "title": "H7CTF 2026",
+    "type": "participation",
+    "recipient": "tinhatinh",
+    "issuer": "H7CTF Organizing Team",
+    "signatory": "ABU",
+    "date": "2026-10-03",
+    "date_kind": "issued",
+    "event_period": {"vi": "26–27/09/2026", "en": "26–27 September 2026"},
+    "certificate_id": "H7CTF26-9KDF-765A-RC5F",
+    "image": "/assets/certificates/h7ctf-2026-participation-tinhatinh.png",
+    "verification_url": "https://app.h7tex.com/verify",
+    "verified_on": "2026-10-03"
+  }
+]

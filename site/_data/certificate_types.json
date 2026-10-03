@@ -1,0 +1,18 @@
+{
+  "participation": {
+    "vi": "Chứng nhận tham gia",
+    "en": "Participation certificate"
+  },
+  "professional": {
+    "vi": "Chứng chỉ chuyên môn",
+    "en": "Professional certification"
+  },
+  "course": {
+    "vi": "Khóa học",
+    "en": "Course completion"
+  },
+  "award": {
+    "vi": "Giải thưởng",
+    "en": "Award"
+  }
+}

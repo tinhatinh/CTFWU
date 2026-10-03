@@ -198,6 +198,25 @@
     host.append(button);
   });
 
+  const certificates = [...document.querySelectorAll('.certificate-card')];
+  if (certificates.length) {
+    const controls = document.querySelector('.certificate-controls');
+    const search = document.querySelector('#certificate-search');
+    const type = document.querySelector('#certificate-type');
+    const normalize = value => value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[đĐ]/g,'d').toLowerCase();
+    if (certificates.length > 3 || type.options.length > 2) controls.hidden = false;
+    const filter = () => {
+      const words = normalize(search.value.trim()).split(/\s+/).filter(Boolean);
+      certificates.forEach(card => { card.hidden = !!((type.value && card.dataset.type !== type.value) || !words.every(word=>normalize(card.dataset.search).includes(word))); });
+      document.querySelector('#certificate-empty').hidden = certificates.some(card=>!card.hidden);
+    };
+    search.addEventListener('input',filter);type.addEventListener('change',filter);
+    document.querySelectorAll('.copy-certificate').forEach(button=>button.addEventListener('click',async()=>{
+      const status=document.querySelector('#certificate-copy-status');
+      try { await navigator.clipboard.writeText(button.dataset.copy);status.textContent=vi?'Đã sao chép mã chứng nhận.':'Certificate ID copied.'; }
+      catch (_) { status.textContent=vi?'Không sao chép được. Hãy chọn mã để sao chép thủ công.':'Could not copy. Select the ID to copy manually.'; }
+    }));
+  }
   const topLink = document.querySelector('#back-to-top');
   const topRing = document.querySelector('#top-progress');
   if (topLink && topRing) {
