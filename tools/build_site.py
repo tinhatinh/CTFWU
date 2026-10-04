@@ -438,7 +438,7 @@ def write_post(stage, ev, p, lang, base):
     fm = ["---", 'title: "%s"' % p["title"].replace('"', "'"),
           "date: %s %s" % (d.strftime("%Y-%m-%d %H:%M:%S"), d.strftime("%z")),
           "lastmod_at: %s" % mod.strftime("%Y-%m-%d %H:%M:%S %z"),
-          "categories: " + json.dumps(p["cats"], ensure_ascii=False),
+          "categories: " + json.dumps(p.get("cats", [p["cat"]]), ensure_ascii=False),
           "primary_category: " + json.dumps(p["cat"]),
           "tags: " + json.dumps([ev["slug"].replace("-ctf-", "-").replace("-2026", ""),
                                  p["cat"].lower()], ensure_ascii=False),
@@ -534,7 +534,7 @@ def write_competitions(stage, events, lang, base):
         span = stamp(last, lang, False)
         if first.date() != last.date():
             span = "%s → %s" % (stamp(first, lang, False), span)
-        cats = sorted({cat for p in ev["posts"] for cat in p["cats"]})
+        cats = sorted({cat for p in ev["posts"] for cat in p.get("cats", [p["cat"]])})
         cover = cover_html(ev, base)
         cats_html = "".join("<span>%s</span>" % c for c in cats)
         body.append(
@@ -580,7 +580,7 @@ def write_portfolio(stage, events, lang):
                             '<text x="300" y="170" text-anchor="middle" font-family="monospace" '
                             'font-size="68" fill="#c0ec88">' + html.escape(initials(ev["name"])) + '</text></svg>')
         records.append({"name": ev["name"], "slug": ev["slug"], "count": len(ev["posts"]),
-                        "categories": sorted({cat for p in ev["posts"] for cat in p["cats"]}),
+                        "categories": sorted({cat for p in ev["posts"] for cat in p.get("cats", [p["cat"]])}),
                         "date": max(p["date"] for p in ev["posts"]).strftime("%m / %Y"),
                         "cover": "/assets/competitions/" + cover})
     path = os.path.join(stage, "_data", "portfolio.json")
