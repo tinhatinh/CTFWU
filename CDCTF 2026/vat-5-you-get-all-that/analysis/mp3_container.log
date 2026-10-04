@@ -1,0 +1,11 @@
+kich thuoc : 151244
+head       : b'ID3\x04\x00\x00\x00\x00\x00"TS'
+ID3v4.0 flags=0x00 size=34 (-> 44 byte header)
+ID3 text   : b'TSSE\x00\x00\x00\x0e\x00\x00\x03Lavf61.7.100\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+sau tag    : 151200 byte, head=fff364c40015a0aa
+uoc luong stream = 25.20 s * 48000/8 = 151200 byte; len(body) = 151200 byte; chenh lech = 0
+toan bo file = ID3(44) + stream(151200) = 151244 vs 151244
+  magic zip: [44887, 96286, 120669]
+  magic id3-lan-nua: [0]
+duoi 16 byte: 55555555555555555555555555555555
+so byte 0x00 trong toan file: 2480

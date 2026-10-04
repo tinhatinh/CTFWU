@@ -1,0 +1,14 @@
+word      : 17 x [5] chu cai
+first word: ximok   last word: lizyx
+anchors   : [0][0]='x' [-1][-1]='x'
+pos 0: bcfghlmnrsxz               distinct=12  pattern=C
+pos 1: aeiouy                     distinct= 6  pattern=V
+pos 2: lmnrstvz                   distinct= 8  pattern=C
+pos 3: aeiouy                     distinct= 6  pattern=V
+pos 4: fhklx                      distinct= 5  pattern=C
+used      : abcefghiklmnorstuvxyz
+missing   : djpqw
+vowels    : aeiouy  -> radix 6
+consonants: bcfghklmnrstvxz -> radix 17 (16 + 'x')
+letters   : 21 (6 vow + 15 cons dung thuc te)
+bytes     : (rounds-1)*2 + 1 = 33   [rounds = len/2+1]

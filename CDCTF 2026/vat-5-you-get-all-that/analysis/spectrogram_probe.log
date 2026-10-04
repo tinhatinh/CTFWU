@@ -1,0 +1,6 @@
+STFT (1025, 1183) bins x frames, fmax=24000 Hz
+nang luong binh quan <500 Hz = -95.96 dB, 4-11 kHz = -121.36 dB (chenh lech 25.40 dB)
+form <500 Hz dao dong 91.05 dB theo frame -> nguon dieu bien, co pitch
+<1 kHz: 60/1183 frame gan trang hoan toan; plateau dai nhat 113
+1-4 kHz: 0/1183 frame gan trang hoan toan; plateau dai nhat 0
+ket luan: khong co luong tu nhi phan (khong co chu ky anh an); dai cao thap lien tuc va co harmonics = tieng noi
