@@ -1,0 +1,17 @@
+[*] check_in : n=1067  don dieu thoi gian=True  so thu tu lien tiep=True  (550408395..550409461)
+[*] votes    : n=1067  don dieu thoi gian=True  so thu tu lien tiep=True  (381009204091..381009205157)
+[*] cua so mo cua: check_in 07:45:27..17:46:32, votes 08:00:45..17:59:50
+
+[*] do lech (vote[i] - check_in[i+lag]) theo tung cach phoi:
+     lag cap hop le    min    mean    max   am
+      -2       1065    628   937.0   1252    0
+      -1       1066    599   903.2   1216    0
+      +0       1067    560   869.4   1184    0
+      +1       1066    522   835.6   1160    0
+      +2       1065    491   801.9   1128    0
+
+[*] Ket luan: hai log cung do dai (1067), cung don dieu theo thoi gian va theo
+    so thu tu, va moi cu tri check-in dung mot lan. Mot phep gan 1-1 giu thu tu
+    (ai vao truoc bo phieu truoc) chi co the la i <-> i; lag +/-1 de loi mot
+    luot check-in va mot phieu khong co doi tuong, nen trai voi ngu nghia log.
+    Do lech duoi lag 0 nam trong 560..1184 s, khong cap nao am.

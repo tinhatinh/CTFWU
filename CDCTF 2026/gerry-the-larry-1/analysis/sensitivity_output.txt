@@ -1,0 +1,17 @@
+    lag -1: cap= 1066  ghe Meowjority=10  block lech voi lag 0 = ['Biscuit Bend', 'Cardboard Court', 'Cozy Loaf Court', 'Feather Wand Walk', 'Laser Dot Lane', 'Mousetrap Alley', 'Pawprint Plaza', 'Scratching Post Street', 'Sunbeam Square', 'Treat Jar Terrace', 'Tuna Terrace', 'Whisker Row']
+    lag  0: cap= 1067  ghe Meowjority=12  block lech voi lag 0 = []
+    lag +1: cap= 1066  ghe Meowjority= 9  block lech voi lag 0 = ['Biscuit Bend', 'Cardboard Court', 'Catnip Corner', 'Fishbone Flats', 'Hairball Heights', 'Laser Dot Lane', 'Mousetrap Alley', 'Nap Nook', 'Purrington Place', 'Rooftop Ridge', 'Scratching Post Street', 'Tuna Terrace', 'Yarnball Yard']
+
+[*] Margin (Meowjority - phe thu nhi) trong 12 block thang o lag 0:
+    Cardboard Court           21 -   6   margin=15
+    Catnip Corner             12 -   5   margin=7
+    Hairball Heights          21 -   6   margin=15
+    Mousetrap Alley           14 -   5   margin=9
+    Pawprint Plaza            16 -   9   margin=7
+    Purrington Place          19 -   8   margin=11
+    Scratching Post Street    11 -   9   margin=2
+    Sunbeam Square            16 -   4   margin=12
+    Tuna Terrace              11 -   5   margin=6
+    Whisker Row               13 -   8   margin=5
+    Windowsill Way             6 -   5   margin=1
+    Yarnball Yard             14 -   5   margin=9
