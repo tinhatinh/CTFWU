@@ -1,0 +1,169 @@
+# cac doan disassembly quyet dinh (objdump -dM intel files/client), chay 2026-10-04
+
+## sat::client::contrivance(session&) @ 0x403a86  <- double free
+0000000000403a86 <_ZN3sat6client11contrivanceERNS0_7sessionE>:
+  403a86:	f3 0f 1e fa          	endbr64
+  403a8a:	55                   	push   rbp
+  403a8b:	53                   	push   rbx
+  403a8c:	48 83 ec 08          	sub    rsp,0x8
+  403a90:	bf 40 00 00 00       	mov    edi,0x40
+  403a95:	e8 66 fd ff ff       	call   403800 <malloc@plt>
+  403a9a:	48 89 c3             	mov    rbx,rax
+  403a9d:	bf 40 00 00 00       	mov    edi,0x40
+  403aa2:	e8 59 fd ff ff       	call   403800 <malloc@plt>
+  403aa7:	48 89 c5             	mov    rbp,rax
+  403aaa:	48 89 df             	mov    rdi,rbx
+  403aad:	e8 1e fd ff ff       	call   4037d0 <free@plt>
+  403ab2:	48 89 ef             	mov    rdi,rbp
+  403ab5:	e8 16 fd ff ff       	call   4037d0 <free@plt>
+  403aba:	48 89 df             	mov    rdi,rbx
+  403abd:	e8 0e fd ff ff       	call   4037d0 <free@plt>
+  403ac2:	48 83 c4 08          	add    rsp,0x8
+  403ac6:	5b                   	pop    rbx
+  403ac7:	5d                   	pop    rbp
+  403ac8:	c3                   	ret
+
+## sat::client::cmd::auth_bypass_dbg(session&) @ 0x403ac9  <- muc nhay, set [rdi+0x28]=1
+0000000000403ac9 <_ZN3sat6client3cmd15auth_bypass_dbgERNS0_7sessionE>:
+  403ac9:	f3 0f 1e fa          	endbr64
+  403acd:	48 83 ec 08          	sub    rsp,0x8
+  403ad1:	c6 47 28 01          	mov    BYTE PTR [rdi+0x28],0x1
+  403ad5:	be 13 95 40 00       	mov    esi,0x409513
+  403ada:	bf 80 d2 40 00       	mov    edi,0x40d280
+  403adf:	e8 6c fc ff ff       	call   403750 <_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@plt>
+  403ae4:	48 83 c4 08          	add    rsp,0x8
+  403ae8:	c3                   	ret
+
+## sat::client::check_password(char*, session&) @ 0x4047ae  <- thu tu malloc va goi dbg
+00000000004047ae <_ZN3sat6client14check_passwordEPcRNS0_7sessionE>:
+  4047ae:	f3 0f 1e fa          	endbr64
+  4047b2:	41 56                	push   r14
+  4047b4:	41 55                	push   r13
+  4047b6:	41 54                	push   r12
+  4047b8:	55                   	push   rbp
+  4047b9:	53                   	push   rbx
+  4047ba:	48 81 ec 10 02 00 00 	sub    rsp,0x210
+  4047c1:	49 89 fc             	mov    r12,rdi
+  4047c4:	48 89 f3             	mov    rbx,rsi
+  4047c7:	49 89 f6             	mov    r14,rsi
+  4047ca:	64 48 8b 04 25 28 00 	mov    rax,QWORD PTR fs:0x28
+  4047d1:	00 00 
+  4047d3:	48 89 84 24 08 02 00 	mov    QWORD PTR [rsp+0x208],rax
+  4047da:	00 
+  4047db:	31 c0                	xor    eax,eax
+  4047dd:	bf 40 00 00 00       	mov    edi,0x40
+  4047e2:	e8 19 f0 ff ff       	call   403800 <malloc@plt>
+  4047e7:	48 89 c5             	mov    rbp,rax
+  4047ea:	66 0f ef c0          	pxor   xmm0,xmm0
+  4047ee:	0f 11 00             	movups XMMWORD PTR [rax],xmm0
+  4047f1:	0f 11 40 10          	movups XMMWORD PTR [rax+0x10],xmm0
+  4047f5:	0f 11 40 20          	movups XMMWORD PTR [rax+0x20],xmm0
+  4047f9:	0f 11 40 30          	movups XMMWORD PTR [rax+0x30],xmm0
+  4047fd:	bf 40 00 00 00       	mov    edi,0x40
+  404802:	e8 f9 ef ff ff       	call   403800 <malloc@plt>
+  404807:	48 8b 40 18          	mov    rax,QWORD PTR [rax+0x18]
+  40480b:	48 85 c0             	test   rax,rax
+  40480e:	74 05                	je     404815 <_ZN3sat6client14check_passwordEPcRNS0_7sessionE+0x67>
+  404810:	48 89 df             	mov    rdi,rbx
+  404813:	ff d0                	call   rax
+  404815:	bf 60 00 00 00       	mov    edi,0x60
+  40481a:	e8 e1 ef ff ff       	call   403800 <malloc@plt>
+  40481f:	48                   	rex.W
+## ... doan doc /flag.txt va so sanh
+0000000000404839 <_ZN3sat6client14check_passwordEPcRNS0_7sessionE+0x8b>:
+  404839:	0f 11 40 50          	movups XMMWORD PTR [rax+0x50],xmm0
+  40483d:	ba 08 00 00 00       	mov    edx,0x8
+  404842:	be 53 95 40 00       	mov    esi,0x409553
+  404847:	48 89 e7             	mov    rdi,rsp
+  40484a:	e8 e1 f0 ff ff       	call   403930 <_ZNSt14basic_ifstreamIcSt11char_traitsIcEEC1EPKcSt13_Ios_Openmode@plt>
+  40484f:	ba 60 00 00 00       	mov    edx,0x60
+  404854:	48 89 de             	mov    rsi,rbx
+  404857:	48 89 e7             	mov    rdi,rsp
+  40485a:	e8 e1 ec ff ff       	call   403540 <_ZNSi7getlineEPcl@plt>
+  40485f:	48 89 df             	mov    rdi,rbx
+  404862:	e8 49 ed ff ff       	call   4035b0 <strlen@plt>
+  404867:	49 89 c5             	mov    r13,rax
+  40486a:	4c 89 e7             	mov    rdi,r12
+  40486d:	e8 3e ed ff ff       	call   4035b0 <strlen@plt>
+  404872:	49 39 c5             	cmp    r13,rax
+  404875:	74 2a                	je     4048a1 <_ZN3sat6client14check_passwordEPcRNS0_7sessionE+0xf3>
+  404877:	41 bd 00 00 00 00    	mov    r13d,0x0
+  40487d:	4c 89 e7             	mov    rdi,r12
+  404880:	e8 4b ef ff ff       	call   4037d0 <free@plt>
+  404885:	48 89 df             	mov    rdi,rbx
+  404888:	e8 43 ef ff ff       	call   4037d0 <free@plt>
+  40488d:	48 89 ef             	mov    rdi,rbp
+  404890:	e8 3b ef ff ff       	call   4037d0 <free@plt>
+  404895:	bf 40 00 00 00       	mov    edi,0x40
+  40489a:	e8 35 f7 ff ff       	call   403fd4 <_ZN3sat6client22maybe_flush_shim_classEm>
+  40489f:	eb 22                	jmp    4048c3 <_ZN3sat6client14check_passwordEPcRNS0_7sessionE+0x115>
+
+## sat::client::authenticate @ 0x40492f  <- contrivance roi get_password roi check_password
+000000000040492f <_ZN3sat6client3cmd12authenticateERNS0_7sessionERNSt7__cxx1119basic_istringstreamIcSt11char_traitsIcESaIcEEE>:
+  40492f:	f3 0f 1e fa          	endbr64
+  404933:	53                   	push   rbx
+  404934:	80 7f 28 00          	cmp    BYTE PTR [rdi+0x28],0x0
+  404938:	75 30                	jne    40496a <_ZN3sat6client3cmd12authenticateERNS0_7sessionERNSt7__cxx1119basic_istringstreamIcSt11char_traitsIcESaIcEEE+0x3b>
+  40493a:	48 89 fb             	mov    rbx,rdi
+  40493d:	e8 44 f1 ff ff       	call   403a86 <_ZN3sat6client11contrivanceERNS0_7sessionE>
+  404942:	e8 1a f7 ff ff       	call   404061 <_ZN3sat6client12get_passwordEv>
+  404947:	48 89 c7             	mov    rdi,rax
+  40494a:	48 89 de             	mov    rsi,rbx
+  40494d:	e8 5c fe ff ff       	call   4047ae <_ZN3sat6client14check_passwordEPcRNS0_7sessionE>
+  404952:	88 43 28             	mov    BYTE PTR [rbx+0x28],al
+
+## sat::client::vanished_alerts @ 0x408263..0x408325  <- in CONGRATULATIONS + /flag.txt
+0000000000408263 <_ZN3sat6client15vanished_alertsB5cxx11ERKSt6vectorINS0_8body_posESaIS2_EES6_+0x143>:
+  408263:	4d 85 ff             	test   r15,r15
+  408266:	0f 84 be 00 00 00    	je     40832a <_ZN3sat6client15vanished_alertsB5cxx11ERKSt6vectorINS0_8body_posESaIS2_EES6_+0x20a>
+  40826c:	48 8d 7c 24 70       	lea    rdi,[rsp+0x70]
+  408271:	be 03 98 40 00       	mov    esi,0x409803
+  408276:	e8 d5 b4 ff ff       	call   403750 <_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@plt>
+  40827b:	48 89 c7             	mov    rdi,rax
+  40827e:	49 8b 57 08          	mov    rdx,QWORD PTR [r15+0x8]
+  408282:	49 8b 37             	mov    rsi,QWORD PTR [r15]
+  408285:	e8 26 b5 ff ff       	call   4037b0 <_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l@plt>
+  40828a:	48 89 c7             	mov    rdi,rax
+  40828d:	be 1e 98 40 00       	mov    esi,0x40981e
+  408292:	e8 b9 b4 ff ff       	call   403750 <_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@plt>
+  408297:	48 89 c7             	mov    rdi,rax
+  40829a:	f2 0f 10 04 24       	movsd  xmm0,QWORD PTR [rsp]
+  40829f:	e8 dc b5 ff ff       	call   403880 <_ZNSo9_M_insertIdEERSoT_@plt>
+  4082a4:	48 89 c7             	mov    rdi,rax
+  4082a7:	be 2f 98 40 00       	mov    esi,0x40982f
+  4082ac:	e8 9f b4 ff ff       	call   403750 <_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@plt>
+  4082b1:	48 8d 44 24 60       	lea    rax,[rsp+0x60]
+  4082b6:	48 89 44 24 50       	mov    QWORD PTR [rsp+0x50],rax
+  4082bb:	c6 44 24 60 00       	mov    BYTE PTR [rsp+0x60],0x0
+  4082c0:	48 c7 44 24 58 00 00 	mov    QWORD PTR [rsp+0x58],0x0
+  4082c7:	00 00 
+  4082c9:	48 8d bc 24 f0 01 00 	lea    rdi,[rsp+0x1f0]
+  4082d0:	00 
+  4082d1:	ba 08 00 00 00       	mov    edx,0x8
+  4082d6:	be 53 95 40 00       	mov    esi,0x409553
+  4082db:	e8 50 b6 ff ff       	call   403930 <_ZNSt14basic_ifstreamIcSt11char_traitsIcEEC1EPKcSt13_Ios_Openmode@plt>
+  4082e0:	48 8d 74 24 50       	lea    rsi,[rsp+0x50]
+  4082e5:	48 8d bc 24 f0 01 00 	lea    rdi,[rsp+0x1f0]
+  4082ec:	00 
+  4082ed:	e8 ee b4 ff ff       	call   4037e0 <_ZStrsIcSt11char_traitsIcESaIcEERSt13basic_istreamIT_T0_ES7_RNSt7__cxx1112basic_stringIS4_S5_T1_EE@plt>
+  4082f2:	48 8d 7c 24 70       	lea    rdi,[rsp+0x70]
+  4082f7:	be 31 98 40 00       	mov    esi,0x409831
+  4082fc:	e8 4f b4 ff ff       	call   403750 <_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@plt>
+  408301:	48 89 c7             	mov    rdi,rax
+  408304:	48 8b 54 24 58       	mov    rdx,QWORD PTR [rsp+0x58]
+  408309:	48 8b 74 24 50       	mov    rsi,QWORD PTR [rsp+0x50]
+  40830e:	e8 9d b4 ff ff       	call   4037b0 <_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l@plt>
+  408313:	48 8d bc 24 f0 01 00 	lea    rdi,[rsp+0x1f0]
+  40831a:	00 
+  40831b:	e8 10 b2 ff ff       	call   403530 <_ZNSt14basic_ifstreamIcSt11char_traitsIcEED1Ev@plt>
+  408320:	48 8d 7c 24 50       	lea    rdi,[rsp+0x50]
+  408325:	e8                   	.byte 0xe8
+
+## chu lien quan trong .rodata
+ 4097f0 686f7420 726f773a 20005b41 4c455254  hot row: .[ALERT
+ 409800 5d20003b 2070726f 6261626c 6520636f  ] .; probable co
+ 409810 6c6c6973 696f6e20 77697468 20002028  llision with . (
+ 409820 6c617374 20736565 6e206761 70200029  last seen gap .)
+ 409830 000a434f 4e475241 54554c41 54494f4e  ..CONGRATULATION
+ 409840 533a2000 534e4150 53484f54 006e6f20  S: .SNAPSHOT.no 
+ 409850 626f6469 65732074 6f20706c 6f740a00  bodies to plot..

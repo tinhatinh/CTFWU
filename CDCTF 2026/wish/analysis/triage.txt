@@ -1,0 +1,38 @@
+# triage files/client - CDCTF 2026 wish, chay 2026-10-04 tren Windows (binutils cua Strawberry Perl)
+
+$ file files/client
+ELF 64-bit LSB executable, x86-64, version 1 (GNU/Linux), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=6ba9660c0436a66af8835075a49d92a9dfb14090, for GNU/Linux 3.2.0, with debug_info, not stripped
+
+$ readelf -h files/client | head -8
+ELF Header:
+  Magic:   7f 45 4c 46 02 01 01 03 00 00 00 00 00 00 00 00 
+  Class:                             ELF64
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - GNU
+  ABI Version:                       0
+  Type:                              EXEC (Executable file)
+
+$ readelf -lW files/client | grep -iE 'GNU_STACK|GNU_RELRO|^\s+\[.?CODE'
+  GNU_STACK      0x000000 0x0000000000000000 0x0000000000000000 0x000000 0x000000 RW  0x10
+  GNU_RELRO      0x00bd80 0x000000000040cd80 0x000000000040cd80 0x000280 0x000280 R   0x1
+
+$ readelf -dW files/client | grep -iE 'BIND_NOW|FLAGS'
+(khong co BIND_NOW -> Partial RELRO)
+
+$ readelf -SW files/client | grep -E '\.got|\.data|\.bss'
+  [23] .data.rel.ro      PROGBITS        000000000040cd90 00bd90 000048 00  WA  0   0 16
+  [25] .got              PROGBITS        000000000040cfd8 00bfd8 000010 08  WA  0   0  8
+  [26] .got.plt          PROGBITS        000000000040cfe8 00bfe8 000270 08  WA  0   0  8
+  [27] .data             PROGBITS        000000000040d258 00c258 000010 00  WA  0   0  8
+  [28] .bss              NOBITS          000000000040d280 00c268 0003a8 00  WA  0   0 64
+
+$ nm -D files/client | awk '$2=="U"' | grep -vE 'GLIBCXX|CXXABI'
+_Unwind_Resume@GCC_3.0 __cxa_atexit@GLIBC_2.2.5 __errno_location@GLIBC_2.2.5 __libc_start_main@GLIBC_2.34 __stack_chk_fail@GLIBC_2.4 close@GLIBC_2.2.5 connect@GLIBC_2.2.5 dlsym@GLIBC_2.34 fprintf@GLIBC_2.2.5 free@GLIBC_2.2.5 fwrite@GLIBC_2.2.5 malloc@GLIBC_2.2.5 memchr@GLIBC_2.2.5 memcmp@GLIBC_2.2.5 memcpy@GLIBC_2.14 memmove@GLIBC_2.2.5 memset@GLIBC_2.2.5 pclose@GLIBC_2.2.5 popen@GLIBC_2.2.5 recv@GLIBC_2.2.5 send@GLIBC_2.2.5 setsockopt@GLIBC_2.2.5 socket@GLIBC_2.2.5 sqrt@GLIBC_2.2.5 strerror@GLIBC_2.2.5 strlen@GLIBC_2.2.5 strncmp@GLIBC_2.2.5 strncpy@GLIBC_2.2.5 strtod@GLIBC_2.2.5 toupper@GLIBC_2.2.5 
+
+$ nm -D files/client | grep -c shim_flush_class  (chi co wrapper weak, khong co dinh nghia)
+000000000040d618 u _ZGVZN3sat6client22maybe_flush_shim_classEmE2fn
+0000000000403fd4 W _ZN3sat6client22maybe_flush_shim_classEm
+000000000040d620 u _ZZN3sat6client22maybe_flush_shim_classEmE2fn
+
+$ nm -C files/client | grep sat::  (cac ham tu nguon de cho)
