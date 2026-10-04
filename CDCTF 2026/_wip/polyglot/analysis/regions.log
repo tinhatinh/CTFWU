@@ -1,0 +1,42 @@
+lines = 32  ->  len(KEY) = 32
+
+Ung cu vien cua tung vi tri (chu cai, sau bua backward):
+  pos  1  states 1   1 cai: c
+  pos  2  states 1   1 cai: d
+  pos  3  states 23   2 cai: Wc
+  pos  4  states 2   8 cai: DJPVhntz
+  pos  5  states 123456   8 cai: BHNZflrx
+  pos  6  states 45   3 cai: EQo
+  pos  7  states 2   1 cai: S
+  pos  8  states 5   1 cai: e
+  pos  9  states 1   7 cai: EKQWcou
+  pos 10  states 123456   8 cai: BHNZflrx
+  pos 11  states 2   1 cai: e
+  pos 12  states 6   2 cai: Jt
+  pos 13  states 3   9 cai: CIOUagmsy
+  pos 14  states 123456   8 cai: BHNZflrx
+  pos 15  states 3   2 cai: Cm
+  pos 16  states 5   2 cai: Eo
+  pos 17  states 2   2 cai: Cm
+  pos 18  states 1   8 cai: FLRXdjpv
+  pos 19  states 0123456  52 cai: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  pos 20  states 0123456  52 cai: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  pos 21  states 0123456  52 cai: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  pos 22  states 0123456  52 cai: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  pos 23  states 0123456  52 cai: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  pos 24  states 0123456  52 cai: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  pos 25  states 0123456  52 cai: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  pos 26  states 0123456  52 cai: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  pos 27  states 0123456  52 cai: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  pos 28  states 0123456  52 cai: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  pos 29  states 0123456  52 cai: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  pos 30  states 0123456  52 cai: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  pos 31  states 0123456  52 cai: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  pos 32  states 0123456  52 cai: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+
+Chuoi ky tu bi ep cung (duyet theo tung vi tri):
+  cd[Wc][DJPVhntz][BHNZflrx][EQo]Se[EKQWcou][BHNZflrx]e[Jt][CIOUagmsy][BHNZflrx][Cm][Eo][Cm][FLRXdjpv][52 cai][52 cai][52 cai][52 cai][52 cai][52 cai][52 cai][52 cai][52 cai][52 cai][52 cai][52 cai][52 cai][52 cai]
+
+Ky tu kha dung o vi tri 18 ma cung chia het cho 7: Fp
+Tu vi tri 19 tro di, ca 52 chu cai deu kha dung -> duoi KEY khong bi file nay rang buoc.
+Kiem tra mot ung cu vien bang: python exploit.py <zip> "cdctf{...}"
