@@ -1,0 +1,4 @@
+len 1 (mask "?u", 26 ung vien):
+Status...........: Exhausted
+Recovered........: 0/1 (100.00%) Digests (total), 1/1 (100.00%) Digests (new)
+Progress.........: 26/26 (100.00%)

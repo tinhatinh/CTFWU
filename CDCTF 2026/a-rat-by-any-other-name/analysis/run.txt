@@ -1,0 +1,4 @@
+[*] MD5 = fe00ab6a1d242513c9f246344bf7da1d, mask = ?u?l?l?l?l?l?l?l, mien = 2..8
+[*] thu hoi: 'Jaqurtis' (41.9 s)
+[+] ten cua chuot: Jaqurtis
+[+] cdctf{Jaqurtis}
