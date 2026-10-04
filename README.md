@@ -111,10 +111,19 @@ and team results. Entries live in `site/_data/certificates.json`; bilingual type
 append a catalog entry. No layout change is needed. Participation, professional certifications,
 courses and awards are supported. Search/type filters appear as the collection grows.
 
-Required fields: unique `id`, `title`, `type`, `recipient`, `issuer`, and `image` or `document`.
-Optional fields: ISO `date`, `date_kind` (`issued`/`event`), `event_period` (`vi`/`en` labels),
-`certificate_id`, `verification_url` (HTTPS), `signatory` and `verified_on`. Omit dates without
-evidence; set `verified_on` only after checking the issuer. The build validates IDs, assets and dates.
+Current language credentials, verified on the [official score lookup](https://admin.chinesetest.cn/queryScore.do?sid=c2tActR9Wb%274d5abc0a153f80ff334719fbb938a461a6b706eba73aa8f4%2724d7sWsQ5nVUQSwD):
+
+| Test | Date | Result |
+|------|------|--------|
+| HSK Level 4 | 28 June 2026 | 262/300 — Listening 90, Reading 94, Writing 78 (pass mark 180) |
+| HSKK Intermediate | 28 June 2026 | Speaking 60/100 (pass mark 60) |
+
+Catalog entries require a unique `id`, `title`, `type`, `recipient` and `issuer`. Add evidence with
+an `image`, `document` or HTTPS `verification_url`. Optional fields include ISO `date`, `date_kind`
+(`issued`/`event`/`exam`), bilingual `summary`, `score_details` and `validity_note`, `event_period`
+(`vi`/`en` labels), `certificate_id`, `signatory` and `verified_on`. Omit dates without evidence;
+set `verified_on` only after checking the issuer. The build validates IDs, assets, dates and bilingual
+score labels.
 
 ## Competitions
 
