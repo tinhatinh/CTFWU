@@ -1,7 +1,7 @@
 # Verbal Authentication Transmissions 5/5: You get all that? - OSINT + Crypto (500 pts)
 
 **Flag:** `cdctf{8u88l3_848813_fl4g_pa55ing}`
-**Files:** `captured_cred_call.mp3` (151244 B, sha256 `687fecc9b0868355...4799f803`), `cred_call_transcript.txt` (254 B, sha256 `41eb65db34be1d35...aab00fea`)
+**Files:** `captured_cred_call.mp3` (151244 B, sha256 `687fecc9b0868355f0af53b347d8a3a5e918522d936cda0cd46d89504799f803`), `cred_call_transcript.txt` (254 B, sha256 `41eb65db34be1d35090b7d694d2bd065d1afbee97d57172f3aa9ead6aab00fea`)
 
 ## Problem Description
 

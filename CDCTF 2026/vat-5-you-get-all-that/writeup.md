@@ -1,7 +1,7 @@
 # Verbal Authentication Transmissions 5/5: You get all that? - OSINT + Crypto (500 pts)
 
 **Flag:** `cdctf{8u88l3_848813_fl4g_pa55ing}`
-**Files:** `captured_cred_call.mp3` (151244 B, sha256 `687fecc9b0868355...4799f803`), `cred_call_transcript.txt` (254 B, sha256 `41eb65db34be1d35...aab00fea`)
+**Files:** `captured_cred_call.mp3` (151244 B, sha256 `687fecc9b0868355f0af53b347d8a3a5e918522d936cda0cd46d89504799f803`), `cred_call_transcript.txt` (254 B, sha256 `41eb65db34be1d35090b7d694d2bd065d1afbee97d57172f3aa9ead6aab00fea`)
 
 ## Đề bài
 
@@ -39,13 +39,13 @@ Trước khi chốt đã kiểm tra và loại các kênh sau (log đầy đủ 
 4. **Sinh transcript từ audio**: Whisper `small` trả 0 token cho 17 word, nên audio không
    thêm dữ kiện; transcript là nguồn duy nhất. Loại (nhưng vẫn dùng để xác minh transcript
    bằng chính vòng mã hoá).
-5. **Mật độ classical trên 85 ký tự** (Polybius homophonic, mỗi word một ký tự): 654 bộ tham
+5. **Mật mã classical trên 85 ký tự** (Polybius homophonic, mỗi word một ký tự): 654 bộ tham
    số (tập vị trí, cách quy đổi, endian, bảng ký tự, offset ASCII) cho 0 kết quả chứa manh
    roi cờ, trong khi cùng bộ máy đó tìm thấy `cdctf` trên dữ liệu tổng hợp có cùng sơ đồ. Loại.
 
 ## Chuỗi khai thác
 
-**Bước 1 - Đọc cấu trúc thành tham số của BubbleBabble.** hàm này phát `x`, rồi mỗi vòng
+**Bước 1 - Đọc cấu trúc thành tham số của BubbleBabble.** Hàm này phát `x`, rồi mỗi vòng
 tròn in 5 ký tự từ một cặp byte, xen kẽ dấu `-`:
 
 ```python
