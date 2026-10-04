@@ -12,7 +12,7 @@ The archive layout below is the source of truth. The site is assembled into a st
 1.3 GB of challenge artifacts in this repo never reach `_site`:
 
 ```bash
-python tools/build_site.py              # writes _site_src/ and _site_src_en/, 72 posts each
+python tools/build_site.py              # writes _site_src/ and _site_src_en/, 113 posts each
 ```
 
 `_site_src/` (Vietnamese) and `_site_src_en/` (English) are generated and git-ignored - never edit
@@ -133,8 +133,9 @@ score labels.
 | [SunshineCTF 2026](SunshineCTF%202026/writeup.md) | Sep 2026 | 18 | Pwn · Web · Crypto · Forensics · Misc |
 | [Pointer Overflow CTF 2026](Pointer%20Overflow%20CTF%202026/writeup.md) | Sep 2026 | 8 | Crypto · EXP · Forensics · Misc · OSINT · RE · Steg · Web |
 | [CSS CTF 2026: Return of Nexus](CSS%20CTF%202026/writeup.md) | Oct 2026 | 17 | Web · Pwn · Crypto · Forensics · OSINT · Misc · Reverse Engineering · Web3 |
+| [CDCTF 2026](CDCTF%202026/README.md) | Oct 2026 | 41 | Crypto · Forensics · Log Analysis · Misc · NTA · OSINT · Password Cracking · Pwn · Reverse · Scanning · Web |
 
-**Total: 72 writeups**
+**Total: 113 writeups**
 
 ## Structure
 
@@ -270,6 +271,55 @@ Each challenge directory follows a consistent layout:
 </details>
 
 
+
+<details>
+<summary><b>CDCTF 2026 - 41 challenges</b></summary>
+
+| Challenge | Category |
+|-----------|----------|
+| [a-rat-by-any-other-name](CDCTF%202026/a-rat-by-any-other-name/writeup.md) | Password Cracking |
+| [best-of-friends](CDCTF%202026/best-of-friends/writeup.md) | Crypto |
+| [blakes-bride](CDCTF%202026/blakes-bride/writeup.md) | Forensics |
+| [bring-coines](CDCTF%202026/bring-coines/writeup.md) | Reverse |
+| [calcurator-1](CDCTF%202026/calcurator-1/writeup.md) | Forensics · Reverse |
+| [calcurator-2](CDCTF%202026/calcurator-2/writeup.md) | Forensics · Reverse |
+| [calcurator-3](CDCTF%202026/calcurator-3/writeup.md) | Forensics · Reverse |
+| [calcurator-4](CDCTF%202026/calcurator-4/writeup.md) | Forensics · Reverse · OSINT |
+| [catty-malware-1](CDCTF%202026/catty-malware-1/writeup.md) | Forensics |
+| [catty-malware-2](CDCTF%202026/catty-malware-2/writeup.md) | Forensics |
+| [catty-malware-3](CDCTF%202026/catty-malware-3/writeup.md) | Forensics |
+| [clear-as-glass](CDCTF%202026/clear-as-glass/writeup.md) | Forensics · Reverse |
+| [cookies](CDCTF%202026/cookies/writeup.md) | Web |
+| [corporate-rat](CDCTF%202026/corporate-rat/writeup.md) | Log Analysis |
+| [cosmic-call](CDCTF%202026/cosmic-call/writeup.md) | Scanning · NTA · Crypto |
+| [crypto-cat-1](CDCTF%202026/crypto-cat-1/writeup.md) | Crypto |
+| [crypto-cat-2](CDCTF%202026/crypto-cat-2/writeup.md) | Crypto |
+| [crypto-cat-3](CDCTF%202026/crypto-cat-3/writeup.md) | Crypto |
+| [diggity-network](CDCTF%202026/diggity-network/writeup.md) | Forensics |
+| [doomscroll-hell](CDCTF%202026/doomscroll-hell/writeup.md) | Forensics |
+| [eat-your-fruits-and-vegetables](CDCTF%202026/eat-your-fruits-and-vegetables/writeup.md) | Crypto |
+| [epic-rat-encoding](CDCTF%202026/epic-rat-encoding/writeup.md) | Reverse |
+| [flag-knows-what-it-is](CDCTF%202026/flag-knows-what-it-is/writeup.md) | Crypto |
+| [forensics-training-mat](CDCTF%202026/forensics-training-mat/writeup.md) | Forensics |
+| [gerry-the-larry-1](CDCTF%202026/gerry-the-larry-1/writeup.md) | Log Analysis |
+| [gitlash](CDCTF%202026/gitlash/writeup.md) | Pwn · Forensics |
+| [low-on-fun](CDCTF%202026/low-on-fun/writeup.md) | Reverse |
+| [night-catz-crazy-cat-club](CDCTF%202026/night-catz-crazy-cat-club/writeup.md) | Reverse · Crypto |
+| [script-of-theseus](CDCTF%202026/script-of-theseus/writeup.md) | Forensics |
+| [soupos-0-welcome-to-the-kitchen](CDCTF%202026/soupos-0-welcome-to-the-kitchen/writeup.md) | Reverse · Pwn |
+| [soupos-1-mise-en-place](CDCTF%202026/soupos-1-mise-en-place/writeup.md) | Reverse · Pwn |
+| [soupos-2-salt-to-taste](CDCTF%202026/soupos-2-salt-to-taste/writeup.md) | Reverse · Pwn |
+| [soupos-3-bad-recipe](CDCTF%202026/soupos-3-bad-recipe/writeup.md) | Reverse · Pwn |
+| [tacocat](CDCTF%202026/tacocat/writeup.md) | Misc |
+| [troubled-translation](CDCTF%202026/troubled-translation/writeup.md) | OSINT |
+| [vat-1-going-ham](CDCTF%202026/vat-1-going-ham/writeup.md) | OSINT · Crypto |
+| [vat-3-pretty-good-passphrase](CDCTF%202026/vat-3-pretty-good-passphrase/writeup.md) | OSINT · Crypto |
+| [vat-4-what-the-helly](CDCTF%202026/vat-4-what-the-helly/writeup.md) | OSINT · Crypto · Password Cracking |
+| [vat-5-you-get-all-that](CDCTF%202026/vat-5-you-get-all-that/writeup.md) | OSINT · Crypto |
+| [wish](CDCTF%202026/wish/writeup.md) | Pwn |
+| [yummy-rat-toast](CDCTF%202026/yummy-rat-toast/writeup.md) | Password Cracking |
+
+</details>
 
 ## License
 
