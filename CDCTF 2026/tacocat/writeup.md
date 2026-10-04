@@ -1,6 +1,7 @@
-# Tacocat - Misc / Forensics (500 diem)
+# Tacocat - Misc
 
-**Flag:** `cdctf{I_really_rea11y_1ik3_th3_tac0b311_classic_crunchy_taco3}` · **Files:** `fat_tacocat.png`, 578053 byte, sha256 `11fe22d62e5f8a1fee9cb0d9cdc04efd6d66b20ea860aeb58351bf5b69e1f07f`
+**Flag:** `cdctf{I_really_rea11y_1ik3_th3_tac0b311_classic_crunchy_taco3}` · **Điểm:** 500 · **Tác giả:** alex
+**Files:** `fat_tacocat.png` (578053 B, sha256 `11fe22d62e5f8a1fee9cb0d9cdc04efd6d66b20ea860aeb58351bf5b69e1f07f`)
 
 ## Đề bài
 
