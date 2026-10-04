@@ -50,6 +50,7 @@ bash _template/new_case.sh "CDCTF 2026" <ten-bai> "<duong-dan-file-de>" --wip
 | [best-of-friends](best-of-friends/writeup.md) | Cryptography | 500 | `cdctf{friendshipisalotlikecheese}` (bang chu cai Tom-Tom, tinh cuc bo tu file de, chua doi chieu bang submission) |
 | [doomscroll-hell](doomscroll-hell/writeup.md) | Forensics | 500 | `cdctf{doomscrolling_is_so_much_fun!}` (the de ghi `word_word_word_word_word`, co `!` o tu cuoi) |
 | [vat-1-going-ham](vat-1-going-ham/writeup.md) | OSINT + Crypto | 500 | `cdctf{N4T0_comms}` (bảng NATO đọc chính tả hex, phát sóng tự sửa bằng từ `Correction`) |
+| [vat-3-pretty-good-passphrase](vat-3-pretty-good-passphrase/writeup.md) | OSINT + Crypto | 500 | `cdctf{pr3t7y_g00d_piv4cy_fl4G}` (PGP Word List: mỗi từ là một byte của cả khối ASCII armor, chẵn = từ 2 âm tiết, lẻ = từ 3 âm tiết; hợp nhất 3 bản nghe whisper để sửa 8 ô lệch) |
 | [vat-4-what-the-helly](vat-4-what-the-helly/writeup.md) | OSINT + Crypto + Password Cracking | 500 | `cdctf{idontcare1}` (S/Key six-word RFC 2289, nhưng chuỗi đi `fold(MD5(hex))` chứ không phải `fold(MD5(8 byte thô))`; mask 53-64 bit quet 14.3M tu rockyou) |
 | [vat-5-you-get-all-that](vat-5-you-get-all-that/writeup.md) | OSINT + Crypto | 500 | `cdctf{8u88l3_848813_fl4g_pa55ing}` (BubbleBabble của OpenSSH, đảo theo chuỗi seed; đối chiếu round-trip 85/85 ký tự) |
 | [crypto-cat-2](crypto-cat-2/writeup.md) | Cryptography | 496 | `cdctf{exclus1ve_x0r1n_these_byt3s_and_5tuff}` (XOR mot byte, k = 0x8f) |
@@ -64,7 +65,7 @@ Các bài CDCTF khác đã làm trong cùng giải nhưng chưa được đóng 
 Catty Malware, Tattle Tale, Cosmic Call, Crimson Clinic, CommuniCATe, Polyglot, Gerry the
 Larry (2/2)) đang nằm trong memory của các phiên chơi, chưa có folder. Thêm bằng `new_case.sh` rồi cập
 nhật bảng ở trên. Phần 1 của Gerry the Larry đã đóng gói ở `gerry-the-larry-1/`, trong đó có danh sách
-12 block cần cho phần 2. Series VAT của `b0b` đã đóng gói 1/5, 4/5 (`vat-4-what-the-helly/`, S/Key)
-và 5/5; còn 2/5 (LARP) và 3/5 (Pretty Good Passphrase) chưa có folder. Key PGP `VAT_key` (userid
-"Crimson Offense b0b (baller) <b0b@crimson.offense>") tải về cùng đợt với audio của 4/5, nhiều khả
-năng là artifact của 3/5; 4/5 đã dùng nó làm đối chứng mật khẩu.
+12 block cần cho phần 2. Series VAT của `b0b` đã đóng gói 1/5, 3/5 (`vat-3-pretty-good-passphrase/`,
+PGP Word List), 4/5 (`vat-4-what-the-helly/`, S/Key) và 5/5; còn 2/5 (LARP) chưa có folder. Key PGP
+`VAT_key` (userid "Crimson Offense b0b (baller) <b0b@crimson.offense>") đúng là artifact của 3/5,
+đã kiểm chứng: keyID subkey `C87AFF55F4097C91` xuất hiện ngay trong PKESK giải ra từ audio.

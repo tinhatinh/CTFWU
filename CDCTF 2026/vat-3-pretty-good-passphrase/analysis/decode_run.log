@@ -1,0 +1,23 @@
+[*] artifact: voicemail.mp3
+[*] asr_base: 419 token -> 415 tu, body 340, o chua doc duoc [86, 94]
+[*] asr_medium: 423 token -> 417 tu, body 340, o chua doc duoc [227]
+[*] asr_small: 423 token -> 417 tu, body 340, o chua doc duoc [229, 247, 329]
+[*] hop nhat 3 ban nghe: 340 ky tu base64, 8 o co bat dong
+      pos 41: tXX -> X
+      pos 65: tXX -> X
+      pos 86: ?WW -> W
+      pos 94: ?PP -> P
+      pos 227: W?W -> W
+      pos 229: ii? -> i
+      pos 247: ii? -> i
+      pos 329: YY? -> Y
+[*] 253 byte, CRC doc tu audio = uQhg (b90860), CRC24 tinh lai tu body = b90860 KHOP
+[*] kiem cau truc packet:
+      PKESK tag=0x84 len=140 ver=3 keyid=c87aff55f4097c91 algo=1 mpi=1020 bit
+      SEIP  tag=0xd2 len=109 ver=1
+[*] gpg:
+gpg: encrypted with rsa1024 key, ID C87AFF55F4097C91, created 2026-10-03
+      "Crimson Offense b0b (baller) <b0b@crimson.offense>"
+[+] plaintext: 'Good work: cdctf{pr3t7y_g00d_piv4cy_fl4G}\n'
+
+FLAG: cdctf{pr3t7y_g00d_piv4cy_fl4G}
