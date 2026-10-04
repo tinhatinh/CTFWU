@@ -1,0 +1,20 @@
+$ python exploit.py --crack C:/Tools/rockyou.txt 14
+[*] wordlist C:/Tools/rockyou.txt: 14344391 dong, 14 tien trinh, so bit chac cua tung ma: [53, 42, 64, 64, 64, 64, 64, 53]
+[*] mask hit b'idontcare1': 39/48 o khop, 3/8 ma khop het
+Mat khau thu: b'idontcare1'   (n=8, khong seed, MD5 nap ve 64 bit)
+ma       suy ra tu mat khau                       nghe duoc trong audio
+Code 1    BAIT GAUR OS TACT TIP DUD                BATE GOWER OS TACT TIP DUD               
+Code 2    GLEN YAWL PEW RUNG BUOY BODY             GLIN YALL PEW RUN BUOY BODY              
+Code 3    GRUB TRY BABY MUFF GRIM ACME             GRUB TRY BABY MUFF GRIM ACME             == KHOP
+Code 4    CUB CUTS GAIN SLUM MUST ELM              CUB CUTS GAIN SLUM MUST ELM              == KHOP
+Code 5    RUST HERB BAIL SAVE IFFY DO              RUST HERB BAIL SAVE IFFY DO              == KHOP
+Code 6    REAR NOLL MART TREE WORM WAVE            REAR NO MART TREE WORM WAVE              
+Code 7    MIST LOG HOST SORT HOLT ACRE             MIST LOG HOST SORT HOLD ACRE             
+Code 8    INCH WERT IKE LOS DRAB SIS               INCH WORT IKE LOSE DRAB SIS              
+[*] 39/48 o tu khop voi transcript, 3/8 ma khop tuyet doi
+[+] cdctf{idontcare1}
+[+] da luu flag.txt
+
+real	2m46.994s
+user	0m0.000s
+sys	0m0.015s

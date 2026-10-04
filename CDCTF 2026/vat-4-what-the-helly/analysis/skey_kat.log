@@ -1,0 +1,18 @@
+=== Phan 1: RFC 2289 Appendix C ===
+  27/27 vector khop ca hex lan sau tu (MD4/MD5/SHA1)
+
+=== Phan 2: kiem kieu dong goi 64 bit <-> sau tu ===
+  D1854218EBBB0B51 -> ROME MUG FRED SCAN LIVE LACE   (RFC: ROME MUG FRED SCAN LIVE LACE)  khop
+  63473EF01CD0B444 -> CARD SAD MINI RYE COL KIN   (RFC: CARD SAD MINI RYE COL KIN)  khop
+  C5E612776E6C237A -> NOTE OUT IBIS SINK NAVE MODE   (RFC: NOTE OUT IBIS SINK NAVE MODE)  khop
+  tu dien: 2048 tu, ngan nhat 1 dai nhat 4 ky tu
+
+=== Phan 3: checksum cua tung ma nghe duoc trong audio ===
+Code 1  BATE GOWER OS TACT TIP DUD                ngoai tu dien: GOWER
+Code 2  GLIN YALL PEW RUN BUOY BODY               ngoai tu dien: GLIN YALL
+Code 3  GRUB TRY BABY MUFF GRIM ACME              checksum -> GRUB TRY BABY MUFF GRIM ACME             hop le
+Code 4  CUB CUTS GAIN SLUM MUST ELM               checksum -> CUB CUTS GAIN SLUM MUST ELM              hop le
+Code 5  RUST HERB BAIL SAVE IFFY DO               checksum -> RUST HERB BAIL SAVE IFFY DO              hop le
+Code 6  REAR NO MART TREE WORM WAVE               checksum -> REAR NO MART TREE WORM WATS              LECH o 5
+Code 7  MIST LOG HOST SORT HOLD ACRE              checksum -> MIST LOG HOST SORT HOLD ACRE             hop le
+Code 8  INCH WORT IKE LOSE DRAB SIS               ngoai tu dien: WORT

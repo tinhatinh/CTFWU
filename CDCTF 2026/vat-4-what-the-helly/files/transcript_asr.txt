@@ -1,0 +1,13 @@
+# Ver bay tam ma OTP doc trong audio (OTP_CODES_VAT.mp3).
+#Nguon: Whisper `base` (analysis/asr_base_run.log), Whisper `small`
+#       (analysis/asr_small_run.log) va Vosk small-en (analysis/asr_vosk_run.log),
+#       chot moi o bang tu gan nhat voi bang tu dien S/Key (xem notes.md).
+#Cac token khong co trong tu dien giu nguyen, chung khong dong gop bit nao vao mask.
+Code 1: BATE GOWER OS TACT TIP DUD
+Code 2: GLIN YALL PEW RUN BUOY BODY
+Code 3: GRUB TRY BABY MUFF GRIM ACME
+Code 4: CUB CUTS GAIN SLUM MUST ELM
+Code 5: RUST HERB BAIL SAVE IFFY DO
+Code 6: REAR NO MART TREE WORM WAVE
+Code 7: MIST LOG HOST SORT HOLD ACRE
+Code 8: INCH WORT IKE LOSE DRAB SIS

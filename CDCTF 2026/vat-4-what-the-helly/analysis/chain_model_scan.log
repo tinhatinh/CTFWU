@@ -1,0 +1,13 @@
+ma dung duoc 6 tu (lam bang chung): [3, 4, 5, 6, 7]
+so ket hop hash/nap/input da thu: 65
+  KHOP  step^1(Code4) ~ Code3  lech=[]   [md5 / xor-nua / chuoi-hex]
+  KHOP  step^2(Code5) ~ Code3  lech=[]   [md5 / xor-nua / chuoi-hex]
+  KHOP  step^1(Code5) ~ Code4  lech=[]   [md5 / xor-nua / chuoi-hex]
+tong so kieu khop: 3
+mo hinh RFC (8 byte tho): khong co
+
+=== dung mo hinh md5/xor-nua/chuoi-hex, suy lai ma 1 va ma 2 tu ma 3 ===
+  Code 2 suy ra  GLEN YAWL PEW RUNG BUOY BODY
+  Code 2 nghe     GLIN YALL PEW RUN BUOY BODY   (o tu lech: 1:GLIN->GLEN 2:YALL->YAWL 4:RUN->RUNG)
+  Code 1 suy ra  BAIT GAUR OS TACT TIP DUD
+  Code 1 nghe     BATE GOWER OS TACT TIP DUD   (o tu lech: 1:BATE->BAIT 2:GOWER->GAUR)
