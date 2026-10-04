@@ -1,0 +1,16 @@
+Lệnh mở đầu: giải mã toàn bộ chuỗi hex bằng phép bù một bit, chạy trực tiếp để lấy kết quả thay vì ghép tay.
+
+```bash
+node -e '
+const h="9c9b9c8b9984968bdf968cdf8c8a8d9adf88979a8d9adf968bdf968c91d88bd3df88968b979691df8d9a9e8c9091d3df9e919bdf968bdf949190888cdf88979a8d9adf968bdf889e8c82";
+console.log("hexlen",h.length,"bytes",h.length/2);
+let o="";for(let i=0;i<h.length;i+=2)o+=String.fromCharCode(0xff^parseInt(h.substr(i,2),16));
+console.log(o);'
+```
+
+Output thật:
+
+```text
+hexlen 148 bytes 74
+cdctf{it is sure where it isn't, within reason, and it knows where it was}
+```
