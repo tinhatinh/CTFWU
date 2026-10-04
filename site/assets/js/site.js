@@ -37,6 +37,7 @@
   const list = document.querySelector("#archive-list");
   if (list) {
     const rows = [...list.querySelectorAll(".writeup-row")];
+    const categoriesByRow = new Map(rows.map(row => [row, JSON.parse(row.dataset.categories)]));
     const search = document.querySelector("#archive-search");
     const eventFilter = document.querySelector("#event-filter");
     const sort = document.querySelector("#sort-order");
@@ -56,7 +57,7 @@
         normalize(
           [
             row.dataset.title,
-            row.dataset.category,
+            categoriesByRow.get(row).join(" "),
             row.dataset.event,
             row.dataset.search,
           ].join(" "),
@@ -69,7 +70,7 @@
       let visible = 0;
       for (const row of rows) {
         row.hidden = !!(
-          (category && row.dataset.category !== category) ||
+          (category && !categoriesByRow.get(row).includes(category)) ||
           (eventFilter.value && row.dataset.event !== eventFilter.value) ||
           !words.every((word) => searchable.get(row).includes(word))
         );

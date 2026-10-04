@@ -215,6 +215,24 @@ def readme_categories(event):
     return m
 
 
+def challenge_categories(label):
+    """Return separate, canonical labels in source order (primary first)."""
+    aliases = {
+        "cryptography": "Crypto", "crypto": "Crypto",
+        "reverse engineering": "Reverse", "rev eng": "Reverse",
+        "reverse": "Reverse", "re": "Reverse", "rev": "Reverse", "reve": "Reverse",
+        "pwn": "Pwn", "web exploitation": "Web", "web": "Web",
+        "forensics": "Forensics", "osint": "OSINT", "misc": "Misc",
+        "log analysis": "Log Analysis", "password cracking": "Password Cracking",
+        "scanning": "Scanning", "nta": "NTA", "steg": "Steg",
+        "warm-up": "Warm-up", "web3": "Web3", "ai": "AI", "cloud": "Cloud",
+        "hardware": "Hardware", "mobile": "Mobile", "exp": "EXP",
+    }
+    # Longest labels first also handles legacy strings without '+' delimiters.
+    pattern = r"(?<!\w)(?:" + "|".join(re.escape(a) for a in sorted(aliases, key=len, reverse=True)) + r")(?!\w)"
+    return list(dict.fromkeys(aliases[m.group().lower()] for m in re.finditer(pattern, label, re.I)))
+
+
 def protect_liquid(body):
     """Giup Liquid khong thuc thi payload SSTI/Jinja ma writeup chem lai.
 
@@ -313,6 +331,13 @@ def collect(lang):
             text = open(w, encoding="utf-8").read()
             title = next((ln[2:].strip() for ln in text.split("\n")
                           if ln.startswith("# ")), "%s - %s" % (event, case))
+            category_label = catmap.get(case)
+            if not category_label:
+                heading_parts = re.split(r"\s[-–—]\s", title, maxsplit=1)
+                category_label = heading_parts[1] if len(heading_parts) > 1 else ""
+            categories = challenge_categories(category_label)
+            if not categories:
+                raise ValueError("Missing challenge category: %s/%s" % (event, case))
             key = "%s/%s" % (event, case)
             seen.add(key)
             mod = git_time(w)
@@ -324,7 +349,7 @@ def collect(lang):
                 "case": case, "path": w, "text": text, "title": title,
                 "date": solved, "exact": exact, "mod": mod,
                 "key": "%s-%s" % (slugify(event), slugify(case)),
-                "cat": (catmap.get(case) or "writeup").strip(), "fallback": fallback,
+                "cat": categories[0], "cats": categories, "fallback": fallback,
             })
         if posts:
             events.append({"name": event, "slug": slugify(event), "posts": posts, "idx": i})
@@ -413,9 +438,10 @@ def write_post(stage, ev, p, lang, base):
     fm = ["---", 'title: "%s"' % p["title"].replace('"', "'"),
           "date: %s %s" % (d.strftime("%Y-%m-%d %H:%M:%S"), d.strftime("%z")),
           "lastmod_at: %s" % mod.strftime("%Y-%m-%d %H:%M:%S %z"),
-          "categories: [%s]" % p["cat"],
-          "tags: [%s]" % ", ".join(dict.fromkeys([ev["slug"].replace("-ctf-", "-").replace("-2026", ""),
-                                                  p["cat"].lower()])),
+          "categories: " + json.dumps(p["cats"], ensure_ascii=False),
+          "primary_category: " + json.dumps(p["cat"]),
+          "tags: " + json.dumps([ev["slug"].replace("-ctf-", "-").replace("-2026", ""),
+                                 p["cat"].lower()], ensure_ascii=False),
           "permalink: /posts/%s/" % p["key"],
           "challenge_key: " + json.dumps(p["key"]),
           "challenge_name: " + json.dumps(re.split(r"\s[-–—]\s", p["title"], maxsplit=1)[0], ensure_ascii=False),
@@ -508,7 +534,7 @@ def write_competitions(stage, events, lang, base):
         span = stamp(last, lang, False)
         if first.date() != last.date():
             span = "%s → %s" % (stamp(first, lang, False), span)
-        cats = sorted({p["cat"] for p in ev["posts"]})
+        cats = sorted({cat for p in ev["posts"] for cat in p["cats"]})
         cover = cover_html(ev, base)
         cats_html = "".join("<span>%s</span>" % c for c in cats)
         body.append(
@@ -554,7 +580,7 @@ def write_portfolio(stage, events, lang):
                             '<text x="300" y="170" text-anchor="middle" font-family="monospace" '
                             'font-size="68" fill="#c0ec88">' + html.escape(initials(ev["name"])) + '</text></svg>')
         records.append({"name": ev["name"], "slug": ev["slug"], "count": len(ev["posts"]),
-                        "categories": sorted({p["cat"] for p in ev["posts"]}),
+                        "categories": sorted({cat for p in ev["posts"] for cat in p["cats"]}),
                         "date": max(p["date"] for p in ev["posts"]).strftime("%m / %Y"),
                         "cover": "/assets/competitions/" + cover})
     path = os.path.join(stage, "_data", "portfolio.json")

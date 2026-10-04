@@ -737,6 +737,12 @@ a:hover {
 .writeup-row:hover {
   background: var(--surface);
 }
+.writeup-row > .category-pill {
+  max-width: 100%;
+  box-sizing: border-box;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
 .row-name {
   display: flex;
   align-items: center;

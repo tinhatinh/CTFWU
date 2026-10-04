@@ -32,7 +32,7 @@ layout: default
       <a class="feature-card" href="{{ post.url | relative_url }}">
         <div class="feature-body">
           <div class="card-meta">
-            <span class="category-pill">{{ post.categories.first }}</span>
+            <span class="category-pill">{{ post.primary_category }}</span>
             <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%d.%m.%Y' }}</time>
           </div>
           <h3>{{ post.challenge_name }}</h3>
