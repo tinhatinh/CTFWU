@@ -1,0 +1,7 @@
+[*] 8 so -> 64 byte
+[*] hex      : 4d656574206d652061742074686520546f6d20426576696c6c204275696c64696e67206174206e6f6f6e206e657874207765656b20546875727364617900256c
+[*] printable: Meet me at the Tom Bevill Building at noon next week Thursday.%l
+[*] byte sau NUL: 256c = %l (duoi cua chuoi format "%lu " trong binary)
+[+] message (61 ky tu): Meet me at the Tom Bevill Building at noon next week Thursday
+[+] flag      : cdctf{Tom_Bevill_Building_at_noon_next_week_Thursday}
+[+] round-trip: re-encode bang vong lap C khop ca 8 so
