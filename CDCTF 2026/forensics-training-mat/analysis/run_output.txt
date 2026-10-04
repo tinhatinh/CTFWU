@@ -1,0 +1,34 @@
+[0] files/suspicious.xz : 109912 byte, magic fd377a585a00 (XZ) -> unxz
+    -> 524288000 byte, 512 byte dau la DOS/MBR boot sector: day la DISK IMAGE, khong phai archive
+[1] GPT co 4 partition
+    #0 billy   base=17408       size=4982784    loai=vfat
+    #1 astrid  base=5242880     size=41943040   loai=ext
+    #2 hwk     base=48234496    size=130023424  loai=ext
+    #3 main    base=179306496   size=343932928  loai=?
+
+[2] Part 1 - "billy" = FAT32
+    'flag1.png' : 405 byte, 8 byte dau = 504e470d0a1a0a00 (thieu 0x89 -> PNG khong mo duoc)
+    them 0x89 va bo byte duoi -> PNG 111x111 1-bit, CRC hop le cho moi chunk: True
+    QR -> 'cdctf{A_Basic_Crimson_Disk_Exercise_in_Forensics}'
+
+[3] Part 2 - "astrid" = ext2 (compat bit has_journal = False)
+    ino=12 size=82757 -> analysis/flag2.jpg, JPEG 610x610, co EOI: True
+    QR trong anh giai ra: "Don't worry, as lasy as it might feel lite challenge makers tene to ge, we hould never give you the same ihallenge twice in a row dith no meaningful differences. Ee put a lot of heart and soul into these things."
+    -> day la chu thach thuc, khong phai co; co Part 2 nam trong payload StegHide
+
+[4] Part 3 - "hwk" = ext4 (extents + 64bit + metadata_csum)
+    root dir: [(11, 'lost+found'), (13, 'flag3.png')]
+    carrier=1405 byte = PNG 917 byte + XZ 488 byte (ngat ngay sau IEND)
+    XZ -> 559 byte, dong cuoi: b'cdctf{A_Little_XZtra_Tr3at!}'
+
+[5] Part 4 - "main" = btrfs (superblock magic _BHRfS_M @65536)
+    magic = b'_BHRfS_M'
+    cdctf{d3l3te_w0_sync_h0l3y_C0W} xuat hien 6 lan, offset dau [42122663, 42155821, 42270047] (san pham cua snapshot, khong phai file song)
+
+=== Cac co thu duoc tu artifact ===
+  Part 1 (QR trong flag1.png)        cdctf{A_Basic_Crimson_Disk_Exercise_in_Forensics}
+  Part 3 (XZ noi them sau PNG)       cdctf{A_Little_XZtra_Tr3at!}
+  Part 4 (btrfs snapshot + strings)  cdctf{d3l3te_w0_sync_h0l3y_C0W}
+  Quiz (doc tu JS cua trang tutorial) cdctf{f00rens!k_y!pP33}
+  Part 2 (StegHide trong flag2.jpg)  con mo: can binary steghide + passphrase
+[xoa] C:\Users\ADMINI~1\AppData\Local\Temp\cdctf_forensics_disk.img

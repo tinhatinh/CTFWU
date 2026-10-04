@@ -1,0 +1,15 @@
+q1   mc         Part 1, Step 1: Decompressing the Artifact           => unxz
+q2   mc         Part 1, Step 2: Identifying the Class of Artifact    => Disk Image
+q3   checkbox   Part 1, Step 3: Picking a tool                       => Autopsy, a graphical analyzer + Volatility, a command line forensic tool + losetup, a Linux tool to turn files into usable devices
+q4   checkbox   Part 1, Step 4: Classifying Partitions               => vfat + ext2 + ext4 + btrfs
+q5   freeresponse Part 1, Step 5: Finding Normal Files                 => flag1.png
+q6   freeresponse Part 1, Step 6: Recovering Files                     => 405
+q7   mc         Part 1, Step 7: Repairing Files                      => The magic bytes are wrong (Solution: Use a hex editor to make the leading bytes match a PNG)
+q8   mc         Part 2, Step 1: Disguised Files                      => A JPEG of a QR Code
+q9   mc         Part 2, Step 2: Uncovering the Hidden File           => StegHide (Use steghide)
+q10  freeresponse Part 3, Step 1: Carrier Files                        => 1405
+q11  checkbox   Part 3, Step 2: Uncovering the Hidden File (again!)  => CyberChef (Extract Files block) + binwalk
+q12  mc         Part 3, Step 3: Extracting the Hidden File           => XZ
+q13  mc         Part 4, Step 1: Filesystem Quirks and Recovery       => A snapshot
+q14  freeresponse Part 4, Step 2: Commitment Issues                    => sync
+q15  mc         Part 4, Step 3: Retrieving What Was Lost             => strings
