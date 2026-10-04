@@ -621,8 +621,8 @@ def validate_certificates(stage):
             raise ValueError("Certificate type requires VI and EN labels")
         record.setdefault("date", "")
         record.setdefault("date_kind", "issued")
-        if record["date_kind"] not in ("issued", "event"):
-            raise ValueError("Certificate date_kind must be issued or event")
+        if record["date_kind"] not in ("issued", "event", "exam"):
+            raise ValueError("Certificate date_kind must be issued, event or exam")
         if record.get("event_period"):
             period = record["event_period"]
             if not isinstance(period, dict) or not all(isinstance(period.get(lang), str) and period[lang] for lang in ("vi", "en")):
@@ -630,8 +630,12 @@ def validate_certificates(stage):
         for field in ("date", "verified_on"):
             if record.get(field):
                 dt.date.fromisoformat(record[field])
-        if not record.get("image") and not record.get("document"):
-            raise ValueError("Certificate requires an image or a document")
+        for field in ("summary", "validity_note"):
+            if record.get(field) and (not isinstance(record[field], dict) or not all(isinstance(record[field].get(lang), str) and record[field][lang] for lang in ("vi", "en"))):
+                raise ValueError(field + " requires VI and EN text")
+        for detail in record.get("score_details", []):
+            if not isinstance(detail, dict) or any(not isinstance(detail.get(field), dict) or not all(isinstance(detail[field].get(lang), str) and detail[field][lang] for lang in ("vi", "en")) for field in ("label", "value")):
+                raise ValueError("Certificate score details require bilingual labels and values")
         for field in ("image", "document"):
             if not record.get(field):
                 continue

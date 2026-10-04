@@ -13,5 +13,43 @@
     "image": "/assets/certificates/h7ctf-2026-participation-tinhatinh.png",
     "verification_url": "https://app.h7tex.com/verify",
     "verified_on": "2026-10-03"
+  },
+  {
+    "id": "hsk-level-4-2026",
+    "title": "HSK Level 4",
+    "type": "professional",
+    "recipient": "Phan Thành Danh",
+    "issuer": "Center for Language Education and Cooperation (CLEC)",
+    "date": "2026-06-28",
+    "date_kind": "exam",
+    "certificate_id": "H42606080605",
+    "verification_url": "https://admin.chinesetest.cn/queryScore.do?sid=c2tActR9Wb%274d5abc0a153f80ff334719fbb938a461a6b706eba73aa8f4%2724d7sWsQ5nVUQSwD",
+    "verified_on": "2026-10-05",
+    "summary": {"vi": "HSK 4 · 262/300", "en": "HSK 4 · 262/300"},
+    "score_details": [
+      {"label": {"vi": "Nghe", "en": "Listening"}, "value": {"vi": "90/100", "en": "90/100"}},
+      {"label": {"vi": "Đọc", "en": "Reading"}, "value": {"vi": "94/100", "en": "94/100"}},
+      {"label": {"vi": "Viết", "en": "Writing"}, "value": {"vi": "78/100", "en": "78/100"}},
+      {"label": {"vi": "Tổng điểm · đạt từ 180", "en": "Total · passing score 180"}, "value": {"vi": "262/300", "en": "262/300"}}
+    ],
+    "validity_note": {"vi": "Điểm thi có hiệu lực trong 2 năm (đến 28/06/2028).", "en": "Test scores are valid for two years (through 28 June 2028)."}
+  },
+  {
+    "id": "hskk-intermediate-2026",
+    "title": "HSKK Intermediate",
+    "type": "professional",
+    "recipient": "Phan Thành Danh",
+    "issuer": "Center for Language Education and Cooperation (CLEC)",
+    "date": "2026-06-28",
+    "date_kind": "exam",
+    "verification_url": "https://admin.chinesetest.cn/queryScore.do?sid=c2tActR9Wb%274d5abc0a153f80ff334719fbb938a461a6b706eba73aa8f4%2724d7sWsQ5nVUQSwD",
+    "verified_on": "2026-10-05",
+    "summary": {"vi": "HSKK Trung cấp · 60/100", "en": "HSKK Intermediate · 60/100"},
+    "score_details": [
+      {"label": {"vi": "Trình độ", "en": "Level"}, "value": {"vi": "Trung cấp", "en": "Intermediate"}},
+      {"label": {"vi": "Kỹ năng nói", "en": "Speaking"}, "value": {"vi": "60/100", "en": "60/100"}},
+      {"label": {"vi": "Tổng điểm · đạt từ 60", "en": "Total · passing score 60"}, "value": {"vi": "60/100", "en": "60/100"}}
+    ],
+    "validity_note": {"vi": "Điểm thi có hiệu lực trong 2 năm (đến 28/06/2028).", "en": "Test scores are valid for two years (through 28 June 2028)."}
   }
 ]
