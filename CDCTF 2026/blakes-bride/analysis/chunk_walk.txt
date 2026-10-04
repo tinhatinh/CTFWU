@@ -1,0 +1,11 @@
+size 139894
+IHDR 13 data@ 16 end@ 29
+sRGB 1 data@ 41 end@ 42
+gAMA 4 data@ 54 end@ 58
+pHYs 9 data@ 70 end@ 79
+iTXt 896 data@ 91 end@ 987
+IDAT 64537 data@ 999 end@ 65536
+IDAT 65524 data@ 65548 end@ 131072
+IDAT 8794 data@ 131084 end@ 139878
+IEND 0 data@ 139890 end@ 139890
+after IEND bytes: 0
