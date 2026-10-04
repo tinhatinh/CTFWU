@@ -52,9 +52,9 @@ result: OK - co: `cdctf{I_really_rea11y_1ik3_th3_tac0b311_classic_crunchy_taco3}
 
 ## Trang thai
 
-Ban H7 bi tu choi. Ban H8 chua thay nguoi dung xac nhan nap duoc hay chua.
-Neu van sai, nghi cho khac la `1ik3` -> `lik3` hoac `taco3` -> `tacos`, nhung do chan de cua
-`1ik3` la 93px (bang kieu so `1`), nen kha nang do thap.
+Da xac nhan: `cdctf{I_really_rea11y_1ik3_th3_tac0b311_classic_crunchy_taco3}` la co dung
+(nguoi dung nap duoc, 2026-10-04). Ban H7 bi tu choi vi doi `1` thanh `l` o hai cho
+`rea11y` va `tac0b311`.
 
 ## Quy trinh cho lan sau
 
