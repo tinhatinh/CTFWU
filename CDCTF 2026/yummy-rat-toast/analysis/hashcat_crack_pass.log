@@ -1,0 +1,10 @@
+Minimum password length supported by kernel: 0
+Maximum password length supported by kernel: 256
+Pure kernels can crack longer passwords, but drastically reduce performance.
+Session..........: stheme3+dive3603
+Status...........: Cracked
+Hash.Mode........: 0 (MD5)
+Speed.#3.........: 44977.2 kH/s (86.33ms) @ Accel:8 Loops:128 Thr:64 Vec:1
+Progress.........: 4194304/19611893808 (0.02%)
+Candidate.Engine.: Device Generator
+Candidates.#3....: Alfredo -> GIACCHINO CHEESE!

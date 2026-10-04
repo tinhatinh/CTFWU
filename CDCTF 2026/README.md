@@ -54,6 +54,7 @@ bash _template/new_case.sh "CDCTF 2026" <ten-bai> "<duong-dan-file-de>" --wip
 | [vat-5-you-get-all-that](vat-5-you-get-all-that/writeup.md) | OSINT + Crypto | 500 | `cdctf{8u88l3_848813_fl4g_pa55ing}` (BubbleBabble của OpenSSH, đảo theo chuỗi seed; đối chiếu round-trip 85/85 ký tự) |
 | [crypto-cat-2](crypto-cat-2/writeup.md) | Cryptography | 496 | `cdctf{exclus1ve_x0r1n_these_byt3s_and_5tuff}` (XOR mot byte, k = 0x8f) |
 | [crypto-cat-3](crypto-cat-3/writeup.md) | Cryptography | 498 | `cdctf{any monoalphabetic sub'stitution cipher can be cracked through sta'tistical analysis given su'fficient cipher text for the numbers to be figured out mathematically and such}` (phep the hoa don, ba dau nhay don la mồi chống wordlist) |
+| [yummy-rat-toast](yummy-rat-toast/writeup.md) | Password Cracking | 500 | `cdctf{Alfredo Linguini01}` (md5 tên dàn cast Ratatouille ghép thành tên đầy đủ; wordlist chuẩn và rule mở rộng đều trượt vì không sinh dạng "Title Title" + số; cờ có dấu cách, chưa đối chiếu bằng submission) |
 
 \* Forensics Training Mat còn thiếu cờ Part 2 (StegHide trong `flag2.jpg`): máy làm bài không có binary `steghide`/`stegseek`, winget và pip đều không cung cấp. Bài vẫn được đưa vào bảng vì 4/5 cờ đã nộp và toàn bộ phần còn lại đã tái lập bằng `exploit.py`; phần đang mở ghi rõ ở cuối `writeup.md`.
 
