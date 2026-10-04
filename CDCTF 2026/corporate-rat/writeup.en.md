@@ -73,7 +73,7 @@ Three leads look attacker-like but do not connect to the implant (full log in `n
 
 ## Exploit chain
 
-**Step 1 - Tie the implant to one human action.** The `crontab` record in `audit.log` carries `auid`
+**Step 1 - Tie the implant to the original login account.** The `crontab` record in `audit.log` carries `auid`
 (the original login uid); `uid=0` only says the command ran through sudo. The `REPLACE` line in
 `cron.log` names the pid of the very `crontab` process that rewrote root's crontab, so that pid joins
 the two files:
@@ -152,7 +152,7 @@ cron.log: 569 lan cron root chay /tmp/.cache/.upd
 The first beacon lands 1 second after the first cron line, the interval is 20 minutes, and 568 EXECVE
 = 568 SOCKADDR: inside `audit.log`, every implant run leaves exactly one connection.
 
-`syslog` sides with cron: 570 UFW ALLOW lines, all to `203.0.113.77`.
+Cross-checking `syslog`: 570 UFW ALLOW lines, all to `203.0.113.77`.
 
 ```bash
 awk '/UFW ALLOW/ {d="";p="";t="ACK";for(i=1;i<=NF;i++){if($i~/^DST=/)d=$i;if($i~/^DPT=/)p=$i;if($i=="SYN")t="SYN"}; print d,p,t}' syslog | sort | uniq -c

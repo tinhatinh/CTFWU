@@ -1,0 +1,229 @@
+  1           RESUME                   0
+
+  2           LOAD_GLOBAL              1 (print + NULL)
+              LOAD_CONST               0 ('Validating flag...')
+              CALL                     1
+              POP_TOP
+
+  3           LOAD_GLOBAL              2 (bytes)
+              LOAD_ATTR                5 (fromhex + NULL|self)
+              LOAD_CONST               1 ('98e29c5194c029703d536b6b9227a0fd5362d01e2e07b1da25ed8d868dadb959bc2cae60d79a682f13a9b6872dfb1d901ec61c14afcd49f126dbb150f01498bb5289634c2c62b04d1842e7f807bf6e8e7d203ff1644b70a131505b6877b79eb0e33ef65de088fd057529f993aa6667d8610bcd74877e904b3305b3ea0a08d92c')
+              CALL                     1
+              STORE_FAST               1 (key)
+
+  4           BUILD_LIST               0
+              LOAD_CONST               2 ('61')
+              LIST_APPEND              1
+              LOAD_CONST               3 ('2e')
+              LIST_APPEND              1
+              LOAD_CONST               4 ('ba')
+              LIST_APPEND              1
+              LOAD_CONST               5 ('33')
+              LIST_APPEND              1
+              LOAD_CONST               6 ('6f')
+              LIST_APPEND              1
+              LOAD_CONST               7 ('91')
+              LIST_APPEND              1
+              LOAD_CONST               5 ('33')
+              LIST_APPEND              1
+              LOAD_CONST               8 ('37')
+              LIST_APPEND              1
+              LOAD_CONST               9 ('b3')
+              LIST_APPEND              1
+              LOAD_CONST              10 ('de')
+              LIST_APPEND              1
+              LOAD_CONST              11 ('4c')
+              LIST_APPEND              1
+              LOAD_CONST              12 ('3b')
+              LIST_APPEND              1
+              LOAD_CONST              13 ('1e')
+              LIST_APPEND              1
+              LOAD_CONST              14 ('03')
+              LIST_APPEND              1
+              LOAD_CONST              15 ('f1')
+              LIST_APPEND              1
+              LOAD_CONST              16 ('99')
+              LIST_APPEND              1
+              LOAD_CONST              17 ('01')
+              LIST_APPEND              1
+              LOAD_CONST              11 ('4c')
+              LIST_APPEND              1
+              LOAD_CONST              18 ('12')
+              LIST_APPEND              1
+              LOAD_CONST              19 ('08')
+              LIST_APPEND              1
+              LOAD_CONST              20 ('4a')
+              LIST_APPEND              1
+              LOAD_CONST              21 ('93')
+              LIST_APPEND              1
+              LOAD_CONST              22 ('e3')
+              LIST_APPEND              1
+              LOAD_CONST              23 ('f8')
+              LIST_APPEND              1
+              LOAD_CONST              24 ('47')
+              LIST_APPEND              1
+              LOAD_CONST              25 ('d4')
+              LIST_APPEND              1
+              LOAD_CONST              26 ('be')
+              LIST_APPEND              1
+              LOAD_CONST              27 ('a5')
+              LIST_APPEND              1
+              LOAD_CONST              11 ('4c')
+              LIST_APPEND              1
+              LOAD_CONST              14 ('03')
+              LIST_APPEND              1
+              LOAD_CONST              28 ('51')
+              LIST_APPEND              1
+              LOAD_CONST              29 ('7f')
+              LIST_APPEND              1
+              LOAD_CONST              30 ('1b')
+              LIST_APPEND              1
+              LOAD_CONST              31 ('dc')
+              LIST_APPEND              1
+              LOAD_CONST              32 ('27')
+              LIST_APPEND              1
+              LOAD_CONST              33 ('18')
+              LIST_APPEND              1
+              LOAD_CONST              34 ('cc')
+              LIST_APPEND              1
+              LOAD_CONST              35 ('2d')
+              LIST_APPEND              1
+              LOAD_CONST              36 ('6c')
+              LIST_APPEND              1
+              LOAD_CONST              37 ('fb')
+              LIST_APPEND              1
+              STORE_FAST               2 (enc)
+
+  5           LOAD_GLOBAL              2 (bytes)
+              LOAD_ATTR                5 (fromhex + NULL|self)
+              LOAD_CONST              38 ('')
+              LOAD_ATTR                7 (join + NULL|self)
+              LOAD_FAST_BORROW         2 (enc)
+              CALL                     1
+              CALL                     1
+              STORE_FAST               3 (check)
+
+  6           LOAD_GLOBAL              9 (len + NULL)
+              LOAD_FAST_BORROW         1 (key)
+              CALL                     1
+              STORE_FAST               4 (key_length)
+
+  7           LOAD_GLOBAL             11 (list + NULL)
+              LOAD_GLOBAL             13 (range + NULL)
+              LOAD_CONST              39 (256)
+              CALL                     1
+              CALL                     1
+              STORE_FAST               5 (S)
+
+  8           LOAD_SMALL_INT           0
+              STORE_FAST               6 (j)
+
+  9           LOAD_GLOBAL             13 (range + NULL)
+              LOAD_CONST              39 (256)
+              CALL                     1
+              GET_ITER
+      L1:     FOR_ITER                66 (to L2)
+              STORE_FAST               7 (i)
+
+ 10           LOAD_FAST_BORROW_LOAD_FAST_BORROW 101 (j, S)
+              LOAD_FAST_BORROW         7 (i)
+              BINARY_OP               26 ([])
+              BINARY_OP                0 (+)
+              LOAD_FAST_BORROW_LOAD_FAST_BORROW 23 (key, i)
+              LOAD_FAST_BORROW         4 (key_length)
+              BINARY_OP                6 (%)
+              BINARY_OP               26 ([])
+              BINARY_OP                0 (+)
+              LOAD_CONST              39 (256)
+              BINARY_OP                6 (%)
+              STORE_FAST               6 (j)
+
+ 11           LOAD_FAST_BORROW_LOAD_FAST_BORROW 86 (S, j)
+              BINARY_OP               26 ([])
+              LOAD_FAST_BORROW_LOAD_FAST_BORROW 87 (S, i)
+              BINARY_OP               26 ([])
+              SWAP                     2
+              LOAD_FAST_BORROW_LOAD_FAST_BORROW 87 (S, i)
+              STORE_SUBSCR
+              LOAD_FAST_BORROW_LOAD_FAST_BORROW 86 (S, j)
+              STORE_SUBSCR
+              JUMP_BACKWARD           68 (to L1)
+
+  9   L2:     END_FOR
+              POP_ITER
+
+ 12           LOAD_SMALL_INT           0
+              STORE_FAST               8 (k)
+
+ 13           LOAD_SMALL_INT           0
+              STORE_FAST               9 (l)
+
+ 14           LOAD_GLOBAL             15 (bytearray + NULL)
+              CALL                     0
+              STORE_FAST              10 (out)
+
+ 15           LOAD_FAST_BORROW         0 (data)
+              GET_ITER
+      L3:     FOR_ITER               120 (to L4)
+              STORE_FAST              11 (byte)
+
+ 16           LOAD_FAST_BORROW         8 (k)
+              LOAD_SMALL_INT           1
+              BINARY_OP                0 (+)
+              LOAD_CONST              39 (256)
+              BINARY_OP                6 (%)
+              STORE_FAST               8 (k)
+
+ 17           LOAD_FAST_BORROW_LOAD_FAST_BORROW 149 (l, S)
+              LOAD_FAST_BORROW         8 (k)
+              BINARY_OP               26 ([])
+              BINARY_OP                0 (+)
+              LOAD_CONST              39 (256)
+              BINARY_OP                6 (%)
+              STORE_FAST               9 (l)
+
+ 18           LOAD_FAST_BORROW_LOAD_FAST_BORROW 89 (S, l)
+              BINARY_OP               26 ([])
+              LOAD_FAST_BORROW_LOAD_FAST_BORROW 88 (S, k)
+              BINARY_OP               26 ([])
+              SWAP                     2
+              LOAD_FAST_BORROW_LOAD_FAST_BORROW 88 (S, k)
+              STORE_SUBSCR
+              LOAD_FAST_BORROW_LOAD_FAST_BORROW 89 (S, l)
+              STORE_SUBSCR
+
+ 19           LOAD_FAST_BORROW_LOAD_FAST_BORROW 85 (S, S)
+              LOAD_FAST_BORROW         8 (k)
+              BINARY_OP               26 ([])
+              LOAD_FAST_BORROW_LOAD_FAST_BORROW 89 (S, l)
+              BINARY_OP               26 ([])
+              BINARY_OP                0 (+)
+              LOAD_CONST              39 (256)
+              BINARY_OP                6 (%)
+              BINARY_OP               26 ([])
+              STORE_FAST              12 (keystream_byte)
+
+ 20           LOAD_FAST_BORROW        10 (out)
+              LOAD_ATTR               17 (append + NULL|self)
+              LOAD_FAST_BORROW_LOAD_FAST_BORROW 188 (byte, keystream_byte)
+              BINARY_OP               12 (^)
+              CALL                     1
+              POP_TOP
+              JUMP_BACKWARD          122 (to L3)
+
+ 15   L4:     END_FOR
+              POP_ITER
+
+ 21           LOAD_GLOBAL              3 (bytes + NULL)
+              LOAD_FAST_BORROW        10 (out)
+              CALL                     1
+              LOAD_FAST_BORROW         3 (check)
+              COMPARE_OP              88 (bool(==))
+              POP_JUMP_IF_FALSE        3 (to L5)
+              NOT_TAKEN
+
+ 22           LOAD_CONST              40 (b"That's it!")
+              RETURN_VALUE
+
+ 23   L5:     LOAD_CONST              41 (b'heck nah')
+              RETURN_VALUE

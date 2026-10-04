@@ -24,7 +24,7 @@
 ['9c ^ ff = c', '9b ^ ff = d', '9c ^ ff = c', '8b ^ ff = t', '99 ^ ff = f', '84 ^ ff = {']
 ```
 
-**Bước 2 - Quet toàn bộ 256 key XOR một byte thay vì chấp nhận đoán.** Key chỉ được coi là đúng nếu nó là giá trị duy nhất cho ra ASCII in được và bao đúng `cdctf{` / `}`.
+**Bước 2 - Quét toàn bộ 256 key XOR một byte thay vì chấp nhận đoán.** Key chỉ được coi là đúng nếu nó là giá trị duy nhất cho ra ASCII in được và bao đúng `cdctf{` / `}`.
 
 ```python
 data = bytes.fromhex(hexstr)
@@ -49,7 +49,7 @@ for key in range(256):
 [+] flag: cdctf{it is sure where it isn't, within reason, and it knows where it was}
 ```
 
-**Bước 3 - Kiểm chứng.** Phép quet có thể sinh ra nhiều key cùng cho text in được, thực tế chỉ trả về 1 kết quả, nên `0xff` không phải lựa chọn may mắn. Đầu ra là câu tiếng Anh trọn nghĩa, khớp cách dùng từ của chính đề bài ("it is sure ... within reason ... it knows where it was"), và 74 byte phủ hết bản mã, không còn phần nào chưa decode.
+**Bước 3 - Kiểm chứng.** Phép quét có thể sinh ra nhiều key cùng cho text in được, thực tế chỉ trả về 1 kết quả, với điều kiện prefix, suffix và ASCII in được đã đặt. Đầu ra là câu tiếng Anh trọn nghĩa, khớp cách dùng từ của chính đề bài ("it is sure ... within reason ... it knows where it was"), và 74 byte phủ hết bản mã, không còn phần nào chưa decode.
 
 ## Flag
 

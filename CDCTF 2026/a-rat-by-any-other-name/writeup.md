@@ -14,7 +14,7 @@ Ba ràng buộc của đề không phải gợi ý để đoán tên, chúng là
 ?u?l{0,7}  =  26 + 26^2 + ... + 26^8  =  217.180.147.158 ứng viên
 ```
 
-MD5 là hash nhanh, không chậm hoá, nên chỉ số này quyết định tất cả. hashcat 6.2.6 trên RTX 3050 laptop đạt 8415 MH/s với kernel optimized, tức toàn bộ không gian rơi vào cỡ vài phút, thực đo dưới 1 phút cho độ dài <= 8. Bài toán quy về brute-force có cấu trúc, không cần tìm ra danh sách tên "đúng".
+MD5 có tốc độ tính toán cao, phù hợp với mask attack trên không gian này. hashcat 6.2.6 trên RTX 3050 laptop đạt 8415 MH/s với optimized kernel; lần chạy với độ dài tối đa 8 kết thúc trong dưới một phút.
 
 Wordlist vẫn được thử trước, và cả ba corpus đều âm tính:
 
@@ -24,11 +24,11 @@ Wordlist vẫn được thử trước, và cả ba corpus đều âm tính:
 | `name-dataset` first names (mọi biến thể gốc / capitalize / title) | 727.556 | không khớp |
 | Moby Project `NAMES*.TXT` (tên riêng trong từ điển Scrabble) | 30.829 | không khớp |
 
-Những con số âm tính đó chỉ chứng minh corpus thiếu tên, không chứng minh mật khẩu nằm ngoài không gian: một cái tên "unconventional" hiển nhiên không có trong danh sách tên phổ biến. Vì vậy kết luận không dựa vào wordlist, mà dựa vào việc tán hết mask.
+Các wordlist đã thử không chứa ứng viên khớp hash. Vì đề quy định rõ độ dài và charset, có thể tiếp tục bằng mask attack mà không cần bổ sung danh sách tên.
 
 ## Chuỗi khai thác
 
-**Bước 1 - Kiểm bộ sinh ứng viên trước khi tin kết quả.** Self-test cắm một hash của tên không liên quan đến đề (`Felix`) vào đúng mask family `?u?l{1,3}` rồi yêu cầu hashcat thu hồi lại. Máy phải tìm thấy thì một kết quả (hoặc một kết luận "hết không gian") mới có giá trị.
+**Bước 1 - Kiểm tra mask bằng một hash đã biết.** Dùng hash MD5 của `Felix` để kiểm tra cấu hình hashcat trước khi chạy với hash của đề.
 
 ```bash
 python exploit.py --selftest
@@ -72,16 +72,16 @@ Progress.........: 36771463168/208827064576 (17.61%)
 fe00ab6a1d242513c9f246344bf7da1d:Jaqurtis
 ```
 
-**Bước 3 - Kiểm chứng.** Chuỗi thu được khớp ở ba độc lập:
+**Bước 3 - Kiểm chứng.** Kiểm tra hash và các ràng buộc của đề:
 
 ```python
 import hashlib
 print(hashlib.md5(b"Jaqurtis").hexdigest())   # fe00ab6a1d242513c9f246344bf7da1d
 ```
 
-- `md5("Jaqurtis")` bằng chính xác hash trong đề, nên chuỗi hash đọc từ thẻ không bị sai ký tự: một lỗi đọc sẽ không thể có tiền ảnh trong cùng không gian.
-- Độ dài 8, `J` in hoa, còn lại in thường, khớp từng chữ mô tả "begins with a capitol, and the rest is lower case".
-- Tính nhất thiết: các mặt cắt độ dài 1 và 2..7 đã duyệt hết (`Status: Exhausted`, `Recovered 0/1`), preimage chỉ xuất hiện ở độ dài 8. `Jaqurtis` là một tên riêng đọc được, không phải tổ hợp ký tự ngẫu nhiên, và nằm ngoài cả ba corpus đã so ở trên - đúng cái nghĩa "unconventional" mà đề mô tả.
+- `md5("Jaqurtis")` khớp hash trong đề.
+- `Jaqurtis` dài 8 ký tự, bắt đầu bằng chữ hoa và có các ký tự còn lại viết thường.
+- Các mask độ dài 1..7 đã chạy hết mà không tìm thấy kết quả; ứng viên được tìm thấy ở độ dài 8. Ba wordlist đã thử trước đó không chứa tên này.
 
 ## Flag
 

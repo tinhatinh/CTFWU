@@ -71,7 +71,7 @@ Loop &
   895 root      0:00 {script} /bin/bash /home/zero/scripts/script
 ```
 
-Three details decide the shape of the solve:
+Three implementation details:
 
 1. The filename must be exactly **`script`** (single word, no extension), anywhere under `/home`; the
    runner chmods it itself, so even a 644 upload still executes.

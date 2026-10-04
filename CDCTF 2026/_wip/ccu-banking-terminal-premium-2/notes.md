@@ -83,6 +83,45 @@ evidence: `analysis/flagfile.local` = `cdctf{LOCAL_FAKE_FLAG_not_real}` là flag
 result: PENDING - bài ở `_wip/` cho tới khi `python solve.py` trên instance in ra
 `cdctf{...}` thật và lưu vào `flag.txt`.
 
+## H10 - Giả thuyết format string qua menu 6/7 (đặt ra trong phiên 2026-10-04, đã loại)
+cmd: `objdump -d -M intel ccu_premium | sed -n '/<review_memos>:/,+40p'` và
+`sed -n '/<show_history>:/,+90p'`
+evidence: `4027a9: lea rax,[rip+0x1487] # 403c37` rồi `4027b8: call printf`; format là
+hằng số `.rodata` (`"%d) %.60s"`), memo của người chơi vào `rdx` với vai trò **đối số**
+của `%s` và bị giới hạn `%.60s`. `show_history` cũng vậy: `402901: lea rax,[rip+0x1405]
+# 403d0d`, đối số là chuỗi do `money()` dựng từ `rec`. Không có `call printf`/`puts`/
+`fwrite` nào lấy buffer của người chơi làm format.
+result: DEAD - không có format-string primitive ở menu 6 lẫn menu 7. Chuỗi `%p.` hoặc
+`%10$s` gửi vào `PAGE>` chỉ được in ra như văn bản thường, và bị `%.60s` cắt ngắn.
+Đừng vòng lặp lại hướng này.
+
+## C10 - `recvall()` gây EOFError trên workstation (lỗi tooling, không phải bằng chứng về server)
+cmd: `io.recvall(timeout=2)` ngay sau login, rồi `io.sendline(b'5')`
+evidence: `EOFError` ở lần gửi tiếp theo, nhưng cùng luồng login đó với `io.recv(2048)`
+thì nhận đủ toàn bộ menu (883 byte). Server không tự đóng session sau khi in menu; chính
+`recvall` đợi hết timeout rồi đóng tube, nên lệnh sau mới vỡ.
+result: DEAD - không phải anti-automation hay timing race. Dùng `recv(n)` hoặc
+`recvuntil()` theo chuỗi con; chuỗi thật là `Access PIN    : ` (nhiều khoảng trắng) và
+`Selection: `.
+
+## F1 - Hằng số đã xác minh (bổ sung phần protocol)
+
+- `do_login`: `strtoul(argv,10)` so với `0x2262` (= 8802), `strcmp` với `member_pin`
+  (`.data` `0x406108`, nội dung `2049`). Đếm số lần sai ở `[rbp-0x44]`, vượt ngưỡng thì
+  `** Too many failed attempts. Session terminated.`
+- `change_pin`: chặn `1234` và `0000` (`** That PIN is on the branch blocklist.`), đòi
+  đúng 4 chữ số, và ghi rõ `PIN updated for this session only. The branch record is
+  unchanged.`
+- `menu_loop`: jump table tại `0x404134` (9 entry, `ja` quay lại in menu khi lựa chọn
+  `> 9`); thứ tự 1..8 = `show_summary, open_account, close_account, rename_account,
+  attach_memo, review_memos, show_history, change_pin`, 9 = thoát.
+- `show_history`: mỗi entry `LEDGER` rộng `0x30` byte (tính `i*3` rồi `shl 3`), in qua
+  `money()` với `%.30s` lấy từ `.rodata`, giới hạn 8 postings (`cmp DWORD PTR [rbp-0x4c],0x7`).
+- `attach_memo`: `malloc(0x180)` = 384 byte, `memset`, `read_full(memo,0x180)`, lưu con
+  trỏ vào `memos[n_memos++]` (`memos` ở `.bss` `0x406240`, chặn `n_memos <= 7`).
+- `open_account`: chặn `n_accounts <= 0xf`, balance clamp `0..0xf4240` (1000000),
+  `malloc(0x180)` cho branch page.
+
 ## Ghi chú môi trường (ràng buộc phải nhớ)
 - Workstation của đề **không có internet**: không `pip install`, không tải gì; phải
   `cat > solve.py`, paste, Ctrl-D.

@@ -1,0 +1,9 @@
+ 25           RESUME                   0
+
+ 26           LOAD_GLOBAL              1 (input + NULL)
+              LOAD_CONST               0 ("This is a simple 'flag checker' program I wrote to test this new style of coding. It condences 4 functions into 3, wow!\nThere's probably a better way to do this...\nAnyways, enter the flag!\n>")
+              CALL                     1
+              STORE_FAST               0 (flag)
+
+ 27           LOAD_FAST_BORROW         0 (flag)
+              RETURN_VALUE

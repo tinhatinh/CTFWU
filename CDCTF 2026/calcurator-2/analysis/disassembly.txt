@@ -1,0 +1,60 @@
+
+files/calculator:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000012b460 <_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructILb1EEEvPKcm@@Base-0x9a260>:
+  12b460:	55                   	push   rbp
+  12b461:	be 03 00 00 00       	mov    esi,0x3
+  12b466:	bf 02 00 00 00       	mov    edi,0x2
+  12b46b:	48 8d 2d 9d bb 4b 00 	lea    rbp,[rip+0x4bbb9d]        # 5e700f <_ZNSt7__cxx1115basic_stringbufIcSt11char_traitsIcESaIcEED0Ev@@Base+0x34fa8f>
+  12b472:	53                   	push   rbx
+  12b473:	48 81 ec 38 04 00 00 	sub    rsp,0x438
+  12b47a:	64 48 8b 14 25 28 00 	mov    rdx,QWORD PTR fs:0x28
+  12b481:	00 00 
+  12b483:	48 89 94 24 28 04 00 	mov    QWORD PTR [rsp+0x428],rdx
+  12b48a:	00 
+  12b48b:	ba 01 00 00 00       	mov    edx,0x1
+  12b490:	e8 bb 34 f6 ff       	call   8e950 <socket@plt>
+  12b495:	89 c3                	mov    ebx,eax
+  12b497:	66 0f 1f 84 00 00 00 	nop    WORD PTR [rax+rax*1+0x0]
+  12b49e:	00 00 
+  12b4a0:	31 f6                	xor    esi,esi
+  12b4a2:	ba 01 04 00 00       	mov    edx,0x401
+  12b4a7:	48 8d 7c 24 20       	lea    rdi,[rsp+0x20]
+  12b4ac:	e8 7f 31 f6 ff       	call   8e630 <memset@plt>
+  12b4b1:	31 c9                	xor    ecx,ecx
+  12b4b3:	ba 00 04 00 00       	mov    edx,0x400
+  12b4b8:	89 df                	mov    edi,ebx
+  12b4ba:	48 8d 74 24 20       	lea    rsi,[rsp+0x20]
+  12b4bf:	e8 8c 3f f6 ff       	call   8f450 <recv@plt>
+  12b4c4:	85 c0                	test   eax,eax
+  12b4c6:	7e d8                	jle    12b4a0 <rl_getc@plt+0x9b9d0>
+  12b4c8:	80 7c 24 34 08       	cmp    BYTE PTR [rsp+0x34],0x8
+  12b4cd:	75 d1                	jne    12b4a0 <rl_getc@plt+0x9b9d0>
+  12b4cf:	80 7c 24 3c 63       	cmp    BYTE PTR [rsp+0x3c],0x63
+  12b4d4:	75 ca                	jne    12b4a0 <rl_getc@plt+0x9b9d0>
+  12b4d6:	48 8d 35 fe ad 49 00 	lea    rsi,[rip+0x49adfe]        # 5c62db <_ZNSt7__cxx1115basic_stringbufIcSt11char_traitsIcESaIcEED0Ev@@Base+0x32ed5b>
+  12b4dd:	48 8d 4c 24 20       	lea    rcx,[rsp+0x20]
+  12b4e2:	ba 02 00 00 00       	mov    edx,0x2
+  12b4e7:	0f 1f 00             	nop    DWORD PTR [rax]
+  12b4ea:	66 66 2e 0f 1f 84 00 	data16 cs nop WORD PTR [rax+rax*1+0x0]
+  12b4f1:	00 00 00 00 
+  12b4f5:	66 66 2e 0f 1f 84 00 	data16 cs nop WORD PTR [rax+rax*1+0x0]
+  12b4fc:	00 00 00 00 
+  12b500:	0f b6 41 1d          	movzx  eax,BYTE PTR [rcx+0x1d]
+  12b504:	0f be 7e 01          	movsx  edi,BYTE PTR [rsi+0x1]
+  12b508:	32 44 15 00          	xor    al,BYTE PTR [rbp+rdx*1+0x0]
+  12b50c:	0f b6 c0             	movzx  eax,al
+  12b50f:	39 f8                	cmp    eax,edi
+  12b511:	41 0f 94 c1          	sete   r9b
+  12b515:	48 83 fa 14          	cmp    rdx,0x14
+  12b519:	41 0f 95 c0          	setne  r8b
+  12b51d:	48 83 c2 01          	add    rdx,0x1
+  12b521:	48 83 c6 01          	add    rsi,0x1
+  12b525:	48 83 c1 01          	add    rcx,0x1
+  12b529:	45 84 c1             	test   r9b,r8b
+  12b52c:	75 d2                	jne    12b500 <rl_getc@plt+0x9ba30>
+  12b52e:	39 f8                	cmp    eax,edi
+  12b530:	0f 85 6a ff ff ff    	jne    12b4a0 <rl_getc@plt+0x9b9d0>

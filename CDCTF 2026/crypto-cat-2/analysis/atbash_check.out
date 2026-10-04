@@ -1,0 +1,5 @@
+[*] atbash murc ky tu tren chuoi hex, cac chu so bi dao thanh:
+    '0' -> 0xab, '1' -> 0xaa, '2' -> 0xa9, '3' -> 0xa8, '4' -> 0xa7, '5' -> 0xa6, '6' -> 0xa5, '7' -> 0xa4, '8' -> 0xa3, '9' -> 0xa2
+[*] bit-NOT toan bo 45 byte: 11/45 byte roi vung 0x20-0x7e
+    6 byte dau: 0x13 0x14 0x13 0x04 0x16 0x0b
+[*] doi chieu (positive control) k=0x8f: 44/45 byte in duoc, chua 1 ky tu xuong dong

@@ -23,8 +23,7 @@ standalone cipher.
 - 29 characters, lowercase letters, digits, `_`, `{`, `}` only.
 - Special character positions: `{` at index 5, four `_` at 14, 17, 20, 23, `}` at
   the last index. That is exactly the skeleton of a flag
-  (`prefix{word_word_word_word}`), so the transform touches lowercase letters
-  only; a byte-wide XOR would have moved `{`, `}` and `_` as well.
+  (`prefix{word_word_word_word}`), which suggests the transform preserves special characters; a byte-wide XOR would have moved `{`, `}` and `_` as well.
 - The challenge never states the flag prefix, so each candidate cipher was judged
   on whether the 5 leading characters (`xwxgu`) turn into a readable tag.
 
@@ -48,7 +47,7 @@ Full log in `notes.md`.
 ## Exploit Chain
 
 **Step 1 - Read the ciphertext skeleton.** Counting the positions of `{`, `}` and
-`_` proves only letters were transformed; `analysis/triage.py` then prints the 25
+`_` identifies the flag structure; `analysis/triage.py` then prints the 25
 Caesar shifts and the 256 single-byte XOR candidates so the first two routes can be
 eliminated in one run:
 
@@ -77,8 +76,7 @@ cdctf{atbash1n_it_up_in_h3re}
 **Step 3 - Verification.** Atbash is an involution: applying it to the plaintext
 must return the original ciphertext, and `exploit.py` asserts that. The tag `cdctf`
 matches the event's flag format, the body contains only lowercase letters, digits
-and underscores, and the message reads itself (`atbash 1n it up 1n h3re`), so the
-result is not a coincidence.
+and underscores, and the decoded body describes the Atbash transformation.
 
 ## Flag
 
@@ -105,5 +103,4 @@ python exploit.py files/ciphertext.txt
 ## Note for the following parts
 
 Keep the part 1 flag. The statement says all four minor keys are required for part
-5, where the master key is protected by "xor with many keys", most likely a bitwise
-XOR of the four keys.
+5, where the master key is protected by "xor with many keys", The combination used in part 5 is not established here.

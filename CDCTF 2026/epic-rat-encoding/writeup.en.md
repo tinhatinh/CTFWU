@@ -18,8 +18,7 @@ numeric output remain. Required flag format: `cdctf{Place_Place_Place_at_time_ti
   `nums[j]` is `message[8j..8j+7]` packed big-endian into one `uint64_t`.
 - 8 chunks × 8 bytes = 64 bytes. The flag format needs `Place_Place_Place` + `at` + four time
   tokens, i.e. roughly 47-64 bytes, so eight numbers are enough to hold the whole message.
-- `uint64_t nums[8];` is left uninitialised, so its starting value is stack garbage. The real
-  output has no garbage, so the decode can treat it as zero.
+- `uint64_t nums[8];` is uninitialised, so the C source has undefined behavior. Decode the supplied integers as big-endian bytes; initialise the array to zero in a reproduction of the encoder.
 
 ## Ruled Out
 
@@ -53,7 +52,7 @@ print("".join(chr(b) if 32 <= b < 127 else "." for b in raw))
 [+] round-trip: re-encode bang vong lap C khop ca 8 so
 ```
 
-**Step 2 - Fit the flag into the template.** `Meet me at the ` is filler; `Place_Place_Place` maps
+**Step 2 - Fit the flag into the template.** `Meet me at the ` is the message introduction, excluded from the submitted value; `Place_Place_Place` maps
 to `Tom_Bevill_Building`, `at` stays as is, and the last four tokens `time_time_time_Time` map to
 `noon_next_week_Thursday` (final token capitalised, matching `Thursday`).
 
@@ -72,10 +71,7 @@ re-encode         : [5576975263002879264, 7022273403317198932, 80291091802136518
 identical         : True
 ```
 
-The last two decoded bytes are `0x25 0x6c` = `%l`, the first two characters of the format string
-`"%lu "` sitting next to the `message` array in the binary. The loop reads 64 bytes while the string
-is 61 characters + NUL, so this tail both pins the length at 61 and confirms the big-endian reading:
-little-endian would move those garbage bytes to the front of the chunk and destroy the text.
+The final two decoded bytes are `0x25 0x6c` = `%l`, matching the start of `"%lu "`. The loop reads 64 bytes from a 61-character message plus NUL, so it can read beyond the string. The supplied source and integers do not establish the memory placement of those trailing bytes.
 
 ## Flag
 

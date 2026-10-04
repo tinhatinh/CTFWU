@@ -44,6 +44,11 @@ bash _template/new_case.sh "CDCTF 2026" <ten-bai> "<duong-dan-file-de>" --wip
 
 | Challenge | Category | Difficulty | Flag |
 |-----------|----------|------------|------|
+| [troubled-translation](troubled-translation/writeup.md) | OSINT | 479 điểm; độ khó không cung cấp | `cdctf{McDonald's_in_Chicago}` (người dùng xác nhận) |
+| [calcurator-1](calcurator-1/writeup.md) | Forensics + Rev Eng | 491 | `cdctf{wpad}` (suy ra cục bộ, chưa đối chiếu submission) |
+| [calcurator-2](calcurator-2/writeup.md) | Forensics + Rev Eng | 500 | `cdctf{ICMP ECHO REQUEST}` (suy ra cục bộ, chưa đối chiếu submission) |
+| [calcurator-3](calcurator-3/writeup.md) | Forensics + Rev Eng | 500 | `cdctf{1CMP_TR1GG3R$}` (suy ra cục bộ, chưa đối chiếu submission) |
+| [calcurator-4](calcurator-4/writeup.md) | Forensics + Rev Eng + OSINT | 500 | `cdctf{libqalculate/prism}` (suy ra cục bộ, chưa đối chiếu submission) |
 | [forensics-training-mat](forensics-training-mat/writeup.md) | Forensics | Training, 250 | 4/5 cờ: `cdctf{A_Basic_Crimson_Disk_Exercise_in_Forensics}`, `cdctf{A_Little_XZtra_Tr3at!}`, `cdctf{d3l3te_w0_sync_h0l3y_C0W}`, `cdctf{f00rens!k_y!pP33}` |
 | [corporate-rat](corporate-rat/writeup.md) | Log Analysis | 500 | `cdctf{Lamar Hackson}` |
 | [gerry-the-larry-1](gerry-the-larry-1/writeup.md) | Log Analysis | 500 | `cdctf{12}` (số block Meowjority kiểm soát, tính cục bộ từ 1067 phiếu, chưa đối chiếu bằng submission) |
@@ -56,16 +61,33 @@ bash _template/new_case.sh "CDCTF 2026" <ten-bai> "<duong-dan-file-de>" --wip
 | [crypto-cat-2](crypto-cat-2/writeup.md) | Cryptography | 496 | `cdctf{exclus1ve_x0r1n_these_byt3s_and_5tuff}` (XOR mot byte, k = 0x8f) |
 | [crypto-cat-3](crypto-cat-3/writeup.md) | Cryptography | 498 | `cdctf{any monoalphabetic sub'stitution cipher can be cracked through sta'tistical analysis given su'fficient cipher text for the numbers to be figured out mathematically and such}` (phep the hoa don, ba dau nhay don la mồi chống wordlist) |
 | [yummy-rat-toast](yummy-rat-toast/writeup.md) | Password Cracking | 500 | `cdctf{Alfredo Linguini01}` (md5 tên dàn cast Ratatouille ghép thành tên đầy đủ; wordlist chuẩn và rule mở rộng đều trượt vì không sinh dạng "Title Title" + số; cờ có dấu cách, chưa đối chiếu bằng submission) |
+| [diggity-network](diggity-network/writeup.md) | Forensics | 500 | `cdctf{file_over_http}` (đọc trực tiếp từ ảnh PNG trong TCP stream 0) |
+| [soupos-0-welcome-to-the-kitchen](soupos-0-welcome-to-the-kitchen/writeup.md) | Rev Eng pwn | 431 | `cdctf{soupOS_is_better_than_arch}` (free flag trên thẻ đề; bài này còn dựng bản đồ 4 chỗ "trust the wrong thing" của cả chain) |
+| [soupos-1-mise-en-place](soupos-1-mise-en-place/writeup.md) | Rev Eng pwn | 479 | `cdctf{mise_en_place_two_paths_one_check}` (`soup -c pour read(open("/FLAG1.TXT"),47)` - soupyc gọi thẳng VFS, bỏ qua `may()` của shell) |
+| [soupos-2-salt-to-taste](soupos-2-salt-to-taste/writeup.md) | Rev Eng pwn | 489 | chưa capture verbatim (AlphaSOUP-32 không salt: tiền ảnh `saohjea` của `f63a9eb7` tìm bằng meet-in-the-middle 3+4, rồi `chef special`) |
+| [soupos-3-bad-recipe](soupos-3-bad-recipe/writeup.md) | Rev Eng pwn | 498 | `cdctf{bad_recipe_the_loader_reads_wide}` (ELF 174 B, `p_offset=0xFFF00000` wrap cửa sổ đọc xuống dưới buffer 1 MB; payload 90 byte quét "cdct") |
+| [cosmic-call](cosmic-call/writeup.md) | Scanning NTA Crypto | 797 | `cdctf{W3_@rE_n0T_AL0n3_OuT_h3r3?_5d68a0e7}` (keystream 8 byte dùng lại; lệnh `downlinkflag`; độ hoa/thường không phục hồi được từ một mẫu nhiễu) |
+| [wish](wish/writeup.md) | pwn | 800 | `cdctf{W!sh_Up0n_A_Sh0ot1ng_Star_81ab9a33}` (double free trong `contrivance` lam `password` va `auth_sess` trung chunk, ghi `dbg` = `auth_bypass_dbg` o `0x403ac9`; co do `vanished_alerts` in ra khi mot body bien mat giua hai lan `STATUS`) |
 
 \* Forensics Training Mat còn thiếu cờ Part 2 (StegHide trong `flag2.jpg`): máy làm bài không có binary `steghide`/`stegseek`, winget và pip đều không cung cấp. Bài vẫn được đưa vào bảng vì 4/5 cờ đã nộp và toàn bộ phần còn lại đã tái lập bằng `exploit.py`; phần đang mở ghi rõ ở cuối `writeup.md`.
 
 ## Chưa có writeup
 
-Các bài CDCTF khác đã làm trong cùng giải nhưng chưa được đóng gói vào thư mục này (GitLash, soupOS,
-Catty Malware, Tattle Tale, Cosmic Call, Crimson Clinic, CommuniCATe, Polyglot, Gerry the
-Larry (2/2)) đang nằm trong memory của các phiên chơi, chưa có folder. Thêm bằng `new_case.sh` rồi cập
-nhật bảng ở trên. Phần 1 của Gerry the Larry đã đóng gói ở `gerry-the-larry-1/`, trong đó có danh sách
-12 block cần cho phần 2. Series VAT của `b0b` đã đóng gói 1/5, 3/5 (`vat-3-pretty-good-passphrase/`,
-PGP Word List), 4/5 (`vat-4-what-the-helly/`, S/Key) và 5/5; còn 2/5 (LARP) chưa có folder. Key PGP
-`VAT_key` (userid "Crimson Offense b0b (baller) <b0b@crimson.offense>") đúng là artifact của 3/5,
-đã kiểm chứng: keyID subkey `C87AFF55F4097C91` xuất hiện ngay trong PKESK giải ra từ audio.
+Các bài CDCTF khác đã làm trong cùng giải nhưng chưa được đóng gói vào thư mục này (GitLash, Catty Malware,
+Tattle Tale, Crimson Clinic, CommuniCATe, Polyglot) đang nằm trong memory của các phiên chơi. Thêm bằng
+`new_case.sh` rồi cập nhật bảng ở trên.
+
+Đang mở, đã có folder trong `_wip/`:
+
+- `_wip/soupos-4-too-many-cooks/` - primitive và lệnh `soup -c let a=[1] a[-1]=1051024` đã chứng minh ở local
+  bằng `soupyc.c` thật, còn thiếu một lần xác nhận trên màn hình VM.
+- `_wip/gerry-the-larry-2/` - đã bóc client (signature = `8·year+4·lat+2·lon+number`, mint UVIN tuỳ ý),
+  đã đo schema `/vote` qua lỗi 422 (`votes` là danh sách boolean phẳng, 121 ô theo `lat` ngoài `lon` trong),
+  còn đang mở ở câu "khoá `already voted` tính theo cấp nào"; solver chia khu đã kiểm chứng ở
+  `analysis/solver.py`.
+
+Phần 1 của Gerry the Larry đã đóng gói ở `gerry-the-larry-1/`, trong đó có danh sách 12 block cần cho phần 2.
+Series VAT của `b0b` đã đóng gói 1/5, 3/5 (`vat-3-pretty-good-passphrase/`, PGP Word List),
+4/5 (`vat-4-what-the-helly/`, S/Key) và 5/5; còn 2/5 (LARP) chưa có folder. Key PGP `VAT_key`
+(userid "Crimson Offense b0b (baller) <b0b@crimson.offense>") đúng là artifact của 3/5, đã kiểm chứng:
+keyID subkey `C87AFF55F4097C91` xuất hiện ngay trong PKESK giải ra từ audio.

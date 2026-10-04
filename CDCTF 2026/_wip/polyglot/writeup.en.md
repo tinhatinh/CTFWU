@@ -34,7 +34,7 @@ mod-7 variable tracks all six chains. `respond` consumes one input line per `For
 equals `len(KEY)`: `len(KEY) = 32` and the flag body is 25 characters.
 
 The data itself confirms the reading: every answer line has exactly 3 fragments and the category of each
-fragment matches the question order on that line. Over 96 slots that is not a coincidence.
+fragment matches the question order on that line. This checks the parser against all 96 observed fragments.
 
 ## Ruled out
 
@@ -112,7 +112,7 @@ Tu vi tri 19 tro di, ca 52 chu cai deu kha dung -> duoi KEY khong bi file nay ra
 ```
 
 Positions 1-3 pin `cdc`, position 7 pins `S`, position 8 pins `e`, and positions 4-6 admit `t`, `f`, `{`,
-so `KEY` is the whole flag string rather than just the body. Over the alphabet, the only readable
+so `KEY` is the whole flag string rather than just the body. Over the alphabet, the selected readable
 18-character start is `cdctf{SecretOfComp`: `Se`+`cr`+`e`+`t` = `Secret`, `O`+`f` = `Of`, then `C`+`o`+`m`+`p`
 opens a `Comp*` word.
 

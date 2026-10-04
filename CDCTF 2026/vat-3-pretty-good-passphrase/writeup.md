@@ -12,11 +12,11 @@ Bạn của tác giả định gửi một thông điệp mã hoá PGP nhưng đ
 ## Phân tích ban đầu
 
 `ffprobe` báo MPEG layer III v2, 48 kbps, 24 kHz, đơn kênh, `duration=660.792000`, không có ID3
-mang nội dung. Container giống hệt các phần khác của chuỗi VAT, tức file do TTS sinh ra.
+mang nội dung. Container giống hệt các phần khác của chuỗi VAT; các đặc điểm lời đọc phía dưới gợi ý TTS.
 
 Cắt theo năng lượng cho 432 burst tiếng nói, cách đều nhau 1.585 s, độ dài 0.36-0.88 s. Mỗi burst
 có F0 80-140 Hz cùng formant tới 12 kHz, nên đây là tiếng nói chứ không phải mode số. Các lần lặp
-của cùng một từ là bản sao gần như bit-đỉnh (correlation 1.000), đúng tính chất của TTS ghép
+của cùng một từ là có tương quan rất cao (correlation 1.000 trong phép đo), đúng tính chất của TTS ghép
 theo từ.
 
 Whisper `base.en` cho 419 token với hai đặc trưng nổi bật: toàn bộ chữ cái đầu nằm trong khoảng
@@ -31,20 +31,20 @@ byte. Chuỗi byte đó là toàn bộ văn bản ASCII armor, kể cả CR, LF 
 ## Các hướng đã loại
 
 1. **Passphrase đề cho bị sai**: `--export-secret-keys` báo `Bad passphrase` nhưng hai keyID bị
-   lỗi không thuộc keyring của bài. Thử ký rồi verify cho `Good signature`. Loại.
+   lỗi không thuộc keyring của bài. Thử ký rồi verify cho `Good signature`.
 2. **Stego trong container hoặc bit thấp của PCM**: không magic nào ngoài `LAME`, tám bit plane
-   cho 8-17% ký tự in được. Loại.
-3. **DTMF, tone ổn định, dữ liệu trong phổ**: không có stable tone nào trên 2.5 kHz. Loại.
+   cho 8-17% ký tự in được.
+3. **DTMF, tone ổn định, dữ liệu trong phổ**: không có stable tone nào trên 2.5 kHz.
 4. **Bảng chữ cái chính tả**: gom cụm cho ~351 từ phân biệt trên 413 lát cắt, quá lớn cho một
-   bảng 16/26/64 ký tự. Loại.
+   bảng 16/26/64 ký tự.
 5. **Đối mẫu bằng TTS tại chỗ**: `espeak-ng` correlation tốt nhất 0.043 (khác engine), `edge-tts`
-   cài được nhưng mọi voice chết ở `ClientConnectorDNSError` với `speech.platform.bing.com`. Loại.
+   cài được nhưng các voice đã thử gặp `ClientConnectorDNSError` với `speech.platform.bing.com`.
 6. **Bỏ audio, tìm ciphertext ở chỗ khác**: `gpg --list-packets VAT_key` chỉ có 5 packet, không
-   user attribute, không subpacket comment/URI. Loại.
+   user attribute, không subpacket comment/URI.
 
 ## Chuỗi khai thác
 
-**Bước 1 - Cưỡng bức parity bằng Viterbi.** Với mỗi token, trạng thái là parity hiện tại; một từ
+**Bước 1 - Áp ràng buộc parity bằng Viterbi.** Với mỗi token, trạng thái là parity hiện tại; một từ
 hợp lệ ở đúng danh sách cho điểm 3, từ gần đúng (edit distance nhỏ) cho điểm 1, cho phép gộp hai
 token thành một từ để sửa các ca `dogs led`, `eight ball`. Trên 419 token của `base.en`, Viterbi
 khớp chính xác 246 ô và giải ra:
@@ -66,7 +66,7 @@ whisper nghe thành `escamo` và `imbecile`.
 **Bước 2 - Định vị lỗi còn lại bằng ba oracle độc lập.** Kiểm cấu trúc packet của 253 byte giải
 được: `PKESK tag=0x84 len=140 ver=3 keyid=c87aff55f4097c91 algo=1 mpi=1020 bit` rồi
 `SEIP tag=0xd2 len=109 ver=1`. keyID khớp chính xác subkey mã hoá của đề, và `len=109` đúng bằng
-`253 - 142 - 2`, nên phần head tới byte 144 là sạch. Quét trọn 64x64 tổ hợp cho hai ô `?` bằng
+`253 - 142 - 2`, xác nhận một số trường header; chưa bảo đảm toàn bộ dữ liệu RSA phía trước byte 144 đều đúng. Quét trọn 64x64 tổ hợp cho hai ô `?` bằng
 `gpg`: cả 4096 đều trả `Wrong secret key used`, tức còn lỗi nằm trong vùng RSA.
 
 Oracle thứ hai là CRC24 của armor. Hàm CRC được kiểm trước bằng cách ký một file nháp với chính

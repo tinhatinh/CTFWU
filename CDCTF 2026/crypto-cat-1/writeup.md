@@ -21,7 +21,7 @@ phần sẽ được dùng lại ở phần 5, nên từng phần lẻ là một
 - Ciphertext dài 29 ký tự, chỉ gồm chữ thường, chữ số, `_`, `{`, `}`.
 - Vị trí các ký tự đặc biệt: `{` ở chỉ số 5, bốn dấu `_` ở 14, 17, 20, 23, `}` ở
   chỉ số cuối. Đó chính là khung hình của một flag (`prefix{word_word_word_word}`),
-  nên phép biến đổi chỉ chạm vào chữ thường; XOR byte áp lên toàn chuỗi sẽ đổi luôn
+  gợi ý phép biến đổi giữ nguyên các ký tự đặc biệt; XOR byte áp lên toàn chuỗi sẽ đổi luôn
   `{`, `}` và `_`.
 - Đề không nói trước prefix cờ, nên mỗi hướng ứng viên được chấm bằng cách nhìn 5
   ký tự đầu (`xwxgu`) có biến thành một tag ra nghĩa không.
@@ -30,14 +30,14 @@ phần sẽ được dùng lại ở phần 5, nên từng phần lẻ là một
 
 1. **XOR một byte** (đúng cái tên của series): dò cả 256 khoá trên toàn chuỗi. 16
    khoá cho output nằm trọn trong dải ASCII in được, nhưng chỉ khoá `0x00` (tức
-   không mã hoá) giữ được `{` ở chỉ số 5; các output còn lại là rác kiểu
-   `yvyftz{fx{ir0l^sf^gj^sl^r2hw|`. Loại.
+   không mã hoá) giữ được `{` ở chỉ số 5; các output còn lại là chuỗi không khớp định dạng, chẳng hạn
+   `yvyftz{fx{ir0l^sf^gj^sl^r2hw|`.
 2. **Caesar / dịch chuyển chữ cái**: in cả 25 dịch chuyển (`analysis/triage.py`),
    không dòng nào có prefix là một từ ra nghĩa, và `zgyzhs` không trở thành từ nào
-   trong 25 khả năng. Loại.
+   trong 25 khả năng.
 3. **Vigenere/Beaufort với khoá lấy từ tên nhân vật** (`caticus`): ra
    `lmuoi{xuowpg1k_hd_tg_fc_a3et}` và `edvbh{svbtaj1f_im_wj_kn_p3lw}`, cả hai đều
-   có 5 ký tự đầu rác. Loại.
+   không có prefix cờ hợp lệ.
 
 Hướng còn lại, Atbash (a<->z), cho `xwxgu` -> `cdctf` ngay lần thử đầu và là lời
 giải bên dưới.
@@ -46,8 +46,7 @@ Log đầy đủ ở `notes.md`.
 
 ## Chuỗi khai thác
 
-**Bước 1 - Xác định khung ciphertext.** Đếm vị trí `{`, `}`, `_` để kết luận chỉ
-chữ cái bị biến đổi, rồi chạy bảng 25 Caesar và 256 XOR một byte để loại hai hướng
+**Bước 1 - Xác định khung ciphertext.** Đếm vị trí `{`, `}`, `_` để nhận diện cấu trúc cờ, rồi chạy bảng 25 Caesar và 256 XOR một byte để loại hai hướng
 đầu tiên:
 
 ```bash
@@ -75,8 +74,7 @@ cdctf{atbash1n_it_up_in_h3re}
 **Bước 3 - Kiểm chứng.** Atbash là involution: áp dụng lại lên plaintext phải trả
 về đúng ciphertext gốc, và điều này đã được assert trong `exploit.py` (thoát lỗi
 nếu không khớp). Prefix `cdctf` khớp định dạng cờ của giải, phần thân chỉ còn chữ
-thường - số - gạch dưới, và nội dung tự đọc được (`atbash 1n it up 1n h3re`), nên
-không phải trùng hợp.
+thường - số - gạch dưới, và nội dung tự đọc được (`atbash 1n it up 1n h3re`), phù hợp với kết quả giải mã.
 
 ## Flag
 
@@ -103,5 +101,4 @@ python exploit.py files/ciphertext.txt
 ## Ghi chú cho các phần sau
 
 Flag phần 1 phải được giữ lại: đề ghi rõ bốn minor key đều cần cho phần 5, nơi
-khoá master bị "xor with many keys" bảo vệ, tức khả năng cao là XOR bitwise của
-bốn key.
+khoá master bị "xor with many keys" bảo vệ, Chưa xác định phép kết hợp các key trong phần này.

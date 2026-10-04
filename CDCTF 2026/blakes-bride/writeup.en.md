@@ -41,8 +41,7 @@ at SHA-512, but that hint is correct only about the size.
 3. **Data appended after `IEND` or hidden chunks**: walking the whole chunk list leaves 0 bytes
    after `IEND`. Ruled out.
 
-Those three close every remaining possibility: the image carries nothing, and of the three
-64-byte functions only one matches. What is left is a hash-cracking loop over a known space.
+The checks above found no useful data outside XMP. Continue testing 64-byte hash functions on the password space specified by the challenge.
 
 ## Exploit chain
 

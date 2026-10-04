@@ -1,0 +1,12 @@
+[*] ciphertext.txt: 45 to hex, goi lai duoc 45 byte
+[*] dai byte: 0x85 - 0xfd, 24 gia tri phan biet
+[*] so byte duoi 0x80: 0 (0 = khong phai ASCII thuan, nen day la ket qua cua phep doi cho)
+[*] XOR 1 byte, 256 khoa: 0 khoa cho ASCII in duoc tuyet doi, 5 khoa neu cho phep them tab/LF/CR
+    k=0x8c, k=0x8f, k=0xd9, k=0xda, k=0xdd
+[*] khoa vua ASCII vua mo dau bang dinh dang cdctf{: 1 -> k=0x8f
+[+] khoa k = 0x8f = 143
+[+] plaintext (repr): b'cdctf{exclus1ve_x0r1n_these_byt3s_and_5tuff}\n'
+[*] byte cuoi 0x85 XOR 0x8f = 0x0a -> ky tu xuong dong, khong thuoc co
+[+] round-trip: ma hoa lai 45 byte voi 0x8f cho ra dung chuoi de ban dau -> True
+[+] flag: cdctf{exclus1ve_x0r1n_these_byt3s_and_5tuff}
+[+] da luu flag.txt

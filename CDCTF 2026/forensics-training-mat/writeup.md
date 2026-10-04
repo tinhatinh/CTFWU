@@ -20,18 +20,18 @@ MAT rèn luyện forensics của CDCTF: một file `suspicious.xz` kèm một tr
 
 Bốn loại này khớp đáp án câu q4 của quiz (vfat, ext2, ext4, btrfs), nên cách phân chia part/artifact của bảng trên là cách bài toán định.
 
-Máy không có The Sleuth Kit, binwalk, steghide; WSL chỉ còn distro `docker-desktop` tối giản (không có `bash`, không có `mount`) và Docker daemon đang tắt. Nên toàn bộ parsing tự viết bằng `struct` trong Python stdlib, chỉ việc đọc QR cần `pyzbar`.
+Parser trong `exploit.py` dùng `struct` của Python để đọc cấu trúc filesystem. Bước đọc QR dùng `pyzbar`, với phương án thay thế bằng OpenCV.
 
 ## Các hướng đã loại
 
-1. **Quét `cdctf{` trên cả ảnh để ăn hết một lần.** Chỉ ra đúng một chuỗi, `cdctf{d3l3te_w0_sync_h0l3y_C0W}`, 6 lần trong partition `main`. Ba cờ kia không ở dạng plaintext, và cờ quiz thì không nằm trong artifact. Loại làm đường tắt chung, nhưng đây chính là lời giải Part 4.
+1. **Quét `cdctf{` trên cả ảnh để tìm cờ dạng plaintext.** Chỉ ra đúng một chuỗi, `cdctf{d3l3te_w0_sync_h0l3y_C0W}`, 6 lần trong partition `main`. Ba cờ kia không ở dạng plaintext, và cờ quiz thì không nằm trong artifact. Loại làm đường tắt chung, nhưng đây chính là lời giải Part 4.
 2. **Recover `flag1.png` từ directory record đã xoá.** Record LFN của nó bị đánh dấu `0xE5` nhưng cluster = 0 và size = 0, không có dữ liệu. Bản đang sống của cùng tên cho 405 byte, trùng con số quiz hỏi ở bước "Recovering Files".
 3. **Coi QR trong `flag2.jpg` là cờ.** Ảnh 610x610 giải ra một câu thách thức, không phải cờ. Phần lõi của Part 2 nằm ở lớp StegHide.
 4. **Carve `flag2.jpg` từ offset tìm thấy JPEG magic.** Cách đó cho một JPEG không có EOI. Nguyên nhân thật là thuật toán đọc block: các block đi qua single indirect bị gán logical block number bằng 0, nên dữ liệu bị xáo thứ tự. Đọc theo inode cho ra 82757 byte, kết thúc bằng `FFD9`, `exiftool` nhận baseline DCT 610x610.
 
 ## Chuỗi khai thác
 
-**Bước 1 - Part 1: FAT32, sửa magic PNG, đọc QR.** boot sector cho bytes/sector 512, sector/cluster 1, reserved 32, FAT32 dài 75 sector, root cluster 2. Entry `FLAG1 PNG` có size 405, cluster 4. Tám byte đầu của dữ liệu là `504e470d0a1a0a00`: PNG signature thiếu byte `0x89` nên toàn bộ nội dung lệch một byte sang trái, byte dôi nằm ở cuối file. Sửa = thêm `0x89` ở đầu và bỏ byte cuối. Sau khi sửa, CRC của cả 6 chunk đều khớp và `IDAT` giải nén ra đúng `1665 = 111 * 15` byte, tức không còn hỏng ở tầng khác.
+**Bước 1 - Part 1: FAT32, sửa magic PNG, đọc QR.** boot sector cho bytes/sector 512, sector/cluster 1, reserved 32, FAT32 dài 75 sector, root cluster 2. Entry `FLAG1 PNG` có size 405, cluster 4. Tám byte đầu của dữ liệu là `504e470d0a1a0a00`: PNG signature thiếu byte `0x89` nên toàn bộ nội dung lệch một byte sang trái, byte dôi nằm ở cuối file. Sửa = thêm `0x89` ở đầu và bỏ byte cuối. Sau khi sửa, CRC của cả 6 chunk đều khớp và `IDAT` giải nén ra đúng `1665 = 111 * 15` byte, xác nhận cấu trúc PNG và dữ liệu IDAT sau khi sửa.
 
 ```python
 fixed = b'\x89' + data[:-1]          # data = 405 byte đọc từ cluster 4
@@ -77,7 +77,7 @@ Bảng đáp án trích từ chính mảng `questions` trong file HTML (bản đ
 
 `astrid` là ext2, inode 12 tên `flag2.jpg`, 82757 byte, JPEG baseline grayscale 610x610 có `FFD9`; SHA-256 của bản trích xuất: `c798f09c73a6195fb1db2aa46a7d696e08224cd59bf57cbaae5e058bf5be1f30`. Ảnh đã lưu ở `analysis/flag2.jpg`. QR nhìn thấy trong ảnh chỉ là chuỗi thách thức, còn cờ nằm ở payload StegHide (câu q9 của quiz khẳng định đúng kỹ thuật này).
 
-Chưa lấy được cờ vì máy không có `steghide`: `winget search steghide` và `pip download steghide` đều không có kết quả, WSL không có distro Linux nào đủ `apt`, Docker daemon đang tắt. StegHide mã hoá payload bằng khoá suy từ passphrase nên không thể tự giải bằng đọc LSB thủ công. Hướng tiếp theo, theo thứ tự chi phí tăng dần:
+Chưa trích được payload StegHide. Cần thử extraction với passphrase rỗng, sau đó kiểm tra các chuỗi QR hoặc wordlist nếu cần. Các hướng này chưa có kết quả xác minh.
 
 1. Bật Docker Desktop, chạy một container Debian/Ubuntu cài `steghide` rồi thử passphrase rỗng (`steghide extract -sf flag2.jpg -p '' -w out`).
 2. Nếu passphrase rỗng fail, dùng `stegseek` với wordlist; ứng viên tự nhiên nhất là các chuỗi QR mà bài đã cho sẵn (câu thách thức trong `flag2.jpg`, đoạn chữ trong `flag3.png`).
@@ -132,4 +132,4 @@ python exploit.py files/suspicious.xz
 python exploit.py files/suspicious.xz
 ```
 
-Cần `numpy`, `Pillow`, `pyzbar` cho bước đọc QR (nếu thiếu `pyzbar` script tựfallback sang `cv2.QRCodeDetector`). Ảnh đĩa 500 MiB được giải nén vào `%TEMP%` và xoá khi kết thúc; thêm `--keep-image` nếu muốn giữ để kiểm tra tay bằng `binwalk`/`fls`. Toàn bộ lời giải Part 1, 3, 4 chỉ dùng `struct` trong stdlib.
+Cần `numpy`, `Pillow`, `pyzbar` cho bước đọc QR (nếu thiếu `pyzbar` script tự chuyển sang `cv2.QRCodeDetector`). Ảnh đĩa 500 MiB được giải nén vào `%TEMP%` và xoá khi kết thúc; thêm `--keep-image` nếu muốn giữ để kiểm tra tay bằng `binwalk`/`fls`. Toàn bộ lời giải Part 1, 3, 4 chỉ dùng `struct` trong stdlib.

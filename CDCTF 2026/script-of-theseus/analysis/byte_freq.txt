@@ -1,0 +1,12 @@
+original_epic_python_script.py: 156 byte, LF(0x0A) 7, CR(0x0D) 0, 8 byte dau 23 21 2f 75 73 72 2f 62
+  BOM: khong | phi ASCII in duoc: 149/156
+replaced_epic_python_script.py: 163 byte, LF(0x0A) 7, CR(0x0D) 7, 8 byte dau 23 21 2f 75 73 72 2f 62
+  BOM: khong | phi ASCII in duoc: 149/163
+
+Them o ban sau : {'0x0D': 7}
+Mat di o ban sau: {}
+
+Vi tri 0x0D: ['0x16', '0x18', '0x45', '0x63', '0x7b', '0x82', '0xa1']
+Duoc 0x0A di kem: 7/7
+Xoa het 0x0D -> khop ban goc: True
+23 21 2f 75 73 72 2f 62 69 6e 2f 65 6e 76 20 70 79 74 68 6f 6e 33 0d 0a 0d 0a

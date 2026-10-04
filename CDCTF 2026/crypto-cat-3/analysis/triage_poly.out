@@ -1,0 +1,40 @@
+== A. index of coincidence theo chieu dai khoa ==
+  L= 1 avgIC=0.0580
+  L= 2 avgIC=0.0570
+  L= 3 avgIC=0.0553
+  L= 4 avgIC=0.0594
+  L= 5 avgIC=0.0563
+  L= 6 avgIC=0.0493
+  L= 7 avgIC=0.0540
+  L= 8 avgIC=0.0724
+  L= 9 avgIC=0.0767
+  L=10 avgIC=0.0507
+  L=11 avgIC=0.0526
+  L=12 avgIC=0.0499
+  L=13 avgIC=0.0520
+  L=14 avgIC=0.0453
+  L=15 avgIC=0.0585
+  L=16 avgIC=0.0642
+  L=17 avgIC=0.0516
+  L=18 avgIC=0.0776
+  L=19 avgIC=0.0570
+  L=20 avgIC=0.0482
+== B. 'wezmrf' lap lai: 59 chu cai, 70 ky tu
+== B. 'kr' lap lai: 75 chu cai, 90 ky tu
+   gcd theo chu cai = 1 (chi L=1 thoat), gcd theo ky tu = 10 -> L chia 10
+== C. crib 'cdctf' + 'cant'/'well' (chi so theo chu cai) ==
+  vigenere  crib cdctf thoi: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]   cong them doi nhap: [13]
+    K[0..4] = ['u', 'z', 'u', 'w', 'g'], K[22..25] = ['l', 'v', 'x', 'u']
+  variant   crib cdctf thoi: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]   cong them doi nhap: [13]
+    K[0..4] = ['g', 'b', 'g', 'e', 'u'], K[22..25] = ['p', 'f', 'd', 'g']
+  beaufort  crib cdctf thoi: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]   cong them doi nhap: [13]
+    K[0..4] = ['y', 'f', 'y', 'i', 'q'], K[22..25] = ['p', 'v', 'x', 'g']
+== C2. cung crib nhung khoa chay theo ky tu (chen ca space/ngoac/nhay) ==
+  vigenere  L song (1..20): []
+    giao voi uoc cua 10 (phep thu B theo ky tu): []
+  variant   L song (1..20): []
+    giao voi uoc cua 10 (phep thu B theo ky tu): []
+  beaufort  L song (1..20): []
+    giao voi uoc cua 10 (phep thu B theo ky tu): []
+== D. autokey (primer + plaintext / + ciphertext) ==
+  so ung vien autokey co >1 tu Anh phon: 0

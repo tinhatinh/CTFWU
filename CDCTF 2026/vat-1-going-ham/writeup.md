@@ -14,11 +14,11 @@ có service từ xa, không có hint kèm theo; toàn bộ dữ kiện nằm tro
 
 `file` báo MP3 có ID3v2.4, MPEG-2 layer III, 48 kbps, 24 kHz, đơn kênh. `exiftool` chỉ ra ID3
 dài 34 byte với duy nhất frame `TSSE = Lavf61.7.103`, tức file được sinh ra bằng ffmpeg và
-không có metadata mô tả. Đi bộ khung MP3 (`analysis/mp3_frame_walk.py`) cho 2026 khung, tất
+không có metadata mô tả. Duyệt các frame MP3 (`analysis/mp3_frame_walk.py`) cho 2026 khung, tất
 cả 288 byte, kèm 8 khoảng ngoài khung mỗi khoảng đúng 44 byte và phần đuôi 144 byte. Dump
 các vùng đó: một khoảng là ID3v2.4 khác chèn giữa stream, các khoảng còn lại là payload của
 khung bị mất header sau lần re-encode, đuôi file là một khung `FFF3` với dữ liệu toàn `0x55`
-(khung im lặng được pad). Không có byte thừa nào mang nghĩa, nên hướng container bị đóng ngay.
+(khung im lặng được pad). Không tìm thấy cờ trong các vùng này; lời giải tiếp tục từ nội dung lời đọc.
 
 Phổ tín hiệu mới là thứ định hướng bài. Ba dải phổ (`analysis/spectrogram_0-1200Hz.png`,
 `analysis/spectrogram_0-6000Hz.png`) cho thấy một chuỗi hài âm cách nhau ~100 Hz trượt theo
@@ -31,12 +31,12 @@ là một cuộc gọi radio nói.
 Trước khi chốt đã kiểm tra và loại các kênh sau (log đầy đủ ở `notes.md`):
 
 1. **Stego container**: mọi vùng byte lạ đều giải thích được bằng encoder ffmpeg, entropy
-   6.494/8, 0 hit mẫu cờ. Loại.
-2. **RTTY/AFSK, SSTV, FT8**: không có cặp tone đứng yên, không có cấu trúc dòng. Loại.
+   6.494/8, 0 hit mẫu cờ.
+2. **RTTY/AFSK, SSTV, FT8**: không có cặp tone đứng yên, không có cấu trúc dòng.
 3. **DTMF**: năng lượng tại 4 tần số thấp và 4 tần số cao của bàn phím đều dưới mức tham
-   chiếu broadband, không ô nào nhô lên. Loại.
+   chiếu broadband, không ô nào nhô lên.
 4. **Morse/on-off keying**: các khoảng lặng là ranh giới cụm từ, sóng mang bị biến điệu biên
-   độ liên tục chứ không bật/tắt. Loại.
+   độ liên tục chứ không bật/tắt.
 
 ## Chuỗi khai thác
 
@@ -71,8 +71,7 @@ bốn chữ cái là chữ số hex: `bravo`, `echo`, `foxtrot`, `delta` tương
 Điểm mấu chốt nằm ở từ `Correction`. Lần đọc đầu bị thiếu một số `6` (`...four six seven
 bravo`), cho chuỗi hex 11 ký tự, lẻ nên không ghép thành byte nào. Lần đọc thứ hai chèn thêm
 số `6` (`...four six six seven bravo`) thành 12 ký tự, và `63 64 63 74 66 7B` chính là
-`cdctf{`. Đề cố tình nhét lỗi truyền dẫn vào phát ngôn để bắt người chơi chọn đúng bản đã
-sửa, và phát sóng tự xác nhận bằng lần `Repeat` thứ ba.
+`cdctf{`. Dùng bản `Correction` và đối chiếu với lần `Repeat` thứ ba để khôi phục chuỗi hex đã sửa.
 
 **Bước 3 - Giải mã và đối chiếu hai lần đọc.**
 

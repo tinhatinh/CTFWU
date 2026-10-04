@@ -70,7 +70,7 @@ Loop &
   895 root      0:00 {script} /bin/bash /home/zero/scripts/script
 ```
 
-Sơn lại ba chi tiết quyết định:
+Ba chi tiết cần lưu ý:
 
 1. Tên file phải là **`script`** (đúng một từ, không phần mở rộng), đặt đâu cũng được dưới `/home`;
    runner tự `chmod +x` nên kể cả file upload mang mode 644 vẫn được chạy.
@@ -89,7 +89,7 @@ MARK 2026-10-04T02:47:05+00:00 uid=0 host=one
 Từ `one`, DNS cho `one=172.26.4.2`, `two=172.26.4.3`, `three` không resolve: mỗi hop chỉ nhìn thấy
 hàng xóm kế tiếp, đúng như chuỗi `zero/one/two/three` trong thơ. Trên `one` có `ssh`, `sftp`, `scp`,
 `nc`, `bash` (không có `python3`, không có `socat`), và `/home/*/.ssh/key` là bản read-only bind của
-key "Universal" - nghĩa là payload chạy root ở `one` thừa tư cách để upload `script` sang `two`.
+key "Universal" - nghĩa là payload chạy root ở `one` có key cần thiết để upload `script` sang `two`.
 
 ## Các hướng đã loại
 
@@ -102,7 +102,7 @@ key "Universal" - nghĩa là payload chạy root ở `one` thừa tư cách đ�
    `> /scripts/h_x` fail im lặng. Đây là âm tính giả, đã sửa ở bước sau.
 3. **Kênh socket làm bằng chứng**: listener `python3` trên `terminal` đặt `settimeout(10)` rồi đóng,
    trong khi payload vẫn đang chờ `getent`/`sftp` (mỗi lần gọi có thể chậm hơn 10s), nên dữ liệu bị cắt
-   ngay tại dòng giữa chứng. Đã thay bằng kênh file (mục cơ chế). Payload còn một lỗi nhỏ: runner khởi
+   giữa output. Đã thay bằng kênh file (mục cơ chế). Payload còn một lỗi nhỏ: runner khởi
    động instance mới mỗi 10s và các instance **ghi đè cùng một file**, nên đọc luôn thấy nội dung dở
    dang; phải ghi ra tmp rồi `cp`, kèm khóa `flock`.
 4. **`put` file vào gốc chroot**: `put /tmp/cb /cb` -> `dest open "/cb": Permission denied` (gốc chroot
@@ -111,7 +111,7 @@ key "Universal" - nghĩa là payload chạy root ở `one` thừa tư cách đ�
 ## Còn thiếu
 
 - Chưa xác nhận vòng `one -> two` (user `one`, host `two`, key `/home/zero/.ssh/key`) trong một lần chạy
-  sạch; lần thử duy nhất bị cắt bởi lỗi timeout ở mục 3.
+  đầy đủ; lần thử duy nhất bị cắt bởi lỗi timeout ở mục 3.
 - Chưa biết độ dài thật của chuỗi và chỗ cờ nằm (`four`? một user/máy tên `floor`? `/flag` trên hop cuối?).
 - Chuỗi payload hoàn chỉnh (tự nhân bản xuống `four`, rồi kéo cờ ngược về `/home/zero/scripts` trên `one`)
   đã viết ở `analysis/propagator.sh` nhưng **chưa chạy**.

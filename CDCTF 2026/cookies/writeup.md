@@ -14,8 +14,8 @@ set 0 cookie. Muốn lấy cờ phải làm việc với instance Web: mở `/`,
 - `GET /get_cookie` trả `Set-Cookie: user_cookie_balance=<JWT>; Path=/`. Balance không nằm trong
   cookie thường mà trong payload JWT `{"user_cookie_balance":0}`, header `{"alg":"HS256","typ":"JWT"}`.
 - `POST /purchase_flag` với token gốc cho `Flag request: DENIED`; với cookie rác hoặc token ký bằng
-  secret sai cho `Invalid token!`. Server thẩm định HMAC thật, nên hướng duy nhất là tìm khoá.
-- `GET /flag` 404 của Werkzeug, `GET /purchase_flag` 405; không còn route nào khác.
+  secret sai cho `Invalid token!`. Các phép thử cho thấy server kiểm tra signature; lời giải tiếp tục bằng việc tìm khóa HMAC.
+- `GET /flag` 404 của Werkzeug, `GET /purchase_flag` 405; hai đường dẫn này không cung cấp thêm dữ liệu.
 - `robots.txt` chỉ redirect sang YouTube, không có dữ kiện.
 - Mô tả đề và các dòng `X-LLM-Agent-Instruction` / `X-LLM-Policy` là cơ chế chặn agent tự động của
   giải, không phải một bước của lời giải.
@@ -23,17 +23,16 @@ set 0 cookie. Muốn lấy cờ phải làm việc với instance Web: mở `/`,
 ## Các hướng đã loại
 
 1. **Sửa chuỗi balance trong cookie**: giá trị là JWT ba segment do server ký, sửa tay làm hỏng
-   signature. Loại.
+   signature.
 2. **Server chỉ decode, không verify**: `Invalid token!` xuất hiện với mọi token ký sai, còn token gốc
-   thì `DENIED` tức là decode vẫn thành công nhưng bị chặn ở bước kiểm tra balance. Loại.
+   thì `DENIED` tức là decode vẫn thành công nhưng bị chặn ở bước kiểm tra balance.
 3. **Secret đoán trước**: 17 ứng viên theo theme (`cookies`, `chocolate`, `Cookies-and-All-That`,
-   `alex`, `cdctf`, `user_cookie_balance`, secret rỗng...) đều `Invalid token!`. Loại.
+   `alex`, `cdctf`, `user_cookie_balance`, secret rỗng...) đều `Invalid token!`.
 
 ## Chuỗi khai thác
 
 **Bước 1 - Bẻ khoá HMAC của token gốc.** Signature chỉ 32 byte và payload đã biết, cố định,
-nên bài quy về việc tìm khoá HS256. `rockyou.txt` (14344392 dòng) chứa khoá: 8 worker Node đi hết
-wordlist trong 35.9s và dừng ở dòng 251496.
+nên bài quy về việc tìm khoá HS256. `rockyou.txt` (14344392 dòng) chứa khoá: 8 worker Node tìm thấy khóa ở dòng 251496 sau 35.9 s.
 
 ```bash
 cd "CDCTF 2026/cookies"
@@ -66,9 +65,9 @@ Gửi nó tới `/purchase_flag` lúc instance còn sống cho HTTP 200 và cờ
 [200] balance=1 -> Cookie Trading Post       "Today me will live in the moment, unless it’s unpleasant in which case me will eat a cookie."   --Cookie Monster       cdctf{0mNomN0mNomC00k1E5!_24a480be}
 ```
 
-`balance=999` cũng trả cùng cờ: server chỉ kiểm balance > 0, không có upper bound.
+`balance=999` cũng trả cùng cờ: giá trị 999 cũng vượt qua kiểm tra balance. Hai phép thử này chưa xác định toàn bộ miền giá trị được server chấp nhận.
 
-**Bước 3 - Kiểm chứng.** Hai điểm chứng minh kết quả không phải trùng hợp:
+**Bước 3 - Kiểm chứng.** Các phép kiểm chứng:
 
 ```bash
 # Harness bẻ khoá phải tìm được một secret biết trước, nếu không thì mọi "Invalid token!" ở trên vô nghĩa

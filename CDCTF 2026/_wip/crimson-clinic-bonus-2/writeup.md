@@ -11,6 +11,6 @@ Câu hỏi duy nhất: "What is the name of Jeffery Barrett's cat?", format `cdc
 
 Ba kênh công khai đã loại (chi tiết và lệnh đã chạy ở `notes.md`): nhân vật có thật khớp tên, site "Crimson Clinic" trên hạ tầng Crimson Defense, và source công khai của series trên GitHub org `UACrimsonDefense`.
 
-Giả thuyết làm việc: dữ liệu nằm trong kiosk Discord của series Crimson Clinic (cùng event với Terminal 1 Self Check-In và Terminal 2 Triage), nên lời giải là trích bản ghi bệnh nhân ra từ bot. Cần nội dung thẻ BONUS 1 và channel của BONUS 2 để đi tiếp.
+Có giả thuyết dữ liệu nằm trong kiosk Discord của Crimson Clinic, nhưng chưa có phản hồi bot để xác nhận. Cần nội dung liên quan đến Jeffery Barrett trước khi kết luận.
 
 File `exploit.py` vẫn là template, chưa có thuật giải.

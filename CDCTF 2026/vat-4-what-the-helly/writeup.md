@@ -7,13 +7,13 @@
 
 Audio 74.808 s được cho là lời đọc các mã S/Key OTP của một operative bên Crimson Offense.
 Mã đã hết hạn sử dụng, nhưng từ đó phải recovery lại được mật khẩu gốc, vì mật khẩu này còn
-dùng ở chỗ khác. Đề cho ba tham số: `n=8`, hash có nap (folded), không dùng seed. Thẻ bài ghi
+dùng ở chỗ khác. Đề cho ba tham số: `n=8`, hash có folding, không dùng seed. Thẻ bài ghi
 500 điểm, hạng OSINT + Crypto + Password Cracking, tác giả `b0b`, format `cdctf{password}`.
 
 ## Phân tích ban đầu
 
 `ffprobe` báo MPEG layer III v2, 48 kbps, 24 kHz, đơn kênh, không có ID3 mang nội dung. Cùng
-kiểu container với các phần khác của chuỗi VAT, tức file do TTS sinh ra; payload nằm ở lời đọc,
+kiểu container với các phần khác của chuỗi VAT, gợi ý cùng pipeline tạo audio; payload nằm ở lời đọc,
 không phải byte thừa hay mode tín hiệu.
 
 Whisper `base` và `small` (một từ một phân đoạn, `analysis/asr_base_run.log`,
@@ -27,13 +27,13 @@ và mật khẩu. Hai thứ đầu có thể kiểm chứng bằng dữ liệu, 
 
 ## Các hướng đã loại
 
-1. **Dữ liệu ngoài lời đọc**: frame MP3 đều, không ID3, không kênh phụ. Loại.
+1. **Dữ liệu ngoài lời đọc**: frame MP3 đều, không ID3, không kênh phụ.
 2. **Nhận dạng bị ràng buộc từ điển**: Vosk grammar 2048 từ trên từng lát cắt 1.1 s trả về rỗng
    49/49 lát cắt (`analysis/asr_vosk_grammar_attempt.txt`), kèm 931 dòng
    `Ignoring word missing in vocabulary` cho 19 từ khác nhau trong từ điển bị model bỏ qua.
    Loại, quay về ba bản nghe không ràng buộc.
 3. **Chuỗi RFC 1760/2289 đúng nghĩa**: `step(v) = fold(MD5(8 byte thô))`. Kiểm trên mọi cặp mã
-   đọc được, `k = 1..7`, cả MD4, MD5, SHA1 và cả hai thứ tự byte: 0 khớp. Loại.
+   đọc được, `k = 1..7`, cả MD4, MD5, SHA1 và cả hai thứ tự byte: 0 khớp.
 4. **Kết quả âm tính ở hướng 3 từng bị sai một lần**: khi so sáu từ nguyên bản thì hai bit checksum
    của từ thứ sáu luôn luôn lệch, nên mỗi cặp đều "lệch đúng một ô" và bị loại bởi cùng một ngưỡng
    chịu lỗi. Chỉ khi chuyển sang so giá trị 64 bit (bỏ 2 bit checksum) thì phép thử mới có nghĩa.
@@ -64,7 +64,7 @@ từng mã nghe được: 5 mã đủ 6 từ trong từ điển (3, 4, 5, 6, 7) 
 (3, 4, 5, 7); mã 6 đòi từ thứ sáu là `WATS` thay vì `WAVE`. Từ đây có hai kết luận: encoding là
 bản chuẩn RFC, và transcript vẫn còn lỗi nên không được dùng nó làm bằng chứng tuyệt đối.
 
-**Bước 2 - Tìm hàm bước thật.** Quét 65 tổ hợp (4 hash, 4 kiểu nap, 5 dạng input) và kiểm xem
+**Bước 2 - Tìm hàm bước thật.** Quét 65 tổ hợp (4 hash, 4 kiểu folding, 5 dạng input) và kiểm xem
 `step^k(mã A)` có cho `mã B` hay không, cho phép lệch một ô:
 
 ```text
@@ -105,11 +105,7 @@ với audio ở 39/48 ô; 9 ô còn lại đều là cặp từ gần âm (`BATE
 `YALL/YAWL`, `RUN/RUNG`, `NO/NOLL`, `HOLD/HOLT`, `WORT/WERT`, `LOSE/LOS`), tức là lỗi nghe chứ
 không phải lỗi chuỗi.
 
-**Bước 4 - Đối chứng ngoài bài.** Đề nói mật khẩu "would help us gain access elsewhere". Cùng
-chuỗi đó mở keyring PGP của operative. File `VAT_key` tải về cùng đợt với audio, nhiều khả năng là
-artifact của phần 3/5 (S2K iter+salt SHA1, protect-count 65011712, AES-256): `gpg --import` với
-passphrase này báo `secret key imported`, `secret keys imported: 1`. Không có pass phrase nào khác
-được thử.
+**Bước 4 - Kiểm tra với key PGP đi kèm.** Đã thử `gpg --import` với mật khẩu tìm được trên `VAT_key` (S2K iter+salt SHA1, protect-count 65011712, AES-256); output báo `secret key imported`. Import thành công chưa đủ chứng minh passphrase giải mã được private key; cần thêm thao tác ký hoặc giải mã để xác minh.
 
 ## Flag
 

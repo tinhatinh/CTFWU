@@ -10,7 +10,7 @@ Chủ repo khai báo bị hack giữa lúc phát triển một app ghi chú Flas
 
 ## Phân tích ban đầu
 
-Lịch sử repo gọn: 8 commit trên một nhánh `main`, 0 tag, `git fsck --full --dangling` không in object lạc, `git for-each-ref` chỉ có ba ref cùng trỏ `a531ea371475532d0a6aef72a051d3bd44d1c689`. Không có force-push, nên đoạn mã attacker thêm nằm trong diff của một commit đang tồn tại và phải qua được mắt người đọc.
+Bản clone có 8 commit trên nhánh `main`, không có tag. `git fsck --full --dangling` không báo object không được tham chiếu; `git for-each-ref` trả ba ref cùng trỏ tới `a531ea371475532d0a6aef72a051d3bd44d1c689`. Có thể kiểm tra payload trong các commit hiện có; dữ liệu clone không đủ để kết luận remote chưa từng force-push.
 
 Chuỗi commit:
 
@@ -39,17 +39,17 @@ def _tags_for(db, note_ids):
 exec(tags_list)
 ```
 
-`notes_list` không được dùng ở chỗ nào khác ngoài vòng lặp dựng `tags_list`, và `exec(tags_list)` nằm ở cấp module nên chạy ngay khi import, tức mỗi lần khởi động app. Offset `0xE0000` trùng đầu vùng Unicode Tag: U+E0020-U+E007E ánh xạ đúng sang ASCII 0x20-0x7E, U+E000A là xuống dòng. Cả vùng này zero-width, editor lẫn diff GitHub đều không render, nên dòng 6 trông như một chuỗi rỗng. Đếm được 395 ký tự U+E00xx trong `app.py`, tất cả nằm trên dòng 6 (425 ký tự, 1611 byte); 13 file còn lại của repo có 0.
+`notes_list` không được dùng ở chỗ nào khác ngoài vòng lặp dựng `tags_list`, và `exec(tags_list)` nằm ở cấp module nên chạy ngay khi import, tức mỗi lần khởi động app. Offset `0xE0000` trùng đầu vùng Unicode Tag: U+E0020-U+E007E ánh xạ đúng sang ASCII 0x20-0x7E, U+E000A là xuống dòng. Các ký tự này không hiển thị trong editor và diff GitHub đã kiểm tra, nên dòng 6 trông như một chuỗi rỗng. Đếm được 395 ký tự U+E00xx trong `app.py`, tất cả nằm trên dòng 6 (425 ký tự, 1611 byte); 13 file còn lại của repo có 0.
 
 ## Các hướng đã loại
 
 `analysis/scan_hidden_unicode.py` quét working tree, mọi blob trong lịch sử, mọi commit message kèm author và committer:
 
-1. **Lịch sử bị viết lại** (force-push, commit lạc, stash): `git fsck --full --dangling` trả rỗng, `git count-objects -v` báo 45 object nằm trọn trong một pack, `git reflog` sau clone chỉ có một dòng `clone: from https://github.com/shkorodi/notekeeper.git`. Loại.
-2. **Payload cất trong object không ref nào trỏ tới**: `git cat-file --batch-all-objects --batch-check` liệt kê đủ 45 object, trong đó chỉ hai blob `app.py` có ký tự ẩn. Loại.
-3. **Stego trong commit message, tên hoặc email author/committer**: scan trả 0 ký tự Tag và 0 ký tự zero-width/bidi trên cả 8 commit. Loại.
+1. **Object không được tham chiếu trong bản clone:** `git fsck --full --dangling` không báo kết quả, 45 object nằm trong một pack. Reflog chỉ ghi lần clone, nên không cung cấp lịch sử thay đổi ref trước đó.
+2. **Payload cất trong object không ref nào trỏ tới**: `git cat-file --batch-all-objects --batch-check` liệt kê đủ 45 object, trong đó chỉ hai blob `app.py` có ký tự ẩn.
+3. **Stego trong commit message, tên hoặc email author/committer**: scan trả 0 ký tự Tag và 0 ký tự zero-width/bidi trên cả 8 commit.
 4. **Zero-width kinh điển** (U+200B-U+200F, U+202A-U+202E, U+2060, U+FEFF): 0 trên mọi file. Kênh thật là U+E00xx.
-5. **Mã độc ở file khác** (templates, static, tests, `db.py`, `helpers.py`): `git grep -nE "exec\(|eval\(|subprocess|os\.system|base64"` chạy trên toàn bộ revision chỉ trả về `exec(tags_list)` trong bốn phiên bản `app.py`, tức từ `bd75399` về sau. Loại.
+5. **Mã độc ở file khác** (templates, static, tests, `db.py`, `helpers.py`): `git grep -nE "exec\(|eval\(|subprocess|os\.system|base64"` chạy trên toàn bộ revision chỉ trả về `exec(tags_list)` trong bốn phiên bản `app.py`, tức từ `bd75399` về sau.
 6. **Chạy payload để bắt request**: `example.com` là domain RFC 2606 reserved, phần đường dẫn lại là cờ XOR với `random.randbytes(32)` nên mỗi lần chạy sinh URL khác. Lời giải là phân tích tĩnh, không gọi mạng.
 
 ## Chuỗi khai thác
@@ -125,7 +125,7 @@ print("flag:", bytes(a ^ b for a, b in zip(k, f)).decode())
 flag: cdctf{G1455w0rM_w4s_pr3tTy_c0oL}
 ```
 
-Hai blob dài 32 byte, XOR ra chuỗi in được trọn vẹn, khớp `cdctf{...}` và có cấu trúc leetspeak như định dạng đề nêu. `k` tuần hoàn đúng 6 byte `67 42 06 72 17 61`, còn `f` thì không, nên `f` là dữ liệu và `k` là key.
+Hai blob dài 32 byte, XOR ra chuỗi in được trọn vẹn, khớp `cdctf{...}` và có cấu trúc leetspeak như định dạng đề nêu. `k` tuần hoàn đúng 6 byte `67 42 06 72 17 61`, còn `f` thì không, Vai trò `f` và `k` được xác định từ phép XOR trong payload.
 
 ## Flag
 

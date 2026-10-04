@@ -12,13 +12,7 @@ Crypto, tác giả `b0b`, định dạng cờ `cdctf{ex4mp13_f14g}`. Không có 
 
 ## Phân tích ban đầu
 
-Audio là file 24 kHz đơn kênh sinh bằng ffmpeg (`TSSE = Lavf61.7.100`). Container sạch: ID3
-dài 34 byte, thân 151200 byte, cộng lại đúng bằng `25.20 s * 48000 / 8`, nên không có byte
-dính thêm cuối file. Phổ tín hiệu là giọng nói (năng lượng dưới 500 Hz cao hơn dải 4-11 kHz
-25.40 dB và dao động 91.05 dB theo frame), không có lưới điểm ảnh của stego spectrogram.
-Whisper `small` chỉ lấy được câu intro trong 9.4 giây đầu và trả về 0 token cho đoạn code,
-xác nhận đúng lời than trong đề: máy cũng không nghe ra. Kết luận làm việc: payload nằm
-trong transcript, audio chỉ là bản tường thuật lại.
+Đề đã cung cấp transcript của 17 nhóm từ. Dùng trực tiếp transcript làm đầu vào cho decoder; không cần nhận dạng lại audio. File MP3 là bản lời đọc đi kèm, định dạng 24 kHz mono, có tag `TSSE = Lavf61.7.100`.
 
 Cấu trúc 17 word tự khai báo thuật toán. Mọi word đều `CVCVC`. Bảng chữ dùng được gói gọn
 trong 21 ký tự: đúng 6 nguyên âm `a e i o u y`, và 15 trong số 17 phụ âm
@@ -27,26 +21,13 @@ cuối cùng kết thúc bằng `x`. Bộ ba dấu hiệu "6 nguyên âm + 17 ph
 chữ ký của **BubbleBabble**, định dạng fingerprint OpenSSH sinh ra để đọc qua điện thoại,
 hàm `fingerprint_bubblebabble` trong `sshkey.c`.
 
-## Các hướng đã loại
+## Ghi chú phân tích
 
-Trước khi chốt đã kiểm tra và loại các kênh sau (log đầy đủ ở `notes.md`):
-
-1. **Stego trong MP3**: ID3 chỉ có `TSSE`, thông số bitrate nhân ra đúng số byte thân file,
-   các chuỗi `PK` xuất hiện ở offset 44887/96286/120669 là trùng hợp nội dung nén. Loại.
-2. **Stego spectrogram**: không có frame nào ở dải 1-4 kHz gần trắng toàn phần, không plateau
-   dài; dải thấp liên tục biến điệu theo hài âm. Loại.
-3. **DTMF / AFSK / Morse**: chỉ 18 utterance lời người từ 9 s trở đi, không ô tone nào nhô lên. Loại.
-4. **Sinh transcript từ audio**: Whisper `small` trả 0 token cho 17 word, nên audio không
-   thêm dữ kiện; transcript là nguồn duy nhất. Loại (nhưng vẫn dùng để xác minh transcript
-   bằng chính vòng mã hoá).
-5. **Mật mã classical trên 85 ký tự** (Polybius homophonic, mỗi word một ký tự): 654 bộ tham
-   số (tập vị trí, cách quy đổi, endian, bảng ký tự, offset ASCII) cho 0 kết quả chứa manh
-   roi cờ, trong khi cùng bộ máy đó tìm thấy `cdctf` trên dữ liệu tổng hợp có cùng sơ đồ. Loại.
+Các phép thử container, phổ tín hiệu và ASR được lưu trong `notes.md`. Lời giải dưới đây chỉ cần transcript do đề cung cấp.
 
 ## Chuỗi khai thác
 
-**Bước 1 - Đọc cấu trúc thành tham số của BubbleBabble.** Hàm này phát `x`, rồi mỗi vòng
-tròn in 5 ký tự từ một cặp byte, xen kẽ dấu `-`:
+**Bước 1 - Đọc cấu trúc thành tham số của BubbleBabble.** Hàm này phát `x`, rồi mỗi vòng lặp in 5 ký tự từ một cặp byte, xen kẽ dấu `-`:
 
 ```python
 rounds = len(data) // 2 + 1
@@ -89,12 +70,10 @@ hàm forward của BubbleBabble và so từng ký tự với transcript:
 ```
 
 85/85 ký tự chữ cái khớp nhau, và chuỗi re-encode in ra có đúng 16 dấu `-`, tức vẫn là 17
-nhóm như transcript. Không có chữ nào trong transcript bị nghe sai (đoán ban đầu rằng `z` là
+nhóm như transcript. Transcript khớp kết quả re-encode (đoán ban đầu rằng `z` là
 `x` bị đọc lệch là sai). Chuỗi ra còn tự giải thích: `8u88l3_848813` là
 `bubble_babble`, phần đuôi `fl4g_pa55ing` là `flag_passing`, prefix `cdctf{` và dấu `}` đúng
-luật đề. Một tính chất phụ của mã cũng được dùng làm van an toàn: nếu một ký tự bị sửa sai,
-phép cộng mod 6 sẽ sinh chỉ số không nằm trong 0..3 ở vòng kế tiếp và lời giải gãy ngay tại
-đó.
+luật đề. Một tính chất phụ của mã cũng được dùng làm van an toàn: một số lỗi ký tự có thể làm chỉ số vượt 0..3. Đây là phép kiểm tra cấu trúc, không bảo đảm phát hiện mọi thay đổi.
 
 ## Flag
 

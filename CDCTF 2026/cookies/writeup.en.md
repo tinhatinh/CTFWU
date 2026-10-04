@@ -14,9 +14,8 @@ to 0 cookies. Solving means interacting with the web instance: load `/`, let the
 - `GET /get_cookie` returns `Set-Cookie: user_cookie_balance=<JWT>; Path=/`. The balance is not a plain
   cookie but a JWT payload `{"user_cookie_balance":0}` with header `{"alg":"HS256","typ":"JWT"}`.
 - `POST /purchase_flag` with the original token returns `Flag request: DENIED`; a garbage cookie or a
-  token signed with a wrong key returns `Invalid token!`. The server does verify the HMAC, so the only
-  route left is recovering the key.
-- `GET /flag` is a Werkzeug 404, `GET /purchase_flag` is 405; no other routes exist.
+  token signed with a wrong key returns `Invalid token!`. The server does verify the HMAC, so the solution proceeds by recovering the signing key.
+- `GET /flag` is a Werkzeug 404, `GET /purchase_flag` is 405; neither route provides further data in these tests.
 - `robots.txt` only redirects to YouTube and carries no data.
 - The challenge description and the `X-LLM-Agent-Instruction` / `X-LLM-Policy` response headers are the
   event's automation block, not a step of the solution.
@@ -34,7 +33,7 @@ to 0 cookies. Solving means interacting with the web instance: load `/`, let the
 
 **Step 1 - Recover the HMAC key of the original token.** The signature is 32 bytes and the payload is
 known and fixed, so the challenge reduces to finding the HS256 key. `rockyou.txt` (14344392 lines) holds
-it: 8 Node workers walked the whole list in 35.9s and stopped at line 251496.
+it: 8 Node workers found the key at line 251496 after 35.9 s.
 
 ```bash
 cd "CDCTF 2026/cookies"
@@ -67,9 +66,9 @@ Sending it to `/purchase_flag` while the instance was alive returned HTTP 200 an
 [200] balance=1 -> Cookie Trading Post       "Today me will live in the moment, unless it’s unpleasant in which case me will eat a cookie."   --Cookie Monster       cdctf{0mNomN0mNomC00k1E5!_24a480be}
 ```
 
-`balance=999` returns the same flag: the server only tests balance > 0, there is no upper bound.
+`balance=999` returns the same flag: 999 also passed the balance check. These two tests do not establish the full accepted range.
 
-**Step 3 - Verification.** Two facts show the result is not a coincidence:
+**Step 3 - Verification.** Verification checks:
 
 ```bash
 # The cracking harness must find a secret planted in advance, otherwise every "Invalid token!" above proves nothing

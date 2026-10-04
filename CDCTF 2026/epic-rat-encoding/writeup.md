@@ -18,8 +18,7 @@ về một buổi gặp bí mật (ở đâu và lúc nào). Trong file C, dòng
   `nums[j]` là 8 byte `message[8j..8j+7]` đóng gói big-endian trong một `uint64_t`.
 - 8 chunk × 8 byte = 64 byte. Định dạng cờ cần `Place_Place_Place` + `at` + 4 token thời gian,
   tức khoảng 47-64 byte, nên đúng 8 số là đủ chứa toàn bộ thông điệp, không thiếu dữ liệu.
-- `uint64_t nums[8];` không được khởi tạo, giá trị ban đầu là rác stack. Đầu ra thật của bài không
-  có rác, nên lời giải cứ coi như bắt đầu từ 0.
+- `uint64_t nums[8];` chưa được khởi tạo, nên source C có undefined behavior. Lời giải diễn giải tám số đã cho thành byte big-endian; khi dựng encoder để đối chiếu cần khởi tạo mảng bằng 0.
 
 ## Các hướng đã loại
 
@@ -52,7 +51,7 @@ print("".join(chr(b) if 32 <= b < 127 else "." for b in raw))
 [+] round-trip: re-encode bang vong lap C khop ca 8 so
 ```
 
-**Bước 2 - Ghép cờ theo đúng khuôn.** `Meet me at the ` là mô thừa; `Place_Place_Place` tương ứng
+**Bước 2 - Ghép cờ theo đúng khuôn.** `Meet me at the ` là phần mở đầu thông điệp, không thuộc giá trị cần nộp; `Place_Place_Place` tương ứng
 `Tom_Bevill_Building`, `at` giữ nguyên, bốn token cuối `time_time_time_Time` tương ứng
 `noon_next_week_Thursday` (token cuối in hoa, khớp `Thursday`).
 
@@ -71,10 +70,7 @@ re-encode         : [5576975263002879264, 7022273403317198932, 80291091802136518
 identical         : True
 ```
 
-Hai byte cuối của bản giải mã là `0x25 0x6c` = `%l`, tức hai ký tự đầu của chuỗi format `"%lu "`
-nằm cạnh mảng `message` trong binary. Vòng lặp đọc 64 byte trong khi chuỗi chỉ 61 ký tự + NUL,
-nên phần đuôi này vừa khớp độ dài 61 ký tự, vừa xác nhận hướng đóng gói là big-endian (little-endian
-sẽ trả các byte rác này về đầu chunk và phá mất chữ cái).
+Hai byte cuối giải mã thành `0x25 0x6c` = `%l`, giống đầu chuỗi format `"%lu "`. Vòng lặp đọc 64 byte trong khi thông điệp có 61 ký tự và NUL, nên có thể đọc vượt chuỗi. Không thể xác định vị trí các byte này trong bộ nhớ chỉ từ source và tám số đã cho.
 
 ## Flag
 

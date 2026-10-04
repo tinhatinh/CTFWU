@@ -26,7 +26,7 @@ git fetch --quiet --prune origin +refs/heads/*:refs/remotes/origin/*
 socat TCP-LISTEN:25,fork,reuseaddr TCP:mail.gitlash.internal:25
 ```
 
-Hai hệ quả trực tiếp: job chạy root và **mù** (stdout/stderr vào `/dev/null`), nên muốn lấy cờ thì
+Hai hệ quả trực tiếp: job chạy bằng root và không lưu output (stdout/stderr vào `/dev/null`), nên muốn lấy cờ thì
 phải tự mở kênh thoát; và nội dung thực thi đến từ repo `diagbot/diag-d9dbe170` mà `player` chỉ clone
 được bằng quyền đọc (`git ls-remote` ẩn danh trả `2f7853aa... refs/heads/main`).
 
@@ -48,27 +48,27 @@ ghi repo, vì mọi kênh ghi ẩn danh đều bị chặn (xem mục dưới).
 
 1. **GitLab registration / user đầu tiên là admin**: `curl -L /users/sign_up` trả về form **đăng nhập**
    (`user[login]`, `user[password]`, `user[remember_me]`, không có `user[email]`/`user[name]`, không có
-   link "Sign up for an account"). Registration tắt. Loại.
+   link "Sign up for an account"). Registration tắt.
 2. **Ghi repo ẩn danh**: `POST|PUT /api/v4/projects/54/repository/files/run.sh` -> 401,
    `POST /api/v4/projects/54/issues` -> 401, `GET .../info/refs?service=git-receive-pack` -> 401,
-   `git push` hỏi credential. Loại.
+   `git push` hỏi credential.
 3. **CVE-2021-22205 (ExifTool DjVu)**: đã dựng file DjVu đúng từng byte trên target (528 B, md5
    `63596306c1d365f489c56e7dd5895b87` và `eeea1f2bbe82ace7f639b2d8f24a4fc3`), điểm rơi
    `/api/v4/project/markdown/upload` trả **404**, còn `/uploads/user` trả 422 rất nhanh. 422 này là
    trang "The change you requested was rejected" (CSRF), không phải ExifTool từ chối. Type qua
    GraphQL ẩn danh: schema có `AGENT_PLATFORM_SESSION_CREATED_ASC`, `AGENTIC_CHAT` -> GitLab bản mới
-   (17.7+/18.x), CVE đã vá. Loại.
+   (17.7+/18.x), CVE đã vá.
 4. **CVE-2023-7028 (đổi mật khẩu qua email)**: form web trả 302; quét toàn bộ body issue của 54
    project bằng `grep -aoiE 'reset_password_token|glpat-|private.token|deploy[_-]token'` trả **0 kết quả**,
-   tức chưa từng có thư đổi mật khẩu nào rơi vào kênh mail-to-issue. Loại.
+   không tìm thấy token đổi mật khẩu trong các issue đã thu thập.
 5. **IMAP trên 172.18.0.3**: tự viết client qua `/dev/tcp` (mỗi `printf` đều `>&3`), `incoming/incoming`,
-   `incoming/<glimt token>`, `diagbot/diagbot`, `gitlab/<hash>` đều `a2 NO [AUTHENTICATIONFAILED]`. Loại.
+   `incoming/<glimt token>`, `diagbot/diagbot`, `gitlab/<hash>` đều `a2 NO [AUTHENTICATIONFAILED]`.
 6. **Bơm lệnh vào mail-to-issue**: `$(sleep 11)` và `` `sleep 11` `` trong Subject lẫn body tạo issue
-   trong đúng 1-3s như baseline, không có delay. Pipeline thư không eval shell. Loại.
+   trong đúng 1-3s như baseline, không có delay trong các phép thử này. Chưa ghi nhận command execution qua Subject hoặc body.
 7. **Cấy `.git` để hook chạy theo cron**: `find / -xdev -maxdepth 5 -name '.git'` chỉ ra `/tmp/r/.git`
    (clone do chính ta tạo lúc 01:09); 12 đường dẫn diag nghi ngờ đều không tồn tại. Clone của root nằm
-   dưới thư mục không traverse được. Loại.
-8. **`/opt/seed` có metadata**: chỉ chứa `run.sh` 556 byte, **byte-identical** với `run.sh` trong repo. Loại.
+   dưới thư mục không traverse được.
+8. **`/opt/seed` có metadata**: chỉ chứa `run.sh` 556 byte, **byte-identical** với `run.sh` trong repo.
 
 ## Chuỗi khai thác
 
@@ -85,7 +85,7 @@ ghi repo, vì mọi kênh ghi ẩn danh đều bị chặn (xem mục dưới).
 1       diagbot/diag-41ac40fd   public
 ```
 
-**Bước 2 - Quét state của 53 người anh em.** Với mỗi project, gọi ba endpoint đọc (issues, tree, commits)
+**Bước 2 - Đọc dữ liệu của các project public còn lại.** Với mỗi project, gọi ba endpoint đọc (issues, tree, commits)
 và giữ lại JSON; 162 request mất chưa tới một phút. Đếm issue theo project cho thấy phần lớn đã bị
 các đội khác đụng tới:
 
@@ -118,8 +118,8 @@ gồm cả output chạy bằng root. Một vòng `grep` trên toàn bộ JSON �
 
 Chuỗi `..._adb2dc3f` được chấp nhận trên bảng điểm. Đuôi của mỗi cờ là hex của chính instance sinh ra
 nó (`p33 -> 0ff0ae34`, `p35 -> f420b244`, `p39 -> adb2dc3f`), nên cờ mang hex `d9dbe170` là của box mình
-và chỉ lấy được khi hoàn thành nốt quyền ghi repo; bước đó chưa đóng trong phiên này. Cờ nộp là cờ của
-tenant anh em, đọc được vì server GitLab chung để toàn bộ repo và issue của mọi đội ở chế độ public.
+và chỉ lấy được khi hoàn thành nốt quyền ghi repo; bước đó chưa hoàn thành. Cờ nộp là cờ của
+tenant khác, đọc được vì server GitLab chung để toàn bộ repo và issue của mọi đội ở chế độ public.
 
 ## Flag
 
@@ -133,7 +133,7 @@ cdctf{mY_3m41L_is_a_TOKEN_adb2dc3f}
 
 ## Reproduce
 
-Cần shell trong instance của một đội bất kỳ (mọiệnh chỉ đọc). Sao chép `analysis/enumerate_siblings.sh`
+Cần shell trong instance của một đội bất kỳ (mọi lệnh chỉ đọc). Sao chép `analysis/enumerate_siblings.sh`
 vào box, chạy `bash enumerate_siblings.sh` rồi đọc `grep cdctf /tmp/all_iss.txt`.
 
 ```bash

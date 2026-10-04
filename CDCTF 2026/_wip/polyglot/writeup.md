@@ -7,7 +7,7 @@
 ## Đề bài
 
 Đề cho ba file: một "protocol" bằng Haskell, một bộ câu hỏi 32 dòng, một bộ câu trả lời 32 dòng đã phục
-hồi nhưng mỗi dòng thiếu mất một phần.Nhiệm vụ là lấy lại thông tin còn thiếu, tức module `Secrets` chứa
+hồi nhưng mỗi dòng thiếu mất một phần. Nhiệm vụ là lấy lại thông tin còn thiếu, tức module `Secrets` chứa
 `KEY` mà `Program1.hs` import. Gợi ý "far depths of Glasgow, Scotland" chỉ tới GHC và phương ngữ
 Glasgow; format cờ là `cdctf{ABunchOfTitleCaseWords}`.
 
@@ -15,9 +15,9 @@ Glasgow; format cờ là `cdctf{ABunchOfTitleCaseWords}`.
 
 `Program1.hs` dùng type-level programming (`DataKinds`, `TypeFamilies`, `UndecidableSuperClasses`) và
 `import Secrets (KEY)`, với `KEY` là một `Symbol`. Chạy trực tiếp không được vì máy không có GHC và cũng
-không có `Secrets.hs`, nên phải viết lại đúng bán đột của nó rồi giải ngược.
+không có `Secrets.hs`, nên phải viết lại đúng semantics của nó rồi giải ngược.
 
-Bán đột nằm ở instance `LocaleSet`. Với state `n` và ký tự `c`:
+Semantics nằm ở instance `LocaleSet`. Với state `n` và ký tự `c`:
 
 ```haskell
 locales _ _ =  locale  (Proxy @(Mod (n * CharToNat c) M1))
@@ -35,19 +35,19 @@ Vì phép mod 7 chỉ nhân nên state của chuỗi j luôn bằng `(j * P) mod
 bằng đúng độ dài `KEY`, tức `len(KEY) = 32` và body cờ là 25 ký tự.
 
 Dữ liệu tự kiểm chứng cách đọc này: 32 dòng answer đều có đúng 3 fragment, và category của fragment khớp
-thứ tự question từng dòng. Với 96 vị trí khớp ngẫu nhiên thì xác suất trùng hợp là không đáng kể.
+thứ tự question từng dòng. Parser được đối chiếu với đủ 96 fragment quan sát được.
 
 ## Các hướng đã loại
 
 1. **Homoglyph hoặc stego trong byte**: cả ba file không có byte nào ngoài ASCII; histogram dấu cách cuối
-   dòng là uniform (Answers 1/dòng do mỗi variant kết thúc bằng space, Questions 0). Loại.
+   dòng là uniform (Answers 1/dòng do mỗi variant kết thúc bằng space, Questions 0).
 2. **Zip chứa entry ẩn hoặc ADS**: `unzip -l` chỉ có 4 entry (folder + 3 file), không comment; `dir /r`
    chỉ thấy `Zone.Identifier` do trình duyệt gắn. Ba lần tải cùng md5 `55e1ce98f5df3c1b44b73f1b6b392531`
-   dù BTC nói đã update, nên bản tải về không đổi. Loại.
+   dù BTC nói đã update, nên bản tải về không đổi.
 3. **Thứ tự question dòng 21-32 mã hóa đuôi**: 20 dòng đầu là đúng 20 tổ hợp chập 3 của 6 cột theo thứ tự
-   chuẩn, 12 dòng sau là bản đảo ngược của 12 dòng đầu. Không có bit nào ngoài mẫu hình. Loại.
+   chuẩn, 12 dòng sau là bản đảo ngược của 12 dòng đầu. Không có bit nào ngoài mẫu hình.
 4. **Nhánh "chuỗi sống" để đuôi vẫn bị ràng buộc**: `python exploit.py files/Polyglot1.zip --alive`, kết quả ở `analysis/alive.log`. Bắt buộc không có ký tự `≡ 0 (mod 7)` ở vị trí 18 thì
-   quét toàn bộ chuỗi khả dụng ở index 12-17 cho 528 kết quả, tất cả là phụ âm rác (`CHCECL`, `CHmEmv`);
+   quét toàn bộ chuỗi khả dụng ở index 12-17 cho 528 kết quả, tất cả là chuỗi phụ âm không tạo thành từ đã nhận diện (`CHCECL`, `CHmEmv`);
    quét theo từng vị trí chết 18, 20, 22, 24, 26, 28, 30 với từ điển 10k và 370k từ cho 0 cụm có nghĩa.
    Loại, nên nhánh tiếng Anh buộc ký tự 18 là `p`.
 5. **Dò từ điển không có tiền tố cờ**: tìm cụm TitleCase khớp ràng buộc mà không giả định `cdctf{` cho
@@ -57,7 +57,7 @@ thứ tự question từng dòng. Với 96 vị trí khớp ngẫu nhiên thì x
 
 ## Chuỗi khai thác
 
-**Bước 1 - Dựng lại bán đột và kiểm tra parser.** `exploit.py` mô phỏng đúng `locales` cho cả 6 chuỗi rồi
+**Bước 1 - Dựng lại semantics và kiểm tra parser.** `exploit.py` mô phỏng đúng `locales` cho cả 6 chuỗi rồi
 ngược lại: sinh ràng buộc từ answer, ép mỗi fragment phải đứng đúng cột mà question hỏi.
 
 ```bash
@@ -109,7 +109,7 @@ Tu vi tri 19 tro di, ca 52 chu cai deu kha dung -> duoi KEY khong bi file nay ra
 ```
 
 Vị trí 1-3 ép `cdc`, vị trí 7 ép `S` và vị trí 8 ép `e`; bộ ba 4-5-6 cho phép `t`,`f`,`{`, nên `KEY` là
-nguyên văn xâu cờ chứ không riêng body. Trong toàn bộ không gian chữ cái, xâu duy nhất đọc ra tiếng Anh ở
+nguyên văn xâu cờ chứ không riêng body. Trong các ứng viên đã phân tích, prefix tiếng Anh được chọn ở
 18 vị trí đầu là `cdctf{SecretOfComp`: `Se` + `cr` + `e` + `t` ghép thành `Secret`, `O` + `f` ghép thành
 `Of`, rồi `C` + `o` + `m` + `p` mở đầu một từ `Comp*`.
 
@@ -132,7 +132,7 @@ KEY = 'cdctf{SecretOfComprehensiveness}' (32 ky tu, du 32 dong)  khop 32/32 dong
 KEY = 'cdctf{WrongPhraseEntirelyWrong}' (31 ky tu, ph bao 31/32 dong)  khop 17/31 dong | lech dong 7,8,9,10,11,12,13,15,16,17,18,19,20,21
 ```
 
-Đuổi cùng lúc 52 chữ cái ở mọi vị trí từ 19 nghĩa là phần còn lại của body không do protocol quyết định,
+Có 52 chữ cái hợp lệ ở mọi vị trí từ 19 nghĩa là phần còn lại của body không do protocol quyết định,
 nó là một cụm từ tiếng Anh. Bài này vì thế cần tác giả xác nhận: reep236 trả lời rằng cờ bị dài quá khi
 chuyển từ dev sang testing, script verify bỏ sót input vẫn pass, và checker đã được đổi thành regex tính
 từ vùng mơ hồ, tức mọi đuôi sau `cdctf{SecretOfComp` đều được chấp nhận.

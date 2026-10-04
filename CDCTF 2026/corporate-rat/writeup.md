@@ -64,16 +64,16 @@ Ba kênh trông giống attacker nhưng không dẫn tới implant (chi tiết t
 1. **`gfoster` (George Foster, uid 1097)**: `wget -q http://198.51.100.44/tools/monitoring-agent.sh
    -O /tmp/agent.sh` rồi `sh /tmp/agent.sh`, sau đó `/bin/rm /tmp/agent.sh`. Anh ta có sudo thật
    (`sudo=yes` trong roster), đăng nhập từ đúng workstation 10.50.20.125 của mình, và chuỗi lệnh chỉ
-   chạy một lần: 0 dòng cron, 0 beacon. Loại.
+   chạy một lần: 0 dòng cron, 0 beacon.
 2. **User ngoài `newhire`**: chỉ có một dòng `useradd` do `lroberts` chạy ngày 25/09, không có phiên
-   login và không có record audit nào mang uid của user này. Loại.
+   login và không có record audit nào mang uid của user này.
 3. **Scanner từ `198.51.100.x` và `203.0.113.x`**: 106 dòng UFW BLOCK trong `syslog` và các dòng
    `Invalid user` trong `auth.log`. Toàn bộ 457 dòng `Accepted password` đều đến `10.50.x.x`, không
-   IP nào trong nhóm quét lấy được phiên. Loại.
+   IP nào trong nhóm quét lấy được phiên.
 
 ## Chuỗi khai thác
 
-**Bước 1 - Trói implant với một hành động của con người.** Record `crontab` trong `audit.log` mang
+**Bước 1 - Liên kết implant với tài khoản đăng nhập.** Record `crontab` trong `audit.log` mang
 `auid` (login uid gốc), còn `uid=0` chỉ cho biết lệnh chạy qua sudo. Dòng `REPLACE` trong `cron.log`
 cho biết pid của chính tiến trình `crontab` đã sửa crontab của root, nên pid đó nối hai file lại:
 
@@ -117,7 +117,7 @@ Sep 20 02:17:10 ubnt-app02 sudo: lhackson : TTY=pts/4 ; PWD=/home/lhackson ; USE
 Sep 20 02:26:15 ubnt-app02 sshd[4344]: pam_unix(sshd:session): session closed for user lhackson
 ```
 
-Ba chi tiết phụ hoạ thêm cho cùng một người: IP 10.50.44.233 chỉ xuất hiện 2 lần trong toàn bộ
+Các chi tiết bổ sung liên quan đến cùng tài khoản: IP 10.50.44.233 chỉ xuất hiện 2 lần trong toàn bộ
 `auth.log` và đều là phiên này (9 phiên còn lại của `lhackson` đến từ 10.50.12.188); 455 session
 khác trong log được systemd-logind đánh số liên tục từ 40000 đến 40454, chỉ phiên này nhận 50695;
 ngày 23/09 chính user này chạy `sudo /bin/ls -la /tmp/.cache/`, tức quay lại kiểm tra thư mục chứa
@@ -150,7 +150,7 @@ cron.log: 569 lan cron root chay /tmp/.cache/.upd
 Beacon đầu tiên xuất hiện 1 giây sau dòng cron đầu tiên, nhịp 20 phút, và 568 EXECVE = 568 SOCKADDR:
 mỗi lần implant chạy để lại đúng một kết nối trong audit.
 
-`syslog` đứng ở cùng phía với cron: 570 dòng UFW ALLOW, tất cả tới `203.0.113.77`.
+Đối chiếu thêm với `syslog`: 570 dòng UFW ALLOW, tất cả tới `203.0.113.77`.
 
 ```bash
 awk '/UFW ALLOW/ {d="";p="";t="ACK";for(i=1;i<=NF;i++){if($i~/^DST=/)d=$i;if($i~/^DPT=/)p=$i;if($i=="SYN")t="SYN"}; print d,p,t}' syslog | sort | uniq -c

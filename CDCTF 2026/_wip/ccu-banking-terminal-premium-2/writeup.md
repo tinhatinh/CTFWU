@@ -34,14 +34,14 @@ Bốn điểm bất thường định hướng toàn bộ lời giải:
    vòng lặp `i <= 0xa` nạp 11 entry từ bảng `allowed.0` @0x404160. Dump đúng file offset
    `0x4160` ra 11 số syscall (little-endian dword):
 
-   ```text
+```text
    00000000 01000000 02000000 01010000 08000000 05000000
    0c000000 09000000 0b000000 3c000000 e7000000
    ```
 
    Tức `read, write, open, openat, lseek, fstat, brk, mmap, munmap, exit, exit_group`.
    **Không có `execve`, không có `fork/clone`, và không có `mprotect` (10)** - nên không
-   thể spawn shell và không thể JIT shellcode. Hướng duy nhất là orw (open/read/write).
+   thể spawn shell và không thể JIT shellcode. Chuỗi được sử dụng ở đây là ORW (open/read/write).
 
 2. Mỗi record là một trang cố định: `open_account` @0x401f31 và `attach_memo` @0x402590
    đều `malloc(0x180)` rồi `read_full(ptr, 0x180)`. `read_full` @0x401693 là vòng
@@ -53,7 +53,7 @@ Bốn điểm bất thường định hướng toàn bộ lời giải:
    gọi `money(rec, 0x30, rec+0x08)` in `rec+0x08` dưới dạng **số thập phân 64-bit đầy đủ**,
    rồi:
 
-   ```asm
+```asm
    401e9b: mov 0x28(%rax),%rdx     # rax = rec
    401ea3: mov %rax,%rdi           # rdi = rec
    401ea6: call *%rdx              # dividend callback
@@ -80,17 +80,17 @@ chunk record vừa free (tcache LIFO, cùng size), và memo **không bị sửa 
 2. **Đoán bảng syscall mà không dump**: ban đầu đọc `allowed.0` như một dãy số nằm cạnh
    jump table và suy ra `9,15,16,21,23,25,32,37,38,42` (có `mprotect`), rồi lên kế hoạch
    `mmap` RWX + shellcode. Dump đúng offset `0x4160` (bảng ở mục Phân tích) cho thấy
-   **không có syscall 10** (`mprotect`), kế hoạch JIT chết ngay từ đầu. Loại.
+   **không có syscall 10** (`mprotect`), phương án phụ thuộc `mprotect` không dùng được. Việc thiếu syscall này chưa tự loại trừ `mmap` với quyền executable.
 3. **Tràn 384 byte để đè memos/accounts kế tiếp**: `read_full` đọc đúng số byte yêu cầu vào
    chunk `malloc(0x180)` (chunk thật 0x190 gồm header), không có linear overflow nào ra
-   ngoài trang. Overwrite chỉ đến từ **tái sử dụng chunk**, không phải từ overflow. Loại.
+   ngoài trang. Overwrite chỉ đến từ **tái sử dụng chunk**, không phải từ overflow.
 4. **Đè `+0x28` trực tiếp trong branch page của record**: `open_account` sau khi đọc trang
    sẽ ghi đè `+0x00` (số hiệu), `+0x04` (loại - 1), `+0x08` (số dư đã nhân hệ số) và
    `+0x28 = RATE_TABLE[type-1]`, đồng thời `+0x27 = 0`. Giá trị ta đặt ở `+0x28` bị xoá.
-   Vì vậy không có đường nào ngoài type confusion qua memo. Loại.
+   Vì vậy lời giải dùng type confusion qua memo.
 5. **Vòng lặp callback offset với địa chỉ `0xdeadbeefcafe0000`**: do (4), các lần gửi này chỉ
-   tiêu kết nối (login chỉ được 3 lần thử) chứ không map được layout. Loại.
-6. **Ma sát tooling (ghi lại để lần sau khỏi mất thời gian)**: dán thẳng Python vào bash
+   tiêu kết nối (login chỉ được 3 lần thử) chứ không map được layout.
+6. **Lỗi khi thiết lập môi trường**: dán thẳng Python vào bash
    → `bash: from: command not found`; `io.recvuntil(b"> ")` → `EOFError` vì prompt thật là
    `Selection: `; `default.timeout = 10` → `NameError`, `context.default.timeout` →
    `AttributeError` (đúng là `context.timeout`); server cần timeout dài và đọc theo
@@ -98,7 +98,7 @@ chunk record vừa free (tcache LIFO, cùng size), và memo **không bị sửa 
 
 ## Chuỗi khai thác
 
-**Bước 1 - Bốc hơi 7 chunk vào tcache, 2 chunk xuống unsorted bin để leak libc.**
+**Bước 1 - Đưa 7 chunk vào tcache, 2 chunk xuống unsorted bin để leak libc.**
 Mở 9 record, đóng cả 9 theo thứ tự. `n_accounts` không giảm nên 9 record vẫn được duyệt.
 Hai chunk rơi xuống unsorted bin giữ con trỏ `bk` trỏ vào `main_arena` của libc;
 `money()` in nguyên `rec+0x08` ra thập phân, đủ để tính base. Delta hiệu dụng cho đúng
@@ -161,7 +161,7 @@ Kết quả đọc về từ lần chạy local, với `/flag` được mount t�
 /flag\x00\x00\x00cdctf{LOCAL_TEST_FLAG_abc123}\n
 ```
 
-**Bước N - Kiểm chứng.** Ba bằng chứng chuỗi là thật chứ không phải trùng hợp: (a) giá trị
+**Bước 4 - Kiểm chứng local.** Các kết quả đối chiếu: (a) giá trị
 in ở `rec+0x08` thỏa điều kiện canonical và `== libc_base + 0x21ACE0`, số dư đúng theo
 `mmap`-aligned; (b) bước echo `write(1, 0x406300, 8)` trả về đúng `"/flag\0\0\0"` trước khi
 `open` chạy, chứng tỏ trang scratch ghi được; (c) nội dung in ra đúng 32 byte theo độ dài

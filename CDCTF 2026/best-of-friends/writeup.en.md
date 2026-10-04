@@ -17,7 +17,7 @@ with no spaces.
 ```
 
 - 107 bytes = 82 symbols + 25 spaces. Nothing outside `/`, `\` and space occurs in
-  the file: no BOM, no trailing newline, no hidden byte, so there is no stego channel.
+  the file: no BOM, no trailing newline, no hidden byte, no additional byte-level data was found.
 - 26 groups but only 15 distinct shapes. Groups repeat as whole shapes: `/\` 5 times,
   `/\\\` 4 times, `\/\` 3 times, `\\\/` and `/\\` twice each.
 - Group lengths run 1 to 4 (histogram 1/5/9/11). Equal symbol counts in a different
@@ -80,7 +80,7 @@ round-trip: OK (re-encode khop tung byte voi file goc)
 flag      : cdctf{friendshipisalotlikecheese}
 ```
 
-Three facts rule out a coincidence: all 26 groups resolve through a 1-to-1 table; the
+Verification checks: all 26 groups resolve through a 1-to-1 table; the
 re-encode matches all 107 bytes of the file; and the 26 letters read as the English
 sentence "Friendship is a lot like cheese", which is the direction the hint points to.
 

@@ -31,28 +31,23 @@ lại nằm ở `votes.log`: phiếu chỉ có số thứ tự ballot và tên �
 dãy 9 chữ số 550408395..550409461, ballot trong `votes.log` là dãy 12 chữ số 381009204091..381009205157,
 giao nhau rỗng, tức hai log không chia sẻ khoá.
 
-Điểm mở đường là cấu trúc chuỗi: cả hai log đều đơn điệu theo thời gian, số thứ tự tăng đúng 1
-mỗi dòng, và cùng dài 1067 dòng. Hàng đợi ở tổ bầu cử là FIFO, cử tri điểm danh trước thì bỏ phiếu
-trước, nên phép gán 1-1 giữ thứ tự giữa hai log chỉ có duy nhất một khả năng: dòng i với dòng i.
-Kiểm tra lại bằng thời gian, khoảng cách giữa phiếu và lượt điểm danh tương ứng nằm trong
-560..1184 s (trung bình 869 s), không cặp nào đảo ngược.
+Hai log tăng theo thời gian, số thứ tự tăng 1 mỗi dòng và cùng có 1067 dòng. Lời giải giả định cử tri bỏ phiếu theo thứ tự check-in (FIFO), rồi ghép dòng i với dòng i. Khoảng cách thời gian 560..1184 s, trung bình 869 s, phù hợp với giả định này nhưng không tự chứng minh thứ tự bỏ phiếu.
 
 ## Các hướng đã loại
 
-1. **Nối hai log bằng số thứ tự**: `set(receipt) & set(ballot)` rỗng vì hai dãy đánh số độc lập. Loại.
+1. **Nối hai log bằng số thứ tự**: `set(receipt) & set(ballot)` rỗng vì hai dãy đánh số độc lập.
 2. **Dịch pha một dòng** (phiếu i thuộc điểm danh i-1 hoặc i+1): hai cách này chỉ ghép được 1066 cặp,
    để thừa một lượt điểm danh và một phiếu không có đôi, trái với dữ kiện mỗi cử tri điểm danh đúng
    một lần và hai log dài bằng nhau. Kết quả cũng khác (10 và 9 block, xem `analysis/sensitivity.py`),
-   nên đây là bước phải chốt trước khi tin con số 12. Loại.
+   nên đây là bước phải chốt trước khi tin con số 12.
 3. **Đếm theo đa số tuyệt đối** (phải trên 50% số phiếu của block): được 9 block, tức giảm ba block so
    với plurality (Scratching Post Street 11/32, Tuna Terrace 11/25, Windowsill Way 6/20). Đề không nêu
    thể lệ count nào, nhưng không block nào hoà phiếu và cách tính "nhiều phiếu nhất thì giành block"
-   là quy tắc nhất quán trên toàn 36 block, nên chọn plurality.
+   được dùng làm giả định tính kết quả theo plurality.
 
 ## Chuỗi khai thác
 
-**Bước 1 - Khôi phục quan hệ giữa phiếu và cử tri.** Vì hai log không có khoá chung, dùng tính đơn điệu
-và đẳng độ dài để suy ra phép gán, đồng thời in ra khoảng cách thời gian để thấy phép gán đó hợp lệ:
+**Bước 1 - Khôi phục quan hệ giữa phiếu và cử tri.** Vì hai log không có khoá chung, ghép theo thứ tự FIFO giả định, đồng thời in ra khoảng cách thời gian để thấy phép gán đó hợp lệ:
 
 ```text
 [*] check_in : n=1067  don dieu thoi gian=True  so thu tu lien tiep=True  (550408395..550409461)
@@ -108,8 +103,7 @@ meow = [b for b in sorted(tally) if tally[b]["Meowjority"] == max(tally[b].value
 [*] kiem chung: 36/36 block co so phieu = so cu tri dang ky (tong 1067 = 1067 phieu)
 ```
 
-Mỗi block nhận đúng số phiếu bằng số cử tri đăng ký của nó, nên không phiếu nào bị gán nhầm sang
-block khác và không cử tri nào bị bỏ sót. Bảng phân bố ghế cũng khớp với tình tiết của đề: Meowjority
+Mỗi block nhận đúng số phiếu bằng số cử tri đăng ký của nó, xác nhận phép ghép phủ đủ dữ liệu. Phép đếm này không kiểm chứng độc lập việc từng phiếu được gán đúng cử tri. Bảng phân bố ghế cũng khớp với tình tiết của đề: Meowjority
 dẫn 286/1067 phiếu (26.8%) nhưng giữ 12/36 block (33.3%), nhiều ghế nhất dù về nhì về số phiếu;
 Domestic Loafs nhiều phiếu nhất (293) chỉ giữ 9 block. Biên cách biệt ở các block Meowjority thắng
 là 1 đến 15 phiếu, trong đó Windowsill Way 6-5 và Scratching Post Street 11-9 là hai block sát nhất,

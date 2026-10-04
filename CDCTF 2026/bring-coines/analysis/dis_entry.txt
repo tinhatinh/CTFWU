@@ -1,0 +1,341 @@
+[*] CArchive: pkg=6936409 B, TOC=864 B, pyvers=312
+[+] entry 'bringcoines' typecode=s pos=22772 stored=1771 B
+[+] inflate -> 3774 B (marshal thô, chưa có header 16 byte)
+  0           0 RESUME                   0
+
+  1           2 LOAD_CONST               0 (0)
+              4 LOAD_CONST               1 (None)
+              6 IMPORT_NAME              0 (numbers)
+              8 STORE_NAME               0 (numbers)
+
+  2          10 LOAD_CONST               0 (0)
+             12 LOAD_CONST               1 (None)
+             14 IMPORT_NAME              1 (sys)
+             16 STORE_NAME               1 (sys)
+
+  4          18 LOAD_CONST               2 (<code object italics at 0x00000201E7999620, file "bringcoines.py", line 4>)
+             20 MAKE_FUNCTION            0
+             22 STORE_NAME               2 (italics)
+
+  7          24 LOAD_CONST               3 (<code object process_coines at 0x00000201E7590C90, file "bringcoines.py", line 7>)
+             26 MAKE_FUNCTION            0
+             28 STORE_NAME               3 (process_coines)
+
+ 17          30 LOAD_CONST               4 (<code object hat_menu at 0x00000201E7840210, file "bringcoines.py", line 17>)
+             32 MAKE_FUNCTION            0
+             34 STORE_NAME               4 (hat_menu)
+
+ 71          36 LOAD_CONST               5 (<code object main at 0x00000201E93B8150, file "bringcoines.py", line 71>)
+             38 MAKE_FUNCTION            0
+             40 STORE_NAME               5 (main)
+
+ 76          42 LOAD_NAME                6 (__name__)
+             44 LOAD_CONST               6 ('__main__')
+             46 COMPARE_OP              40 (==)
+             50 POP_JUMP_IF_FALSE        8 (to 68)
+
+ 77          52 PUSH_NULL
+             54 LOAD_NAME                5 (main)
+             56 CALL                     0
+             64 POP_TOP
+             66 RETURN_CONST             1 (None)
+
+ 76     >>   68 RETURN_CONST             1 (None)
+
+Disassembly of <code object italics at 0x00000201E7999620, file "bringcoines.py", line 4>:
+  4           0 RESUME                   0
+
+  5           2 LOAD_CONST               1 ('\x1b[3m')
+              4 LOAD_FAST                0 (text)
+              6 FORMAT_VALUE             0
+              8 LOAD_CONST               2 ('\x1b[0m')
+             10 BUILD_STRING             3
+             12 RETURN_VALUE
+
+Disassembly of <code object process_coines at 0x00000201E7590C90, file "bringcoines.py", line 7>:
+  7           0 RESUME                   0
+
+  8           2 LOAD_FAST                0 (coines_value)
+              4 LOAD_CONST               1 ('[(H)34]')
+              6 COMPARE_OP              40 (==)
+             10 POP_JUMP_IF_FALSE       11 (to 34)
+
+  9          12 LOAD_GLOBAL              1 (NULL + hat_menu)
+             22 CALL                     0
+             30 POP_TOP
+             32 RETURN_CONST             0 (None)
+
+ 11     >>   34 NOP
+
+ 12          36 LOAD_GLOBAL              3 (NULL + float)
+             46 LOAD_FAST                0 (coines_value)
+             48 CALL                     1
+             56 STORE_FAST               1 (is_num)
+
+ 13          58 LOAD_GLOBAL              5 (NULL + print)
+             68 LOAD_CONST               2 ("That's a lotta coines poke. Congrats!")
+             70 CALL                     1
+             78 POP_TOP
+             80 RETURN_CONST             0 (None)
+        >>   82 PUSH_EXC_INFO
+
+ 14          84 LOAD_GLOBAL              6 (ValueError)
+             94 CHECK_EXC_MATCH
+             96 POP_JUMP_IF_FALSE       24 (to 146)
+             98 POP_TOP
+
+ 15         100 LOAD_GLOBAL              9 (NULL + sys)
+            110 LOAD_ATTR               10 (exit)
+            130 LOAD_CONST               3 ("That's not coines...")
+            132 CALL                     1
+            140 POP_TOP
+            142 POP_EXCEPT
+            144 RETURN_CONST             0 (None)
+
+ 14     >>  146 RERAISE                  0
+        >>  148 COPY                     3
+            150 POP_EXCEPT
+            152 RERAISE                  1
+ExceptionTable:
+  36 to 78 -> 82 [0]
+  82 to 140 -> 148 [1] lasti
+  146 to 146 -> 148 [1] lasti
+
+Disassembly of <code object hat_menu at 0x00000201E7840210, file "bringcoines.py", line 17>:
+ 17           0 RESUME                   0
+
+ 18           2 BUILD_LIST               0
+              4 LOAD_CONST               1 ((99, 100, 99, 116, 102, 123, 104, 52, 116, 95, 77, 48, 117, 115, 51, 95, 112, 48, 107, 51, 95, 70, 76, 65, 71, 33, 125))
+              6 LIST_EXTEND              1
+              8 STORE_FAST               0 (fleg)
+
+ 20          10 LOAD_CONST               2 ("\n        =========================================\n                    HAT MOUSE SHOP\n                         ) _     _\n                        ( (^)-~-(^)\n                    __,-.\\_( 6 6 )__,-.___\n                      'M'   \\   /   'M'\n                    hjw      >o<             \n        =========================================\n        1.  Polka Bow (2,000 coins)\n        2.  Paper Hat (1,500 coins)\n        3.  Cowpoke Hat (fLEG!!!)\n        4.  Tropiclip (3,000 coins)\n        5.  Mouse Ears (10,000 coins)\n        6.  Bowler Hat (5,000 coins)\n        7.  Cool Cap (2,500 coins)\n        8.  Blue Bonnet (3,500 coins)\n        9.  Trucker Hat (4,000 coins)\n        10. Eye Patch (7,000 coins)\n        0.  Exit Shop\n        =========================================\n        ")
+             12 STORE_FAST               1 (menu_text)
+
+ 42          14 LOAD_GLOBAL              1 (NULL + print)
+             24 LOAD_FAST                1 (menu_text)
+             26 CALL                     1
+             34 POP_TOP
+
+ 43          36 LOAD_GLOBAL              3 (NULL + int)
+             46 LOAD_GLOBAL              5 (NULL + input)
+             56 CALL                     0
+             64 CALL                     1
+             72 STORE_FAST               2 (selection)
+
+ 45          74 LOAD_FAST                2 (selection)
+             76 LOAD_CONST               3 (3)
+             78 COMPARE_OP              40 (==)
+             82 POP_JUMP_IF_FALSE       71 (to 226)
+
+ 46          84 LOAD_CONST               4 ('')
+             86 LOAD_ATTR                7 (NULL|self + join)
+            106 LOAD_CONST               5 (<code object <genexpr> at 0x00000201E9363990, file "bringcoines.py", line 46>)
+            108 MAKE_FUNCTION            0
+            110 LOAD_FAST                0 (fleg)
+            112 GET_ITER
+            114 CALL                     0
+            122 CALL                     1
+            130 STORE_FAST               3 (plaintext)
+
+ 47         132 LOAD_GLOBAL              1 (NULL + print)
+            142 LOAD_CONST               6 ('Wowee! You want fleg: ')
+            144 LOAD_FAST                3 (plaintext)
+            146 FORMAT_VALUE             0
+            148 BUILD_STRING             2
+            150 CALL                     1
+            158 POP_TOP
+
+ 48         160 LOAD_GLOBAL              1 (NULL + print)
+            170 LOAD_CONST               7 ('Enjoy!')
+            172 CALL                     1
+            180 POP_TOP
+
+ 49         182 LOAD_GLOBAL              9 (NULL + sys)
+            192 LOAD_ATTR               10 (exit)
+            212 LOAD_CONST               8 (0)
+            214 CALL                     1
+            222 POP_TOP
+            224 RETURN_CONST             0 (None)
+
+ 50     >>  226 LOAD_FAST                2 (selection)
+            228 LOAD_CONST               8 (0)
+            230 COMPARE_OP              40 (==)
+            234 POP_JUMP_IF_FALSE       33 (to 302)
+
+ 51         236 LOAD_GLOBAL              1 (NULL + print)
+            246 LOAD_CONST               9 ('Bye!')
+            248 CALL                     1
+            256 POP_TOP
+
+ 52         258 LOAD_GLOBAL              9 (NULL + sys)
+            268 LOAD_ATTR               10 (exit)
+            288 LOAD_CONST               8 (0)
+            290 CALL                     1
+            298 POP_TOP
+            300 RETURN_CONST             0 (None)
+
+ 53     >>  302 LOAD_FAST                2 (selection)
+            304 LOAD_CONST              10 (1)
+            306 COMPARE_OP              40 (==)
+            310 POP_JUMP_IF_TRUE         5 (to 322)
+            312 LOAD_FAST                2 (selection)
+            314 LOAD_CONST              11 (4)
+            316 COMPARE_OP              40 (==)
+            320 POP_JUMP_IF_FALSE       54 (to 430)
+
+ 54     >>  322 LOAD_GLOBAL              1 (NULL + print)
+            332 LOAD_CONST              12 ('Pretty!')
+            334 CALL                     1
+            342 POP_TOP
+
+ 55         344 LOAD_GLOBAL              1 (NULL + print)
+            354 LOAD_GLOBAL             13 (NULL + italics)
+            364 LOAD_CONST              13 ('You have bought a hat from Hat Mouse.')
+            366 CALL                     1
+            374 FORMAT_VALUE             0
+            376 CALL                     1
+            384 POP_TOP
+
+ 56         386 LOAD_GLOBAL              9 (NULL + sys)
+            396 LOAD_ATTR               10 (exit)
+            416 LOAD_CONST               8 (0)
+            418 CALL                     1
+            426 POP_TOP
+            428 RETURN_CONST             0 (None)
+
+ 57     >>  430 LOAD_FAST                2 (selection)
+            432 LOAD_CONST              14 (2)
+            434 COMPARE_OP              40 (==)
+            438 POP_JUMP_IF_TRUE        10 (to 460)
+            440 LOAD_FAST                2 (selection)
+            442 LOAD_CONST              15 (6)
+            444 COMPARE_OP              40 (==)
+            448 POP_JUMP_IF_TRUE         5 (to 460)
+            450 LOAD_FAST                2 (selection)
+            452 LOAD_CONST              16 (9)
+            454 COMPARE_OP              40 (==)
+            458 POP_JUMP_IF_FALSE       54 (to 568)
+
+ 58     >>  460 LOAD_GLOBAL              1 (NULL + print)
+            470 LOAD_CONST              17 ('Fancy!')
+            472 CALL                     1
+            480 POP_TOP
+
+ 59         482 LOAD_GLOBAL              1 (NULL + print)
+            492 LOAD_GLOBAL             13 (NULL + italics)
+            502 LOAD_CONST              13 ('You have bought a hat from Hat Mouse.')
+            504 CALL                     1
+            512 FORMAT_VALUE             0
+            514 CALL                     1
+            522 POP_TOP
+
+ 60         524 LOAD_GLOBAL              9 (NULL + sys)
+            534 LOAD_ATTR               10 (exit)
+            554 LOAD_CONST               8 (0)
+            556 CALL                     1
+            564 POP_TOP
+            566 RETURN_CONST             0 (None)
+
+ 61     >>  568 LOAD_FAST                2 (selection)
+            570 LOAD_CONST              18 (5)
+            572 COMPARE_OP              40 (==)
+            576 POP_JUMP_IF_TRUE        15 (to 608)
+            578 LOAD_FAST                2 (selection)
+            580 LOAD_CONST              19 (7)
+            582 COMPARE_OP              40 (==)
+            586 POP_JUMP_IF_TRUE        10 (to 608)
+            588 LOAD_FAST                2 (selection)
+            590 LOAD_CONST              20 (8)
+            592 COMPARE_OP              40 (==)
+            596 POP_JUMP_IF_TRUE         5 (to 608)
+            598 LOAD_FAST                2 (selection)
+            600 LOAD_CONST              21 (10)
+            602 COMPARE_OP              40 (==)
+            606 POP_JUMP_IF_FALSE       54 (to 716)
+
+ 62     >>  608 LOAD_GLOBAL              1 (NULL + print)
+            618 LOAD_CONST              22 ('Cool!')
+            620 CALL                     1
+            628 POP_TOP
+
+ 63         630 LOAD_GLOBAL              1 (NULL + print)
+            640 LOAD_GLOBAL             13 (NULL + italics)
+            650 LOAD_CONST              13 ('You have bought a hat from Hat Mouse.')
+            652 CALL                     1
+            660 FORMAT_VALUE             0
+            662 CALL                     1
+            670 POP_TOP
+
+ 64         672 LOAD_GLOBAL              9 (NULL + sys)
+            682 LOAD_ATTR               10 (exit)
+            702 LOAD_CONST               8 (0)
+            704 CALL                     1
+            712 POP_TOP
+            714 RETURN_CONST             0 (None)
+
+ 66     >>  716 LOAD_GLOBAL              1 (NULL + print)
+            726 LOAD_CONST              23 ('Whaaaa????')
+            728 CALL                     1
+            736 POP_TOP
+
+ 67         738 LOAD_GLOBAL              1 (NULL + print)
+            748 LOAD_GLOBAL             13 (NULL + italics)
+            758 LOAD_CONST              24 ('You have offended Hat Mouse.')
+            760 CALL                     1
+            768 FORMAT_VALUE             0
+            770 CALL                     1
+            778 POP_TOP
+
+ 68         780 LOAD_GLOBAL              9 (NULL + sys)
+            790 LOAD_ATTR               10 (exit)
+            810 LOAD_CONST               8 (0)
+            812 CALL                     1
+            820 POP_TOP
+            822 RETURN_CONST             0 (None)
+
+Disassembly of <code object <genexpr> at 0x00000201E9363990, file "bringcoines.py", line 46>:
+ 46           0 RETURN_GENERATOR
+              2 POP_TOP
+              4 RESUME                   0
+              6 LOAD_FAST                0 (.0)
+        >>    8 FOR_ITER                24 (to 60)
+             12 STORE_FAST               1 (num)
+             14 LOAD_GLOBAL              1 (NULL + str)
+             24 LOAD_GLOBAL              3 (NULL + chr)
+             34 LOAD_FAST                1 (num)
+             36 CALL                     1
+             44 CALL                     1
+             52 YIELD_VALUE              1
+             54 RESUME                   1
+             56 POP_TOP
+             58 JUMP_BACKWARD           26 (to 8)
+        >>   60 END_FOR
+             62 RETURN_CONST             0 (None)
+        >>   64 CALL_INTRINSIC_1         3 (INTRINSIC_STOPITERATION_ERROR)
+             66 RERAISE                  1
+ExceptionTable:
+  4 to 62 -> 64 [0] lasti
+
+Disassembly of <code object main at 0x00000201E93B8150, file "bringcoines.py", line 71>:
+ 71           0 RESUME                   0
+
+ 72           2 LOAD_GLOBAL              1 (NULL + print)
+             12 LOAD_CONST               1 ('Hiya poke. Bring coines?\n\n')
+             14 LOAD_GLOBAL              3 (NULL + italics)
+             24 LOAD_CONST               2 ('Tell Hat Mouse how many coins you have:')
+             26 CALL                     1
+             34 FORMAT_VALUE             0
+             36 BUILD_STRING             2
+             38 CALL                     1
+             46 POP_TOP
+
+ 73          48 LOAD_GLOBAL              5 (NULL + input)
+             58 CALL                     0
+             66 STORE_FAST               0 (coines)
+
+ 74          68 LOAD_GLOBAL              7 (NULL + process_coines)
+             78 LOAD_FAST                0 (coines)
+             80 CALL                     1
+             88 POP_TOP
+             90 RETURN_CONST             0 (None)

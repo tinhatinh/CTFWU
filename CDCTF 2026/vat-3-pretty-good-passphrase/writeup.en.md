@@ -15,12 +15,11 @@ decrypt it.
 ## Initial analysis
 
 `ffprobe` reports MPEG layer III v2, 48 kbps, 24 kHz, mono, `duration=660.792000`, no ID3
-carrying content. The container matches every other part of the VAT series, i.e. the file came
-out of a TTS engine.
+carrying content. The container resembles the other VAT files, suggesting a shared audio-generation pipeline.
 
 Energy-based segmentation gives 432 speech bursts spaced 1.585 s apart, each 0.36-0.88 s long.
 Every burst has an F0 of 80-140 Hz with formants up to 12 kHz, so this is speech, not a numeric
-mode. Repeats of the same word are near bit-identical copies (correlation 1.000), which is what a
+mode. Repeats of the same word are highly correlated (1.000 in the recorded measurement), which is what a
 word-clipping TTS produces.
 
 Whisper `base.en` returns 419 tokens with two striking properties: every initial letter falls in
@@ -50,7 +49,7 @@ byte stream is the whole ASCII armor text, including CR, LF and the CRC line.
 
 ## Exploit chain
 
-**Step 1 - Force parity with a Viterbi decode.** For each token the state is the current parity; a
+**Step 1 - Apply parity constraints with a Viterbi decode.** For each token the state is the current parity; a
 word that is an exact hit in the parity-correct list scores 3, a close match scores 1, and two
 adjacent tokens may be merged into one word to repair cases like `dogs led` and `eight ball`. On
 the 419 tokens of `base.en` the decode matches 246 cells exactly and yields:
@@ -72,7 +71,7 @@ right; only two `?` cells remain, which whisper heard as `escamo` and `imbecile`
 **Step 2 - Localise the remaining errors with three independent oracles.** Packet structure of the
 253 decoded bytes: `PKESK tag=0x84 len=140 ver=3 keyid=c87aff55f4097c91 algo=1 mpi=1020 bit` then
 `SEIP tag=0xd2 len=109 ver=1`. The keyID matches the challenge's encryption subkey exactly, and
-`len=109` equals `253 - 142 - 2`, so everything up to byte 144 is clean. Sweeping all 64x64
+`len=109` equals `253 - 142 - 2`, validating those header fields, but not every RSA byte before byte 144. Sweeping all 64x64
 combinations for the two `?` cells through `gpg` returns `Wrong secret key used` for all 4096, so
 another error still sits inside the RSA region.
 

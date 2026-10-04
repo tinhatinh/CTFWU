@@ -32,7 +32,7 @@ struct auth_sess
 };
 ```
 
-`auth_sess` is exactly 64 bytes with `dbg` at offset 24, so the whole struct lives in one tcache bin `0x40` chunk.
+`auth_sess` is exactly 64 bytes with `dbg` at offset 24, so the whole struct lives in one 64-byte allocation. The chunk size including metadata depends on the allocator.
 
 ```cpp
 void contrivance(session& s)
@@ -52,7 +52,7 @@ The allocation sequence inside one `AUTHENTICATE` command (`authenticate` 0x4049
 
 Two constants come from the binary: `auth_bypass_dbg` at `0x403ac9`, and since its argument is `session&`, the instruction `mov BYTE PTR [rdi+0x28],0x1` shows `authed` sits at offset `0x28`. With no PIE, `0x403ac9` never moves.
 
-The puzzle half lives in `vanished_alerts` (0x408120), the only function that prints a flag:
+The flag condition is implemented in `vanished_alerts` (0x408120), the only function that prints a flag:
 
 ```asm
   4082c9:  lea    rdi,[rsp+0x1f0]
@@ -62,7 +62,7 @@ The puzzle half lives in `vanished_alerts` (0x408120), the only function that pr
 
 It compares the body snapshot of two consecutive `STATUS` calls. For every body present before and absent now, it prints `[ALERT] <name> is gone since the last STATUS; probable collision with <other> (last seen gap <d>)`, then reads `/flag.txt` and prints `CONGRATULATIONS: <flag>`. The flag branch sits after `test r15,r15; je ...` at `0x408263`, so at least one body must still be alive in the new snapshot.
 
-`INFO` on the instance: Earth at `(0,0,0)` radius 20 with `mass: 0`, Satellite at `(50,0,0)` radius 5 with `mass: 1` and velocity `(0,0,0)`. A `mass 0` attractor plus constant velocity between commands proves there is no gravity; the impact has to be driven.
+`INFO` on the instance: Earth at `(0,0,0)` radius 20 with `mass: 0`, Satellite at `(50,0,0)` radius 5 with `mass: 1` and velocity `(0,0,0)`. A `mass 0` attractor plus constant velocity between commands shows no observed gravitational effect in these measurements; the impact has to be driven.
 
 ## Ruled-Out Directions
 
@@ -110,7 +110,7 @@ OK
 CONGRATULATIONS: cdctf{W!sh_Up0n_A_Sh0ot1ng_Star_81ab9a33}
 ```
 
-**Verification.** Three facts rule out luck. Primitive: `auth forced via dbg` is printed only by `auth_bypass_dbg`, and `0x403ac9` is its fixed address in a non-PIE binary. Physics: `mass` walks `1 → 0.75 → 0.5` while `velocity` walks `0 → -28.293854944373365 → -68.220297140345764`, matching the rocket equation `v = ve*ln(m0/m)` with `ve ~ 98.4` (`28.29/ln(4/3) = 98.32`, `68.22/ln 2 = 98.44`), so `-1 0` always burns the whole 68.22 delta-v budget and carries the satellite from `x=50` into Earth's `|x| < 25` band. Flag gate: the `CONGRATULATIONS` branch only runs when the new snapshot still holds a body (`test r15,r15` at `0x408263`), exactly the configuration where Earth is swallowed and the satellite survives.
+**Verification.** Three checks support the result. Primitive: `auth forced via dbg` is printed only by `auth_bypass_dbg`, and `0x403ac9` is its fixed address in a non-PIE binary. Physics: `mass` walks `1 → 0.75 → 0.5` while `velocity` walks `0 → -28.293854944373365 → -68.220297140345764`, matching the rocket equation `v = ve*ln(m0/m)` with `ve ~ 98.4` (`28.29/ln(4/3) = 98.32`, `68.22/ln 2 = 98.44`), so `-1 0` always burns the whole 68.22 delta-v budget and carries the satellite from `x=50` into Earth's `|x| < 25` band. Flag gate: the `CONGRATULATIONS` branch only runs when the new snapshot still holds a body (`test r15,r15` at `0x408263`), exactly the configuration where Earth is swallowed and the satellite survives.
 
 A side result measured along the way: the collision deletes the lighter body. After the fly-through in the first connection, `INFO Earth` returned `ERR no such body Earth` and `STATUS` plotted only the circle labelled `Satellite`, leaving the world without a second body and therefore incapable of another collision. Fuel is also gone permanently (`mass` stuck at `0.49999999999999994`, `THRUST` answers `OK` while `velocity` no longer changes). The first instance was spent this way and a new subdomain had to be requested; the final chain ran on the second instance.
 

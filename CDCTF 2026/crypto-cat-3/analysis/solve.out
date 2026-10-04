@@ -1,0 +1,10 @@
+[*] ciphertext.txt: 151 chu cai, 22 chu phan biet, IC = 0.0580
+    tan suat top 6: p:17 q:13 r:13 e:13 w:12 g:9
+[*] tu lap lai 'wezmrf': cach 59 chu cai, 70 ky tu
+[*] tu lap lai 'kr': cach 75 chu cai, 90 ky tu
+[*] bang the 22 anh xa, don anh, 22 chu cai trong ban ma duoc phan anh het
+    chu vang trong ban ma: abix | chu vang trong ban tho: jqwz
+[*] ban tho dung 22 chu cai phan biet, bang so chu cua ban ma (22): True
+[+] round-trip: ma hoa lai ban tho bang bang the nguoc tai tao dung 179 ky tu cua de -> True
+[+] plaintext: cdctf{any monoalphabetic sub'stitution cipher can be cracked through sta'tistical analysis given su'fficient cipher text for the numbers to be figured out mathematically and such}
+[+] da luu flag.txt

@@ -19,8 +19,7 @@ by ffmpeg and carries no descriptive metadata. Walking the MP3 frames
 (`analysis/mp3_frame_walk.py`) finds 2026 frames, all 288 bytes, plus 8 out-of-frame gaps of
 exactly 44 bytes each and a 144-byte tail. Dumping those regions: one gap is a second ID3v2.4
 tag inserted mid-stream, the rest are frame payloads that lost their header during re-encoding,
-and the tail is a `FFF3` frame whose payload is all `0x55` (a padded silent frame). No surplus
-byte carries meaning, so the container angle closes immediately.
+and the tail is a `FFF3` frame whose payload is all `0x55` (a padded silent frame). No flag was found in those regions; the solution proceeds from the spoken content.
 
 The spectrum is what actually orients the challenge. Three spectrogram bands
 (`analysis/spectrogram_0-1200Hz.png`, `analysis/spectrogram_0-6000Hz.png`) show a ~100 Hz harmonic
@@ -73,7 +72,7 @@ map to `B E F D`. The number words are plain hex digits. The 34 tokens form 17 b
 The pivot is the word `Correction`. The first reading drops one `6` (`...four six seven bravo`),
 producing an 11-character hex string, odd, so no byte can be assembled. The second reading
 restores it (`...four six six seven bravo`) to 12 characters, and `63 64 63 74 66 7B` is
-`cdctf{`. The author planted a transmission error in the speech so that the solver has to pick
+`cdctf{`. Use
 the corrected reading, and the broadcast confirms itself with the third `Repeat` pass.
 
 **Step 3 - Decode and cross-check the readings.**

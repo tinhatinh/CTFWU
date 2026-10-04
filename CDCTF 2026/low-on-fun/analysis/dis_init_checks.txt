@@ -1,0 +1,51 @@
+ 29           RESUME                   0
+
+ 30           LOAD_GLOBAL              1 (str + NULL)
+              LOAD_FAST_BORROW         0 (inp)
+              CALL                     1
+              STORE_FAST               0 (inp)
+
+ 31           LOAD_GLOBAL              3 (print + NULL)
+              LOAD_CONST               0 ('Checking input...')
+              CALL                     1
+              POP_TOP
+
+ 32           LOAD_FAST_BORROW         0 (inp)
+              LOAD_ATTR                5 (startswith + NULL|self)
+              LOAD_CONST               1 ('cdctf')
+              CALL                     1
+              TO_BOOL
+              POP_JUMP_IF_TRUE        14 (to L1)
+              NOT_TAKEN
+
+ 33           LOAD_GLOBAL              3 (print + NULL)
+              LOAD_CONST               2 ("That's not even the correct format!")
+              CALL                     1
+              POP_TOP
+
+ 34           LOAD_SMALL_INT           0
+              RETURN_VALUE
+
+ 35   L1:     LOAD_GLOBAL              7 (len + NULL)
+              LOAD_FAST_BORROW         0 (inp)
+              CALL                     1
+              LOAD_SMALL_INT          40
+              COMPARE_OP              88 (bool(==))
+              POP_JUMP_IF_TRUE        14 (to L2)
+              NOT_TAKEN
+
+ 36           LOAD_GLOBAL              3 (print + NULL)
+              LOAD_CONST               3 ("That's the wrong length!")
+              CALL                     1
+              POP_TOP
+
+ 37           LOAD_SMALL_INT           0
+              RETURN_VALUE
+
+ 38   L2:     LOAD_GLOBAL              3 (print + NULL)
+              LOAD_CONST               4 ('Input is good...')
+              CALL                     1
+              POP_TOP
+
+ 39           LOAD_SMALL_INT           1
+              RETURN_VALUE

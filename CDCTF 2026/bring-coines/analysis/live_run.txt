@@ -1,0 +1,27 @@
+Hiya poke. Bring coines?
+
+[3mTell Hat Mouse how many coins you have:[0m
+
+        =========================================
+                    HAT MOUSE SHOP
+                         ) _     _
+                        ( (^)-~-(^)
+                    __,-.\_( 6 6 )__,-.___
+                      'M'   \   /   'M'
+                    hjw      >o<             
+        =========================================
+        1.  Polka Bow (2,000 coins)
+        2.  Paper Hat (1,500 coins)
+        3.  Cowpoke Hat (fLEG!!!)
+        4.  Tropiclip (3,000 coins)
+        5.  Mouse Ears (10,000 coins)
+        6.  Bowler Hat (5,000 coins)
+        7.  Cool Cap (2,500 coins)
+        8.  Blue Bonnet (3,500 coins)
+        9.  Trucker Hat (4,000 coins)
+        10. Eye Patch (7,000 coins)
+        0.  Exit Shop
+        =========================================
+        
+Wowee! You want fleg: cdctf{h4t_M0us3_p0k3_FLAG!}
+Enjoy!

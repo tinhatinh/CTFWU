@@ -1,0 +1,10 @@
+[*] files\bringcoines.exe: 7284057 bytes, sha256 576db2ac5c6657189ea446c594092c7b7d0ad5d84f3246b1165d2a372b39c3c6
+[*] CArchive: pkg=6936409 B, TOC=864 B, pyvers=312
+[+] entry 'bringcoines' typecode=s pos=22772 stored=1771 B
+[+] inflate -> 3774 B (marshal thô, chưa có header 16 byte)
+[*] module '<module>', tên toàn cục: numbers, sys, italics, process_coines, hat_menu, main, __name__
+[+] cổng vào hat_menu(): process_coines so input == '[(H)34]'
+[+] menu nhận lựa chọn [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], mục 3 là 'Cowpoke Hat (fLEG!!!)'
+[+] fleg = tuple 27 số nguyên, bốn số đầu [99, 100, 99, 116]
+[+] flag: cdctf{h4t_M0us3_p0k3_FLAG!}
+[+] đã lưu flag.txt

@@ -13,8 +13,7 @@ card advertises the format `cdctf{word_word_word_word_word}`.
 
 15 mp4 files, 3.0-4.1 MB each, H.264 + AAC, 10-13 seconds long. `ffprobe` and `exiftool` turn up
 nothing suspicious: the only tags are `encoder = Lavc libx264` and `creation_time` values dated
-2026-10-03, so the videos were re-rendered by the author rather than downloaded intact from
-Instagram. The frames are ordinary reels (a dog pulling down its owner's trousers, `@SNOPFEED`
+2026-10-03, recording the encoder and metadata dates. Those tags alone do not establish how the videos were obtained. The frames are ordinary reels (a dog pulling down its owner's trousers, `@SNOPFEED`
 watermark).
 
 The real anomaly is at container level. Walking the MP4 boxes shows all 15 files share the same
@@ -67,7 +66,7 @@ xref rows   15 64 121 247 317   ->  real offsets of `1 0 obj` .. `5 0 obj`: 15 6
 startxref   839                 ->  real offset of `xref`: 839
 ```
 
-Nothing is missing, so the content is the original. `fitz` renders a single page; the 946-byte
+All slices are accounted for and the PDF offsets are internally consistent. `fitz` renders a single page; the 946-byte
 content stream holds an "internal memo" about retention metrics, and the second-to-last line is the
 flag.
 

@@ -31,11 +31,7 @@ carries only a sequence number and a party name. Receipts in `check_in.log` form
 550408395..550409461 while ballots in `votes.log` form the 12-digit range 381009204091..381009205157.
 The two sets do not intersect, so the logs share no key.
 
-The opening is structural: both logs are monotonic in time, their sequence numbers increase by
-exactly 1 per line, and both hold exactly 1067 lines. A polling queue is first in, first out, so the
-only order-preserving bijection between the two files pairs line i with line i. Re-checking that
-against the timestamps, each ballot lands 560..1184 s (mean 869 s) after its check-in, and no pair is
-reversed.
+Both logs increase in time, their sequence numbers increment by one, and both have 1067 lines. The solution assumes voters cast ballots in check-in order (FIFO), pairing line i with line i. The 560..1184 s time gaps (mean 869 s) are compatible with that assumption, but do not independently prove it.
 
 ## Approaches Ruled Out
 
@@ -53,8 +49,7 @@ reversed.
 
 ## Exploitation Chain
 
-**Step 1 - Recover the ballot-to-voter relation.** The logs share no key, so monotonicity plus equal
-length determines the pairing. The check prints the time gap for every candidate shift:
+**Step 1 - Recover the ballot-to-voter relation.** The logs share no key, so the pairing follows the FIFO assumption. The check prints the time gap for every candidate shift:
 
 ```text
 [*] check_in : n=1067  don dieu thoi gian=True  so thu tu lien tiep=True  (550408395..550409461)
@@ -111,8 +106,7 @@ aborts if either one fails:
 [*] kiem chung: 36/36 block co so phieu = so cu tri dang ky (tong 1067 = 1067 phieu)
 ```
 
-Every block receives exactly as many ballots as it has registered voters, so no ballot was routed to
-the wrong block and no voter was dropped. The seat distribution also matches the premise of the
+Every block receives exactly as many ballots as it has registered voters, confirming complete coverage. This count does not independently validate each ballot-to-voter pairing. The seat distribution also matches the premise of the
 challenge: the Meowjority holds 286 of 1067 votes (26.8%) yet keeps 12 of 36 blocks (33.3%), the most
 seats of any party despite finishing second in the popular vote, while Domestic Loafs, with the most
 votes (293), holds only 9 blocks. Winning margins in the twelve Meowjority blocks run from 1 to 15

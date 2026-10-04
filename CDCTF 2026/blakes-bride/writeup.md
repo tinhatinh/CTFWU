@@ -33,20 +33,18 @@ SHA-512, nhưng gợi ý đó chỉ đúng về kích thước.
 ## Các hướng đã loại
 
 1. **SHA-512 / SHA3-512**: với ràng buộc `<từ> + 000..999`, cả hai hàm cho 0/3 digest khớp.
-   Loại.
-2. **Stego LSB trong ảnh**: lần lượt trích 1, 2, 3 bit thấp của mỗi kênh theo cả hai thứ tự
-   bit, tỉ lệ byte in được chỉ đạt 0,043 / 0,019 / 0,010 và đầu ra là nhiễu. Loại.
-3. **Dữ liệu nối sau `IEND` hoặc chunk ẩn**: đi hết chuỗi chunk, số byte sau `IEND` là 0. Loại.
 
-Ba hướng trên loại hết các khả năng còn lại: phần ảnh không chứa gì, và trong ba hàm 64 byte
-chỉ một hàm khớp. Bài quy về một vòng lặp bẻ hash trên không gian đã biết.
+2. **Stego LSB trong ảnh**: lần lượt trích 1, 2, 3 bit thấp của mỗi kênh theo cả hai thứ tự
+   bit, tỉ lệ byte in được chỉ đạt 0,043 / 0,019 / 0,010 và đầu ra là nhiễu.
+3. **Dữ liệu nối sau `IEND` hoặc chunk ẩn**: đi hết chuỗi chunk, số byte sau `IEND` là 0.
+
+Các phép thử trên không thu được dữ liệu hữu ích ngoài XMP. Tiếp tục kiểm tra các hàm hash có digest 64 byte trên không gian mật khẩu mà đề mô tả.
 
 ## Chuỗi khai thác
 
 **Bước 1 - Định danh thuật toán.** 128 ký tự hex là 64 byte, nhưng phép thử trực tiếp trên
 không gian mật khẩu đã cho thấy hàm đúng là BLAKE2b (digest mặc định 64 byte). Tên artifact
-`blake.png` và câu "I wonder if there's something wrong with Blake" là chữ BLAKE2b, không phải
-tên người.
+`blake.png` và câu "I wonder if there's something wrong with Blake" gợi ý sử dụng BLAKE2b.
 
 ```python
 import hashlib
@@ -68,7 +66,7 @@ cùng không gian đó. `epithalamium` (khúc hát mừng cưới) và `troussea
 trong danh sách gọn này.
 
 **Bước 3 - Mở rộng từ điển.** Chuyển sang từ điển tiếng Anh 369.778 mục từ, cùng phép nối
-`<từ> + 3 chữ số`, chia đều cho 16 tiến trình. Hai digest còn lại đóng lại trong chưa tới 75
+`<từ> + 3 chữ số`, chia đều cho 16 tiến trình. Hai mật khẩu còn lại được tìm thấy trong chưa tới 75
 giây, không cần thêm ràng buộc nào khác:
 
 ```text

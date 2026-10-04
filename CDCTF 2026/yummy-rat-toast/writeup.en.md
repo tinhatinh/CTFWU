@@ -19,9 +19,7 @@ The gromweb reverse-md5 database (832,927,522 known sums) finds nothing:
 Provided MD5 hash could not be reversed into a string: no reverse string was found.
 ```
 
-That rules out any password present in public md5 tables, i.e. it is not a rockyou-style password. Local
-sweeping on an RTX 3050 (9.6 GH/s for `-m 0`) kills two whole families: every lowercase string of length 1-8
-and every digit string of length 1-12 (table in `analysis/`):
+The queried database returned no match. Local mask attacks on an RTX 3050 (9.6 GH/s for `-m 0`) also found no preimage among lowercase strings of length 1..8 and digit strings of length 1..12. These results exclude only the tested sets:
 
 ```text
 Exhausted  26/26              Exhausted  308915776/308915776
@@ -31,10 +29,7 @@ Exhausted  456976/456976
 Exhausted  11881376/11881376
 ```
 
-What remains is one shape: a capitalised proper name, longer than 8 characters, possibly with digits. That is
-exactly the gap standard wordlists leave, because `names.txt` and the English dictionary contain no
-"Alfredo Linguini", and hashcat rules only change case and append to a word they were given, they never join
-two words into a full name.
+The Ratatouille clue motivates a wordlist of character names, including full names with spaces and numeric suffixes. The earlier masks do not exclude all other password formats.
 
 ## Ruled out
 

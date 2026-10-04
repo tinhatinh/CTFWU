@@ -12,9 +12,7 @@ exfiltrate dữ liệu. Nhiệm vụ là tìm cờ trong đống video đó. Th�
 ## Phân tích ban đầu
 
 15 file mp4, mỗi file 3,0-4,1 MB, H.264 + AAC, thời lượng 10-13 s. `ffprobe` và `exiftool` không cho
-thấy gì đáng ngờ: nhãn chỉ có `encoder = Lavc libx264` và các `creation_time` ngày 2026-10-03, tức
-video do người ra đề render lại chứ không phải file tải nguyên vẹn từ Instagram. Khung hình là reel
-thường tình (con chó kéo quần ông chủ, watermark `@SNOPFEED`).
+thấy gì đáng ngờ: nhãn chỉ có `encoder = Lavc libx264` và các `creation_time` ngày 2026-10-03, cho biết thời điểm và encoder ghi trong metadata; chưa xác định lịch sử tạo file chỉ từ các tag này. Khung hình là reel thông thường (con chó kéo quần ông chủ, watermark `@SNOPFEED`).
 
 Khác biệt thật nằm ở mức container. Duyệt box MP4 cho thấy cả 15 file có cùng một chuỗi
 `ftyp, moov, free, mdat, uuid`. Bốn box đầu là chuẩn ffmpeg; box cuối là `uuid` 92-93 byte, nằm
@@ -26,7 +24,7 @@ Khác biệt thật nằm ở mức container. Duyệt box MP4 cho thấy cả 1
 ## Các hướng đã loại
 
 1. **Nhãn metadata**: `udta/meta` 53 byte chỉ chứa tag encoder, `free` đúng 8 byte rỗng,
-   `creation_time` khác nhau nhưng không theo quy luật nào. Loại.
+   `creation_time` khác nhau nhưng không theo quy luật nào.
 2. **Stego trong khung hình và âm thanh**: không khai thác. Sau khi 15 lát cắt PDF khép lại bằng
    ràng buộc `xref` thì kênh này không còn lý do; mới chỉ xem vài frame bằng mắt, chưa đo LSB hay phổ.
 
@@ -63,7 +61,7 @@ xref rows   15 64 121 247 317   ->  offset thật của `1 0 obj` .. `5 0 obj`: 
 startxref   839                 ->  offset thật của `xref`: 839
 ```
 
-Không còn byte nào thiếu, nên nội dung bên trong là nguyên bản. `fitz` render ra một trang duy nhất,
+Các lát cắt được ghép đủ và các offset nội bộ khớp cấu trúc PDF. `fitz` render ra một trang duy nhất,
 content stream dài 946 byte chứa một "internal memo" về chỉ số retention, dòng áp chót là cờ.
 
 ## Flag

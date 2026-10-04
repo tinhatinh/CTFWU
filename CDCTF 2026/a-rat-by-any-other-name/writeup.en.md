@@ -14,7 +14,7 @@ The three rules are not hints for guessing a name - they are a mask. The set of 
 ?u?l{0,7}  =  26 + 26^2 + ... + 26^8  =  217,180,147,158 candidates
 ```
 
-MD5 is fast and unsalted, so that number is the whole decision. hashcat 6.2.6 on an RTX 3050 laptop reached 8415 MH/s with the optimized kernel, which puts the full space at a couple of minutes; the measured run finished in under a minute. The problem becomes structured brute force, with no need to find the "right" name list.
+MD5 is fast enough for a mask attack on this search space. hashcat 6.2.6 on the RTX 3050 laptop reached 8415 MH/s with the optimized kernel; the recorded run for lengths up to 8 completed in under a minute.
 
 Wordlists were still tried first, and all three corpora came back negative:
 
@@ -24,11 +24,11 @@ Wordlists were still tried first, and all three corpora came back negative:
 | `name-dataset` first names (raw / capitalize / title variants) | 727,556 | no match |
 | Moby Project `NAMES*.TXT` (Scrabble proper names) | 30,829 | no match |
 
-Those negatives only prove the corpora are incomplete; they say nothing about whether the password lies outside the search space, and an "unconventional" name is expected to be missing from popular name lists. The conclusion therefore rests on exhausting the mask, not on a wordlist.
+The tested wordlists contained no matching candidate. The statement defines a bounded charset and length, so a mask attack covers that space without needing another name list.
 
 ## Exploit Chain
 
-**Step 1 - Prove the candidate generator works before trusting any result.** The self-test plants the MD5 of an unrelated name (`Felix`) and asks hashcat to recover it through the same mask family `?u?l{1,3}`. Only if a known positive is found can a "space exhausted" statement be believed.
+**Step 1 - Check the mask with a known hash.** Recover the MD5 of `Felix` to validate the hashcat configuration before attacking the challenge hash.
 
 ```bash
 python exploit.py --selftest
@@ -79,9 +79,9 @@ import hashlib
 print(hashlib.md5(b"Jaqurtis").hexdigest())   # fe00ab6a1d242513c9f246344bf7da1d
 ```
 
-- `md5("Jaqurtis")` equals the challenge hash exactly, so the hash copied off the challenge card has no misread character - a transcription error could not have produced a preimage in the same space.
+- `md5("Jaqurtis")` matches the supplied hash.
 - Length 8, `J` uppercase and the rest lowercase, matching "begins with a capitol, and the rest is lower case" literally.
-- Uniqueness: the length-1 slice and the lengths 2..7 were fully exhausted (`Status: Exhausted`, `Recovered 0/1`); the preimage appears only at length 8. `Jaqurtis` is a readable proper name rather than a random letter combination, and it is absent from all three corpora above, which fits the "unconventional" wording in the challenge.
+- Masks for lengths 1..7 completed without a match; the candidate was found at length 8. It was absent from the three wordlists tested earlier. This does not establish uniqueness among all length-8 candidates.
 
 ## Flag
 

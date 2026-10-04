@@ -13,14 +13,7 @@ with flag format `cdctf{ex4mp13_f14g}`. There is no remote service.
 
 ## Initial Analysis
 
-The audio is a 24 kHz mono file produced by ffmpeg (`TSSE = Lavf61.7.100`). The container is
-clean: the ID3 tag is 34 bytes, the body is 151200 bytes, and the sum is exactly
-`25.20 s * 48000 / 8`, so no byte is appended past the stream. The spectrum is a human voice
-(energy below 500 Hz sits 25.40 dB above the 4-11 kHz band and varies 91.05 dB per frame),
-and there is no pixel grid of a spectrogram stego. Whisper `small` recovers only the intro
-sentence inside the first 9.4 s and returns 0 tokens for the code words, which confirms the
-complaint in the problem text: a machine cannot hear them either. Working conclusion: the
-payload lives in the transcript, and the audio is only a rendering of it.
+The provided transcript contains all 17 word groups needed by the decoder. Use it directly rather than transcribing the audio again. The accompanying MP3 is 24 kHz mono with tag `TSSE = Lavf61.7.100`.
 
 The structure of the 17 words announces the algorithm. Every word is `CVCVC`. The alphabet is
 contained in 21 letters: exactly the 6 vowels `a e i o u y`, and 15 of the 17 consonants
@@ -29,23 +22,9 @@ the last group ends with `x`. That triple - "6 vowels + 17 consonants + `x` clam
 ends" - is the signature of **BubbleBabble**, the spoken-aloud fingerprint format OpenSSH
 generates in `fingerprint_bubblebabble` (`sshkey.c`).
 
-## Ruled-Out Approaches
+## Analysis note
 
-Before committing, these channels were tested and rejected (full log in `notes.md`):
-
-1. **MP3 container stego**: the ID3 holds only `TSSE`, the bitrate arithmetic accounts for
-   every body byte, and the `PK` runs at offsets 44887/96286/120669 are coincidental compressed
-   content. Rejected.
-2. **Spectrogram stego**: no frame in the 1-4 kHz band is near fully white and no long plateau
-   exists; the low band is continuously modulated harmonics. Rejected.
-3. **DTMF / AFSK / Morse**: only 18 human utterances from 9 s onward, no tone cell stands out. Rejected.
-4. **Transcribing the audio**: Whisper `small` yields 0 tokens for the 17 words, so the audio
-   adds no data; the transcript is the only source. Rejected as an input channel, but the
-   transcript is still validated through the cipher itself.
-5. **Classical ciphers over the 85 letters** (homophonic Polybius, one character per word):
-   654 parameter sets (position subset, letter-to-digit rule, endian, alphabet, ASCII offset)
-   produced 0 candidate containing a flag trace, while the same engine does find `cdctf` in a
-   synthetic control built with that scheme. Rejected.
+Container, spectral and ASR experiments are preserved in `notes.md`. The solution below only needs the supplied transcript.
 
 ## Exploitation Chain
 
@@ -94,12 +73,11 @@ transcript:
 [+] vong lap khop 85/85 ky tu: True
 ```
 
-All 85 letters match, including the 16 dashes, so no transcript letter was misheard (the early
+All 85 letters match, including the 16 dashes, confirming the transcript agrees with the re-encoded bytes (the early
 guess that `z` was a mis-read `x` was wrong). The plaintext also explains itself:
 `8u88l3_848813` is `bubble_babble`, the tail `fl4g_pa55ing` is `flag_passing`, and the prefix
 `cdctf{` plus the closing `}` obey the stated format. One side property of the code acts as a
-safety valve: if any character had been altered, the mod-6 addition would produce an index
-outside 0..3 in the following round and the chain would break there.
+safety valve: some character errors produce indices outside 0..3. This structural check does not detect every possible alteration.
 
 ## Flag
 

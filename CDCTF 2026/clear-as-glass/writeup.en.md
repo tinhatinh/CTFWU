@@ -10,7 +10,7 @@ The repo owner reports being hacked mid-development of a Flask note-taking app: 
 
 ## Initial Analysis
 
-The history is small: 8 commits on a single `main` branch, 0 tags, `git fsck --full --dangling` prints nothing, and `git for-each-ref` shows three refs all pointing at `a531ea371475532d0a6aef72a051d3bd44d1c689`. There was no force-push, so the attacker's code lives inside the diff of an existing commit and must have survived a human read.
+The clone contains 8 commits on `main`, no tags, and no dangling objects reported by `git fsck --full --dangling`. Three refs point to `a531ea371475532d0a6aef72a051d3bd44d1c689`. The payload can be investigated in the available commits; a fresh clone cannot establish whether the remote was ever force-pushed.
 
 Commit list:
 
@@ -39,13 +39,13 @@ def _tags_for(db, note_ids):
 exec(tags_list)
 ```
 
-`notes_list` is used nowhere else except the loop that builds `tags_list`, and `exec(tags_list)` sits at module level, so it runs on import, i.e. every app start. The offset `0xE0000` matches the start of the Unicode Tag block: U+E0020-U+E007E maps exactly onto ASCII 0x20-0x7E, and U+E000A is a newline. The whole block is zero-width, invisible in editors and in GitHub diffs, so line 6 looks like an empty string. `app.py` holds 395 characters in U+E00xx, all of them on line 6 (425 characters, 1611 bytes); the other 13 files of the repo hold 0.
+`notes_list` is used nowhere else except the loop that builds `tags_list`, and `exec(tags_list)` sits at module level, so it runs on import, i.e. every app start. The offset `0xE0000` matches the start of the Unicode Tag block: U+E0020-U+E007E maps exactly onto ASCII 0x20-0x7E, and U+E000A is a newline. The whole block is zero-width, not rendered in the editor and GitHub diff views inspected, so line 6 looks like an empty string. `app.py` holds 395 characters in U+E00xx, all of them on line 6 (425 characters, 1611 bytes); the other 13 files of the repo hold 0.
 
 ## Ruled-Out Directions
 
 `analysis/scan_hidden_unicode.py` scans the working tree, every blob in history, and every commit message with author and committer:
 
-1. **Rewritten history** (force-push, orphan commits, stash): `git fsck --full --dangling` is empty, `git count-objects -v` reports all 45 objects inside one pack, and `git reflog` after a clone holds a single line `clone: from https://github.com/shkorodi/notekeeper.git`. Ruled out.
+1. **Unreferenced objects in the clone:** `git fsck --full --dangling` reports none, and all 45 objects are in one pack. The clone reflog records only the clone operation, not earlier remote ref changes.
 2. **Payload stored in an object no ref points at**: `git cat-file --batch-all-objects --batch-check` enumerates all 45 objects, and only two `app.py` blobs carry hidden characters. Ruled out.
 3. **Stego in commit messages, author or committer names and emails**: the scan returns 0 tag characters and 0 zero-width/bidi characters across all 8 commits. Ruled out.
 4. **Classical zero-width characters** (U+200B-U+200F, U+202A-U+202E, U+2060, U+FEFF): 0 in every file. The real channel is U+E00xx.
@@ -125,7 +125,7 @@ print("flag:", bytes(a ^ b for a, b in zip(k, f)).decode())
 flag: cdctf{G1455w0rM_w4s_pr3tTy_c0oL}
 ```
 
-Both blobs are 32 bytes, the XOR yields a fully printable string matching `cdctf{...}` with the leetspeak structure the challenge describes. `k` repeats a 6-byte period `67 42 06 72 17 61` while `f` does not, so `f` is the data and `k` is the key.
+Both blobs are 32 bytes, the XOR yields a fully printable string matching `cdctf{...}` with the leetspeak structure the challenge describes. `k` repeats a 6-byte period `67 42 06 72 17 61` while `f` does not, Their roles follow from the XOR operation in the payload.
 
 ## Flag
 

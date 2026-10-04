@@ -1,0 +1,25 @@
+===== py -3.9 =====
+Traceback (most recent call last):
+  File "C:\Users\Administrator\Downloads\CTFWU\CDCTF 2026\low-on-fun\files\low_on_fun.py", line 10, in <module>
+    if __name__=='__main__':main()
+  File "C:\Users\Administrator\Downloads\CTFWU\CDCTF 2026\low-on-fun\files\low_on_fun.py", line 7, in main
+    funs = functions.split(b'DELIM');replacer(funs[0]);flag = changing();replacer(funs[1]);
+  File "C:\Users\Administrator\Downloads\CTFWU\CDCTF 2026\low-on-fun\files\low_on_fun.py", line 4, in replacer
+    def replacer(obj):new_fun = marshal.loads(obj);changing.__code__ = new_fun;return
+ValueError: bad marshal data (unknown type code)
+exit=1
+===== py -3.11 =====
+analysis/run_triage.sh: line 2: 22590 Done                       echo 'cdctf{aa}'
+     22597 Segmentation fault         | py -$v files/low_on_fun.py
+exit=139
+===== py -3.12 =====
+analysis/run_triage.sh: line 2: 22619 Done                       echo 'cdctf{aa}'
+     22623 Segmentation fault         | py -$v files/low_on_fun.py
+exit=139
+===== py -3.14 =====
+This is a simple 'flag checker' program I wrote to test this new style of coding. It condences 4 functions into 3, wow!
+There's probably a better way to do this...
+Anyways, enter the flag!
+>Checking input...
+That's the wrong length!
+exit=0

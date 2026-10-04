@@ -19,9 +19,7 @@ oracle ngoài. DB tra ngược md5 của gromweb (832.927.522 tổng đã biết
 Provided MD5 hash could not be reversed into a string: no reverse string was found.
 ```
 
-Nghĩa là mật khẩu không nằm trong các bảng md5 công khai, tức không phải mật khẩu phổ biến kiểu rockyou.
-Song song, quét máy địa phương trên RTX 3050 (9,6 GH/s với `-m 0`) cho thấy hai họ ứng viên bị loại ngay:
-toàn bộ chuỗi chữ thường độ dài 1-8 và toàn bộ chuỗi số độ dài 1-12 (bảng trong `analysis/`):
+Cơ sở dữ liệu đã tra không có kết quả cho hash này. Phép thử local trên RTX 3050 (9,6 GH/s với `-m 0`) cũng không tìm thấy preimage trong hai mask: chữ thường dài 1..8 và chữ số dài 1..12. Các kết quả này chỉ loại trừ những tập ứng viên đã thử:
 
 ```text
 Exhausted  26/26              Exhausted  308915776/308915776
@@ -31,9 +29,7 @@ Exhausted  456976/456976
 Exhausted  11881376/11881376
 ```
 
-Còn lại đúng một dạng: tên riêng viết hoa, độ dài trên 8 ký tự, có thể kèm số. Đây là chỗ wordlist chuẩn
-hụt, vì `names.txt` và từ điển Anh không chứa "Alfredo Linguini", còn rule của hashcat chỉ biến đổi hoa
-thường và hậu tố trên các từ có sẵn chứ không ghép hai từ thành tên họ.
+Gợi ý Ratatouille định hướng wordlist theo tên nhân vật, gồm cả họ tên có khoảng trắng và hậu tố số. Các mask trước đó chưa loại trừ mọi dạng mật khẩu khác.
 
 ## Các hướng đã loại
 
@@ -73,7 +69,7 @@ for a in names:
                 bases.append(a + sep + b)
 ```
 
-**Bước 2 - Cho chạy qua `dive.rule` để phần hậu tố số do rule lo.** Wordlist chỉ cần phủ phần tên; hậu tố
+**Bước 2 - Cho chạy qua `dive.rule` để thử hậu tố số.** Wordlist chỉ cần phủ phần tên; hậu tố
 `01`, `!`, leet thuộc `dive.rule` (99.092 rule) sẽ tự thêm. Chạy trên iGPU (Speed 44,98 MH/s vì đây là
 wordlist + rule stack dài):
 

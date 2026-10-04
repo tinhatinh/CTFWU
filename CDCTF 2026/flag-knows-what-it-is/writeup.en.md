@@ -49,7 +49,7 @@ for key in range(256):
 [+] flag: cdctf{it is sure where it isn't, within reason, and it knows where it was}
 ```
 
-**Step 3 - Verification.** The sweep can return several keys that all produce printable text; it returned exactly one, so `0xff` is not a lucky pick. The plaintext is a coherent English sentence that reuses the wording of the challenge text ("it is sure ... within reason ... it knows where it was"), and all 74 bytes are consumed with nothing left undecoded.
+**Step 3 - Verification.** The sweep can return several keys that all produce printable text; it returned exactly one, under the stated prefix, suffix and printable-ASCII conditions. The plaintext is a coherent English sentence that reuses the wording of the challenge text ("it is sure ... within reason ... it knows where it was"), and all 74 bytes are consumed with nothing left undecoded.
 
 ## Flag
 

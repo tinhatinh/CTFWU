@@ -20,7 +20,7 @@ A CDCTF forensics training MAT: one `suspicious.xz` file plus a tutorial page sp
 
 Those four types match the answer key of quiz question q4 (vfat, ext2, ext4, btrfs), so the part-to-artifact mapping above is the one the challenge intends.
 
-The machine has no The Sleuth Kit, no binwalk and no steghide; WSL only keeps the minimal `docker-desktop` distro (no `bash`, no `mount`) and the Docker daemon is off. Every parser was therefore written with `struct` from the Python standard library, and only the QR reading needs `pyzbar`.
+The filesystem parsers use Python `struct`. QR decoding uses `pyzbar`, with an OpenCV fallback.
 
 ## Routes ruled out
 
@@ -77,7 +77,7 @@ The answer key below was parsed from the `questions` array in the same HTML (ful
 
 `astrid` is ext2, inode 12 is `flag2.jpg`, 82757 bytes, a baseline grayscale JPEG 610x610 ending in `FFD9`; SHA-256 of the extracted copy: `c798f09c73a6195fb1db2aa46a7d696e08224cd59bf57cbaae5e058bf5be1f30`. The image is saved as `analysis/flag2.jpg`. The visible QR is only a taunt, the flag is in the StegHide payload (quiz q9 names exactly that technique).
 
-The flag is missing because there is no `steghide` on this machine: `winget search steghide` and `pip download steghide` both return nothing, no WSL distro has `apt`, and the Docker daemon is off. StegHide encrypts its payload with a key derived from the passphrase, so this cannot be solved by hand-rolled LSB reading. Next steps, in increasing cost:
+The StegHide payload has not been extracted. Try extraction with an empty passphrase, then test the QR strings or a wordlist if needed. These steps have not yet produced a verified result.
 
 1. Start Docker Desktop, run a Debian/Ubuntu container with `steghide` installed and try the empty passphrase first (`steghide extract -sf flag2.jpg -p '' -w out`).
 2. If the empty passphrase fails, use `stegseek` with a wordlist; the most natural candidates are the QR strings the MAT itself hands out (the taunt in `flag2.jpg`, the text inside `flag3.png`).

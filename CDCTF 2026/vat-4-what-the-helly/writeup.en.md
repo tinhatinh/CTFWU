@@ -109,11 +109,7 @@ string is line 39260 of rockyou. The eight codes rebuilt from the password agree
 `GLIN/GLEN`, `YALL/YAWL`, `RUN/RUNG`, `NO/NOLL`, `HOLD/HOLT`, `WORT/WERT`, `LOSE/LOS`), i.e.
 listening errors, not chain errors.
 
-**Step 4 - Cross-check outside the challenge.** The card says the password "would help us gain
-access elsewhere". The same string opens the operative's PGP keyring. `VAT_key` came in the same
-download batch as this audio and is most likely the artifact of part 3/5 (S2K iter+salt SHA1,
-protect-count 65011712, AES-256); `gpg --import` with that passphrase reports
-`secret key imported`, `secret keys imported: 1`. No other passphrase was tried.
+**Step 4 - Check the accompanying PGP key.** `gpg --import` was attempted with the recovered password on `VAT_key` (iterated-and-salted SHA1 S2K, protect-count 65011712, AES-256), and reported `secret key imported`. Successful import alone does not demonstrate that the passphrase unlocks the private key; signing or decryption is needed to verify that.
 
 ## Flag
 

@@ -35,14 +35,14 @@ Four observations drive the whole solution:
    loop `i <= 0xa` installing 11 entries from the table `allowed.0` @0x404160. Dumping the
    correct file offset `0x4160` yields 11 little-endian dwords:
 
-   ```text
+```text
    00000000 01000000 02000000 01010000 08000000 05000000
    0c000000 09000000 0b000000 3c000000 e7000000
    ```
 
    i.e. `read, write, open, openat, lseek, fstat, brk, mmap, munmap, exit, exit_group`.
    **No `execve`, no `fork/clone`, and no `mprotect` (10)** - so no shell spawn and no JIT
-   shellcode. Only open/read/write is reachable.
+   shellcode. The exploit uses an open/read/write chain.
 
 2. Every record is a fixed-size page: `open_account` @0x401f31 and `attach_memo` @0x402590
    both `malloc(0x180)` then `read_full(ptr, 0x180)`. `read_full` @0x401693 loops
@@ -54,13 +54,13 @@ Four observations drive the whole solution:
    arbitrary static/heap read primitive), `money(rec, 0x30, rec+0x08)` prints `rec+0x08` as
    a full 64-bit decimal, then:
 
-   ```asm
+```asm
    401e9b: mov 0x28(%rax),%rdx     # rax = rec
    401ea3: mov %rax,%rdi           # rdi = rec
    401ea6: call *%rdx              # dividend callback
    ```
 
-   `call *[rec+0x28]` with `rdi` pointing at the record: we win RIP and the stack pointer.
+   `call *[rec+0x28]` with `rdi` pointing at the record: the callback overwrite controls RIP; the pivot described below controls the stack pointer.
 
 4. `close_account` @0x40223c calls `free(accounts[i-1])`, sets `closed[i]=1`, but **never
    clears the pointer** and never decrements `n_accounts` → `accounts[]` keeps a dangling
@@ -82,7 +82,7 @@ with `+0x28` chosen by us.
 2. **Guessing the seccomp table instead of dumping it**: reading `allowed.0` as bytes sitting
    next to the jump table produced `9,15,16,21,23,25,32,37,38,42` (including `mprotect`) and
    a plan for an RWX `mmap` + shellcode. Dumping offset `0x4160` properly (table in the
-   Initial analysis section) shows **syscall 10 is absent**, so the JIT plan dies at once.
+   Initial analysis section) shows **syscall 10 is absent**, so the plan requiring `mprotect` is unavailable. This alone does not exclude executable `mmap`.
 3. **Overrunning the 384-byte page to hit the next memos/accounts entry**: `read_full` reads
    exactly the requested count into a `malloc(0x180)` chunk (real chunk is 0x190 with its
    header); there is no linear overflow off the page. The write comes from **chunk reuse**,
@@ -90,7 +90,7 @@ with `+0x28` chosen by us.
 4. **Setting `+0x28` directly in a record's branch page**: after reading the page,
    `open_account` overwrites `+0x00` (number), `+0x04` (type - 1), `+0x08` (scaled balance)
    and `+0x28 = RATE_TABLE[type-1]`, and sets `+0x27 = 0`. Our value at `+0x28` is erased.
-   So there is no route other than the memo type confusion.
+   So the exploit uses the memo type confusion.
 5. **Looping callback offsets with `0xdeadbeefcafe0000`**: because of (4), these attempts only
    burned connections (login allows 3 tries) and mapped nothing.
 6. **Tooling friction (logged so it is not repeated)**: pasting Python into bash gives
@@ -165,7 +165,7 @@ Data read back during the local run, with `/flag` pointing at `analysis/flagfile
 /flag\x00\x00\x00cdctf{LOCAL_TEST_FLAG_abc123}\n
 ```
 
-**Step N - Verification.** Three proofs the chain is real and not coincidence: (a) the value
+**Step 4 - Local verification.** The recorded checks are: (a) the value
 printed at `rec+0x08` is canonical and equals `libc_base + 0x21ACE0` with the residue
 consistent with an `mmap`-aligned libc; (b) the echo step `write(1, 0x406300, 8)` returns
 exactly `"/flag\0\0\0"` before `open` runs, proving the scratch page is writable; (c) the

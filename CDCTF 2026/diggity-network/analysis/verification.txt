@@ -1,0 +1,5 @@
+TCP stream 0: 30 payloads, 98061 bytes
+PNG: 724x390, 14 chunks, all CRCs valid
+Saved: analysis/recovered_flag.png
+Manual visual step: open the PNG and transcribe its handwritten flag.
+[+] flag (manual transcription): cdctf{file_over_http}

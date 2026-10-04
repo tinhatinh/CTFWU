@@ -22,14 +22,13 @@ scan magic bytes see nothing.
 
 ## Ruled out
 
-1. **Stego inside the visible image**: all 56 `IDAT` chunks of the first image have valid CRC, decode to
-   the cat photo, and show no LSB anomaly. Ruled out, the payload is in the second file.
+1. **Visible image:** the 56 `IDAT` chunks have valid CRCs and decode to the cat image. The solution uses the PNG appended after `IEND`; valid CRCs do not exclude pixel steganography.
 2. **An archive or another container appended at the end**: scanning the tail for `PK\x03\x04`,
    `\x1f\x8b`, `7zXZ`, `Rar!`, `\xff\xd8\xff` yields 6 hits for `\x1f\x8b`, all of them inside the
    compressed `IDAT` stream, i.e. coincidence. Ruled out.
 3. **`deBG` as a key or checksum**: XOR of the two payloads `0E0EE52B90EDBA88` and `2E1D19437C4E9802`
    gives `2013FC68ECA1228A`, not ASCII, and no ciphertext block exists anywhere to decrypt. Ruled out,
-   it is an author label.
+   its purpose is undetermined and it is not needed for PNG recovery.
 4. **The trailing string "Extra data is no fun!!"**: 80 bytes of plain ASCII that literally claim extra
    data is no fun, which contradicts the hint on the card. Ruled out, it is bait.
 
