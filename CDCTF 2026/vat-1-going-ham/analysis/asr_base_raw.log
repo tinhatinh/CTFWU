@@ -1,0 +1,13 @@
+# output cua `python analysis/asr_base.py` (Whisper base, beam 5); dong tieu dang tai model da loai bo
+C:\Users\Administrator\AppData\Local\Programs\Python\Python312\Lib\site-packages\whisper\transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+TEXT: Delta team. Delta team. This is Eagle 2. Come in. Over. Eagle 2. This is Delta team. Go ahead. Over. Delta team. Please transmit collected flag over. Copy. Eagle 2. Flag is ready for transmit. Please acknowledge. Over. Eagle 2. This is Delta Team. Radio Check. Over. Ready U-5 by 5. Delta Team. Go ahead. Over. copy wilco eagle 2 flag is 636 4637 467 bravo correction flag is 636 4637 4667 bravo 4-0-3-4-5-4-3-0-5 Foxtrot 6-36 Foxtrot 6- delta 6- delta 7-3-7- delta. Repeat. Flag is 6-36-4-6-37-4-6-67 Bravo 4-0-3-4-5-4-3-0-5 Foxtrot 6-36- Foxtrot 6- delta 6- delta 7-3-7- delta. Please confirm. Over. Stand by delta team. Over. Roger, Delta Team, Flag Confirmed. This is Eagle 2, Over, and Out.
+[  0.00- 26.56]  Delta team. Delta team. This is Eagle 2. Come in. Over. Eagle 2. This is Delta team. Go ahead. Over. Delta team. Please transmit collected flag over. Copy. Eagle 2. Flag is ready for transmit. Please acknowledge. Over.
+[ 33.44- 37.76]  Eagle 2. This is Delta Team. Radio Check. Over.
+[ 41.80- 46.48]  Ready U-5 by 5. Delta Team. Go ahead. Over.
+[ 48.80- 60.88]  copy wilco eagle 2 flag is 636 4637 467 bravo correction flag is 636 4637 4667 bravo
+[ 61.26- 69.04]  4-0-3-4-5-4-3-0-5 Foxtrot 6-36 Foxtrot 6- delta 6- delta 7-3-7- delta. Repeat.
+[ 69.76- 80.66]  Flag is 6-36-4-6-37-4-6-67 Bravo 4-0-3-4-5-4-3-0-5 Foxtrot 6-36- Foxtrot 6- delta 6- delta 7-3-7- delta.
+[ 81.08- 82.78]  Please confirm. Over.
+[ 85.36- 87.58]  Stand by delta team. Over.
+[ 90.84- 96.88]  Roger, Delta Team, Flag Confirmed. This is Eagle 2, Over, and Out.

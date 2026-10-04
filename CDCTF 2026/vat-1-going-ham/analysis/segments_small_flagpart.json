@@ -1,0 +1,677 @@
+[
+ {
+  "id": 0,
+  "seek": 0,
+  "start": 0.0,
+  "end": 1.42,
+  "text": " Go ahead. Over.",
+  "tokens": [
+   50364,
+   1037,
+   2286,
+   13,
+   4886,
+   13,
+   50436
+  ],
+  "temperature": 0.0,
+  "avg_logprob": -0.14433350563049316,
+  "compression_ratio": 2.2748091603053435,
+  "no_speech_prob": 0.030977094545960426,
+  "words": [
+   {
+    "word": " Go",
+    "start": 0.0,
+    "end": 0.32,
+    "probability": 0.7811513543128967
+   },
+   {
+    "word": " ahead.",
+    "start": 0.32,
+    "end": 0.56,
+    "probability": 0.9599299430847168
+   },
+   {
+    "word": " Over.",
+    "start": 1.12,
+    "end": 1.42,
+    "probability": 0.9668517708778381
+   }
+  ]
+ },
+ {
+  "id": 1,
+  "seek": 0,
+  "start": 4.64,
+  "end": 10.72,
+  "text": " Copy Wilco. Eagle two. Flag is six three six four six three seven four six seven bravo.",
+  "tokens": [
+   50604,
+   25653,
+   9483,
+   1291,
+   13,
+   27926,
+   732,
+   13,
+   37461,
+   307,
+   2309,
+   1045,
+   2309,
+   1451,
+   2309,
+   1045,
+   3407,
+   1451,
+   2309,
+   3407,
+   1548,
+   3080,
+   13,
+   50920
+  ],
+  "temperature": 0.0,
+  "avg_logprob": -0.14433350563049316,
+  "compression_ratio": 2.2748091603053435,
+  "no_speech_prob": 0.030977094545960426,
+  "words": [
+   {
+    "word": " Copy",
+    "start": 4.64,
+    "end": 5.2,
+    "probability": 0.8145657777786255
+   },
+   {
+    "word": " Wilco.",
+    "start": 5.2,
+    "end": 5.58,
+    "probability": 0.8688464164733887
+   },
+   {
+    "word": " Eagle",
+    "start": 5.98,
+    "end": 6.2,
+    "probability": 0.7373058199882507
+   },
+   {
+    "word": " two.",
+    "start": 6.2,
+    "end": 6.48,
+    "probability": 0.07072500884532928
+   },
+   {
+    "word": " Flag",
+    "start": 7.14,
+    "end": 7.34,
+    "probability": 0.9146379828453064
+   },
+   {
+    "word": " is",
+    "start": 7.34,
+    "end": 7.5,
+    "probability": 0.9836091995239258
+   },
+   {
+    "word": " six",
+    "start": 7.5,
+    "end": 7.72,
+    "probability": 0.12729468941688538
+   },
+   {
+    "word": " three",
+    "start": 7.72,
+    "end": 7.98,
+    "probability": 0.48291015625
+   },
+   {
+    "word": " six",
+    "start": 7.98,
+    "end": 8.18,
+    "probability": 0.9855788946151733
+   },
+   {
+    "word": " four",
+    "start": 8.18,
+    "end": 8.5,
+    "probability": 0.9865713715553284
+   },
+   {
+    "word": " six",
+    "start": 8.5,
+    "end": 8.74,
+    "probability": 0.9888178110122681
+   },
+   {
+    "word": " three",
+    "start": 8.74,
+    "end": 9.08,
+    "probability": 0.9804190993309021
+   },
+   {
+    "word": " seven",
+    "start": 9.08,
+    "end": 9.36,
+    "probability": 0.9408408999443054
+   },
+   {
+    "word": " four",
+    "start": 9.36,
+    "end": 9.66,
+    "probability": 0.9901443719863892
+   },
+   {
+    "word": " six",
+    "start": 9.66,
+    "end": 9.88,
+    "probability": 0.9942228198051453
+   },
+   {
+    "word": " seven",
+    "start": 9.88,
+    "end": 10.24,
+    "probability": 0.9924548864364624
+   },
+   {
+    "word": " bravo.",
+    "start": 10.24,
+    "end": 10.72,
+    "probability": 0.6139779165387154
+   }
+  ]
+ },
+ {
+  "id": 2,
+  "seek": 0,
+  "start": 11.16,
+  "end": 16.8,
+  "text": " Correction. Flag is six three six four six three seven four six six seven bravo four echo three",
+  "tokens": [
+   50920,
+   3925,
+   11417,
+   13,
+   37461,
+   307,
+   2309,
+   1045,
+   2309,
+   1451,
+   2309,
+   1045,
+   3407,
+   1451,
+   2309,
+   2309,
+   3407,
+   1548,
+   3080,
+   1451,
+   14300,
+   1045,
+   51204
+  ],
+  "temperature": 0.0,
+  "avg_logprob": -0.14433350563049316,
+  "compression_ratio": 2.2748091603053435,
+  "no_speech_prob": 0.030977094545960426,
+  "words": [
+   {
+    "word": " Correction.",
+    "start": 11.16,
+    "end": 11.56,
+    "probability": 0.8931324779987335
+   },
+   {
+    "word": " Flag",
+    "start": 12.24,
+    "end": 12.44,
+    "probability": 0.9805251359939575
+   },
+   {
+    "word": " is",
+    "start": 12.44,
+    "end": 12.68,
+    "probability": 0.9961737990379333
+   },
+   {
+    "word": " six",
+    "start": 12.68,
+    "end": 12.86,
+    "probability": 0.9936485886573792
+   },
+   {
+    "word": " three",
+    "start": 12.86,
+    "end": 13.14,
+    "probability": 0.9959418177604675
+   },
+   {
+    "word": " six",
+    "start": 13.14,
+    "end": 13.38,
+    "probability": 0.9952245950698853
+   },
+   {
+    "word": " four",
+    "start": 13.38,
+    "end": 13.7,
+    "probability": 0.9974575638771057
+   },
+   {
+    "word": " six",
+    "start": 13.7,
+    "end": 13.94,
+    "probability": 0.9976223111152649
+   },
+   {
+    "word": " three",
+    "start": 13.94,
+    "end": 14.24,
+    "probability": 0.9932831525802612
+   },
+   {
+    "word": " seven",
+    "start": 14.24,
+    "end": 14.54,
+    "probability": 0.9899104237556458
+   },
+   {
+    "word": " four",
+    "start": 14.54,
+    "end": 14.8,
+    "probability": 0.9942840933799744
+   },
+   {
+    "word": " six",
+    "start": 14.8,
+    "end": 15.06,
+    "probability": 0.997179388999939
+   },
+   {
+    "word": " six",
+    "start": 15.06,
+    "end": 15.32,
+    "probability": 0.9948537945747375
+   },
+   {
+    "word": " seven",
+    "start": 15.32,
+    "end": 15.64,
+    "probability": 0.8926616311073303
+   },
+   {
+    "word": " bravo",
+    "start": 15.64,
+    "end": 16.02,
+    "probability": 0.9845505654811859
+   },
+   {
+    "word": " four",
+    "start": 16.02,
+    "end": 16.28,
+    "probability": 0.36295104026794434
+   },
+   {
+    "word": " echo",
+    "start": 16.28,
+    "end": 16.5,
+    "probability": 0.7273368239402771
+   },
+   {
+    "word": " three",
+    "start": 16.5,
+    "end": 16.8,
+    "probability": 0.9765465259552002
+   }
+  ]
+ },
+ {
+  "id": 3,
+  "seek": 0,
+  "start": 16.8,
+  "end": 22.82,
+  "text": " four five four three zero five foxtrot six three six foxtrot six delta six delta seven three seven",
+  "tokens": [
+   51204,
+   1451,
+   1732,
+   1451,
+   1045,
+   4018,
+   1732,
+   726,
+   734,
+   10536,
+   2309,
+   1045,
+   2309,
+   726,
+   734,
+   10536,
+   2309,
+   8289,
+   2309,
+   8289,
+   3407,
+   1045,
+   3407,
+   51504
+  ],
+  "temperature": 0.0,
+  "avg_logprob": -0.14433350563049316,
+  "compression_ratio": 2.2748091603053435,
+  "no_speech_prob": 0.030977094545960426,
+  "words": [
+   {
+    "word": " four",
+    "start": 16.8,
+    "end": 17.06,
+    "probability": 0.9807902574539185
+   },
+   {
+    "word": " five",
+    "start": 17.06,
+    "end": 17.38,
+    "probability": 0.9890925884246826
+   },
+   {
+    "word": " four",
+    "start": 17.38,
+    "end": 17.66,
+    "probability": 0.995392918586731
+   },
+   {
+    "word": " three",
+    "start": 17.66,
+    "end": 17.94,
+    "probability": 0.9943817257881165
+   },
+   {
+    "word": " zero",
+    "start": 17.94,
+    "end": 18.2,
+    "probability": 0.9935779571533203
+   },
+   {
+    "word": " five",
+    "start": 18.2,
+    "end": 18.6,
+    "probability": 0.9951218962669373
+   },
+   {
+    "word": " foxtrot",
+    "start": 18.6,
+    "end": 19.24,
+    "probability": 0.762460470199585
+   },
+   {
+    "word": " six",
+    "start": 19.24,
+    "end": 19.52,
+    "probability": 0.9618545770645142
+   },
+   {
+    "word": " three",
+    "start": 19.52,
+    "end": 19.8,
+    "probability": 0.9941576719284058
+   },
+   {
+    "word": " six",
+    "start": 19.8,
+    "end": 20.04,
+    "probability": 0.9985431432723999
+   },
+   {
+    "word": " foxtrot",
+    "start": 20.04,
+    "end": 20.64,
+    "probability": 0.9635226527849833
+   },
+   {
+    "word": " six",
+    "start": 20.64,
+    "end": 20.94,
+    "probability": 0.9866264462471008
+   },
+   {
+    "word": " delta",
+    "start": 20.94,
+    "end": 21.32,
+    "probability": 0.8945783376693726
+   },
+   {
+    "word": " six",
+    "start": 21.32,
+    "end": 21.6,
+    "probability": 0.9922336339950562
+   },
+   {
+    "word": " delta",
+    "start": 21.6,
+    "end": 21.9,
+    "probability": 0.9909573793411255
+   },
+   {
+    "word": " seven",
+    "start": 21.9,
+    "end": 22.26,
+    "probability": 0.9943494200706482
+   },
+   {
+    "word": " three",
+    "start": 22.26,
+    "end": 22.54,
+    "probability": 0.9867732524871826
+   },
+   {
+    "word": " seven",
+    "start": 22.54,
+    "end": 22.82,
+    "probability": 0.9955193996429443
+   }
+  ]
+ },
+ {
+  "id": 4,
+  "seek": 2282,
+  "start": 22.82,
+  "end": 34.42,
+  "text": " Delta. Repeat. Flag is 63646374667 Bravo for Echo 3454305 Foxtrot 636 Foxtrot 6 Delta 6 Delta",
+  "tokens": [
+   50364,
+   18183,
+   13,
+   28523,
+   13,
+   37461,
+   307,
+   1386,
+   11309,
+   16169,
+   12851,
+   16169,
+   22452,
+   28861,
+   337,
+   31887,
+   805,
+   8465,
+   19,
+   3446,
+   20,
+   8564,
+   734,
+   10536,
+   1386,
+   11309,
+   8564,
+   734,
+   10536,
+   1386,
+   18183,
+   1386,
+   18183,
+   50948
+  ],
+  "temperature": 0.0,
+  "avg_logprob": -0.21176866863084876,
+  "compression_ratio": 1.1886792452830188,
+  "no_speech_prob": 0.14160281419754028,
+  "words": [
+   {
+    "word": " Delta.",
+    "start": 22.82,
+    "end": 23.18,
+    "probability": 0.6221935749053955
+   },
+   {
+    "word": " Repeat.",
+    "start": 23.72,
+    "end": 24.0,
+    "probability": 0.9738849997520447
+   },
+   {
+    "word": " Flag",
+    "start": 24.7,
+    "end": 24.96,
+    "probability": 0.8538293838500977
+   },
+   {
+    "word": " is",
+    "start": 24.96,
+    "end": 25.18,
+    "probability": 0.9777005314826965
+   },
+   {
+    "word": " 63646374667",
+    "start": 25.18,
+    "end": 28.12,
+    "probability": 0.9272170464197794
+   },
+   {
+    "word": " Bravo",
+    "start": 28.12,
+    "end": 28.38,
+    "probability": 0.8627921342849731
+   },
+   {
+    "word": " for",
+    "start": 28.38,
+    "end": 28.78,
+    "probability": 0.6195335984230042
+   },
+   {
+    "word": " Echo",
+    "start": 28.78,
+    "end": 29.02,
+    "probability": 0.8236812353134155
+   },
+   {
+    "word": " 3454305",
+    "start": 29.02,
+    "end": 31.1,
+    "probability": 0.917060649394989
+   },
+   {
+    "word": " Foxtrot",
+    "start": 31.1,
+    "end": 31.74,
+    "probability": 0.9214155077934265
+   },
+   {
+    "word": " 636",
+    "start": 31.74,
+    "end": 32.48,
+    "probability": 0.9862206280231476
+   },
+   {
+    "word": " Foxtrot",
+    "start": 32.48,
+    "end": 33.18,
+    "probability": 0.9764962196350098
+   },
+   {
+    "word": " 6",
+    "start": 33.18,
+    "end": 33.48,
+    "probability": 0.9690690636634827
+   },
+   {
+    "word": " Delta",
+    "start": 33.48,
+    "end": 33.82,
+    "probability": 0.8224837779998779
+   },
+   {
+    "word": " 6",
+    "start": 33.82,
+    "end": 34.12,
+    "probability": 0.9278924465179443
+   },
+   {
+    "word": " Delta",
+    "start": 34.12,
+    "end": 34.42,
+    "probability": 0.9606645107269287
+   }
+  ]
+ },
+ {
+  "id": 5,
+  "seek": 2282,
+  "start": 34.42,
+  "end": 37.7,
+  "text": " 737 Delta. Please confirm. Over.",
+  "tokens": [
+   50948,
+   1614,
+   12851,
+   18183,
+   13,
+   2555,
+   9064,
+   13,
+   4886,
+   13,
+   51116
+  ],
+  "temperature": 0.0,
+  "avg_logprob": -0.21176866863084876,
+  "compression_ratio": 1.1886792452830188,
+  "no_speech_prob": 0.14160281419754028,
+  "words": [
+   {
+    "word": " 737",
+    "start": 34.42,
+    "end": 35.1,
+    "probability": 0.959538608789444
+   },
+   {
+    "word": " Delta.",
+    "start": 35.1,
+    "end": 35.62,
+    "probability": 0.9420048594474792
+   },
+   {
+    "word": " Please",
+    "start": 36.18,
+    "end": 36.46,
+    "probability": 0.9960243701934814
+   },
+   {
+    "word": " confirm.",
+    "start": 36.46,
+    "end": 36.84,
+    "probability": 0.9782119989395142
+   },
+   {
+    "word": " Over.",
+    "start": 37.5,
+    "end": 37.7,
+    "probability": 0.9886186122894287
+   }
+  ]
+ }
+]

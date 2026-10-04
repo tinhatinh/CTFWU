@@ -1,0 +1,1141 @@
+[
+ {
+  "id": 0,
+  "seek": 0,
+  "start": 0.0,
+  "end": 5.3,
+  "text": " Delta team. Delta team. This is Eagle 2. Come in. Over.",
+  "tokens": [
+   50364,
+   18183,
+   1469,
+   13,
+   18183,
+   1469,
+   13,
+   639,
+   307,
+   27926,
+   568,
+   13,
+   2492,
+   294,
+   13,
+   4886,
+   13,
+   50636
+  ],
+  "temperature": 0.0,
+  "avg_logprob": -0.2237593030172681,
+  "compression_ratio": 1.689922480620155,
+  "no_speech_prob": 0.004854604601860046,
+  "words": [
+   {
+    "word": " Delta",
+    "start": 0.0,
+    "end": 0.42,
+    "probability": 0.8034478425979614
+   },
+   {
+    "word": " team.",
+    "start": 0.42,
+    "end": 0.78,
+    "probability": 0.2865960896015167
+   },
+   {
+    "word": " Delta",
+    "start": 1.24,
+    "end": 1.62,
+    "probability": 0.8271132111549377
+   },
+   {
+    "word": " team.",
+    "start": 1.62,
+    "end": 2.0,
+    "probability": 0.9928487539291382
+   },
+   {
+    "word": " This",
+    "start": 2.52,
+    "end": 2.7,
+    "probability": 0.9949449896812439
+   },
+   {
+    "word": " is",
+    "start": 2.7,
+    "end": 2.9,
+    "probability": 0.9958341121673584
+   },
+   {
+    "word": " Eagle",
+    "start": 2.9,
+    "end": 3.1,
+    "probability": 0.9351871609687805
+   },
+   {
+    "word": " 2.",
+    "start": 3.1,
+    "end": 3.4,
+    "probability": 0.6616335511207581
+   },
+   {
+    "word": " Come",
+    "start": 3.9,
+    "end": 4.14,
+    "probability": 0.9943771958351135
+   },
+   {
+    "word": " in.",
+    "start": 4.14,
+    "end": 4.48,
+    "probability": 0.9951812624931335
+   },
+   {
+    "word": " Over.",
+    "start": 5.04,
+    "end": 5.3,
+    "probability": 0.9940500259399414
+   }
+  ]
+ },
+ {
+  "id": 1,
+  "seek": 0,
+  "start": 9.280000000000001,
+  "end": 13.4,
+  "text": " Eagle 2. This is Delta team. Go ahead. Over.",
+  "tokens": [
+   50848,
+   27926,
+   568,
+   13,
+   639,
+   307,
+   18183,
+   1469,
+   13,
+   1037,
+   2286,
+   13,
+   4886,
+   13,
+   51036
+  ],
+  "temperature": 0.0,
+  "avg_logprob": -0.2237593030172681,
+  "compression_ratio": 1.689922480620155,
+  "no_speech_prob": 0.004854604601860046,
+  "words": [
+   {
+    "word": " Eagle",
+    "start": 9.280000000000001,
+    "end": 10.0,
+    "probability": 0.9703909754753113
+   },
+   {
+    "word": " 2.",
+    "start": 10.0,
+    "end": 10.26,
+    "probability": 0.9844875931739807
+   },
+   {
+    "word": " This",
+    "start": 10.64,
+    "end": 10.8,
+    "probability": 0.9934972524642944
+   },
+   {
+    "word": " is",
+    "start": 10.8,
+    "end": 10.94,
+    "probability": 0.998981773853302
+   },
+   {
+    "word": " Delta",
+    "start": 10.94,
+    "end": 11.24,
+    "probability": 0.9608256220817566
+   },
+   {
+    "word": " team.",
+    "start": 11.24,
+    "end": 11.56,
+    "probability": 0.8823071122169495
+   },
+   {
+    "word": " Go",
+    "start": 12.2,
+    "end": 12.36,
+    "probability": 0.9981763362884521
+   },
+   {
+    "word": " ahead.",
+    "start": 12.36,
+    "end": 12.6,
+    "probability": 0.993507981300354
+   },
+   {
+    "word": " Over.",
+    "start": 13.2,
+    "end": 13.4,
+    "probability": 0.9974244832992554
+   }
+  ]
+ },
+ {
+  "id": 2,
+  "seek": 0,
+  "start": 15.540000000000003,
+  "end": 19.78,
+  "text": " Delta team. Please transmit collected flag. Over.",
+  "tokens": [
+   51160,
+   18183,
+   1469,
+   13,
+   2555,
+   17831,
+   11087,
+   7166,
+   13,
+   4886,
+   13,
+   51352
+  ],
+  "temperature": 0.0,
+  "avg_logprob": -0.2237593030172681,
+  "compression_ratio": 1.689922480620155,
+  "no_speech_prob": 0.004854604601860046,
+  "words": [
+   {
+    "word": " Delta",
+    "start": 15.540000000000003,
+    "end": 16.26,
+    "probability": 0.9973528385162354
+   },
+   {
+    "word": " team.",
+    "start": 16.26,
+    "end": 16.62,
+    "probability": 0.9890551567077637
+   },
+   {
+    "word": " Please",
+    "start": 17.08,
+    "end": 17.34,
+    "probability": 0.9983587861061096
+   },
+   {
+    "word": " transmit",
+    "start": 17.34,
+    "end": 18.02,
+    "probability": 0.8737596273422241
+   },
+   {
+    "word": " collected",
+    "start": 18.02,
+    "end": 18.58,
+    "probability": 0.8649294376373291
+   },
+   {
+    "word": " flag.",
+    "start": 18.58,
+    "end": 18.9,
+    "probability": 0.9797732830047607
+   },
+   {
+    "word": " Over.",
+    "start": 19.46,
+    "end": 19.78,
+    "probability": 0.9984305500984192
+   }
+  ]
+ },
+ {
+  "id": 3,
+  "seek": 0,
+  "start": 21.02,
+  "end": 26.5,
+  "text": " Copy Eagle 2. Flag is ready for transmit. Please acknowledge. Over.",
+  "tokens": [
+   51424,
+   25653,
+   27926,
+   568,
+   13,
+   37461,
+   307,
+   1919,
+   337,
+   17831,
+   13,
+   2555,
+   10692,
+   13,
+   4886,
+   13,
+   51688
+  ],
+  "temperature": 0.0,
+  "avg_logprob": -0.2237593030172681,
+  "compression_ratio": 1.689922480620155,
+  "no_speech_prob": 0.004854604601860046,
+  "words": [
+   {
+    "word": " Copy",
+    "start": 21.02,
+    "end": 21.58,
+    "probability": 0.991845428943634
+   },
+   {
+    "word": " Eagle",
+    "start": 21.58,
+    "end": 22.18,
+    "probability": 0.31760334968566895
+   },
+   {
+    "word": " 2.",
+    "start": 22.18,
+    "end": 22.52,
+    "probability": 0.9903171062469482
+   },
+   {
+    "word": " Flag",
+    "start": 23.02,
+    "end": 23.3,
+    "probability": 0.9906505346298218
+   },
+   {
+    "word": " is",
+    "start": 23.3,
+    "end": 23.52,
+    "probability": 0.9979032278060913
+   },
+   {
+    "word": " ready",
+    "start": 23.52,
+    "end": 23.76,
+    "probability": 0.9985274076461792
+   },
+   {
+    "word": " for",
+    "start": 23.76,
+    "end": 23.92,
+    "probability": 0.9930073022842407
+   },
+   {
+    "word": " transmit.",
+    "start": 23.92,
+    "end": 24.3,
+    "probability": 0.9894240498542786
+   },
+   {
+    "word": " Please",
+    "start": 24.92,
+    "end": 25.18,
+    "probability": 0.9979508519172668
+   },
+   {
+    "word": " acknowledge.",
+    "start": 25.18,
+    "end": 25.54,
+    "probability": 0.9922285676002502
+   },
+   {
+    "word": " Over.",
+    "start": 26.28,
+    "end": 26.5,
+    "probability": 0.9987683892250061
+   }
+  ]
+ },
+ {
+  "id": 4,
+  "seek": 3000,
+  "start": 33.54,
+  "end": 37.7,
+  "text": " Eagle 2, this is Delta Team. Radio check. Over.",
+  "tokens": [
+   50364,
+   27926,
+   568,
+   11,
+   341,
+   307,
+   18183,
+   7606,
+   13,
+   17296,
+   1520,
+   13,
+   4886,
+   13,
+   50864
+  ],
+  "temperature": 0.0,
+  "avg_logprob": -0.3772152987393466,
+  "compression_ratio": 1.155844155844156,
+  "no_speech_prob": 0.30748429894447327,
+  "words": [
+   {
+    "word": " Eagle",
+    "start": 33.54,
+    "end": 34.22,
+    "probability": 0.459493488073349
+   },
+   {
+    "word": " 2,",
+    "start": 34.22,
+    "end": 34.48,
+    "probability": 0.6374443173408508
+   },
+   {
+    "word": " this",
+    "start": 34.8,
+    "end": 35.02,
+    "probability": 0.8576105833053589
+   },
+   {
+    "word": " is",
+    "start": 35.02,
+    "end": 35.18,
+    "probability": 0.9951477646827698
+   },
+   {
+    "word": " Delta",
+    "start": 35.18,
+    "end": 35.44,
+    "probability": 0.875043511390686
+   },
+   {
+    "word": " Team.",
+    "start": 35.44,
+    "end": 35.78,
+    "probability": 0.7427094578742981
+   },
+   {
+    "word": " Radio",
+    "start": 36.28,
+    "end": 36.66,
+    "probability": 0.9633575081825256
+   },
+   {
+    "word": " check.",
+    "start": 36.66,
+    "end": 37.0,
+    "probability": 0.8911315202713013
+   },
+   {
+    "word": " Over.",
+    "start": 37.46,
+    "end": 37.7,
+    "probability": 0.9901524186134338
+   }
+  ]
+ },
+ {
+  "id": 5,
+  "seek": 3000,
+  "start": 41.78,
+  "end": 46.44,
+  "text": " Read you 5x5, Delta Team. Go ahead. Over.",
+  "tokens": [
+   50864,
+   17604,
+   291,
+   1025,
+   87,
+   20,
+   11,
+   18183,
+   7606,
+   13,
+   1037,
+   2286,
+   13,
+   4886,
+   13,
+   51264
+  ],
+  "temperature": 0.0,
+  "avg_logprob": -0.3772152987393466,
+  "compression_ratio": 1.155844155844156,
+  "no_speech_prob": 0.30748429894447327,
+  "words": [
+   {
+    "word": " Read",
+    "start": 41.78,
+    "end": 42.46,
+    "probability": 0.8968135118484497
+   },
+   {
+    "word": " you",
+    "start": 42.46,
+    "end": 42.66,
+    "probability": 0.9649842381477356
+   },
+   {
+    "word": " 5x5,",
+    "start": 42.66,
+    "end": 43.52,
+    "probability": 0.805180569489797
+   },
+   {
+    "word": " Delta",
+    "start": 43.94,
+    "end": 44.28,
+    "probability": 0.9862224459648132
+   },
+   {
+    "word": " Team.",
+    "start": 44.28,
+    "end": 44.64,
+    "probability": 0.9485561847686768
+   },
+   {
+    "word": " Go",
+    "start": 45.16,
+    "end": 45.3,
+    "probability": 0.9955624341964722
+   },
+   {
+    "word": " ahead.",
+    "start": 45.3,
+    "end": 45.54,
+    "probability": 0.9664080142974854
+   },
+   {
+    "word": " Over.",
+    "start": 46.16,
+    "end": 46.44,
+    "probability": 0.994857668876648
+   }
+  ]
+ },
+ {
+  "id": 6,
+  "seek": 4644,
+  "start": 49.440000000000005,
+  "end": 61.28,
+  "text": " Copy Wilco, Eagle 2. Flag is 6364637467 Bravo. Correction. Flag is 63646374667 Bravo for",
+  "tokens": [
+   50364,
+   25653,
+   9483,
+   1291,
+   11,
+   27926,
+   568,
+   13,
+   37461,
+   307,
+   1386,
+   11309,
+   16169,
+   12851,
+   16169,
+   22,
+   28861,
+   13,
+   3925,
+   11417,
+   13,
+   37461,
+   307,
+   1386,
+   11309,
+   16169,
+   12851,
+   16169,
+   22452,
+   28861,
+   337,
+   51104
+  ],
+  "temperature": 0.0,
+  "avg_logprob": -0.22845886735355153,
+  "compression_ratio": 1.5042735042735043,
+  "no_speech_prob": 0.529428243637085,
+  "words": [
+   {
+    "word": " Copy",
+    "start": 49.440000000000005,
+    "end": 50.2,
+    "probability": 0.2114129662513733
+   },
+   {
+    "word": " Wilco,",
+    "start": 50.2,
+    "end": 50.58,
+    "probability": 0.8216005563735962
+   },
+   {
+    "word": " Eagle",
+    "start": 50.96,
+    "end": 51.2,
+    "probability": 0.7770681977272034
+   },
+   {
+    "word": " 2.",
+    "start": 51.2,
+    "end": 51.52,
+    "probability": 0.6234751343727112
+   },
+   {
+    "word": " Flag",
+    "start": 52.0,
+    "end": 52.34,
+    "probability": 0.845453143119812
+   },
+   {
+    "word": " is",
+    "start": 52.34,
+    "end": 52.5,
+    "probability": 0.9624454379081726
+   },
+   {
+    "word": " 6364637467",
+    "start": 52.5,
+    "end": 55.24,
+    "probability": 0.9098448753356934
+   },
+   {
+    "word": " Bravo.",
+    "start": 55.24,
+    "end": 55.46,
+    "probability": 0.7563906311988831
+   },
+   {
+    "word": " Correction.",
+    "start": 56.18,
+    "end": 56.56,
+    "probability": 0.8504396080970764
+   },
+   {
+    "word": " Flag",
+    "start": 57.26,
+    "end": 57.46,
+    "probability": 0.9663451313972473
+   },
+   {
+    "word": " is",
+    "start": 57.46,
+    "end": 57.68,
+    "probability": 0.9975032210350037
+   },
+   {
+    "word": " 63646374667",
+    "start": 57.68,
+    "end": 60.6,
+    "probability": 0.9559352795282999
+   },
+   {
+    "word": " Bravo",
+    "start": 60.6,
+    "end": 60.92,
+    "probability": 0.9522294402122498
+   },
+   {
+    "word": " for",
+    "start": 60.92,
+    "end": 61.28,
+    "probability": 0.518386960029602
+   }
+  ]
+ },
+ {
+  "id": 7,
+  "seek": 4644,
+  "start": 61.28,
+  "end": 73.1,
+  "text": " Echo 3454305 Foxtrot 636 Foxtrot 6 Delta 6 Delta 737 Delta. Repeat. Flag is 63646374667",
+  "tokens": [
+   51104,
+   31887,
+   805,
+   8465,
+   19,
+   3446,
+   20,
+   8564,
+   734,
+   10536,
+   1386,
+   11309,
+   8564,
+   734,
+   10536,
+   1386,
+   18183,
+   1386,
+   18183,
+   1614,
+   12851,
+   18183,
+   13,
+   28523,
+   13,
+   37461,
+   307,
+   1386,
+   11309,
+   16169,
+   12851,
+   16169,
+   22452,
+   51704
+  ],
+  "temperature": 0.0,
+  "avg_logprob": -0.22845886735355153,
+  "compression_ratio": 1.5042735042735043,
+  "no_speech_prob": 0.529428243637085,
+  "words": [
+   {
+    "word": " Echo",
+    "start": 61.28,
+    "end": 61.5,
+    "probability": 0.8297653198242188
+   },
+   {
+    "word": " 3454305",
+    "start": 61.5,
+    "end": 63.58,
+    "probability": 0.8532564759254455
+   },
+   {
+    "word": " Foxtrot",
+    "start": 63.58,
+    "end": 64.24,
+    "probability": 0.937607487042745
+   },
+   {
+    "word": " 636",
+    "start": 64.24,
+    "end": 64.88,
+    "probability": 0.9845488965511322
+   },
+   {
+    "word": " Foxtrot",
+    "start": 64.88,
+    "end": 65.66,
+    "probability": 0.9587221542994181
+   },
+   {
+    "word": " 6",
+    "start": 65.66,
+    "end": 65.96,
+    "probability": 0.9772897958755493
+   },
+   {
+    "word": " Delta",
+    "start": 65.96,
+    "end": 66.32,
+    "probability": 0.6345954537391663
+   },
+   {
+    "word": " 6",
+    "start": 66.32,
+    "end": 66.6,
+    "probability": 0.9715737700462341
+   },
+   {
+    "word": " Delta",
+    "start": 66.6,
+    "end": 66.9,
+    "probability": 0.959997832775116
+   },
+   {
+    "word": " 737",
+    "start": 66.9,
+    "end": 67.58,
+    "probability": 0.9702597260475159
+   },
+   {
+    "word": " Delta.",
+    "start": 67.58,
+    "end": 68.08,
+    "probability": 0.9819214344024658
+   },
+   {
+    "word": " Repeat.",
+    "start": 68.7,
+    "end": 68.98,
+    "probability": 0.993417501449585
+   },
+   {
+    "word": " Flag",
+    "start": 69.66,
+    "end": 69.98,
+    "probability": 0.9611080884933472
+   },
+   {
+    "word": " is",
+    "start": 69.98,
+    "end": 70.18,
+    "probability": 0.9982227683067322
+   },
+   {
+    "word": " 63646374667",
+    "start": 70.18,
+    "end": 73.1,
+    "probability": 0.8982029656569163
+   }
+  ]
+ },
+ {
+  "id": 8,
+  "seek": 7310,
+  "start": 73.1,
+  "end": 82.74,
+  "text": " Bravo 4 Echo 3 4 5 4 3 0 5 Foxtrot 6 3 6 Foxtrot 6 Delta 6 Delta 7 3 7 Delta please confirm over",
+  "tokens": [
+   50364,
+   28861,
+   1017,
+   31887,
+   805,
+   1017,
+   1025,
+   1017,
+   805,
+   1958,
+   1025,
+   8564,
+   734,
+   10536,
+   1386,
+   805,
+   1386,
+   8564,
+   734,
+   10536,
+   1386,
+   18183,
+   1386,
+   18183,
+   1614,
+   805,
+   1614,
+   18183,
+   1767,
+   9064,
+   670,
+   50844
+  ],
+  "temperature": 0.0,
+  "avg_logprob": -0.2187688085767958,
+  "compression_ratio": 1.5041322314049588,
+  "no_speech_prob": 0.0641264095902443,
+  "words": [
+   {
+    "word": " Bravo",
+    "start": 73.1,
+    "end": 73.42,
+    "probability": 0.10172959417104721
+   },
+   {
+    "word": " 4",
+    "start": 73.42,
+    "end": 73.82,
+    "probability": 0.34174811840057373
+   },
+   {
+    "word": " Echo",
+    "start": 73.82,
+    "end": 74.02,
+    "probability": 0.5821428298950195
+   },
+   {
+    "word": " 3",
+    "start": 74.02,
+    "end": 74.3,
+    "probability": 0.8973884582519531
+   },
+   {
+    "word": " 4",
+    "start": 74.3,
+    "end": 74.58,
+    "probability": 0.251651406288147
+   },
+   {
+    "word": " 5",
+    "start": 74.58,
+    "end": 74.88,
+    "probability": 0.9480146169662476
+   },
+   {
+    "word": " 4",
+    "start": 74.88,
+    "end": 75.18,
+    "probability": 0.9935672879219055
+   },
+   {
+    "word": " 3",
+    "start": 75.18,
+    "end": 75.46,
+    "probability": 0.9659594297409058
+   },
+   {
+    "word": " 0",
+    "start": 75.46,
+    "end": 75.72,
+    "probability": 0.9551768898963928
+   },
+   {
+    "word": " 5",
+    "start": 75.72,
+    "end": 76.12,
+    "probability": 0.9825389385223389
+   },
+   {
+    "word": " Foxtrot",
+    "start": 76.12,
+    "end": 76.72,
+    "probability": 0.8398948113123575
+   },
+   {
+    "word": " 6",
+    "start": 76.72,
+    "end": 77.04,
+    "probability": 0.9859169125556946
+   },
+   {
+    "word": " 3",
+    "start": 77.04,
+    "end": 77.32,
+    "probability": 0.8849762678146362
+   },
+   {
+    "word": " 6",
+    "start": 77.32,
+    "end": 77.56,
+    "probability": 0.9941650032997131
+   },
+   {
+    "word": " Foxtrot",
+    "start": 77.56,
+    "end": 78.14,
+    "probability": 0.9653381903966268
+   },
+   {
+    "word": " 6",
+    "start": 78.14,
+    "end": 78.46,
+    "probability": 0.9891788959503174
+   },
+   {
+    "word": " Delta",
+    "start": 78.46,
+    "end": 78.82,
+    "probability": 0.9059780836105347
+   },
+   {
+    "word": " 6",
+    "start": 78.82,
+    "end": 79.1,
+    "probability": 0.9926142692565918
+   },
+   {
+    "word": " Delta",
+    "start": 79.1,
+    "end": 79.44,
+    "probability": 0.9600047469139099
+   },
+   {
+    "word": " 7",
+    "start": 79.44,
+    "end": 79.78,
+    "probability": 0.9885340332984924
+   },
+   {
+    "word": " 3",
+    "start": 79.78,
+    "end": 80.04,
+    "probability": 0.9676002860069275
+   },
+   {
+    "word": " 7",
+    "start": 80.04,
+    "end": 80.32,
+    "probability": 0.9948627352714539
+   },
+   {
+    "word": " Delta",
+    "start": 80.32,
+    "end": 80.64,
+    "probability": 0.9732018709182739
+   },
+   {
+    "word": " please",
+    "start": 80.64,
+    "end": 81.46,
+    "probability": 0.22345444560050964
+   },
+   {
+    "word": " confirm",
+    "start": 81.46,
+    "end": 81.92,
+    "probability": 0.9914203882217407
+   },
+   {
+    "word": " over",
+    "start": 81.92,
+    "end": 82.74,
+    "probability": 0.6025685667991638
+   }
+  ]
+ },
+ {
+  "id": 9,
+  "seek": 7310,
+  "start": 85.18,
+  "end": 87.58,
+  "text": " Stand by Delta team over",
+  "tokens": [
+   50984,
+   9133,
+   538,
+   18183,
+   1469,
+   670,
+   51088
+  ],
+  "temperature": 0.0,
+  "avg_logprob": -0.2187688085767958,
+  "compression_ratio": 1.5041322314049588,
+  "no_speech_prob": 0.0641264095902443,
+  "words": [
+   {
+    "word": " Stand",
+    "start": 85.18,
+    "end": 85.86,
+    "probability": 0.6899147033691406
+   },
+   {
+    "word": " by",
+    "start": 85.86,
+    "end": 86.2,
+    "probability": 0.8327298164367676
+   },
+   {
+    "word": " Delta",
+    "start": 86.2,
+    "end": 86.48,
+    "probability": 0.8983809351921082
+   },
+   {
+    "word": " team",
+    "start": 86.48,
+    "end": 86.82,
+    "probability": 0.713118314743042
+   },
+   {
+    "word": " over",
+    "start": 86.82,
+    "end": 87.58,
+    "probability": 0.8954604268074036
+   }
+  ]
+ },
+ {
+  "id": 10,
+  "seek": 7310,
+  "start": 90.78,
+  "end": 96.86,
+  "text": " Roger Delta team flag confirmed this is Eagle 2 over and out",
+  "tokens": [
+   51260,
+   17666,
+   18183,
+   1469,
+   7166,
+   11341,
+   341,
+   307,
+   27926,
+   568,
+   670,
+   293,
+   484,
+   51556
+  ],
+  "temperature": 0.0,
+  "avg_logprob": -0.2187688085767958,
+  "compression_ratio": 1.5041322314049588,
+  "no_speech_prob": 0.0641264095902443,
+  "words": [
+   {
+    "word": " Roger",
+    "start": 90.78,
+    "end": 91.46000000000001,
+    "probability": 0.9736319184303284
+   },
+   {
+    "word": " Delta",
+    "start": 91.46000000000001,
+    "end": 92.14,
+    "probability": 0.8560011982917786
+   },
+   {
+    "word": " team",
+    "start": 92.14,
+    "end": 92.56,
+    "probability": 0.9094786047935486
+   },
+   {
+    "word": " flag",
+    "start": 92.56,
+    "end": 93.28,
+    "probability": 0.966231107711792
+   },
+   {
+    "word": " confirmed",
+    "start": 93.28,
+    "end": 94.04,
+    "probability": 0.994170069694519
+   },
+   {
+    "word": " this",
+    "start": 94.04,
+    "end": 94.82,
+    "probability": 0.5177679657936096
+   },
+   {
+    "word": " is",
+    "start": 94.82,
+    "end": 95.0,
+    "probability": 0.9939696788787842
+   },
+   {
+    "word": " Eagle",
+    "start": 95.0,
+    "end": 95.26,
+    "probability": 0.8084598183631897
+   },
+   {
+    "word": " 2",
+    "start": 95.26,
+    "end": 95.56,
+    "probability": 0.7975344061851501
+   },
+   {
+    "word": " over",
+    "start": 95.56,
+    "end": 96.16,
+    "probability": 0.9312742352485657
+   },
+   {
+    "word": " and",
+    "start": 96.16,
+    "end": 96.62,
+    "probability": 0.992291271686554
+   },
+   {
+    "word": " out",
+    "start": 96.62,
+    "end": 96.86,
+    "probability": 0.9938144683837891
+   }
+  ]
+ }
+]

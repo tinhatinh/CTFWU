@@ -1,0 +1,5 @@
+id3 size bytes: 34 frame start at 44 b'TSSE\x00\x00\x00\x0e\x00\x00\x03Lavf61.7.103\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+frames: 2026 covered: 583884 of 584028 tail: 144
+distinct frame sizes: [(288, 2026)]
+gaps (non-frame byte runs): 8 total gap bytes: 352
+first gaps: [(58796, 44), (95416, 44), (128004, 44), (204656, 44), (253948, 44), (300360, 44), (514676, 44), (547552, 44)]
