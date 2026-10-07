@@ -10,10 +10,6 @@ Bob Burke (`bubu77`) was accidentally added to a Chatterly group and photographe
 
 The ZIP contains five JPEG photographs of a screen. Chronological reading order is 5 → 4 → 3 → 2 → 1, with overlapping messages. Read and translate the conversation directly from the photographs.
 
-## Eliminated hypotheses
-
-1. **Removing the apostrophe from the business name:** `cdctf{McDonalds_in_Chicago}` was rejected twice according to the submission table supplied by the player. This eliminates that string; it does not establish that the business or city is wrong.
-2. **Finding a public solution:** searches for the challenge title and Chatterly produced no useful result during the session. Analysis returned to the photographs.
 
 ## Exploitation chain
 

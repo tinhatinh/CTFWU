@@ -10,10 +10,6 @@ Bob Burke (`bubu77`) bị thêm nhầm vào nhóm chat Chatterly và chụp lạ
 
 ZIP chứa năm ảnh JPEG chụp màn hình. Đọc theo thời gian: ảnh 5 → 4 → 3 → 2 → 1; các ảnh có đoạn trùng nhau. Đọc và dịch trực tiếp nội dung hội thoại trong ảnh.
 
-## Các hướng đã loại
-
-1. **Flag bỏ dấu nháy trong tên thương hiệu:** `cdctf{McDonalds_in_Chicago}` bị từ chối hai lần theo bảng submission người chơi cung cấp. Loại chuỗi này; kết quả không tự chứng minh doanh nghiệp hoặc thành phố sai.
-2. **Tra cứu lời giải công khai:** tìm tên challenge và Chatterly không thu được kết quả hữu ích trong phiên. Chuyển về chứng cứ trong ảnh.
 
 ## Chuỗi khai thác
 
