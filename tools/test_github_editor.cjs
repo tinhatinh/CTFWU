@@ -3,11 +3,11 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const assert = require('node:assert/strict');
 const code = fs.readFileSync('site/assets/js/github-editor.js','utf8');
-function fixture({nonOwner=false,race=false}={}) {
+function fixture({nonOwner=false,race=false,directory='Example CTF/sample'}={}) {
   const calls=[];
   const files={vi:{content:'# VN\nNội dung.\n',sha:'old-vn'},en:{content:'# EN\nOriginal.\n',sha:'old-en'}};
   let committed, tree;
-  const context={window:{},document:{querySelector:()=>({dataset:{sourceDirectory:'Example CTF/sample'}})},
+  const context={window:{},document:{querySelector:()=>({dataset:{sourceDirectory:directory}})},
     TextDecoder,TextEncoder,Uint8Array,URLSearchParams,Date,atob,
     fetch:async(url,options)=>{
       const path=new URL(url).pathname;
@@ -56,5 +56,11 @@ async function save(instance,edits){return instance.request('/api/writeup',{meth
   const concurrent=fixture({race:true});await login(concurrent);
   await assert.rejects(()=>save(concurrent,[{lang:'vi',version:'old-vn',content:'# Changed'}]),/GitHub changed/);
   assert.equal(concurrent.files.vi.sha,'old-vn');
+  const wave=fixture({directory:'Example CTF/Wave 2/sample'});await login(wave);
+  await save(wave,[{lang:'vi',version:'old-vn',content:'# Wave VN\n'}]);
+  assert.equal(wave.tree.tree[0].path,'Example CTF/Wave 2/sample/writeup.md');
+  assert(wave.calls.some(call=>call.path.includes('/contents/Example%20CTF/Wave%202/sample/writeup.md')));
+  assert.throws(()=>fixture({directory:'Example CTF/Wave 2/../sample'}),/Invalid source directory/);
+  assert.throws(()=>fixture({directory:'Example CTF/arbitrary/sample'}),/Invalid source directory/);
   console.log('GitHub editor checks passed: owner, UTF-8, conflict, bilingual commit, logout, concurrent push');
 })().catch(error=>{console.error(error);process.exitCode=1;});

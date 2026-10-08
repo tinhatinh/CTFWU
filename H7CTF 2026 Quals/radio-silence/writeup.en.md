@@ -10,7 +10,7 @@ A radio burst was transmitted next to a device nobody can name: no datasheet, no
 challenge gives only a baseband file and says "Read it back", which means every parameter of the protocol has to be
 measured from the signal itself.
 
-## Initial Analysis
+## Analysis
 
 ```
 $ curl -sS https://web-0350e37b217a0cbc.web.h7tex.com
@@ -46,7 +46,7 @@ An FFT over the burst alone (Hanning, 23.1 Hz resolution) yields exactly two pea
 
 both sitting dead centre in their bins, so the real tones are 35 kHz and 85 kHz: a 60 kHz centre carrier, ±25 kHz deviation.
 
-## Exploit Chain
+## Solution
 
 ### Step 1: symbol timing from the signal itself
 
@@ -116,7 +116,7 @@ t35=1 LSB   printable 18/54  rác
 Nothing is submitted over HTTP: the instance serves exactly one static file (`Server: SimpleHTTP/0.6`), with no `<pre>`
 submission contract like the other web/hardware challenges of the same event, so the flag is pasted into the scoreboard.
 
-## Flag
+## Result
 ```
 $ python solve_rf.py files/capture.cf32
 [+] FLAG: H7CTF{6780856d-db42-4cfa-8b56-c62109d8417c}

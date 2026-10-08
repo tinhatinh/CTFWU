@@ -10,7 +10,7 @@ script: script lấy từ một repo GitLab nội bộ, để người vận hà
 Đề nhắc `swaks` có sẵn trên box. Instance cấp cho mỗi đội là một terminal web chạy `player@<container>`,
 bên trong có sẵn cron job nói trên và quyền gửi thư ra `mail.gitlash.internal`.
 
-## Phân tích ban đầu
+## Phân tích
 
 Box của mỗi đội là một container Debian có PID 1 là `tini -- ttyd ... bash -lc exec su - player`,
 kèm `cron` và một forwarder `socat TCP-LISTEN:25 -> mail.gitlash.internal:25`. Poll `/proc/*/cmdline`
@@ -44,7 +44,7 @@ Chuỗi đầy đủ do đó là: ghi `run.sh` trong repo -> job root 5 phút ch
 `swaks` về địa chỉ `incoming+...-glimt-...-issue@` -> đọc issue qua API. Nút thắt duy nhất là quyền
 ghi repo, vì mọi kênh ghi ẩn danh đều bị chặn (xem mục dưới).
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **GitLab registration / user đầu tiên là admin**: `curl -L /users/sign_up` trả về form **đăng nhập**
    (`user[login]`, `user[password]`, `user[remember_me]`, không có `user[email]`/`user[name]`, không có
@@ -70,7 +70,7 @@ ghi repo, vì mọi kênh ghi ẩn danh đều bị chặn (xem mục dưới).
    dưới thư mục không traverse được.
 8. **`/opt/seed` có metadata**: chỉ chứa `run.sh` 556 byte, **byte-identical** với `run.sh` trong repo.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Đọc cấu trúc chia sẻ.** GitLab phục vụ mọi instance là một server chung, nên danh sách project
 ẩn danh là bản đồ của cả giải. `GET /api/v4/projects?per_page=100` trả 54 project, id 1..54, tất cả
@@ -121,7 +121,7 @@ nó (`p33 -> 0ff0ae34`, `p35 -> f420b244`, `p39 -> adb2dc3f`), nên cờ mang he
 và chỉ lấy được khi hoàn thành nốt quyền ghi repo; bước đó chưa hoàn thành. Cờ nộp là cờ của
 tenant khác, đọc được vì server GitLab chung để toàn bộ repo và issue của mọi đội ở chế độ public.
 
-## Flag
+## Kết quả
 
 ```bash
 grep -aoiE 'cdctf.[^"]{0,60}' /tmp/iss/*.json | sort -u
@@ -131,7 +131,7 @@ grep -aoiE 'cdctf.[^"]{0,60}' /tmp/iss/*.json | sort -u
 cdctf{mY_3m41L_is_a_TOKEN_adb2dc3f}
 ```
 
-## Reproduce
+## Tái hiện
 
 Cần shell trong instance của một đội bất kỳ (mọi lệnh chỉ đọc). Sao chép `analysis/enumerate_siblings.sh`
 vào box, chạy `bash enumerate_siblings.sh` rồi đọc `grep cdctf /tmp/all_iss.txt`.

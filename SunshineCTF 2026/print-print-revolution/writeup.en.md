@@ -10,7 +10,7 @@ renderer and see what it actually prints. There is only one stripped ELF and one
 The flag string summarizes the challenge constraint: a hand-written format string, no tools
 allowed. This requires building an exploit without pwntools, ROPgadget, WSL, or an attached libc file, meaning all necessary structures must be extracted manually from the remote service.
 
-## Initial Analysis
+## Analysis
 
 64-bit ELF, `ET_EXEC` (no PIE, base `0x400000`), stripped, `.text` only 0x4ea bytes.
 Exactly five imported functions: `write strlen strcspn read setvbuf`. No `open`/`fopen`,
@@ -44,7 +44,7 @@ lea rax,[rsp+0x30];  mov [rsp+0x28], rax ; reg_save_area     = rsp+0x30
 6 `push`es + 8 bytes of return + `sub 0xe8` = 0x128 bytes away). So the 6th parameter onwards is
 read straight from the input.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Reading the renderer's grammar.** The comparison branch at `0x4013e8..0x401524` reveals
 four specifiers:
@@ -103,7 +103,7 @@ renderer has nothing to analyze: the syscall happens right at `call strcspn`.
 replacing the `buf[0x18]` slot with `0x40114f` (no syscall). The
 control returns a normal `score> `, proving the chain executes properly. Restoring the syscall causes the shell to launch silently and wait for input, allowing standard commands.
 
-## Flag
+## Result
 ```bash
 python exploit.py
 ```

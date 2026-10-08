@@ -12,7 +12,7 @@ lend.totalDebt() > lend.totalCollateralLP() * pool.get_virtual_price() / 1e18
 
 The instance is an EVM node: `GET /` on the challenge URL itself returns the rpc endpoint (POST to the same URL), chain id 31337, the player's private key and the Setup address, with no further authentication. Once solved, `GET /flag`.
 
-## Initial Analysis
+## Analysis
 
 The winning inequality only flips sign in two ways: make `totalDebt` grow faster than the collateral value, or make `get_virtual_price()` drop after borrowing. The second is hopeless because Pool assets only leave it through `removeLiquidity`, and that function divides both asset types by exactly the ratio `lp/totalSupply`, so the price is unchanged; donating directly only raises the price permanently. So the price must be made falsely high, temporarily, at exactly the moment `borrow()` runs.
 
@@ -24,7 +24,7 @@ uint256 maxDebt = collateralLP[msg.sender] * pool.get_virtual_price() / 1e18;
 
 So all we need is one instant where the virtual price is inflated.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Finding that instant inside `removeLiquidity`.** Here is the bug: burn LP and pay out ETH first, pay out the token afterwards.
 
@@ -64,7 +64,7 @@ vprice 1  totalDebt 82.73809523809524  collateralValue 50  isSolved true
 
 Debt is 1.65 times the collateral value, and the difference cannot be called back because MirrorLend has no repay function in the challenge.
 
-## Flag
+## Result
 ```bash
 CTF_PK=<private key from GET /> node exploit.mjs
 ```

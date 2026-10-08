@@ -8,7 +8,7 @@ Target environment: Ubuntu 24.04, glibc 2.39-0ubuntu8.9.
 
 A border checkpoint asks for your name, echoes the name into the log, answers "Access denied ... Turn back." and drops the connection. Behind the counter the seal is already there, i.e. the grant-access function. The guard will not reach for it on anyone's behalf. Goal: make the service print the flag.
 
-## Initial Analysis
+## Analysis
 
 `triage.cjs` reports:
 
@@ -40,7 +40,7 @@ The break is in `checkpoint`:
 
 `read(0, buf, 0x100)` with a `buf` of only 64 bytes and no canary: a plain stack overflow.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - offset to the return address.** The buffer sits at `[rbp-0x40]` (64 bytes), the saved rbp at `[rbp]` (8 bytes), the return address at `[rbp+8]`. Offset = 64 + 8 = 72 bytes. `read` allows sending up to 256 bytes, so there is more than enough room.
 
@@ -81,7 +81,7 @@ ACCESS GRANTED: H7CTF{b66621cc-c85c-4042-b908-0d3dd36a71e5}
 
 **Step 5 - Verification.** The flag is captured with the regex `H7CTF\{[^}\n]*\}` over the exact bytes read from the socket, then written straight into `flag.txt`.
 
-## Flag
+## Result
 ```
 H7CTF{b66621cc-c85c-4042-b908-0d3dd36a71e5}
 ```

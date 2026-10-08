@@ -4,7 +4,7 @@
 **Materials:** `files/client` (679,960 B, SHA256 `ae308ff5a34c76e60455e5acbd69d7db993cd67fde038d854e114570424d0394`), `files/auth.hh` (2,572 B, SHA256 `556d461e786eca2592521a7812a21f4b9ba9dc4bb9c1aafa61b5de34ab14ba2b`), `files/cmd_auth.hh` (653 B, SHA256 `fe6ac65e7efbc9343065a73a76a634261b04e36e294917f2b55c522bb2f2fda1`)
 **Author:** phlox
 
-## Problem Description
+## Challenge
 
 The handout ships part of a satellite control system's source (`auth.hh`, `cmd_auth.hh`) plus the `client` binary. The card asks for the satellite to be crashed into Earth.
 
@@ -17,7 +17,7 @@ connected. type HELP for commands.
 
 The log implies the split: the simulation server holds the world state (positions, velocities, fuel) and is shared by every connection, while the client holds the session state, including the `authed` flag. Each WebSocket connection spawns a new client process, so everything has to fit in one connection. The client accepts only seven commands: `STATUS`, `AUTHENTICATE`, `THRUST <name> <x> <z>`, `STOP <name>`, `INFO <name>`, `HELP`, `QUIT`.
 
-## Initial Analysis
+## Analysis
 
 Triage (`analysis/triage.txt`): `Type: EXEC`, so no PIE and the text segment is fixed at `0x400000`; `GNU_STACK RW`, so NX is on; RELRO covers only up to `0x40d000` while `.got.plt` runs to `0x40d258` and there is no `BIND_NOW`, so Partial RELRO; the binary carries `debug_info` and is not stripped, so every function in the `sat::client` namespace is readable. Notable imports: `malloc`/`free`, `popen`/`pclose` (the gnuplot path used by `STATUS`), `strtod`, `strncmp`, `dlsym`.
 
@@ -64,7 +64,7 @@ It compares the body snapshot of two consecutive `STATUS` calls. For every body 
 
 `INFO` on the instance: Earth at `(0,0,0)` radius 20 with `mass: 0`, Satellite at `(50,0,0)` radius 5 with `mass: 1` and velocity `(0,0,0)`. A `mass 0` attractor plus constant velocity between commands shows no observed gravitational effect in these measurements; the impact has to be driven.
 
-## Ruled-Out Directions
+## Approaches tried
 
 1. **Guessing the password**: `check_password` only tests `strlen(flag) == strlen(password)` then a full `strncmp`, and the sole feedback is `authenticated` or `authentication failed`, so there is no per-position oracle. Ruled out.
 2. **Turning `dbg` into RCE and reading `/flag.txt`**: libc, heap and stack remain ASLR'd (dynamic linking), NX is on, and no command prints a pointer. The primitive is only `call [chunk+0x18]` with the argument `&session`. Ruled out.
@@ -73,7 +73,7 @@ It compares the body snapshot of two consecutive `STATUS` calls. For every body 
 5. **glibc >= 2.34 aborting on the double free**: the binary requires `__libc_start_main@GLIBC_2.34` and `dlsym@GLIBC_2.34`, and `_int_free` prints `free(): double free detected in tcache 2` since 2.29. Measured on the instance, chunk A is still re-allocated within the same command and nothing aborts. The route works; the precise reason (the `LD_PRELOAD`ed shim.so) was not verified because the box offers no shell to read `/opt/wish/shim.so`.
 6. **Waiting for the world to heal, or issuing a reset command**: `ECHO` returns `unknown command: ECHO (type HELP)`, the dispatch table (0x408d6b) holds only those seven verbs, and the satellite position kept increasing monotonically across five fresh connections (`-39048`, `-45188`, `-52655`, `-197933`). Ruled out; a new instance is required.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Build the 32-byte payload.** Fill `head[24]`, then write the `auth_bypass_dbg` address into `dbg`, little-endian. `memset(password, 0, 64)` already covers the tail.
 
@@ -114,7 +114,7 @@ CONGRATULATIONS: cdctf{W!sh_Up0n_A_Sh0ot1ng_Star_81ab9a33}
 
 A side result measured along the way: the collision deletes the lighter body. After the fly-through in the first connection, `INFO Earth` returned `ERR no such body Earth` and `STATUS` plotted only the circle labelled `Satellite`, leaving the world without a second body and therefore incapable of another collision. Fuel is also gone permanently (`mass` stuck at `0.49999999999999994`, `THRUST` answers `OK` while `velocity` no longer changes). The first instance was spent this way and a new subdomain had to be requested; the final chain ran on the second instance.
 
-## Flag
+## Result
 
 ```bash
 python exploit.py wss://sbrktohj.i.cdctf.net/ws

@@ -5,11 +5,11 @@
 
 ## Đề bài
 
-> "someone put coal in my gem collection :'^(" 
+> "someone put coal in my gem collection :'^("
 
-Thử thách này chỉ cung cấp duy nhất một file `.pptm` (PowerPoint có chứa Macro) mà không đi kèm bất kỳ dịch vụ mạng hay máy chủ (instance) nào. Mục tiêu của người chơi là phải truy tìm bằng được cờ định dạng `sun{...}` bị cất giấu bên trong bộ sưu tập "đá quý" này. Điểm thú vị là trong file trình chiếu có chứa rất nhiều hình ảnh các loại đá quý đan xen với ảnh chế (meme), và chỉ duy nhất một bức ảnh JPEG lạc loài được ngầm ám chỉ là cục "than" (coal) như mô tả của đề bài.
+Thử thách này chỉ cung cấp duy nhất một file `.pptm` (PowerPoint có chứa Macro) mà không đi kèm bất kỳ dịch vụ mạng hay máy chủ (instance) nào. Mục tiêu của người chơi là phải truy tìm bằng được cờ định dạng `sun{...}` bị cất giấu bên trong bộ sưu tập "đá quý" này.  trong file trình chiếu có chứa rất nhiều hình ảnh các loại đá quý đan xen với ảnh chế (meme), và chỉ duy nhất một bức ảnh JPEG lạc loài được ngầm ám chỉ là cục "than" (coal) như mô tả của đề bài.
 
-## Phân tích ban đầu
+## Phân tích
 
 Định dạng `.pptm` (Microsoft PowerPoint 2007 Macro-Enabled Presentation) về bản chất chính là một file nén ZIP chứa các file XML cấu trúc và mã VBA bên trong. Khi giải nén và kiểm tra thủ công, có một vài chi tiết bất thường đáng chú ý:
 
@@ -17,7 +17,7 @@ Thử thách này chỉ cung cấp duy nhất một file `.pptm` (PowerPoint có
 2. File cấu hình `docProps/app.xml` khai báo các thông số: `Slides=5, Notes=0, HiddenSlides=0`, cho thấy không có slide ẩn nào tồn tại.
 3. Trên Slide số 5 có một hộp thoại (textbox) chứa dòng chữ `> mfw olevba oneshot chall`. Đây là một gợi ý rõ ràng từ tác giả hướng người chơi sử dụng công cụ phân tích macro `olevba`.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1: Trích xuất mã macro bằng oletools**
 
@@ -75,7 +75,7 @@ $destination = 'coal.bin'
 
 Quá trình rà soát lại toàn bộ file đã xác nhận đây là chuỗi cờ duy nhất hợp lệ. Mọi phương pháp tiếp cận khác như cố gắng phân tích giấu tin LSB trên các file PNG hay kiểm tra kỹ thuật giấu dữ liệu qua hệ số DCT của file JPEG "than" đều đi vào hướng không cho kết quả và không trả về bất kỳ kết quả nào.
 
-## Flag
+## Kết quả
 ```bash
 python exploit.py files/gem_collection.pptm
 ```

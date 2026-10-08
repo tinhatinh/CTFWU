@@ -11,7 +11,7 @@ Tapedeck is a podcast hosting service. The Studio takes an audio clip and "rende
 the files it hands back."* WebVerse labels the challenge as CMDI. The flag is on the instance, there is
 no artifact to open locally.
 
-## Initial Analysis
+## Analysis
 
 `/studio` lays out the pipeline's three steps plainly:
 
@@ -45,7 +45,7 @@ Baseline: upload a self-generated 2 second WAV, render with `slug=audiogram`:
 {"ok": true, "outputs": [{"file": "audiogram.png", "url": "/m/b9f13764512c81b7/audiogram.png"}], "errors": null}
 ```
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Locating the command splice.** There is no shell, but there is argv:
 
@@ -90,7 +90,7 @@ once. This run's workspace is `0d6a6fc0562fc2eb`, a different workspace from the
 (`b9f13764512c81b7`), and it still yields the same string. The flag is captured by regex over the bytes actually
 received and written into `flag.txt`.
 
-## Flag
+## Result
 ```bash
 python exploit.py https://ced0f13a-5765-splice-5ba63.mystery-challenges.webverselabs-pro.com
 ```

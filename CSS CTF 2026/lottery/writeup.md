@@ -16,7 +16,7 @@ function isSolved() external view returns (bool) {
 
 Launcher có ba thao tác: `1 launch new instance`, `2 kill instance` và `3 get flag`. Khi hoạt động bình thường, thao tác launch trả UUID, RPC endpoint, private key và địa chỉ `Setup`. Ticket là tên đội, có phân biệt chữ hoa và chữ thường.
 
-## Phân tích ban đầu
+## Phân tích
 
 Ba đặc điểm của `Lottery.sol` cho phép giải challenge trong một transaction:
 
@@ -28,7 +28,7 @@ Ba đặc điểm của `Lottery.sol` cho phép giải challenge trong một tra
 
 RPC trả `eth_chainId = 0x1` và block number khoảng `26096389`. Trong instance, Anvil trả `block.difficulty = 0`; lời giải chỉ cần giá trị này nhất quán trong transaction, không cần dự đoán trước.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Viết contract `Attacker`.**
 
@@ -129,7 +129,7 @@ CSS{U5E_4_R4ND0M_FUNCT10N}
 
 Hai lần gọi lúc 15:55:15 và 15:56:03 trả cùng kết quả. Sau đó, thao tác `2` với ticket trả `Instance killed`.
 
-## Flag
+## Kết quả
 
 ```bash
 python exploit.py http://34.116.80.78:8546/17d5c78a-b92e-480c-aa67-4d60eb754b44 "R3:TURИ"
@@ -144,7 +144,7 @@ Ghi đè định dạng: CSSCTF{CSS{U5E_4_R4ND0M_FUNCT10N}}
 ```
 
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py <rpc-endpoint-cua-instance> "<ten doi>"

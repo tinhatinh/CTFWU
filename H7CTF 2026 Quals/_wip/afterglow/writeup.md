@@ -1,39 +1,6 @@
-# <Tên bài> - <thể loại>
+# Afterglow
 
-**Cờ:** `<PREFIX>{...}` · **File cho trước:** `<artifact>`, <kích thước>, sha256 `<hash>`
+## Trạng thái
 
-## Đề bài
-
-<2-4 câu: mục tiêu phải đạt là gì, đề cho những gì, tương tác với cái nào.>
-
-## Phân tích ban đầu
-
-<Kết quả triage: loại file, mitigation/kích thước/entropy, những điểm bất thường đầu tiên.
-Nêu rõ vì sao những điểm đó gợi hướng này.>
-
-## Chuỗi khai thác
-
-**Bước 1 - <việc làm>.** <kỹ thuật + vì sao làm bước này>
-
-```bash
-<lệnh>
-```
-
-**Bước 2 - <việc làm>.** <code hoặc lệnh, kèm output thật>
-
-```python
-<đoạn code quyết định>
-```
-
-**Bước N - Kiểm chứng tính đúng.** <bằng chứng kết quả không phải trùng hợp:
-độ dài chẵn, magic hợp lệ, toàn bộ dữ liệu khớp, v.v.>
-
-## Cờ
-
-```bash
-python solve.py files/<artifact>
-```
-
-```
-<output thật của script, chứa cờ>
-```
+Bản nháp chưa có lời giải hoặc flag được xác minh.
+Dữ liệu đang có và nhật ký nằm trong `de.md` và `notes.md`; không dùng các lệnh template làm bằng chứng.

@@ -9,7 +9,7 @@ Bạn của tác giả định gửi một thông điệp mã hoá PGP nhưng đ
 `voicemail.mp3` dài 660.792 s và `VAT_key` là private key PGP, kèm passphrase
 `Password123!`. Phải dựng lại thông điệp đã được đọc thành tiếng rồi giải mã nó.
 
-## Phân tích ban đầu
+## Phân tích
 
 `ffprobe` báo MPEG layer III v2, 48 kbps, 24 kHz, đơn kênh, `duration=660.792000`, không có ID3
 mang nội dung. Container giống hệt các phần khác của chuỗi VAT; các đặc điểm lời đọc phía dưới gợi ý TTS.
@@ -28,7 +28,7 @@ thiết kế để đọc byte qua kênh giọng nói.
 Suy ra: mỗi từ là một byte, và chỉ số của từ trong danh sách theo đúng parity chính là giá trị
 byte. Chuỗi byte đó là toàn bộ văn bản ASCII armor, kể cả CR, LF và dòng CRC.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **Passphrase đề cho bị sai**: `--export-secret-keys` báo `Bad passphrase` nhưng hai keyID bị
    lỗi không thuộc keyring của bài. Thử ký rồi verify cho `Good signature`.
@@ -42,7 +42,7 @@ byte. Chuỗi byte đó là toàn bộ văn bản ASCII armor, kể cả CR, LF 
 6. **Bỏ audio, tìm ciphertext ở chỗ khác**: `gpg --list-packets VAT_key` chỉ có 5 packet, không
    user attribute, không subpacket comment/URI.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Áp ràng buộc parity bằng Viterbi.** Với mỗi token, trạng thái là parity hiện tại; một từ
 hợp lệ ở đúng danh sách cho điểm 3, từ gần đúng (edit distance nhỏ) cho điểm 1, cho phép gộp hai
@@ -112,7 +112,7 @@ gpg: encrypted with rsa1024 key, ID C87AFF55F4097C91, created 2026-10-03
 [+] plaintext: 'Good work: cdctf{pr3t7y_g00d_piv4cy_fl4G}\n'
 ```
 
-## Flag
+## Kết quả
 
 ```bash
 python exploit.py files/voicemail.mp3
@@ -131,7 +131,7 @@ gpg: encrypted with rsa1024 key, ID C87AFF55F4097C91, created 2026-10-03
 FLAG: cdctf{pr3t7y_g00d_piv4cy_fl4G}
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/voicemail.mp3

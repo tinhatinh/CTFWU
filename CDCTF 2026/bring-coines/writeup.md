@@ -7,19 +7,19 @@
 
 Hat Mouse bán mũ. Program chạy lên hỏi "how many coins you have", nhập đúng thì mở shop, trong shop có một mặt hàng ghi `fLEG!!!`. Cờ dạng `cdctf{fleg}`. Đề chỉ cho một file `.exe` duy nhất, không có source.
 
-## Phân tích ban đầu
+## Phân tích
 
 - `file` báo PE32+ console x86-64, 7 section, 7.28 MB. Dung lượng này không đi kèm code thật: `.text` chỉ `0x2dc00` byte.
 - `strings` có `PyRun_SimpleStringFlags`, `pyi-python-flag`, `python312.dll`, section `.fptable`. Đây là bootloader PyInstaller của CPython 3.12, toàn bộ logic nằm trong CArchive ở cuối file.
 - Imports chỉ KERNEL32/USER32 (heap, console, window mặc định của bootloader). Không có antidebug, không có self-check.
 - Quét chuỗi trên toàn file không ra mẫu `cdctf{...}`: entry bytecode bị zlib nén, nên chuỗi dựng sẵn duy nhất là các message tiếng Anh thường.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **Tìm cờ trong resource hoặc data của PE.** `.rsrc` 0xf000 byte là manifest PyInstaller mặc định, `.data` chỉ `0xe00` byte. Không có payload đáng nghi ngoài CArchive.
 2. **Nhập số xu lớn.** Hai nhánh trong `process_coines()` đều là mồi: `float()` parse được thì in `That's a lotta coines poke. Congrats!` rồi về, không parse được thì in `That's not coines...`. Giá mũ trong menu (2,000 đến 10,000 coins) cũng chỉ là chữ, program không giữ số dư nào.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Tách bytecode của entry script.**
 
@@ -104,13 +104,13 @@ Enjoy!
 
 Cờ in ra khớp từng ký tự với chuỗi dựng từ tuple, và `exploit.py` suy ra cờ chỉ từ artifact nên không phụ thuộc lần chạy này.
 
-## Flag
+## Kết quả
 
 ```text
 cdctf{h4t_M0us3_p0k3_FLAG!}
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/bringcoines.exe

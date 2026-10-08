@@ -10,7 +10,7 @@ SunshineCTF 2026, pwn, 497 points, author Oreomeister. File provided for downloa
 The challenge text is exactly the one line above: no technical hint, no libc named, no reference
 script. Every conclusion below is drawn from the binary itself.
 
-## Initial Analysis
+## Analysis
 
 ```
 Type: EXEC (no PIE), statically linked, stripped, entry 0x401000
@@ -44,7 +44,7 @@ The 108-byte disassembly provides four details used by the exploit:
 3. `read` accepts `0x00`, so the input can contain a binary payload.
 4. `read` returns its byte count in `rax`. Together with a `syscall; ret` gadget, this controls the syscall number for SROP.
 
-## Hypotheses Ruled Out
+## Approaches tried
 
 | # | Hypothesis | Result |
 |---|---|---|
@@ -54,7 +54,7 @@ The 108-byte disassembly provides four details used by the exploit:
 | H8 | Data at `buf+0x300` had not reached memory yet because `read` returned short | HALF RIGHT: a genuine trap that has to be avoided, but not the main cause. |
 | H9 | seccomp blocks `execve` | DEAD: `execve("/no/such/file")` returns a clear error; `execve("/bin/sh")` goes silent because it succeeds. |
 
-## Exploit Chain
+## Solution
 
 ### Step 1 - Pinning down the stack geometry with pure ROP, free of assumptions
 
@@ -126,7 +126,7 @@ by the two `read` calls so it is left empty:
 The whole ladder matches, so the frame is loaded in full. `analysis/probe_syscall_allow.py` then uses
 that same bait mechanism to check which syscalls are allowed.
 
-## Flag
+## Result
 ```
 sun{r3caLl_ev3Ry_reGist3r_sR0p}
 ```

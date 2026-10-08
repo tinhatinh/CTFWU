@@ -6,17 +6,17 @@
 
 Xác định hai repository nguồn của calculator và backdoor.
 
-## Phân tích ban đầu
+## Phân tích
 
 Cả bốn file có cùng SHA-256. Phân tích tĩnh bằng Python 3.12 và GNU objdump; không thực thi mẫu.
 
 Strings chứa `libqalculate`, `qalc`, biến môi trường QALCULATE và URL tài liệu. Backdoor có raw ICMP receiver, parser callback và sửa argv.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 Các kết quả tìm kiếm icmpdoor/icmpsh không đủ để kết luận chỉ từ cùng giao thức. Repository JadedWraith được thử nhưng trả HTTP 404. PRISM có đối chiếu cụ thể ở parser và cách đổi tên.
 
-## Chuỗi khai thác
+## Lời giải
 
 Repository `Qalculate/libqalculate` chứa CLI qalc. `andreafabrizi/prism` có buffer 1024 byte, ICMP_ECHO, parser `%15s %d`, kiểm tra port > 0 và độ dài IP >= 7, fork rồi reverse shell. Code sửa argv bằng strncpy và memset cũng khớp. Bản challenge đổi tên thành wpad và thêm kiểm tra XOR; tên repository dùng trong flag vẫn là libqalculate/prism.
 
@@ -49,7 +49,7 @@ Nguồn đối chiếu:
 - https://github.com/Qalculate/libqalculate/blob/master/man/qalc.1
 - https://github.com/andreafabrizi/prism/blob/master/prism.c
 
-## Flag
+## Kết quả
 
 ```bash
 python exploit.py files/calculator
@@ -59,7 +59,7 @@ python exploit.py files/calculator
 cdctf{libqalculate/prism}
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/calculator

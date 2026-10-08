@@ -2,7 +2,7 @@
 
 **Flag:** `sun{s4fe_l1nk1ng_w0nt_s4ve_y0ur_tc4che}`
 
-## 1. Problem
+## Challenge
 
 `cache_money` is a menu-driven wallet manager; each wallet is a 0x30-byte struct allocated with
 `calloc`, plus a "ledger" allocated with `malloc(size)`:
@@ -18,7 +18,7 @@ fixed). Three primitives, exactly as the hint "the books haven't been audited" s
 - `withdraw(i)` = `write(1, wallets[i]->ledger, wallets[i]->size)` -> reads out of the chunk
 - `open` = `calloc(0x30)` for the struct then `malloc(size)` for the ledger
 
-## 2. Vulnerability
+## Vulnerability
 
 `transfer(src, dst)` frees src's ledger and then assigns that same freed pointer to dst:
 
@@ -33,22 +33,19 @@ fixed). Three primitives, exactly as the hint "the books haven't been audited" s
 This yields a use-after-free on the heap: reading from and writing to a chunk that is sitting in
 the tcache.
 
-## 3. Two allocator details that decided the approach
+## Two allocator details that decided the approach
 
 **(a) `calloc` does not take chunks from the tcache, `malloc` does.**
 On the target's glibc 2.39, after freeing ledger X and then `open`ing a new wallet, the new wallet's
 struct comes from the top chunk, while its ledger is the chunk X popped from the tcache. Verified
 with the program itself: after `transfer(A->C)` and then `open B`, `withdraw(B)` prints the name
 `"B"` (the struct is still intact) but the 48 bytes read back are the content we just wrote into C,
-i.e. `B->ledger == C->ledger`. Since the struct never lands in the freed chunk, the usual "overwrite
+i.e. `B->ledger == C->ledger`. With the tested allocation order and sizes, the struct does not take the freed ledger chunk, the usual "overwrite
 the ledger with a struct" approach is not available.
 
-(b) Safe-linking. The only chunk in the bin has `fd = 0x2eea7` while the heap is at `0x2eea7xxx`,
-exactly matching `stored = ptr ^ (slot >> 12)`. A useful consequence: when the bin is empty, the
-`fd` value you read is itself the mask `heap_base >> 12`, so no separate heap base leak is needed.
-`key` is a per-thread random value, so it cannot be used to leak.
+**(b) Safe-linking.** For a lone bin entry, the null next pointer is encoded as `pos >> 12`, where `pos` is the next field’s address. The leaked `0x2eea7` is that page’s mask; it does not establish the entire heap base or the offset within the page. The chain uses this mask and checks that the next chunk is on the same page. The tcache `key` detects double-free and is not a heap pointer for deriving the base.
 
-## 4. Attack chain
+## Solution
 
 1. `open A(48)`, `open C(48)`, `open F(48)` -> ledgers X, Z, W.
 2. `transfer(A->C)` -> X into the tcache, `C->ledger = X`. `withdraw(C)` reads `fd` => mask.
@@ -77,7 +74,7 @@ exactly matching `stored = ptr ^ (slot >> 12)`. A useful consequence: when the b
 No ROP needed: there is no `system` in the PLT, but Partial RELRO allows writing the GOT, and the
 `rdi` argument of `free()` is precisely the ledger pointer whose contents we control.
 
-## 5. Quick debugging on a Windows host
+## Quick debugging on a Windows host
 
 No pwntools and no gdb for the Linux ELF, so everything was `objdump` + raw sockets. The two
 mistakes that cost the most time were both on the client side:

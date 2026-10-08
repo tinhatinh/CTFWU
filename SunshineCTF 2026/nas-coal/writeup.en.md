@@ -9,7 +9,7 @@ instance. The task is to find the `sun{...}` flag hidden inside the "gem" collec
 
 The challenge description hints at finding a piece of "coal" inside a collection of valuable items (gems, memes).
 
-## Initial Analysis
+## Analysis
 
 The file is a `Microsoft PowerPoint 2007+` (`.pptm`) file, structurally a ZIP archive containing XML and VBA code.
 
@@ -19,7 +19,7 @@ Notable anomalies:
 2. `docProps/app.xml` declares `Slides=5, Notes=0, HiddenSlides=0`, indicating no hidden slides.
 3. Slide 5 has a textbox with the text `> mfw olevba oneshot chall`. This is a direct hint to use the `olevba` tool.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Extracting the macro with oletools.** Run `olevba` to inspect the `ppt/vbaProject.bin` OLE compound file and extract the `MediaCache` module:
 
@@ -66,7 +66,7 @@ $destination = 'coal.bin'
 
 A comprehensive sweep of the file (including LSB steganography and DCT analysis on the images) confirms that this is the only valid flag hidden within the archive.
 
-## Flag
+## Result
 ```bash
 python exploit.py files/gem_collection.pptm
 ```

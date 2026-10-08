@@ -1,6 +1,6 @@
 # Countersign - Rev (Insane)
 
-**Flag:** `H7CTF{011c87d4-b5c8-405d-923a-33dbed3e5bf7}` 
+**Flag:** `H7CTF{011c87d4-b5c8-405d-923a-33dbed3e5bf7}`
 **Files:** `countersign.zip` (File ELF x86-64 PIE, binary đã loại bỏ thông tin gỡ lỗi - stripped, kích thước 22 KB) + `note.txt`
 **Dịch vụ:** `nc pwn.h7tex.com 43708`
 
@@ -19,7 +19,7 @@ RUN <hex>      Cung cấp đầu vào dài 24 byte cho lõi xử lý (core) và 
 
 Đáng chú ý, tài nguyên chữ ký được khởi tạo ngẫu nhiên "cho mỗi instance" - tức là thay đổi theo **từng phiên kết nối (connection)**. Yêu cầu của bài toán là tìm 24 byte dữ liệu đầu vào chính xác để chương trình đi qua toàn bộ đồ thị kiểm tra và trả về cờ.
 
-## Phân tích ban đầu
+## Phân tích
 
 Quá trình phân tích thực hiện thông qua công cụ `objdump -d`, `readelf` và các script hỗ trợ (như `fd.py`, `records.py`). Binary có dung lượng nhỏ, không bao gồm mã cản trở (anti-debug) hoặc tự sửa đổi (self-modifying code). Thử thách chủ yếu đến từ việc mã nguồn đã bị loại bỏ thông tin gỡ lỗi, yêu cầu suy luận kiến trúc hệ thống từ mã assembly.
 
@@ -95,7 +95,7 @@ for (i = 0; i < rec->k; i++) {
 return rec->dflt;                       // Trả về mặc định nếu không khớp
 ```
 
-Tại mỗi bước, trạng thái đầu vào xác định 1 bit quyết định chọn nhánh (edge). Bất kỳ nhánh nào mang chữ ký không hợp lệ (forged signature) sẽ bị loại bỏ, dù giá trị `sel` khớp. 
+Tại mỗi bước, trạng thái đầu vào xác định 1 bit quyết định chọn nhánh (edge). Bất kỳ nhánh nào mang chữ ký không hợp lệ (forged signature) sẽ bị loại bỏ, dù giá trị `sel` khớp.
 
 ### Cấu trúc dữ liệu bản ghi (Record Layout)
 
@@ -118,18 +118,18 @@ Sau quá trình khởi động, hệ thống tạo ra 40 bản ghi với 129 nh�
 * **Bản ghi đích (Win Record):** Payload `0d 0e 0f` (GETFLAG, PRINT, HALT). Lệnh PRINT cập nhật `printflag`, kích hoạt việc trả về cờ trước khi lệnh HALT được xử lý.
 * **Bản ghi loại bỏ (Deny sink):** Payload `0f` (HALT). Trừ bản ghi đích, các đường dẫn mặc định (`dflt`) khác đều trỏ tới bản ghi này.
 
-## Quá trình khai thác
+## Lời giải
 
-**Bước 1 - Phân tích hạn chế tiếp cận tuần tự (Forward Path).** 
+**Bước 1 - Phân tích hạn chế tiếp cận tuần tự (Forward Path).**
 Các nhánh phụ thuộc vào đầu vào 192 bit. Lệnh `RUN` chỉ thông báo "denied" khi thất bại mà không cung cấp dữ liệu trung gian, do đó không thể dò tìm tuyến tính.
 
-**Bước 2 - Phân tích luồng ngược (Backward tracing).** 
-Trạng thái thanh ghi tại bản ghi Fold cần đạt giá trị đích `(C0..C5)`. Các hằng số này có thể trích xuất từ tải trọng của bản ghi (các lệnh `XORI r7, imm`). 
+**Bước 2 - Phân tích luồng ngược (Backward tracing).**
+Trạng thái thanh ghi tại bản ghi Fold cần đạt giá trị đích `(C0..C5)`. Các hằng số này có thể trích xuất từ tải trọng của bản ghi (các lệnh `XORI r7, imm`).
 Các bản ghi trung gian (12 byte, 30 byte) có khả năng đảo ngược chức năng (invertible): Lệnh `ADD` đảo thành `-`, `XOR`/`XORI` tự đảo, `ROL` đảo thành `ROR`, `ADDI` đảo thành `-`. Bằng cách tính ngược từ bản ghi Fold qua các mốc trung gian về điểm khởi đầu (Entry Record), ta sẽ thu được chuỗi 24 byte đầu vào gốc: `input = pack('<I', r0..r5)`.
 
 Tại mỗi bước tính ngược, cần xác nhận bằng một phép thử tuần tự để đảm bảo nhánh xử lý hiện tại tuân theo thuật toán của `emit`. Cơ chế ưu tiên `first_match` của hàm này giúp nhanh chóng loại bỏ các giả thuyết không hợp lệ. Quá trình tính ngược bắt đầu từ vị trí Fold, không tính toán xuyên qua nó do Fold sử dụng các hàm loại bỏ dữ liệu.
 
-**Bước 3 - Xác thực nhánh bằng lệnh `MINT`.** 
+**Bước 3 - Xác thực nhánh bằng lệnh `MINT`.**
 Mã khóa để xác thực nhánh thay đổi theo kết nối. Do đó, cần kiểm tra tính hợp lệ của từng chữ ký trên nhánh bằng lệnh `MINT`. Cấu trúc gói tin MINT xác thực:
 
 ```text
@@ -138,7 +138,7 @@ MINT( tag(u16) || target(u16) || sel(u8) || tweak(u32) ) cắt lấy 6 byte đ�
 
 Trong 129 nhánh, chỉ có 51 nhánh là hợp lệ. Việc `emit` từ chối các nhánh chữ ký lỗi (forged) là yếu tố quyết định. Tại mốc Fold, nhánh thông thường (luôn khớp điều kiện) có chữ ký lỗi sẽ bị loại, buộc tiến trình chọn nhánh thứ hai, dẫn trực tiếp đến cờ.
 
-**Bước 4 - Khai thác tổng hợp (Single-Connection Stream).** 
+**Bước 4 - Khai thác tổng hợp (Single-Connection Stream).**
 Toàn bộ chuỗi lệnh khai thác phải chạy trên một kết nối duy nhất để bảo toàn mã khóa:
 
 ```text
@@ -147,10 +147,10 @@ Kết_nối -> Gửi lệnh GET -> Chạy 129 lệnh MINT (dán nhãn đường 
 
 Với độ trễ ~13.5 giây để gửi 129 lệnh MINT, tổng thời gian khai thác dưới 20 giây.
 
-**Bước 5 - Trích xuất cờ.** 
+**Bước 5 - Trích xuất cờ.**
 Sử dụng công cụ Python mô phỏng máy ảo VM (`analysis/core.py`) để chạy bộ dữ liệu input, kết quả `(win, 52312, 26)` phản ánh chính xác hành vi máy chủ. Quá trình khai thác trả về cờ thành công.
 
-## Flag
+## Kết quả
 ```bash
 python solve_live.py
 ```

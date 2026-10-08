@@ -8,7 +8,7 @@
 "ping... ping... there's something out there... I sure hope Command didn't reuse the CTR Nonce".
 Ta có một shell trên máy relay và phải tìm xem gì đang nói chuyện trên mạng, chúng nói gì.
 
-## Phân tích ban đầu
+## Phân tích
 
 Máy relay đóng vai trò **router** giữa hai container trong chính mạng docker của instance:
 
@@ -41,7 +41,7 @@ REP mang counter riêng của vệ tinh (đơn điệu theo thời gian), không
 
 Các gói đã capture sử dụng lại keystream 8 byte. Có thể khôi phục keystream từ known plaintext rồi dùng nó để giải mã các message khác.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **Đào traffic ttyd trên cổng 7681.** `grep -aoE '[ -~]{12,}' /tmp/all.pcap | sort -u` chỉ trả về
    bundle tĩnh của xterm.js/zmodem/trzsz và `GET / Host: 127.0.0.1:7681`. Không có I/O thiết bị đầu cuối
@@ -59,7 +59,7 @@ Các gói đã capture sử dụng lại keystream 8 byte. Có thể khôi phụ
 5. **Giả thuyết "kênh truyền làm mất bit 5" là một phép XOR cố định.** Sai: vị trí mất bit 5 không tuần
    hoàn theo chu kỳ 8 hay 16 của keystream, nên nó là nhiễu trên **plaintext**, không phải lỗi khoá.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Khoá 8 byte, lấy từ plaintext đã biết.** Mọi REQ mở đầu bằng `status\x00session\x1d`
 (15 byte), nên một gói là đủ:
@@ -139,13 +139,13 @@ một cách ngẫu nhiên, và cờ thật là `W3_@rE_n0T_AL0n3_OuT_h3r3?`. Cá
 `analysis/twopad.py` + vòng lấy mẫu trong `exploit.py`) là xin **nhiều bản downlink** rồi theo từng vị trí
 lấy OR bit 5: nếu bất kỳ mẫu nào có bit 5 bật thì ký tự gốc có bit 5 bật; nếu mọi mẫu đều tắt, chưa thể chắc chắn bit gốc là 0 vì số mẫu hữu hạn. Có thể lấy thêm mẫu và kiểm tra chuỗi thu được bằng submission.
 
-## Cờ
+## Kết quả
 
 ```text
 cdctf{W3_@rE_n0T_AL0n3_OuT_h3r3?_5d68a0e7}
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 # 1) trên máy relay: chụp một REQ sống, rồi chụp riêng mọi phản hồi gửi về máy mình

@@ -17,7 +17,7 @@ the API behind it.
 
 You get a 12.5 KB APK and an HTTP instance. Four independent objectives; no flag is needed to get another one.
 
-## Initial Analysis
+## Analysis
 
 The APK is unusually small. Opened up it holds only `AndroidManifest.xml`, a 13776 B `classes.dex`, an 1100 B
 `resources.arsc`, one layout and `META-INF/`. No lib, no asset. A D8 build with `compilation-mode=debug`,
@@ -39,7 +39,7 @@ Decompiling with androguard to read function bodies reveals the three places the
 So the direction is to call the API exactly the way the app does, then pry open the two places where the server trusts
 the client too much: the self-declared header, and the body of `PATCH /api/v1/profile`.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Request a bearer with the app's own header.** `POST /api/v1/auth/device` without the header is refused by
 the server:
@@ -107,7 +107,7 @@ token, then read the three endpoints. All three flags came out exactly as above.
 seven values during that sweep, so the profile has been modified; the three endpoints still returned only those three
 flags, nothing more.
 
-## Flag
+## Result
 ```bash
 python exploit.py https://web-3f25599ac74e8a91.web.h7tex.com
 ```

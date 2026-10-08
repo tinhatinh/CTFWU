@@ -18,7 +18,7 @@ from urllib.parse import parse_qs, urlsplit
 import urllib.request
 import urllib.error
 
-from build_site import SKIP_TOP, slugify
+from build_site import SKIP_TOP, slugify, case_directories, challenge_key
 
 ROOT = Path(__file__).resolve().parent.parent
 MAX_CONTENT = 2 * 1024 * 1024
@@ -66,13 +66,12 @@ class EditorStore:
         for event in self.root.iterdir():
             if not event.is_dir() or event.name in SKIP_TOP or event.name.startswith((".", "_")):
                 continue
-            for case in event.iterdir():
-                if not case.is_dir() or case.name.startswith((".", "_")):
-                    continue
+            for relative_case in case_directories(str(event)):
+                case = event / relative_case
                 for lang, name in [("vi", "writeup.md"), ("en", "writeup.en.md")]:
                     path = case / name
                     if path.is_file() and path.resolve().is_relative_to(self.root):
-                        key = (slugify(event.name) + "-" + slugify(case.name), lang)
+                        key = (challenge_key(event.name, relative_case), lang)
                         if key in self.files:
                             raise ValueError("Duplicate challenge key: " + key[0])
                         self.files[key] = path

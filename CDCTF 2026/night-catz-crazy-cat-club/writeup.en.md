@@ -10,7 +10,7 @@ A console authenticator asks `When are you at your happiest?: ` and only lets yo
 answer is exact. The challenge ships a single binary and no network address; the flag is the answer
 itself, in the form `cdctf{secret cat phrase}`.
 
-## Initial analysis
+## Analysis
 
 `cat_club_authenticator.out` is an x86-64 ELF statically linked against glibc, symbols intact. The
 only application symbol is `main` at `0x403035`, and the next defined function is `call_fini` at
@@ -38,7 +38,7 @@ Before the loop, the code applies a length constraint:
 40330e: mov    DWORD PTR [rbp-0x14c],0x0   ; wrong length -> valid flag = 0
 ```
 
-## Ruled out
+## Approaches tried
 
 Before settling on this reading, the following channels were tested and dropped (full log in `notes.md`):
 
@@ -49,7 +49,7 @@ Before settling on this reading, the following channels were tested and dropped 
 3. **`handle_zhaoxin` at `0x403430`**: it runs `cpuid` leaf 4 and walks cache descriptors with a modulo
    3 division. It is glibc CPU init code and `main` never calls it. Dropped.
 
-## Exploit chain
+## Solution
 
 **Step 1 - Read the comparison loop.** The whole check lives here; `A[i]` is slot `[rbp-0x140+4i]` and
 `input` is the `fgets` buffer at `[rbp-0x80]`:
@@ -121,7 +121,7 @@ When are you at your happiest?: INVALID. You are NOT a cat. You are NOT welcome 
 The binary never prints a flag; the submitted value is the answer itself, wrapped in `cdctf{...}` as
 the challenge statement requires.
 
-## Flag
+## Result
 
 ```bash
 python exploit.py files/cat_club_authenticator.out

@@ -14,7 +14,7 @@ and the groundhog has declined to comment.
 Their public console is up. Have a look at where it gets its numbers.
 ```
 
-## Initial Analysis
+## Analysis
 
 The main page has only one form, and the form is commented out in HTML. The comment acts as a blueprint of the system:
 
@@ -52,7 +52,7 @@ The target loop is `/report`: the POST body is rendered by wkhtmltopdf 0.12.5, a
 
 The container cannot reach the outside: a custom DNS station was set up to test this (the page could be read from the station locally, but the console reported `bytes=0`); the cause was differentiated as DNS resolution succeeding but TCP connection failing. None of the `gopher://` payloads in the dictionary worked, so this route was closed at the client identification stage.
 
-## Approaches Ruled Out
+## Approaches tried
 
 | # | Hypothesis | Result |
 |---|---|---|
@@ -63,7 +63,7 @@ The container cannot reach the outside: a custom DNS station was set up to test 
 | H10 | Mock metadata contains the flag | DEAD; smuggling the header allows reading the entire `/computeMetadata/v1/` tree, but it only contains standard GCP data |
 | H14 | `<iframe src="file://...">` renders file content | DEAD; the file is actually fetched but Qt does not draw the text of the subframe, yielding 0 text operators in the PDF |
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Read the application's own error messages to identify the client.** The error page prints exceptions into `<p class="fault">...</p>`. Scanning 18 error classes:
 
@@ -127,7 +127,7 @@ Returns `OK:d89c16037bd5`, which is exactly the content of the container's `/etc
 
 **Step 6 - Locate the flag file.** `/ctf/flag.txt` (the default path for pwn challenges from this series) and `/flag`, `/app/flag.txt`, `/opt/flag.txt` all yield `ContentNotFoundError`. `/flag.txt` returns the flag.
 
-## Flag
+## Result
 ```
 sun{s1x_m0r3_w33ks_0f_g0ph3r_ssrf}
 ```

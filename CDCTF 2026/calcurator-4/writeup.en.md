@@ -6,17 +6,17 @@
 
 Identify the two source repositories merged into the binary.
 
-## Initial analysis
+## Analysis
 
 All four inputs share the same SHA-256. Analysis used Python 3.12 and GNU objdump without executing the sample.
 
 The binary contains libqalculate, qalc, QALCULATE environment names, and documentation URLs. The backdoor implements raw ICMP reception, callback parsing, and argv rewriting.
 
-## Discarded approaches
+## Approaches tried
 
 Search hits for icmpdoor/icmpsh did not establish a match merely by protocol. The attempted JadedWraith repository returned HTTP 404. PRISM provides concrete parser and process-renaming matches.
 
-## Solution chain
+## Solution
 
 Qalculate/libqalculate contains the qalc CLI. andreafabrizi/prism matches the 1024-byte buffer, ICMP_ECHO check, `%15s %d` callback parser, positive-port and address-length checks, fork, and reverse shell. Its strncpy/memset argv rewriting also matches. The challenge changes the label to wpad and adds XOR checking; repository names remain libqalculate/prism.
 
@@ -49,7 +49,7 @@ Source references:
 - https://github.com/Qalculate/libqalculate/blob/master/man/qalc.1
 - https://github.com/andreafabrizi/prism/blob/master/prism.c
 
-## Flag
+## Result
 
 ```bash
 python exploit.py files/calculator

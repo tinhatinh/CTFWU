@@ -10,7 +10,7 @@
 
 Đề bài chỉ cung cấp duy nhất một câu hỏi gợi mở như trên: không có bất kỳ gợi ý (hint) kỹ thuật nào, không đính kèm thư viện `libc`, và cũng không có script tham khảo. Toàn bộ các kết luận khai thác dưới đây đều được đúc kết hoàn toàn từ quá trình dịch ngược trực tiếp binary.
 
-## Phân tích ban đầu
+## Phân tích
 
 Kiểm tra thông số cơ bản của binary:
 ```text
@@ -42,13 +42,13 @@ Disassembly 108 byte cho các thông tin dùng trong exploit:
 
 
 
-## Chuỗi khai thác
+## Lời giải
 
 ### Bước 1 - Đo đạc hình học stack (Stack Geometry) bằng ROP
 
 Việc xác định `RET_OFF = 0x80` và điểm kết thúc lệnh `ret` của `f2` bỏ lại `rsp = buf+0x88` được chứng minh thông qua một chuỗi thực thi nhỏ chỉ sử dụng hai gadget sẵn có (`analysis/probe_exec.py`, `analysis/walk_leak.py`).
 
-Tuy nhiên, do mọi điểm rò rỉ đều đi qua lệnh `push rsp`, sai số 8 byte của bộ đệm không thể bị phát hiện nếu chỉ nhìn vào dữ liệu rò rỉ. Phép đo hơn được sử dụng ở đây (`analysis/measure_rsp.py`): đặt vào mỗi ô của khung (frame) một sentinel dạng `buf+0x300+j`, sau đó điều hướng sigframe nhảy ngược về `0x401000`. Khi chương trình khởi động lại, nó sẽ làm lộ ra `rsp - 16`, và con số thu về khớp chính xác với ô `0xA0`. Suy ngược logic, ta xác nhận được độ lệch `delta` phải là **`buf = L - 0x80`**.
+Tuy nhiên, do mọi điểm rò rỉ đều đi qua lệnh `push rsp`, sai số 8 byte của bộ đệm không thể bị phát hiện nếu chỉ nhìn vào dữ liệu rò rỉ. Phép đo bổ sung được dùng ở đây (`analysis/measure_rsp.py`): đặt vào mỗi ô của khung (frame) một sentinel dạng `buf+0x300+j`, sau đó điều hướng sigframe nhảy ngược về `0x401000`. Khi chương trình khởi động lại, nó sẽ làm lộ ra `rsp - 16`, và con số thu về khớp chính xác với ô `0xA0`. Suy ngược logic, ta xác nhận được độ lệch `delta` phải là **`buf = L - 0x80`**.
 
 Ngoài ra còn một cách kiểm chứng độc lập khác không cần đến sigreturn: gadget tại `0x401032` nuốt input đầu vào và tự động đẩy `rsp` lên 8 byte sau mỗi vòng. Nếu gọi vòng lặp này `k` lần rồi phi thẳng vào `0x401017`, ta sẽ làm rò rỉ chính xác vị trí `buf+0x88+8k`. Cả năm giá trị thử nghiệm đều khớp với thực tế.
 
@@ -97,14 +97,14 @@ Script `analysis/probe_args.py` đóng vai trò nhảy can thiệp vào giữa c
 ```
 Các phép đọc lại cho kết quả khớp frame đã gửi. Sau đó, `analysis/probe_syscall_allow.py` dùng cùng primitive để kiểm tra các syscall được phép trước khi gửi payload lấy flag.
 
-## Flag
+## Kết quả
 ```
 sun{r3caLl_ev3Ry_reGist3r_sR0p}
 ```
 
 Cờ được giấu tại đường dẫn `/ctf/flag.txt` (dài 32 byte, phân quyền nhóm `root:total_recall`, chế độ cấp phép `-rw-r-----`). Luồng shell ta cướp được chạy dưới đặc quyền cho phép đọc trực tiếp file này.
 
-## Phục dựng (Reproduce)
+## Tái hiện
 
 ```bash
 python exploit.py                              # Chạy mặc định: cat /ctf/flag.txt + ls -la /ctf /home

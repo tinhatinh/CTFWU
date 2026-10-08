@@ -9,7 +9,7 @@ Vào lúc 03:14 rạng sáng, hệ thống máy chủ của bệnh viện bị t
 Gợi ý đề bài chỉ ra rằng: khóa giải mã (decryption key) có thể chưa bị hủy bỏ và vẫn tồn tại trong bộ nhớ RAM của tiến trình ransomware.
 Mục tiêu là khôi phục file hồ sơ bệnh án: `Q3_patient_records.pdf.locked`.
 
-## Phân tích ban đầu
+## Phân tích
 
 Đề bài cung cấp hai file:
 
@@ -32,17 +32,17 @@ Các vùng nhớ trong header LiME:
 
 Việc phân tích bản sao RAM được thực hiện bằng bộ công cụ tùy chỉnh (parser) thay vì công cụ như `volatility3`.
 
-## Quá trình khai thác
+## Lời giải
 
 **Bước 1 - Phân tích cấu trúc file `.locked`.**
 File có dung lượng 672 byte. Dựa trên đặc trưng của thuật toán mã hóa CBC kết hợp cơ chế lấp đầy PKCS#7 (yêu cầu dữ liệu theo bội số của 16), phân tách cấu trúc file: `Vector khởi tạo (IV) = file[:16] = 866f319940024339a78be5b443ed8289`, và `Văn bản mã hoá (C) = file[16:]` (có kích thước 656 byte). Lập luận này tương ứng với lệnh ghi file `f.write(iv + ct)` tìm thấy trong bộ nhớ RAM.
 
-**Bước 2 - Khôi phục Bản rõ gốc (Known-Plaintext).** 
+**Bước 2 - Khôi phục Bản rõ gốc (Known-Plaintext).**
 Mẫu PDF carve được từ page cache trong RAM có 16 byte đầu `%PDF-1.4\n1 0 obj`. Dùng header của mẫu này làm known plaintext; đây không phải header bắt buộc của mọi PDF.
 Bằng kỹ thuật carving, nội dung chưa mã hóa của file PDF được xác định trong vùng đệm trang nhớ (page cache) của RAM tại địa chỉ `0x10b021a90`. File chưa hoàn chỉnh do đặc tính phân bổ bộ nhớ không liên tục của RAM.
 Kích thước phần văn bản gốc (Plaintext) ước tính là: `656 byte (mã hóa) - khối_đệm pad(9) = 647 byte`.
 
-**Bước 3 - Xây dựng cơ chế xác thực khối (One-block Oracle).** 
+**Bước 3 - Xây dựng cơ chế xác thực khối (One-block Oracle).**
 Tính chất chế độ hoạt động CBC: `Khối rõ (P1) = Khối giải mã ECB của (C1) XOR với IV`. Cơ chế này cho phép thiết lập hệ thống kiểm tra nhanh: với bất kỳ chuỗi 32 byte nghi ngờ `K` tìm thấy trong RAM, chỉ cần tính toán giải mã ECB một lần:
 
 ```text
@@ -51,7 +51,7 @@ D_K(C1) == P1 XOR IV      <=>      Nếu điều kiện thỏa mãn, K là khóa
 
 Tham số so sánh: `P1 XOR IV = a33f75df6d336d0dadbac5846382e0e3` (với `C1 = 184d651fa87011ae7437a09a92e186fa`).
 
-**Bước 4 - Dò tìm khóa theo cơ chế phân bổ bộ nhớ.** 
+**Bước 4 - Dò tìm khóa theo cơ chế phân bổ bộ nhớ.**
 Mã độc gọi các hàm `os.urandom(32)` và `os.urandom(16)` liên tiếp, làm cho khóa K và biến IV được cấp phát cạnh nhau trên heap. Chuỗi IV đã biết được sử dụng để định vị trên RAM (tìm thấy tại 9 vị trí). Tại mỗi mốc, tìm kiếm khóa bí mật trong bán kính 8 KB (brute-force).
 Kết quả trả về:
 
@@ -62,8 +62,8 @@ Khóa (key) tìm được = 21c0780db69f7eabeb3b8dafb1810b9611916c6becdaf0b2b318
 
 Khóa được xác định sau khoảng 6.129 lần lặp (~3 giây). Phép thử này sử dụng bản rõ làm mốc so sánh trực tiếp, mang lại độ chính xác cao.
 
-**Bước 5 - Thực thi giải mã và kiểm tra.** 
-Áp dụng AES-256-CBC cùng (key, IV) để giải mã khối 656 byte. Giá trị byte cuối cùng là `0x09` và đoạn đệm `pt[-9:]` tuân thủ đúng định dạng đệm PKCS#7 (`9*0x09`), xác thực mã khóa là chính xác. 
+**Bước 5 - Thực thi giải mã và kiểm tra.**
+Áp dụng AES-256-CBC cùng (key, IV) để giải mã khối 656 byte. Giá trị byte cuối cùng là `0x09` và đoạn đệm `pt[-9:]` tuân thủ đúng định dạng đệm PKCS#7 (`9*0x09`), xác thực mã khóa là chính xác.
 Sau khi loại bỏ 9 byte đệm, 647 byte dữ liệu hiển thị cấu trúc PDF nguyên vẹn (`xref`, `trailer`, `startxref 465`, và `%%EOF`). Cấu trúc hợp lệ này là bằng chứng rõ ràng cho kết quả giải mã đúng.
 
 Trích xuất nội dung từ file PDF:
@@ -72,10 +72,10 @@ Trích xuất nội dung từ file PDF:
 BT /F1 12 Tf 72 720 Td (CONFIDENTIAL patient record. Recovery token: H7CTF{bf3a8e98115450c654b4}) Tj ET
 ```
 
-**Bước 6 - Xác minh phụ trợ.** 
+**Bước 6 - Xác minh phụ trợ.**
 Nội dung `H7CTF{bf3a8e98115450c654b4}` cũng được phát hiện tại hai vị trí khác trong bộ nhớ RAM: trong dòng dữ liệu PDF thuộc page cache và trong biến môi trường `FLAG='...'` (cấu hình kỹ thuật của hệ thống sinh đề). Các nguồn độc lập này xác nhận kết quả là chính xác.
 
-## Flag
+## Kết quả
 ```bash
 python exploit.py _scratch/memory.raw files/Q3_patient_records.pdf.locked
 ```

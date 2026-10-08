@@ -10,7 +10,7 @@ adlee7 ships a single ciphertext file and a Tom & Jerry hint, the cat-and-mouse 
 `cdctf{plaintextgoeshere}`, so the decoded output has to be a lowercase letter string
 with no spaces.
 
-## Initial Analysis
+## Analysis
 
 ```text
 //\ /\// /\\\ /\ \/// //// \/\ /\\ /\\\ //\/ /\\\ \/\ / \\\/ /\/ \\/\ \\\/ /\\\ \\/ /\ /// /\\ /\ /\ \/\ /\
@@ -27,7 +27,7 @@ with no spaces.
 - That whole-shape repetition is the signature of a one-to-one substitution alphabet
   (shape = letter), not of a positional bit code.
 
-## Directions Tried and Ruled Out
+## Approaches tried
 
 Numbers quoted here are reproduced by `python analysis/triage.py` (log kept in
 `analysis/triage.txt`).
@@ -49,7 +49,7 @@ Numbers quoted here are reproduced by `python analysis/triage.py` (log kept in
    gives `1e 18 78 e1 e1 de 3c 3c 63 98` (4 of 10 bytes printable), or
    `e1 e7 87 1e 1e 21 c3 c3 9c 67` with the first bit inverted (2 of 10). Rejected.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Recognise the Tom-Tom alphabet.** Two symbols split into variable-length
 groups separated by spaces is the structure of a two-symbol substitution alphabet.
@@ -84,7 +84,7 @@ Verification checks: all 26 groups resolve through a 1-to-1 table; the
 re-encode matches all 107 bytes of the file; and the 26 letters read as the English
 sentence "Friendship is a lot like cheese", which is the direction the hint points to.
 
-## Flag
+## Result
 
 ```text
 cdctf{friendshipisalotlikecheese}

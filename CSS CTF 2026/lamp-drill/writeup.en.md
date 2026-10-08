@@ -3,11 +3,11 @@
 **Flag:** `CSSCTF{css}`
 **Resources:** `lampDrill.svg` (Size: 54,671 B, SHA256: `4a11f4a884aab46c...`) and its raster graphics version `lampDrill.png` (2624x1472).
 
-## Problem Description
+## Challenge
 
 The challenge provides `lampDrill.svg` and `lampDrill.png` with the hint "Warm-up. No spaces.". The top row defines an operation on two bulbs, and the three rows below contain the data to decode into `CSSCTF{...}`.
 
-## Initial Analysis
+## Analysis
 
 The states can be read directly from the image: a filled bulb is 1 and an empty bulb is 0. For a scripted reproduction, read the SVG `<path>` elements and their `fill` values. Grouping by diameter gives:
 
@@ -28,7 +28,7 @@ The top row outputs 1 only when both inputs are 1, which is the AND operation:
 
 The matrix area below consists of 3 sequences, each comprising 8 cells sequentially linked via directional arrows. Each cell contains exactly two light bulbs (2 input bits).
 
-## Exploitation Chain
+## Solution
 
 **Step 1 - Read the bulb states.**
 The script reads the bounding boxes of the `<path>` elements, keeps objects with diameters from 22 to 24, and maps their `fill` values to bits. This reproduces the states visible in the image.
@@ -54,10 +54,10 @@ Sequence 2: bits=01110011 -> Hex: 0x73, ASCII: 's'
 Sequence 3: bits=01110011 -> Hex: 0x73, ASCII: 's'
 ```
 
-**Step 4 - Validate integrity (Verification).** 
+**Step 4 - Validate integrity (Verification).**
 Check the counts: 12 bulbs in the rule row and 48 in the data rows, with two bulbs per cell. The last two rows differ at the first cell (`.#` versus `..`), but AND produces 0 in both cases, so both decode to `s`. The three decoded bytes are `css`.
 
-## Flag
+## Result
 
 Run the script:
 

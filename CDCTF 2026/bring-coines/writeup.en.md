@@ -3,23 +3,23 @@
 **Flag:** `cdctf{h4t_M0us3_p0k3_FLAG!}`
 **Files:** `bringcoines.exe`, 7284057 bytes, sha256 `576db2ac5c6657189ea446c594092c7b7d0ad5d84f3246b1165d2a372b39c3c6`
 
-## Problem
+## Challenge
 
 Hat Mouse sells hats. The program asks "how many coins you have", a correct answer opens the shop, and one menu item is labelled `fLEG!!!`. Flag format `cdctf{fleg}`. The challenge ships a single `.exe`, no source.
 
-## Initial analysis
+## Analysis
 
 - `file` reports PE32+ console x86-64, 7 sections, 7.28 MB, but `.text` is only `0x2dc00` bytes, so the size does not come from real code.
 - `strings` shows `PyRun_SimpleStringFlags`, `pyi-python-flag`, `python312.dll` and a `.fptable` section. That is a PyInstaller bootloader for CPython 3.12; the actual logic lives in the CArchive at the end of the file.
 - Imports are only KERNEL32/USER32 (heap, console and window calls the bootloader needs). No anti-debug, no self-check.
 - Scanning strings across the whole file finds no `cdctf{...}` pattern: the bytecode entry is zlib-compressed, so the only readable literals are the ordinary English messages.
 
-## Excluded directions
+## Approaches tried
 
 1. **Flag inside a PE resource or data section.** `.rsrc` (0xf000 bytes) is the default PyInstaller manifest and `.data` is 0xe00 bytes. Nothing suspicious outside the CArchive.
 2. **Entering a large coin amount.** Both branches of `process_coines()` are decoys: a value that `float()` accepts prints `That's a lotta coines poke. Congrats!` and returns, anything else prints `That's not coines...`. The prices in the menu (2,000 to 10,000 coins) are decoration, the program tracks no balance.
 
-## Exploitation chain
+## Solution
 
 **Step 1 - Pull the entry script bytecode out of the CArchive.**
 
@@ -104,7 +104,7 @@ Enjoy!
 
 The printed flag matches the string assembled from the tuple character by character, and `exploit.py` derives it from the artifact alone, so the result does not depend on this particular run.
 
-## Flag
+## Result
 
 ```text
 cdctf{h4t_M0us3_p0k3_FLAG!}

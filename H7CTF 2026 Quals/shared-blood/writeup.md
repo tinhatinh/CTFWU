@@ -5,10 +5,10 @@
 
 ## Đề bài
 
-Hệ thống camera VoltEye phát hành loạt thiết bị có cấu trúc bảo mật thấp, các thiết bị này được cấu hình đồng bộ. Mục tiêu là cần truy cập vào bảng điều khiển (console) của thiết bị. 
+Hệ thống camera VoltEye phát hành loạt thiết bị có cấu trúc bảo mật thấp, các thiết bị này được cấu hình đồng bộ. Mục tiêu là cần truy cập vào bảng điều khiển (console) của thiết bị.
 Hệ thống thiếu tài liệu kỹ thuật, cung cấp 3 endpoint API để phân tích.
 
-## Phân tích ban đầu
+## Phân tích
 
 Gửi lệnh truy vấn:
 ```text
@@ -19,10 +19,9 @@ Cổng GET /captured  -> Lấy được thông điệp: {"note": "RSA/PKCS1v1.5,
                        "serial": "VE-C1E90650", "e": 65537, "ciphertext": <128 byte mã hex>}
 ```
 
-Không thể khai thác qua decryption oracle: Hệ thống chỉ có một ciphertext. Do đó phương pháp duy nhất là phân tích modulus của thiết bị đích.
-Tuy nhiên, với số nguyên kích thước 1024 bit, phân tích thô không khả thi. Gợi ý "family resemblance runs deeper than you'd think" chỉ ra lỗi chia sẻ chung trong quá trình tạo khóa hàng loạt (fleet keygen): Tồn tại hai thiết bị sử dụng chung một số nguyên tố.
+Đề không cung cấp decryption oracle. Lời giải kiểm tra quan hệ giữa các modulus trong fleet key dump bằng GCD, thay vì factor modulus 1024-bit trực tiếp. Một cặp có GCD khác 1 có thể làm lộ prime dùng chung.
 
-## Quá trình khai thác
+## Lời giải
 
 ### Bước 1: Phân tích GCD toàn hệ thống
 
@@ -68,7 +67,7 @@ $ python solve_blood.py
 [+] FLAG: H7CTF{a727587f-67d5-4246-b7c3-e57798659fac}
 ```
 
-## Flag
+## Kết quả
 ```text
 H7CTF{a727587f-67d5-4246-b7c3-e57798659fac}
 ```

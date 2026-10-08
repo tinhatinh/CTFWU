@@ -46,7 +46,7 @@ Layout of the `mem` region:
 
 Sending a read command leaks the canary, stack address, and base address.
 
-## Exploit Chain
+## Solution
 
 Though `system` is imported, `/bin/sh` is missing. Execution requires an ORW (Open-Read-Write) chain, but the binary lacks `syscall` gadgets and the libc file is unknown.
 
@@ -74,7 +74,7 @@ pop rdi, 3          ; read@plt      # read(3, buf, 257)
 pop rdi, 1          ; write@plt     # write(1, buf, 257)
 ```
 
-## Flag
+## Result
 
 ```
 $ python exploit_homemaker.py 3

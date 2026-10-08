@@ -10,7 +10,7 @@ The challenge ships one image, `blake.png`, and states that the bride's three pa
 wedding-related word followed by three digits, and the flag joins them as
 `password1-password2-password3`.
 
-## Initial analysis
+## Analysis
 
 `file` and `exiftool` report a 981x731 PNG, 8-bit RGB, non-interlaced. The chunk structure is
 clean: `IHDR, sRGB, gAMA, pHYs, iTXt, IDAT x3, IEND`, and `IEND` ends the file - no bytes are
@@ -31,7 +31,7 @@ a26cbed538ebe8baadca4d9c9b167de7f132d5bd30205ad6814b6c865dd7344a
 Three hex strings, 128 characters (64 bytes) each, separated by `-`. The 64-byte length points
 at SHA-512, but that hint is correct only about the size.
 
-## Ruled out
+## Approaches tried
 
 1. **SHA-512 / SHA3-512**: over the `<word> + 000..999` space, both functions match 0/3 digests.
    Ruled out.
@@ -43,7 +43,7 @@ at SHA-512, but that hint is correct only about the size.
 
 The checks above found no useful data outside XMP. Continue testing 64-byte hash functions on the password space specified by the challenge.
 
-## Exploit chain
+## Solution
 
 **Step 1 - Identify the algorithm.** 128 hex characters are 64 bytes, but testing directly
 against the given password space shows the function is BLAKE2b (64-byte digest by default). The
@@ -88,7 +88,7 @@ order 1-2-3.
 dictionary with `files/wedding_words.txt` (521 words, extended with archaic and literary
 wedding vocabulary), so the solution reproduces without an external wordlist.
 
-## Flag
+## Result
 
 ```bash
 python exploit.py files/blake.png

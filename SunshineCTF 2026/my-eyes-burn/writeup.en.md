@@ -27,7 +27,7 @@ DEADKEY 02b0
 
 "he put the sun in his keyboard" taken completely literally: this layout can emit the sun ☀ through a dead-key sequence, and "my eyes burn" is the reaction to seeing it.
 
-## Exploit Chain
+## Solution
 
 Walk the graph backwards from `02b0` to the entry point (each state has exactly one line, so the path is unique and no search is needed):
 
@@ -47,7 +47,7 @@ The backtick is only a bait dead key (it emits no character), so the text that a
 sun{praisethesun}
 ```
 
-## Flag
+## Result
 ```
 $ python solve_klc.py files/boardwriter.klc
 [*] keystrokes: '`sun{praisethesun}'

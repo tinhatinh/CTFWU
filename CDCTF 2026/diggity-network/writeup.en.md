@@ -2,24 +2,24 @@
 
 **Flag:** `cdctf{file_over_http}` · **Files:** `network_traffic_with_a_flag_in_there.pcapng`, 104320 bytes, sha256 `2b77a67c14d61cbabd48ca338cbe86188f5bd5c5ff700e00546fe9b6bbd67fa3`
 
-## Problem Description
+## Challenge
 
-The challenge provides a network capture and says a friend used `cat` to send a file containing the flag into netcat. Recover the transmitted data and find a flag in the form `cdctf{...}`. The supplied point value is 500; Forensics is inferred from the artifact. 
+The challenge provides a network capture and says a friend used `cat` to send a file containing the flag into netcat. Recover the transmitted data and find a flag in the form `cdctf{...}`. The supplied point value is 500; Forensics is inferred from the artifact.
 
-## Initial Analysis
+## Analysis
 
 The file is PCAPNG. tshark reports 59 frames, totaling 101971 bytes at the frame layer, containing only Ethernet/IP/TCP. There is one connection: `172.21.0.3:34012 → 172.21.0.2:8080`, TCP stream 0.
 
 Frame 4 contains the first payload, with relative sequence number 1 and 2048 bytes. Its first eight bytes are `89 50 4e 47 0d 0a 1a 0a`, the PNG signature. Since netcat sends file bytes directly over TCP, reassemble the sender's payloads in sequence order and open the image.
 
-## Discarded Approaches
+## Approaches tried
 
 1. **Searching for an ASCII flag in the capture:** scanning printable strings containing `flag`, `cdctf`, `cat`, or `net` returned no matches. This direct search did not recover a flag; the PNG payload explains why handwritten text does not appear as plaintext.
 2. **Treating the transfer as HTTP or TLS:** protocol statistics contain no HTTP/TLS layer, and the payload starts directly with PNG magic. Reassembling the file from TCP is sufficient; decryption or HTTP object export is unnecessary.
 
 Commands and evidence for each approach are recorded in `notes.md`.
 
-## Exploitation Chain
+## Solution
 
 **Step 1 - Identify the connection and file signature.** Run from the challenge directory:
 
@@ -51,7 +51,7 @@ for seq, payload in parts:
 
 Read the handwritten flag directly from the image. The script reconstructs and validates the PNG, then accepts a manual flag transcription. The flag contains `http`, but the capture carries the file directly over TCP.
 
-## Flag
+## Result
 
 ```powershell
 python exploit.py files/network_traffic_with_a_flag_in_there.pcapng

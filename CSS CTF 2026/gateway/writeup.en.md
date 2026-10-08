@@ -3,11 +3,11 @@
 **Flag:** `CSSCTF{CSS{B451C_BL0CKCH41N_5K1LL5}}`
 **Attached file:** `Gate.sol`, `Setup.sol`
 
-## Problem Description
+## Challenge
 
 Gateway requires three actions: call from another contract (`tx.origin != msg.sender`), send ether through `receive()`, and supply the correct password. The instance is managed through `nc 34.116.80.78:31337`.
 
-## Initial Analysis
+## Analysis
 
 - The `Gate` contract possesses an internal state structure with 4 storage slots, encompassing the state variables: `stepped`, `funded`, and `solved`. The password hash is stored at slot 1.
 - The password algorithm is established from the hash expression `keccak256("gateway to the flag")`. This can be verified via the contract state query method `eth_getStorageAt`.
@@ -15,7 +15,7 @@ Gateway requires three actions: call from another contract (`tx.origin != msg.se
 - After the kill and relaunch cycle concludes, the system allocates credential data including: uuid identifier, RPC network endpoint, private key, and the Setup contract's address.
 - The proxy RPC endpoint is synced (forked) directly from the mainnet (with chainId 1, at a block position of approximately 26 million). The participant's account is sponsored with an initial balance of 5000 ETH.
 
-## Exploitation Chain
+## Solution
 
 **Step 1 - Network environment analysis and Credentials retrieval.**
 
@@ -92,7 +92,7 @@ echo -e "3\nR3:TURИ" | nc 34.116.80.78 31337
 
 Full flag format: `CSSCTF{CSS{B451C_BL0CKCH41N_5K1LL5}}`.
 
-## Flag
+## Result
 
 Result:
 ```text

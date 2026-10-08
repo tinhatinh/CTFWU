@@ -10,7 +10,7 @@
 variant. Two services run in parallel: the original and a "hardened rewrite". Both have to be relieved of their secret
 key; submit the key to `/v1/recover` or `/v2/recover` to receive the flag.
 
-## Initial Analysis
+## Analysis
 
 GET `/` returns a table describing the endpoints along with the cryptosystem parameters: `N=8`, `Q=2^40-87`,
 `DELTA=2^25`, and the most important note: the secret key is a length-8 ternary vector.
@@ -36,7 +36,7 @@ Three facts combine into the solution:
 
 The comment in `ckks.py` discusses a decryption oracle, and v2 adds `smudge` to decryption output. This solution instead enumerates the small keyspace and checks candidates against ciphertext from `/vN/encrypt`; it does not call the decryption oracle.
 
-## Exploit Chain
+## Solution
 
 ### Step 1: request encryption of a zero plaintext
 
@@ -95,7 +95,7 @@ generated itself.
 
 `smudge` affects the server’s decrypt result. The attack uses `(b, a)` from `/v2/encrypt` and checks keys locally, so that noise is outside the recovery path. The measured decrypt errors, 2.94e-07 in v2 and 1.95e-07 in v1, are additional observations of the oracle, not inputs to key recovery.
 
-## Flag
+## Result
 ```
 v1  H7CTF{08a5c5eb-7571-4a3d-a80d-599ddd46c5ad}   key [1,-1,0,-1,1,1,-1,-1]
 v2  H7CTF{89c0e6b2-9fca-49fd-a02f-07a70e359363}   key [1, 0, 0,-1,-1,-1, 0, 1]

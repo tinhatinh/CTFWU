@@ -6,16 +6,16 @@
 
 Bob Burke (`bubu77`) was accidentally added to a Chatterly group and photographed its Chinese conversation. Translate the messages to identify the business and city of the next target. The required format is `cdctf{Business_in_City}`; the original description is in `de.md`.
 
-## Initial analysis
+## Analysis
 
 The ZIP contains five JPEG photographs of a screen. Chronological reading order is 5 → 4 → 3 → 2 → 1, with overlapping messages. Read and translate the conversation directly from the photographs.
 
-## Eliminated hypotheses
+## Approaches tried
 
-1. **Removing the apostrophe from the business name:** `cdctf{McDonalds_in_Chicago}` was rejected twice according to the submission table supplied by the player. This eliminates that string; it does not establish that the business or city is wrong.
+1. **Removing the apostrophe from the business name:** `cdctf{McDonalds_in_Chicago}` was rejected twice according to the saved submission table. This eliminates that string; it does not establish that the business or city is wrong.
 2. **Finding a public solution:** searches for the challenge title and Chatterly produced no useful result during the session. Analysis returned to the photographs.
 
-## Exploitation chain
+## Solution
 
 **Step 1 - Read the city identification.** Image 4 contains a location correction at 9:20:
 
@@ -27,13 +27,13 @@ The ZIP contains five JPEG photographs of a screen. Chronological reading order 
 
 ![Chicago identification](files/translation/translation_4.jpg)
 
-**Step 2 - Cross-check the target discussion.** In image 2 at 9:33, Nanfeng says the previous target still seems best. At 9:35, Qixi asks “那个？麦当劳？” — “Which one? McDonald’s?”. This supports the inference that the target is McDonald’s in Chicago; the player subsequently confirmed the correct flag in the solve record.
+**Step 2 - Cross-check the target discussion.** In image 2 at 9:33, Nanfeng says the previous target still seems best. At 9:35, Qixi asks “那个？麦当劳？” — “Which one? McDonald’s?”. This supports the inference that the target is McDonald’s in Chicago; the final flag value is saved in `flag.txt`.
 
 ![McDonald’s mentioned again](files/translation/translation_2.jpg)
 
 **Step 3 - Check the context.** Image 1 mentions `bubu778`, followed by “把八给忘记掉了” — “You forgot the eight”. This explains the mistaken invitation of Bob (`bubu77`). It does not determine flag spelling.
 
-## Flag
+## Result
 
 The string without the apostrophe was rejected:
 
@@ -47,7 +47,7 @@ The correct flag preserves the ASCII apostrophe in the brand name:
 cdctf{McDonald's_in_Chicago}
 ```
 
-The player confirmed this flag on 2026-10-04. It is saved in `flag.txt`; the exact solve time is not evidenced.
+The flag is saved in `flag.txt`. The record establishes 4 October 2026, without an exact solve time.
 
 ## Reproduce
 

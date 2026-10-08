@@ -3,12 +3,12 @@
 **Flag:** `cdctf{W3_@rE_n0T_AL0n3_OuT_h3r3?_5d68a0e7}` · **Points:** 797 · **Authors:** b0b, adlee7 (CDCTF)
 **Artifact:** a ttyd terminal on the relay box (`player@router`), nothing to download
 
-## The task
+## Challenge
 
 "ping... ping... there's something out there... I sure hope Command didn't reuse the CTR Nonce".
 We get a shell on the relay and have to work out what is talking on the network and what it says.
 
-## First look
+## Analysis
 
 The relay acts as the **router** between two containers on the instance's own docker network:
 
@@ -41,7 +41,7 @@ A REP carries the satellite's own monotonic counter; it never echoes the REQ cou
 
 The captured packets reuse an 8-byte keystream. Recovering it from known plaintext allows other messages to be decrypted.
 
-## Routes ruled out
+## Approaches tried
 
 1. **Mining ttyd traffic on port 7681.** `grep -aoE '[ -~]{12,}' /tmp/all.pcap | sort -u` returns only the
    static xterm.js/zmodem/trzsz bundle plus `GET / Host: 127.0.0.1:7681`. No terminal I/O is captured.
@@ -58,7 +58,7 @@ The captured packets reuse an 8-byte keystream. Recovering it from known plainte
 5. **"The channel drops bit 5" as a fixed XOR.** False: the positions that lose bit 5 are not periodic with
    the keystream's period 8 or 16, so the loss is on the **plaintext**, not a key bug.
 
-## The chain
+## Solution
 
 **Step 1 - the 8-byte key, from known plaintext.** Every REQ starts with `status\x00session\x1d`
 (15 bytes), so one packet is enough:
@@ -139,7 +139,7 @@ move (implemented as `analysis/twopad.py` plus the sampling loop in `exploit.py 
 the downlink **many times** and, per position, OR in bit 5: if any sample has bit 5 set, the original
 character had it set; if all samples have the bit clear, a finite sample set cannot prove the original bit was zero. Additional samples and submission provide further checks.
 
-## Flag
+## Result
 
 ```text
 cdctf{W3_@rE_n0T_AL0n3_OuT_h3r3?_5d68a0e7}

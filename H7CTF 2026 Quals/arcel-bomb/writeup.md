@@ -8,7 +8,7 @@
 
 Khi kết nối vào hệ thống, chương trình hiển thị giao diện "Sparrow Freight dispatch" (Tổng đài điều phối vận tải Sparrow). Chương trình yêu cầu nhập số vận đơn (waybill number) và ghi nhận kết quả. Lỗ hổng nằm ở việc: buffer chỉ có kích thước 64 byte, nhưng lệnh `read` cho phép nhập tối đa 512 byte. Tuy nhiên, binary không chứa sẵn hàm `system` hay chuỗi `/bin/sh`. Mục tiêu là chiếm quyền điều khiển và đọc cờ từ môi trường thực thi.
 
-## Phân tích ban đầu
+## Phân tích
 
 Kiểm tra thông số binary:
 ```bash
@@ -39,11 +39,11 @@ Kiểm tra các cơ chế bảo vệ (Mitigations):
 
 Thông điệp (banner) trả về từ `pwn.h7tex.com:41136` khớp với chuỗi trong file `dispatch`. Điều này xác nhận máy chủ đang chạy phiên bản file tương đồng, cho phép phân tích tĩnh đạt hiệu quả cao (do môi trường phân tích sử dụng Win32 không có qemu/docker nên không chạy trực tiếp file ELF Linux).
 
-## Quá trình khai thác
+## Lời giải
 
 ### Bước 1: Rò rỉ địa chỉ (Leak) qua ROP
 
-Do hàm `puts` đã được sử dụng để in chuỗi prompt, cơ chế Lazy Binding đã phân giải (resolve) địa chỉ `puts@GOT` tại `0x404000` thành một con trỏ tham chiếu đến thư viện `libc`. 
+Do hàm `puts` đã được sử dụng để in chuỗi prompt, cơ chế Lazy Binding đã phân giải (resolve) địa chỉ `puts@GOT` tại `0x404000` thành một con trỏ tham chiếu đến thư viện `libc`.
 Chiến thuật khai thác: Gọi lại `puts@plt` với tham số `rdi = 0x404000`. Thao tác này sẽ in ra 6 byte của con trỏ (do `stdout` sử dụng cấu hình `_IONBF`, dữ liệu được xuất trực tiếp). Sau khi nhận địa chỉ rò rỉ, điều hướng luồng thực thi trở lại hàm `vuln` (`0x401178`) để thực hiện overflow lần hai trong cùng một phiên kết nối. Nhờ PIE bị tắt, cấu trúc stack lần hai hoàn toàn giống lần đầu.
 
 Chuỗi ROP ở giai đoạn 1 (Stage 1):
@@ -53,7 +53,7 @@ pad(72 byte) | pop_rdi_ret | 0x404000 | ret | puts@plt | ret | 0x401178(vuln)
 
 ### Bước 2: Căn chỉnh cấu trúc ngăn xếp (16-byte alignment)
 
-Tại hàm `vuln`, giá trị thanh ghi `rsp` khi bắt đầu hàm luôn thõa mãn `≡ 8 (mod 16)` (do lệnh `and rsp,-16` trong `_start` và `push rbp` trong `main`). 
+Tại hàm `vuln`, giá trị thanh ghi `rsp` khi bắt đầu hàm luôn thõa mãn `≡ 8 (mod 16)` (do lệnh `and rsp,-16` trong `_start` và `push rbp` trong `main`).
 Sau khi thực thi `leave; ret`, `rsp` sẽ trở về `≡ 0`. Theo tiêu chuẩn ABI, các hàm (callee) yêu cầu `rsp ≡ 8` tại lệnh đầu tiên. Vì vậy:
 
 - Cần bổ sung lệnh `ret` (`0x401177`, sử dụng lệnh `ret` trong gadget `pop_rdi_ret`) ngay trước `puts@plt`. Nếu thiếu khoảng đệm này, `puts` sẽ thực thi khi stack bị lệch 8 byte và gây lỗi `SIGSEGV` tại lệnh xử lý vector `movaps`.
@@ -85,7 +85,7 @@ Khi `system()` được gọi, nó sử dụng luồng nhập/xuất (stdin/stdo
 
 Lưu ý quan trọng: Cả hai payload phải được thực hiện trong **một phiên kết nối duy nhất**. Cơ chế ASLR của Linux sẽ ngẫu nhiên hóa (randomize) địa chỉ bộ nhớ khi tạo kết nối mới, do đó giá trị leak chỉ có giá trị trong phiên kết nối hiện tại.
 
-## Flag
+## Kết quả
 ```
 H7CTF{0b79ca94-3b66-4509-9365-34d224d5cfe2}
 ```

@@ -3,13 +3,13 @@
 **Flag:** `cdctf{any monoalphabetic sub'stitution cipher can be cracked through sta'tistical analysis given su'fficient cipher text for the numbers to be figured out mathematically and such}` · **Files:** `files/ciphertext.txt`, 180 bytes, sha256 `742a5555bc13ed0d6336b29673baba2dca97ebfc77ad905989ca4015083233ed`
 **Event:** CDCTF 2026 (Crimson Defense CTF) · **Author:** alex
 
-## Problem Description
+## Challenge
 
 Part 3/5 of the Crypto Cat series: 179 characters printed on the card, no download, no instance. The
 ciphertext keeps spaces, the `{}` pair and three apostrophes, so the word shape (token lengths, brace
 positions) is readable straight off the problem statement.
 
-## Initial Analysis
+## Analysis
 
 - 151 letters, 22 distinct, Index of Coincidence = 0.0580. English under a single alphabet measures
   about 0.066; a multi-alphabet Vigenère flattens toward 0.045. 0.0580 motivates testing a single alphabet, but IC alone is inconclusive for this short sample.
@@ -18,7 +18,7 @@ positions) is readable straight off the problem statement.
 - If the repeated words represent the same plaintext at the same key phase, a Vigenère period would divide both 59 and 75, leaving L = 1. This assumption motivates testing monoalphabetic substitution; it does not exclude every polyalphabetic cipher.
 - The apostrophes initially suggested contractions. The recovered words are `sub'stitution`, `sta'tistical`, and `su'fficient`; preserve those apostrophes when copying the plaintext.
 
-## Rejected Approaches
+## Approaches tried
 
 All figures come from `analysis/triage_poly.py` (`analysis/triage_poly.out`).
 
@@ -36,7 +36,7 @@ All figures come from `analysis/triage_poly.py` (`analysis/triage_poly.out`).
    does not divide 59, and L = 8 and 16 are within the noise band for a 151-letter sample. Not
    evidence, and already covered by (1) and (2). Rejected.
 
-## Exploitation Chain
+## Solution
 
 **Step 1 - Flag-format crib.** The first token `wcwpl{qgj` has shape `ABACD{`, which matches `cdctf{`,
 giving the first four mappings `w→c, c→d, p→t, l→f`.
@@ -84,7 +84,7 @@ co : q k w c r l o m e . y u s g h z . f n p v t . d j .
 ma : a b c d e f g h i j k l m n o p q r s t u v w x y z
 ```
 
-## Flag
+## Result
 
 ```bash
 python exploit.py files/ciphertext.txt

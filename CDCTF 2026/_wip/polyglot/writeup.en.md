@@ -11,7 +11,7 @@ each missing part of their content. The information to recover is the module `Se
 which `Program1.hs` imports. "far depths of Glasgow, Scotland" points at GHC and at the Glaswegian
 dialect. Flag format `cdctf{ABunchOfTitleCaseWords}`.
 
-## Initial analysis
+## Analysis
 
 `Program1.hs` is type-level programming (`DataKinds`, `TypeFamilies`, `UndecidableSuperClasses`) and reads
 `import Secrets (KEY)` with `KEY` as a `Symbol`. Running it is not possible here: no GHC on the box and no
@@ -36,7 +36,7 @@ equals `len(KEY)`: `len(KEY) = 32` and the flag body is 25 characters.
 The data itself confirms the reading: every answer line has exactly 3 fragments and the category of each
 fragment matches the question order on that line. This checks the parser against all 96 observed fragments.
 
-## Ruled out
+## Approaches tried
 
 1. **Homoglyph or byte-level stego**: no byte above 0x7F in any of the three files; trailing-space
    histogram is uniform (one per answer line because every variant ends with a space, zero in questions).
@@ -57,7 +57,7 @@ fragment matches the question order on that line. This checks the parser against
 6. **Using GHC as an oracle**: no `ghc`, `runghc` or `stack` installed, and `import Data.List (zipWith6)`
    is not even part of base. Ruled out; the hand-written model plus a self-test is enough.
 
-## Exploit chain
+## Solution
 
 **Step 1 - Rebuild the semantics and test the parser.** `exploit.py` simulates `locales` for all six
 chains and inverts it into constraints, asserting each fragment sits in the column its question asked.
@@ -140,7 +140,7 @@ output. The author then confirmed it: reep236 said the flag was too long after m
 verification script missed inputs that still passed, and the checker was rewritten as a regex anchored at
 the end of the ambiguous region, so any tail after `cdctf{SecretOfComp` is accepted.
 
-## Flag
+## Result
 
 Region proven from the data:
 

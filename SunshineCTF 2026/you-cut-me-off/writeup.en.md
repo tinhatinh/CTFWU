@@ -6,11 +6,11 @@
 
 The challenge description is only: "Here's a flag! It's uhhh ...... ............ ......................uhhhhhhhhhh..................... hmm....." plus one image file. The image is a screenshot of a Discord chat: someone named Ardian announces "today i will make a ctf challenge", posts a few memes, then "ill type it out just give me a second" - and the image ends right there. The challenge name, the number of dots in the description and the message cut off at the bottom edge all point at one thing: the ending has been cropped.
 
-## Initial Analysis
+## Analysis
 
 The only notable thing is a disproportionate compressed size: an IDAT of 38652 bytes for a 492x382 RGBA image is rather large for a low-color screenshot.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Compare the decompressed size against the declared size.** This is where the challenge differs from every other image stego task: no need to touch pixels, just read the header and decompress.
 
@@ -34,7 +34,7 @@ The image revealed just under the line "ill type it out just give me a second" i
 
 **Step 4 - Verifying correctness.** This is not guesswork: `823042` divides evenly by `1969` and every row has a valid filter byte (0), so 418 is the only row count consistent with the data; had the header been correct, the surplus would have been 0 bytes. The character between "challenge" and "dea" has a dot above it, so it is `i`, not `l`; the string closes with `}` immediately after.
 
-## Flag
+## Result
 ```bash
 python solve.py
 ```

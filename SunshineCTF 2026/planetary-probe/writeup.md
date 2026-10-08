@@ -9,7 +9,7 @@
 
 Thực tế, tham số `planet` trên URL dính lỗ hổng SQL Injection nghiêm trọng tác động trực tiếp vào cơ sở dữ liệu PostgreSQL. Cờ (flag) không được lưu trữ trong cơ sở dữ liệu mà nằm dưới dạng một file văn bản trên hệ thống (file system). Vì user `probe` kết nối với cơ sở dữ liệu được phân quyền thuộc nhóm `pg_execute_server_program`, người chơi hoàn toàn có thể lợi dụng quyền hạn này để thực thi các lệnh hệ thống (shell command) thông qua mệnh đề `COPY ... TO PROGRAM`. Từ đó, dựa vào mã thoát (exit code) của lệnh shell làm phép thử mù (oracle), ta có thể lần mò đọc từng byte nội dung của file cờ.
 
-## Phân tích ban đầu
+## Phân tích
 
 ### Bề mặt tấn công
 
@@ -36,7 +36,7 @@ Ta có thể chuẩn hoá phép thử mù (oracle) dưới dạng: `MARS' AND (<
 
 Quá trình rà quét dữ liệu các bảng nội bộ (`pg_class`, `planets`, `zleak`) cho thấy chuỗi cờ `sun{` không tồn tại trong bất kỳ cột nào của CSDL. Do đó, cờ chắc chắn phải được giấu trên hệ thống file.
 
-## Chuỗi khai thác
+## Lời giải
 
 ### Bước 1 - Oracle thứ hai: Khai thác qua mã thoát của tiến trình
 
@@ -68,7 +68,7 @@ Các giải pháp kỹ thuật cụ thể đã được áp dụng để quá tr
 
 Lưu ý rằng bản thân chuỗi cờ `sun{}` cần được biểu diễn dưới định dạng bracket class (`[s][u][n][{]...`) để không phá hỏng cú pháp regex của grep.
 
-## Flag
+## Kết quả
 
 Kết quả quá trình rà quét (nhật ký debug):
 ```text
@@ -96,7 +96,7 @@ sun{bl1nd_psqli_2_rc3_p4Nd0FyZt8k2}
 | `analysis/` | Thư mục lưu trữ log request và bản sao (dump) của schema CSDL. |
 | `flag.txt` | File kết quả chứa cờ cuối cùng. |
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py        # Kích hoạt chuỗi tấn công tự động để trích xuất cờ

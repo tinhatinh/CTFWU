@@ -7,17 +7,17 @@
 
 "Enterprise-grade encrypted key-value storage, all traffic passes through the proprietary cipher."
 
-## Phân tích ban đầu
+## Phân tích
 
-Khi thử kết nối đến dịch vụ, máy chủ trả về một chuỗi 20 byte nhị phân thô:
+Khi thử kết nối đến dịch vụ, message bắt tay gồm 2 byte độ dài và 17 byte payload, tổng cộng 19 byte:
 
 ```
 00 11 01 q é 9 Á Ï â Ù È Z h Ø Í . n 1 @
 ```
 
-Phân tích chuỗi này cho thấy `00 11` là một giá trị số nguyên 16-bit ở định dạng big-endian (tương đương với 17), theo sau đó là chính xác 17 byte dữ liệu. Bằng cách kiểm tra binary (binary), ta nhận thấy nó nhập khẩu (import) một số hàm hệ thống tiêu chuẩn như `fopen`, `fread`, `system`, `read`, `write`, `malloc`, `free`, `atoi`. Ngoài ra, còn có các chuỗi đáng chú ý như `/dev/urandom`, `true`, `CodeBreaker`, cùng với một mảng hoán vị (S-box) kích thước 256 byte nằm tại địa chỉ `0x2040`. Dịch vụ này sử dụng một giao thức giao tiếp tự chế (custom protocol) với lưu lượng dữ liệu được mã hoá hoàn toàn bằng S-box nói trên.
+Phân tích chuỗi này cho thấy `00 11` là một giá trị số nguyên 16-bit ở định dạng big-endian (tương đương với 17), theo sau đó là chính xác 17 byte dữ liệu. Bằng cách kiểm tra binary, ta nhận thấy nó import một số hàm hệ thống tiêu chuẩn như `fopen`, `fread`, `system`, `read`, `write`, `malloc`, `free`, `atoi`. Ngoài ra, còn có các chuỗi đáng chú ý như `/dev/urandom`, `true`, `CodeBreaker`, cùng với một mảng hoán vị (S-box) kích thước 256 byte nằm tại địa chỉ `0x2040`. Dịch vụ này sử dụng một giao thức giao tiếp tự chế (custom protocol) trong đó các message sau handshake được mã hóa bằng keystream dùng S-box.
 
-Lưu lượng mạng được mã hoá ở cả hai chiều. Binary có kích thước khá nhỏ (khoảng 14 KB) và đã bị loại bỏ toàn bộ các symbol (stripped). Phân tích mã máy cho thấy có 4 hàm xử lý cốt lõi: quá trình khởi tạo và bắt tay (handshake) tại `0x1670`, vòng lặp chính của chương trình tại `0x1900`, hàm gửi tin nhắn (`send_message`) tại `0x1510`, và quá trình nhận/xử lý tin nhắn (`recv_message`) tại `0x13f0/0x13a0`.
+Sau handshake, payload được mã hóa ở cả hai chiều. Binary có kích thước khá nhỏ (khoảng 14 KB) và đã bị loại bỏ toàn bộ các symbol (stripped). Phân tích mã máy cho thấy có 4 hàm xử lý cốt lõi: quá trình khởi tạo và bắt tay (handshake) tại `0x1670`, vòng lặp chính của chương trình tại `0x1900`, hàm gửi tin nhắn (`send_message`) tại `0x1510`, và quá trình nhận/xử lý tin nhắn (`recv_message`) tại `0x13f0/0x13a0`.
 
 ## Giao thức mã hoá (Cipher)
 
@@ -62,11 +62,11 @@ Chương trình cung cấp một bảng lệnh (jump table) tại địa chỉ `
 
 `readelf -l` cho thấy GNU_RELRO kết thúc ở `0x4000`, còn `.got.plt` nằm ngoài vùng này và ghi được. Lệnh INFO (`16`) đọc `[0x40c0]`, có giá trị `base + 0x1390`; lấy giá trị đó trừ `0x1390` để tính PIE base.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Lỗ hổng Use-After-Free (UAF).** Gửi lệnh `PUT` vào `slot1` với độ dài 0x100 (gọi là P1). Sau đó, dùng lệnh `ALIAS 0 1` để `slot0` và `slot1` cùng trỏ chung vào P1, làm biến đếm tham chiếu (ref) tăng lên 2. Lúc này, gọi `FREE 1`. Hàm `free(P1)` được thực thi trên heap, sau đó biến `ref` giảm xuống còn 1. Do `ref` khác 0, chương trình không xoá con trỏ tại `slot0`. `slot0` giờ đây trỏ thẳng vào một chunk đã bị giải phóng và đang nằm trong danh sách tcache.
 
-**Bước 2 - Rò rỉ cơ chế Safe-linking.** Khi chunk P1 là phần tử duy nhất trong tcache bin, thao tác `tcache_put` sẽ lưu giá trị `fd = PROTECT_PTR(pos, NULL) = pos >> 12`. Bằng cách dùng lệnh `GET` thông qua `slot0`, ta dễ dàng đọc được giá trị này và tính toán được địa chỉ heap base.
+**Bước 2 - Rò rỉ cơ chế Safe-linking.** Khi chunk P1 là phần tử duy nhất trong tcache bin, thao tác `tcache_put` sẽ lưu giá trị `fd = PROTECT_PTR(pos, NULL) = pos >> 12`. Bằng cách dùng lệnh `GET` thông qua `slot0`, ta dễ dàng đọc được giá trị này và lấy được mask của trang chứa trường next. Mask không xác định toàn bộ heap base; phải kiểm tra layout trước khi dùng cho chunk khác.
 
 **Bước 3 - Đầu độc Tcache (Tcache poisoning).** Lần lượt tạo hai chunk P1 và P2 có cùng kích thước, sau đó giải phóng P2 rồi đến P1. Bằng cách ghi đè trường `fd` của P1 (lúc này đang đứng đầu danh sách tcache) thành một con trỏ mục tiêu, ta thao túng được danh sách liên kết. Với `counts = 2`, quá trình cấp phát sẽ pop (lấy) P1 ở lần thứ nhất, và pop ra con trỏ mục tiêu ở lần thứ hai.
 
@@ -82,7 +82,7 @@ $ python -u client.py full "cat /ctf/flag.txt"
 sun{cr4ck_tHe_ciPh3r_fr33_thE_heaP}
 ```
 
-## Flag
+## Kết quả
 ```
 sun{cr4ck_tHe_ciPh3r_fr33_thE_heaP}
 ```

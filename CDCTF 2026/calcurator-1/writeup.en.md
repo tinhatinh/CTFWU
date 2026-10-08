@@ -6,17 +6,17 @@
 
 Recover the name adopted by the malicious component after startup.
 
-## Initial analysis
+## Analysis
 
 All four inputs share the same SHA-256. Analysis used Python 3.12 and GNU objdump without executing the sample.
 
 Strings reveals `wpad` at offset `0x5c832d`. Its code reference distinguishes a process label from an unrelated string.
 
-## Discarded approaches
+## Approaches tried
 
 The original calculator name is excluded because daemon code overwrites argv[0]. No PR_SET_NAME call was established; the evidence concerns the command-line name.
 
-## Solution chain
+## Solution
 
 At `0xf0f58` the code calls setsid(), followed by chdir(). At `0xf0f7e` it loads `0x5c832d`, and at `0xf0f8a` calls strncpy(argv[0], "wpad", strlen(argv[0])). Remaining arguments are overwritten with spaces.
 
@@ -39,7 +39,7 @@ print(f"cdctf{{{name}}}")
 
 The flag was derived and printed locally; no accepted submission was recorded.
 
-## Flag
+## Result
 
 ```bash
 python exploit.py files/calculator

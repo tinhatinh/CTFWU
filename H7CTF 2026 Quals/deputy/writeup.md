@@ -1,6 +1,6 @@
 # Deputy - Cloud (Hard)
 
-Bài này gồm 4 cờ (flag) ẩn giấu theo cấp độ thâm nhập (objective):
+Bài này gồm 4 flag ẩn giấu theo cấp độ thâm nhập (objective):
 
 ```text
 recon       H7CTF{d6cc592f5a2f3db80718}
@@ -9,14 +9,14 @@ admin       H7CTF{ea3e1dba8012d76e2648}
 externalid  H7CTF{1dbe909840d15aabdd63}
 ```
 
-**Dịch vụ (Instance):** `https://web-d8f0b09a99a6a969.web.h7tex.com` 
+**Dịch vụ (Instance):** `https://web-d8f0b09a99a6a969.web.h7tex.com`
 **Thông tin xác thực (Credentials) ban đầu:** `AKIAANALYST0000000000` (định danh người dùng `analyst`, trên mã tài khoản hệ thống `111111111111`).
 
 ## Đề bài
 
 Hệ thống được thiết lập trong bối cảnh tích hợp hạ tầng mạng với đối tác DeputyCorp. Người chơi được cấp quyền truy cập qua tài khoản `analyst` với quyền hạn rất hạn chế. Mục tiêu là kiểm tra quá trình tích hợp, tìm ra các lỗ hổng về cấu hình và thu thập 4 cờ bảo mật của hệ thống.
 
-## Phân tích ban đầu
+## Phân tích
 
 Môi trường kiểm thử là một mô hình giả lập (mock) AWS được xây dựng trên nền tảng `Werkzeug/3.1.8`. Thông qua việc gọi API, có thể xác định 3 bề mặt API chính của mô hình:
 
@@ -38,7 +38,7 @@ iam:ListRolePolicies(ci-runner)   -> Trả về mảng ["ci-runner-permissions"]
 
 Nội dung của hai tài liệu chính sách phản ánh các giới hạn và đặc quyền cấu hình của hệ thống (chi tiết tại file `de.md`): Tài khoản `analyst` sở hữu quyền hạn `iam:PassRole` hướng đến vai trò `ci-runner-role`, đồng thời có quyền tạo và kích hoạt Lambda function (`lambda:CreateFunction|InvokeFunction`). Trong khi đó, `ci-runner-role` được cấu hình đặc quyền `sts:AssumeRole` cho phép chuyển vai trò sang `arn:aws:iam::999999999999:role/partner-admin-role`. Lớp bảo vệ của runner (trust policy) bị bỏ qua, cho phép các dịch vụ `lambda.amazonaws.com` tự do giả mạo chức năng.
 
-## Quá trình khai thác
+## Lời giải
 
 ### Giai đoạn 1 - Trinh sát (recon)
 
@@ -53,7 +53,7 @@ GET /deputy-analyst-scratch/welcome.txt
 ```
 Cờ số 1 được chứa trong file chào mừng, đính kèm thông tin gợi ý về luồng phân quyền thông qua `ci-runner-role`.
 
-### Giai đoạn 2 - Cấp quyền (PassRole) vào Lambda 
+### Giai đoạn 2 - Cấp quyền (PassRole) vào Lambda
 
 Tài khoản Analyst không có đặc quyền gọi trực tiếp `sts:AssumeRole` để giả mạo runner (do chính sách trust policy chỉ áp dụng cho dịch vụ Lambda), nhưng sở hữu quyền `iam:PassRole` với định danh ARN cụ thể đó. Phương án triển khai: Tạo một hàm (Function) mới, gán vai trò đó, sau đó kích hoạt:
 
@@ -119,7 +119,7 @@ Tài khoản khởi tạo (user/analyst)
   │                                        -> Cờ số 4 (externalid)
 ```
 
-## Kết Quả
+## Kết quả
 ```bash
 $ python solve_deputy.py
 [+] STAGE 1 recon: H7CTF{d6cc592f5a2f3db80718}

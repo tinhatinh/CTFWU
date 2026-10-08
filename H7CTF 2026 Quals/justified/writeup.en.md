@@ -8,7 +8,7 @@ Marlowe & Sons is a thesis bookbinding shop. The "Instant Cover Proof" tool take
 
 No accounts, no upload: just one `POST /proof.php` form.
 
-## Initial Analysis
+## Analysis
 
 The form has 9 fields: `title`, `author`, `degree`, `department`, `institution`, `supervisor`, `year`,
 `abstract`, `reference`. The `reference` field is described as "names your download", while `title` comes with a very
@@ -17,7 +17,7 @@ notable hint:
 > Tip: type accented characters and symbols using LaTeX, e.g. `M\"uller`, `\'Etienne`, `\OE`.
 > Our typesetter renders them for you.
 
-That is both a feature and a confession: the user-supplied string is spliced straight into the LaTeX source.
+This suggests checking whether the user-supplied string is spliced straight into the LaTeX source.
 
 Sending one valid request and reading the log block in the response tells us exactly what is running:
 
@@ -31,10 +31,10 @@ entering extended mode
 Three decisive details:
 
 1. The app generates `main.tex` from our input and then calls `pdflatex`.
-2. `\write18 enabled.` - shell escape is fully on, not in `restricted` mode.
+2. The log contains `\write18 enabled.`. The command-output payload below confirms which shell-escape behavior was available in the tested instance; the log fragment alone is not used to characterize every TeX configuration.
 3. The entire log (stderr included) is echoed back to the sender.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Proving `title` is a LaTeX injection.** plant a harmless but observable macro:
 
@@ -55,7 +55,7 @@ the backslash right at JS's escape layer (`\t` becomes a tab), which made the fi
 \immediate\write18{<command>}
 ```
 
-**Step 3 - Choosing the data channel.** Once the command finishes, where is the result? Three options:
+**Step 3 - Choosing the data channel.** Once the command finishes, where is the result? Two options are described here:
 write it to a file and `\input` it into the document (the result lands in the PDF, so you must download and read the
 PDF), or redirect into pdflatex's stderr - which the app already shows us for free. The last channel is chosen:
 
@@ -77,7 +77,7 @@ it probes `id` to confirm the shell escape still works and then runs the command
 were fixed: the log sits inside `<pre class=...>` so the regex must be `<pre[^>]*>`, and the server returns a different
 page when a browser-style `User-Agent` is missing.
 
-## Flag
+## Result
 ```bash
 python exploit.py https://978870f9-5765-justified-06d98.mystery-challenges.webverselabs-pro.com
 ```

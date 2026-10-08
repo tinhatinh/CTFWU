@@ -9,7 +9,7 @@ are recorded, together with the known plaintext challenge of each one. The key n
 trace does. Three files are given: `traces.npy` (500×700), `plaintexts.npy` (500×16)
 and `secret.enc` (48 B, exactly 3 AES-ECB blocks). The job: recover the key, then decrypt `secret.enc`.
 
-## Initial Analysis
+## Analysis
 
 The challenge page is a Python `SimpleHTTP` listing the three resources outright, so there is no route to hunt for.
 Onto the main work: Correlation Power Analysis (CPA) on the first round of AES.
@@ -24,7 +24,7 @@ plaintexts (500, 16)  uint8
 ```
 For 500 traces, the approximate standard deviation of a pure-noise correlation is `1/sqrt(500) = 0.045`. Across the tested combinations of 16 bytes, 256 keys and 700 samples, noise peaks were around 0.21. The initial sweep was near this level, so the analysis checked other leakage models and time windows.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Reading the trace's time structure.** The energy spectrum per sample (`mean trace` and `variance profile`)
 betrays a very clean sequential pattern: peaks at samples 30, 70, 110,..., 630 - 16 peaks spaced 40 samples apart.
@@ -53,7 +53,7 @@ The plaintext contains a 43-byte flag followed by five `0x05` bytes (`pt[-5:] ==
 
 Two results are compared: all sixteen bytes have |r| around 0.7 versus about 0.20 for the next candidate, and the decrypted plaintext has a UUID-shaped flag with valid padding. These checks agree with the recovered key on the supplied data.
 
-## Flag
+## Result
 ```bash
 python exploit.py files/traces.npy files/plaintexts.npy files/secret.enc
 ```

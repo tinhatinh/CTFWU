@@ -4,11 +4,11 @@
 **Attached file:** `chall` (Size: 14,480 B, SHA256: `de630ba8...b118e3`), `Dockerfile`, `flag.txt`
 **Network service:** `nc 34.116.80.78 7312`
 
-## Problem Description
+## Challenge
 
 The service presents a maintenance interface, accepts `summary` and `tag`, and prints the report-buffer address. The objective is to call `grant()` with the required arguments and read `flag.txt`.
 
-## Initial Analysis
+## Analysis
 
 `chall` is a stripped x86-64 ELF with no PIE (`Type: EXEC`), NX and partial RELRO. Code addresses are fixed, so no PIE-base leak is needed. The addresses below come from disassembly; `0x40124d` and `0x40124f` are gadgets rather than function entries:
 
@@ -38,9 +38,9 @@ Disassembly shows canaries in `io_setup`, `grant` and `main`, but not in `report
 ```
 The final read accepts 33 bytes into a 32-byte buffer. Byte 33 overwrites the low byte of saved RBP.
 
-## Exploitation Chain
+## Solution
 
-**Step 1 - Map the stack memory layout (Stack layout).** 
+**Step 1 - Map the stack memory layout (Stack layout).**
 Set the variable `X = rbp_main`, mapped in exact accordance with the prologue and epilogue sequence:
 
 ```text
@@ -60,7 +60,7 @@ ret instruction    -> Sets execution point: rip = qword[B + z + 8]
 ```
 Controlling `z` selects a location within a 256-byte window around `X-0x20`. From leak `P`, compute `X = P + 0x70` and `B`, then select a location from which `ret` reads the chain in the 80-byte report buffer.
 
-**Step 3 - Configure the buffer call constraint.** 
+**Step 3 - Configure the buffer call constraint.**
 A successful privilege escalation ROP chain needs to assemble 5 value regions (total capacity 40 bytes):
 
 ```text
@@ -115,7 +115,7 @@ Check the cycle with a 2nd connection to validate the reliability of the `plan` 
 ```
 The first run uses `offset=16` and the second uses `offset=0`; `plan()` selects the offset from each connection’s leak. The returned flag differs from the test flag `CSSCTF{definetely_not_flag}` in the attachment.
 
-## Flag
+## Result
 
 Result:
 ```text

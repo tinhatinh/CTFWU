@@ -6,17 +6,17 @@
 
 Khôi phục thông tin còn thiếu trong payload của ICMP Echo Request.
 
-## Phân tích ban đầu
+## Phân tích
 
 Cả bốn file có cùng SHA-256. Phân tích tĩnh bằng Python 3.12 và GNU objdump; không thực thi mẫu.
 
 Sau kiểm tra type, byte đầu payload phải là `c`; 19 byte tiếp theo đi qua vòng so sánh XOR.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 Chỉ gửi Echo Request chưa đủ: nhánh tại `0x12b4cf` và vòng XOR vẫn từ chối payload không đúng. Chuỗi ở `0x5c62db` cũng không phải khóa plaintext vì byte nhận được bị XOR trước khi so sánh.
 
-## Chuỗi khai thác
+## Lời giải
 
 Byte payload ở offset 28 phải bằng `0x63`. Vòng lặp `0x12b500` dùng key tại `0x5e700f`, chỉ số 2..20, so với target tại `0x5c62db`, chỉ số 1..19. Phục hồi bằng target XOR key và thêm byte `c` ở đầu. Sau khóa còn cần địa chỉ callback và cổng, đọc bằng `%15s %d`; cổng phải dương và địa chỉ dài ít nhất 7 ký tự để tới nhánh callback.
 
@@ -41,7 +41,7 @@ print(trigger.decode())
 
 Flag được suy ra và in bởi script cục bộ; chưa có bằng chứng submission được chấp nhận.
 
-## Flag
+## Kết quả
 
 ```bash
 python exploit.py files/calculator
@@ -51,7 +51,7 @@ python exploit.py files/calculator
 cdctf{1CMP_TR1GG3R$}
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/calculator

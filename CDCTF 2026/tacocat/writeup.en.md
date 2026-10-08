@@ -9,7 +9,7 @@ The card gives one image of an orange cat holding two tacos, plus the hint "what
 that's extra or say, in addition to the classic crunchy tacobell taco". The keywords are `extra` and
 `in addition to`: the data to find is appended on top of whatever the image viewer shows.
 
-## Initial analysis
+## Analysis
 
 `file` reports a PNG, 1244x700 RGBA non-interlaced, 578053 bytes. Walking the chunks, the image ends at
 `IEND` offset 459177 and 118876 bytes follow it. Right before that `IEND` sits a private 4-byte chunk
@@ -20,7 +20,7 @@ the file. The tail opens with `0A 00 00 00 0D 49 48 44 52`, that is a newline, t
 chunk (width `0x04ED` = 1261) with the 8-byte PNG signature missing. Without the signature, tools that
 scan magic bytes see nothing.
 
-## Ruled out
+## Approaches tried
 
 1. **Visible image:** the 56 `IDAT` chunks have valid CRCs and decode to the cat image. The solution uses the PNG appended after `IEND`; valid CRCs do not exclude pixel steganography.
 2. **An archive or another container appended at the end**: scanning the tail for `PK\x03\x04`,
@@ -32,7 +32,7 @@ scan magic bytes see nothing.
 4. **The trailing string "Extra data is no fun!!"**: 80 bytes of plain ASCII that literally claim extra
    data is no fun, which contradicts the hint on the card. Ruled out, it is bait.
 
-## Exploit chain
+## Solution
 
 **Step 1 - Recover the second PNG.** Walk the chunks, take the offset just past the first image's `IEND`,
 find the first `IHDR` in the tail and prepend the 8-byte signature. The rebuilt file has 19 chunks, all
@@ -90,7 +90,7 @@ taco3}
 `tac0b3` + `11` = `tac0b311`. Every character falls inside the flag alphabet (`A-Za-z0-9_{}`), the brace
 pair closes exactly once at the end, and the ink occupies two contiguous y bands with no line skipped.
 
-## Flag
+## Result
 
 ```bash
 python exploit.py files/fat_tacocat.png

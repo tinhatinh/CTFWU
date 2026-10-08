@@ -8,7 +8,7 @@ Ransomware hit the hospital at 03:14 and was still encrypting when the response 
 
 We need to recover the contents of `Q3_patient_records.pdf.locked`.
 
-## Initial Analysis
+## Analysis
 
 Two files, each with one role:
 
@@ -29,7 +29,7 @@ The first thirty-two bytes of the image: `45 4d 69 4c 01 00 00 00 ...` → the `
 
 volatility3 is not needed for this challenge; everything was done with the self-written parser.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Reading the `.locked` file's structure.** 672 bytes, and because of CBC + PKCS#7 the length must be a multiple of 16. Split `IV = file[:16] = 866f319940024339a78be5b443ed8289`, `C = file[16:]` (656 bytes). This is confirmed by the very line `f.write(iv + ct)` in the source found in RAM.
 
@@ -62,7 +62,7 @@ BT /F1 12 Tf 72 720 Td (CONFIDENTIAL patient record. Recovery token: H7CTF{bf3a8
 
 **Step 6 - Independent cross-check.** The string `H7CTF{bf3a8e98115450c654b4}` also appears in two other places in RAM (the PDF stream in the page cache, and the `FLAG='...'` environment variable of the scene-planting script). Three independent sources agree.
 
-## Flag
+## Result
 ```bash
 python exploit.py _scratch/memory.raw files/Q3_patient_records.pdf.locked
 ```

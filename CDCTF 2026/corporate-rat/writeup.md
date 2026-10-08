@@ -9,7 +9,7 @@ Bốn file log của cùng một host `ubnt-app02` (auditd, sshd/sudo, cron, sys
 nhân viên. Một người trong số đó đã để RAT trên máy chủ và làm lộ tài liệu ra ngoài. Nhiệm vụ là
 chỉ đúng người, cờ là họ tên trong roster, format `cdctf{Firstname Lastname}`.
 
-## Phân tích ban đầu
+## Phân tích
 
 Đếm sự kiện theo loại trong `audit.log`:
 
@@ -57,7 +57,7 @@ rồi 4 byte IPv4 big-endian. `0200 2157 CB00714D` là `203.0.113.77:8535`, `020
 beacon. Trong `cron.log`, 569 dòng `CMD (/tmp/.cache/.upd >/dev/null 2>&1)` giải thích cả hai con
 số: implant được cron của root gọi, mỗi lần gọi mở một kết nối beacon.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 Ba kênh trông giống attacker nhưng không dẫn tới implant (chi tiết trong `notes.md`):
 
@@ -71,7 +71,7 @@ Ba kênh trông giống attacker nhưng không dẫn tới implant (chi tiết t
    `Invalid user` trong `auth.log`. Toàn bộ 457 dòng `Accepted password` đều đến `10.50.x.x`, không
    IP nào trong nhóm quét lấy được phiên.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Liên kết implant với tài khoản đăng nhập.** Record `crontab` trong `audit.log` mang
 `auid` (login uid gốc), còn `uid=0` chỉ cho biết lệnh chạy qua sudo. Dòng `REPLACE` trong `cron.log`
@@ -166,7 +166,7 @@ lần cron gọi implant, dòng ACK đầu tiên lúc `Sep 20 02:43:00` trùng g
 Cổng trong hai file không khớp nhau (syslog ghi 8443 cho cả beacon, audit ghi 8535), và audit thiếu
 một kết nối ở cuối cửa sổ, nên con số dùng để đối chiếu được là IP và số lần kết nối, không phải cổng.
 
-## Flag
+## Kết quả
 
 Toàn bộ output của `python exploit.py files/corpo_rat.zip`:
 
@@ -213,7 +213,7 @@ python exploit.py files/corpo_rat.zip
 [+] da luu flag.txt
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 unzip corpo_rat.zip                 # 5 file vào thư mục con corpo_rat/

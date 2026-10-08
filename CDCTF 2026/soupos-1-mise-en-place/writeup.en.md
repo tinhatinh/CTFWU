@@ -3,11 +3,11 @@
 **Flag:** `cdctf{mise_en_place_two_paths_one_check}` · **Points:** 479 · **Author:** soup (CDCTF)
 **Handout:** `soupos-handout.tar.gz` + `symbols.txt` (identical to soupOS 0)
 
-## The task
+## Challenge
 
 "There is a flag file in the root bowl and you cannot read it. serve / will tell you why."
 
-## First look
+## Analysis
 
 `serve` lists the **current** bowl and takes no argument (`cmd_serve(void)`, `shell.c:545`), so the card's
 hint only works bare; typing `serve /` falls into the shell's unknown-command branch:
@@ -49,7 +49,7 @@ if (strcmp(name, "open") == 0) {
 
 Hence the card's title: **two paths, one check**.
 
-## Routes ruled out
+## Approaches tried
 
 1. **Typing it as the card suggests (`serve /`)** - the shell takes no argument for `serve` and falls back
    to `"No soup for you: '%s'"` (`shell.c:2489`). Use bare `serve`, or `cd <bowl>` then `serve`.
@@ -61,7 +61,7 @@ Hence the card's title: **two paths, one check**.
    does nothing; the value must be exactly 47 or the trailing `}` is cut. Verified in a harness built from
    the real sources.
 
-## The chain
+## Solution
 
 **Step 1 - call the interpreter's builtins directly, skipping the shell gate.** In soupyc `pour` is the
 print statement (`TK_POUR`, `soupyc.c:757`), not the shell command, and `read()` is capped at 47 bytes
@@ -89,7 +89,7 @@ That exact error was reproduced in the local harness during parser testing.
 ./soupctest.exe 'pour read(open("/FLAG1.TXT"),47)'
 ```
 
-## Flag
+## Result
 
 ```text
 cdctf{mise_en_place_two_paths_one_check}

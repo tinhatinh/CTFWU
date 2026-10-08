@@ -31,3 +31,11 @@ forged_sig  = SHA256_state_continue(tag, forged_body phần đuôi)
 
 ## Vì sao phải viết SHA-256 thuần Python
 `hashlib` không cho nạp lại trạng thái giữa dòng (không có API để "tiếp tục từ digest"), nên length extension cần tự cài `compress`. 64 vòng × 8 từ, chạy trong chưa tới 1 ms mỗi payload thử.
+
+## Kiểm tra length extension offline — 09/10/2026
+
+cmd: `python analysis/check_sha256.py`
+
+evidence: `PASS: 288 offline length-extension vectors`
+
+Đối chiếu kết quả với hashlib cho secret/body/suffix quanh biên padding 55, 56, 63, 64 byte và trường hợp nhiều block. Không gọi mạng hoặc instance.

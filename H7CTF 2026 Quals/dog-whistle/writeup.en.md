@@ -6,7 +6,7 @@
 
 A smart speaker takes commands over audio, firmware `aria` r7.2. The challenge says the only thing standing between us and the engineering command set is a "spectrum sweep" in the 300 - 3400 Hz band. Objective: take the flag the firmware holds.
 
-## Initial Analysis
+## Analysis
 
 The defence is not a filter. It is a second decoder, running on the signal *before* the nonlinear
 amplification stage, while the *real* decoder runs on the signal *after* it. Feed a command in as tones
@@ -51,7 +51,7 @@ payload 01 01 0E, điều chế carrier-hiệu  -> PROFILE SELECTED: region 0x0e
 
 The problem reduces to a single question: make the guard decode something different from the real decoder.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Difference tones.** The guard reads `x`; the real decoder reads `P(x)`. The `0.05u²` term
 generates `cos(2π(f_p−f_q)t)`. Pick two carriers per symbol at bins `p = 51+B` and `q = 51` (4080 Hz and
@@ -113,7 +113,7 @@ CAL ECHO: 80 25 53 df bc 55 00 00 | d0 62 53 df bc 55 00 00
 **Step 5 - Verifying the frame length.** The total frame length
 `A5 5A 3E 01 01 0E 02 39 1C … CK` = 66 bytes = 132 symbols = 1.65 s, within the WAV's 2-second ceiling.
 
-## Flag
+## Result
 ```bash
 python -u exploit.py
 ```

@@ -6,17 +6,17 @@
 
 Tìm loại packet kích hoạt bộ xử lý của backdoor.
 
-## Phân tích ban đầu
+## Phân tích
 
 Cả bốn file có cùng SHA-256. Phân tích tĩnh bằng Python 3.12 và GNU objdump; không thực thi mẫu.
 
 Hàm `0x12b460` dùng raw socket. Các hằng số truyền vào socket là 2, 3, 1; byte ICMP type được so với 8.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 HTTP/TLS không phù hợp với hàm đã tìm: socket dùng IPPROTO_ICMP. Echo Request thông thường chỉ vượt qua kiểm tra type, chưa vượt qua kiểm tra khóa.
 
-## Chuỗi khai thác
+## Lời giải
 
 Tại `0x12b490`, `socket(2,3,1)` tương ứng `AF_INET/SOCK_RAW/IPPROTO_ICMP`. Buffer nhận ở `rsp+0x20`; tại `0x12b4c8`, `[rsp+0x34]` được so với `0x8`. Offset 20 sau IPv4 header là ICMP type, và type 8 là Echo Request.
 
@@ -42,7 +42,7 @@ print(f"cdctf{{{protocol} {packet}}}")
 
 Flag được suy ra và in bởi script cục bộ; chưa có bằng chứng submission được chấp nhận.
 
-## Flag
+## Kết quả
 
 ```bash
 python exploit.py files/calculator
@@ -52,7 +52,7 @@ python exploit.py files/calculator
 cdctf{ICMP ECHO REQUEST}
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/calculator

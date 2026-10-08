@@ -12,11 +12,12 @@ The archive layout below is the source of truth. The site is assembled into a st
 1.3 GB of challenge artifacts in this repo never reach `_site`:
 
 ```bash
-python tools/build_site.py              # writes _site_src/ and _site_src_en/, 113 posts each
+python tools/build_site.py              # writes _site_src/ and _site_src_en/
 ```
 
 `_site_src/` (Vietnamese) and `_site_src_en/` (English) are generated and git-ignored - never edit
-them. The generator reads each `<Event>/<slug>/writeup.md` and `writeup.en.md`, takes the publish
+them. The generator reads each `<Event>/<slug>/writeup.md` and `writeup.en.md`, including the optional
+`<Event>/Wave N/<slug>/` layout, takes the publish
 date from `tools/solve_times.json` (the moment the flag was written during the contest; an entry
 with no clock time means the file was copied in bulk, so only the day is evidenced), reads the
 category from the event's `README.md` table, generates the `competitions` and `about` tabs, copies
@@ -129,17 +130,18 @@ score labels.
 
 | Event | Date | Writeups | Categories |
 |-------|------|----------|------------|
-| [H7CTF 2026 Quals](H7CTF%202026%20Quals/writeup.md) | Sep 2026 | 29 | Pwn · Crypto · Web · Web3 · Hardware · Forensics · Mobile · Cloud · AI · Rev · OSINT · Misc |
-| [SunshineCTF 2026](SunshineCTF%202026/writeup.md) | Sep 2026 | 18 | Pwn · Web · Crypto · Forensics · Misc |
+| [H7CTF 2026 Quals](H7CTF%202026%20Quals/README.md) | Sep 2026 | 29 | Pwn · Crypto · Web · Web3 · Hardware · Forensics · Mobile · Cloud · AI · Rev · OSINT · Misc |
+| [SunshineCTF 2026](SunshineCTF%202026/README.md) | Sep 2026 | 18 | Pwn · Web · Crypto · Forensics · Misc |
 | [Pointer Overflow CTF 2026](Pointer%20Overflow%20CTF%202026/writeup.md) | Sep 2026 | 8 | Crypto · EXP · Forensics · Misc · OSINT · RE · Steg · Web |
-| [CSS CTF 2026: Return of Nexus](CSS%20CTF%202026/writeup.md) | Oct 2026 | 17 | Web · Pwn · Crypto · Forensics · OSINT · Misc · Reverse Engineering · Web3 |
+| [CSS CTF 2026: Return of Nexus](CSS%20CTF%202026/README.md) | Oct 2026 | 17 | Web · Pwn · Crypto · Forensics · OSINT · Misc · Reverse Engineering · Web3 |
 | [CDCTF 2026](CDCTF%202026/README.md) | Oct 2026 | 41 | Crypto · Forensics · Log Analysis · Misc · NTA · OSINT · Password Cracking · Pwn · Reverse · Scanning · Web |
 
 **Total: 113 writeups**
 
+
 ## Structure
 
-Each challenge directory follows a consistent layout:
+Preferred challenge layout; omit unavailable files and use the script name documented in the writeup:
 
 ```
 <challenge-name>/
@@ -155,9 +157,9 @@ Each challenge directory follows a consistent layout:
 
 ## Conventions
 
-- Flags are recorded only when they appear verbatim in command output. No guessing.
+- Record flags and answers exactly as found in artifacts, readable images or captured output. Distinguish recovered values, issued markers and accepted submissions.
 - Every claim in `writeup.md` traces back to a command logged in `notes.md`.
-- Dead-end hypotheses are preserved in the "Eliminated hypotheses" section - these are often the most educational parts.
+- Include only failed attempts that explain the solution. Keep detailed experiments and untested plans in `notes.md`.
 - Solve scripts are self-contained and can be re-run against a live instance.
 - Flag prefixes vary between challenges (even within the same event). Always verify before scanning.
 

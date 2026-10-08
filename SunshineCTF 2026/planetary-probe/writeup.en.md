@@ -10,7 +10,7 @@ The planetary ledger of the "Galactic Federation". The console answers with exac
 
 The application has a blind SQL injection against PostgreSQL. The flag is not inside the database, but rather stored on the filesystem. By executing stacked statements, the application can use the `COPY (SELECT 1) TO PROGRAM '<cmd>'` feature to execute shell commands as the OS user `postgres`. The exit code of these commands can be used as a second oracle to infer filesystem contents and slowly extract the flag character by character.
 
-## Initial Analysis
+## Analysis
 
 ### Attack surface
 
@@ -31,13 +31,13 @@ Other routes return a Flask-style 404. Extra headers, cookies and parameters cha
 SELECT id FROM planets WHERE name = '<payload>'
 ```
 
-Normalised oracle: `MARS' AND (<expr>)-- ` returns carrier if and only if `<expr>` is true. 
+Normalised oracle: `MARS' AND (<expr>)-- ` returns carrier if and only if `<expr>` is true.
 
 The application lower-cases the entire payload. This means `ascii('A')=65` is evaluated as false, whereas `ascii('A')=97` and `ascii(chr(65))=65` are true. Therefore, no uppercase character may be typed in any pattern, and every comparison has to be reduced to numbers (`ascii`, `length`).
 
 A full scan of the database schema (`pg_class`, `planets`, `zleak`) confirms the string `sun{` is not present in any column or description. The flag must reside on the filesystem.
 
-## Exploit Chain
+## Solution
 
 ### Step 1 - The second oracle: the program's exit code
 
@@ -69,7 +69,7 @@ Technical constraints to handle during extraction:
 
 Each character is verified twice using bracket classes (`[s][u][n][{]...`) to avoid metacharacter interpretation.
 
-## Flag
+## Result
 
 ```
 [*] exact string, end-anchored: True
@@ -78,7 +78,7 @@ Each character is verified twice using bracket classes (`[s][u][n][{]...`) to av
 [*] length 35 and nothing more: True True
 ```
 
-The measured flag length is 35. 
+The measured flag length is 35.
 
 ```
 sun{bl1nd_psqli_2_rc3_p4Nd0FyZt8k2}

@@ -7,7 +7,7 @@
 
 Đề cung cấp `lampDrill.svg` và `lampDrill.png`, kèm gợi ý "Warm-up. No spaces.". Hàng trên mô tả phép toán trên hai bóng đèn; ba hàng dưới chứa dữ liệu để giải mã theo định dạng `CSSCTF{...}`.
 
-## Phân tích ban đầu
+## Phân tích
 
 Có thể đọc các trạng thái trực tiếp trên ảnh: đèn tô đen là 1, đèn rỗng là 0. Để reproduce bằng script, đọc các `<path>` trong SVG và lấy màu `fill`. Phân loại theo đường kính cho các nhóm sau:
 
@@ -28,7 +28,7 @@ Hàng trên chỉ cho đầu ra 1 khi cả hai đầu vào đều là 1, tương
 
 Khu vực ma trận bên dưới bao gồm 3 dãy, mỗi dãy gồm 8 ô được liên kết chuỗi thông qua mũi tên chỉ hướng. Mỗi ô chứa chính xác hai bóng đèn (2 bit đầu vào).
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Đọc trạng thái từng bóng đèn.**
 Script đọc bounding box của các `<path>`, giữ những đối tượng có đường kính 22–24, rồi chuyển màu `fill` thành bit. Đây là cách tự động đọc lại cùng dữ liệu nhìn thấy trên ảnh.
@@ -54,10 +54,10 @@ Dãy 2: bits=01110011 -> Hex: 0x73, ASCII: 's'
 Dãy 3: bits=01110011 -> Hex: 0x73, ASCII: 's'
 ```
 
-**Bước 4 - Xác thực tính toàn vẹn (Kiểm chứng).** 
+**Bước 4 - Xác thực tính toàn vẹn (Kiểm chứng).**
 Kiểm tra lại số lượng: 12 bóng ở hàng quy tắc và 48 bóng ở ba hàng dữ liệu. Mỗi ô có hai bóng. Hai hàng cuối khác trạng thái ở ô đầu (`.#` và `..`), nhưng AND đều cho 0, nên cả hai cùng giải mã thành `s`. Ba byte thu được là `css`.
 
-## Cờ
+## Kết quả
 
 Chạy script:
 

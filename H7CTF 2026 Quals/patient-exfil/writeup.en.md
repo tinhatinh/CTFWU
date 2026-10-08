@@ -8,7 +8,7 @@ A machine in the lab has been "talking to the outside" on a very slow schedule, 
 The challenge gives a single network capture (`capture.pcap`) and asks for the secret message the attacker sent out.
 The event's flag format is `H7CTF{...}`.
 
-## Initial Analysis
+## Analysis
 
 Triage with `node ~/.qoder/skills/ctf-solve/scripts/triage.cjs`:
 
@@ -24,7 +24,7 @@ Triage with `node ~/.qoder/skills/ctf-solve/scripts/triage.cjs`:
   `grafana.internal.lab`, `logging.googleapis.com`, `api.weather.example`, `cdn.jsdelivr.net`)
   and 3 odd ones sharing the same parent:
 
-  ```
+```
   00ja3ugvcgpm3doobx.sync.cdn-telemetry-lab.net.
   01mi4dmy3dg43tozru.sync.cdn-telemetry-lab.net.
   02gi3geoldgb6q.sync.cdn-telemetry-lab.net.
@@ -33,7 +33,7 @@ Triage with `node ~/.qoder/skills/ctf-solve/scripts/triage.cjs`:
 Suspicion: DNS tunneling. The domain `cdn-telemetry-lab.net` impersonates a telemetry service, the `00/01/02`
 prefixes are fragment indices, and this is the classic way to slip past a dashboard because each query is just a DNS lookup.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Counting queries by parent domain.** Filter every DNS query whose `qname` ends in `.sync.cdn-telemetry-lab.net.`.
 There are 12 packets, but only 3 unique labels: each label is sent in pairs (retries), looping over 2 rounds,
@@ -57,12 +57,9 @@ blob (44 ký tự): ja3ugvcgpm3doobxmi4dmy3dg43tozrugi3geoldgb6q
 decoded (27 byte): H7CTF{6787b86cc777f426b9c0}
 ```
 
-**Step 4 - Verifying completeness.** 44 % 8 = 4, so the last chunk is shorter (12 characters instead of 16), exactly the
-sign of the final fragment in a cut data stream; the result ends precisely with `}` and begins with `H7CTF{`.
-Had the chunk order been wrong, or had a chunk still been missing, the output would be garbage and could not line up
-the brackets like that. That is evidence the reassembly structure is correct, not speculation.
+**Step 4 - Check the output structure.** The base32 string is 44 characters and decodes to 27 bytes; `44 % 8 = 4` is consistent with a shorter final base32 chunk. It starts with `H7CTF{` and ends with `}`. These are structural cross-checks, not independent proof that every fragment is ordered correctly. Reproduce the result using the fragment ordering established from the capture.
 
-## Flag
+## Result
 Reproducible with:
 
 ```bash

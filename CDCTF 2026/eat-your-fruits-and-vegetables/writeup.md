@@ -8,7 +8,7 @@ Một cơ sở dữ liệu đã bị đánh cắp và mã hoá bằng AES-128 tr
 
 Không có key và không có oracle giải mã, nên toàn bộ thông tin phải lấy từ chính ciphertext.
 
-## Phân tích ban đầu
+## Phân tích
 
 File dài 960000 byte, chia hết cho 16 và 32. Đề đã xác định AES-ECB; phân tích dưới đây dùng số lượng và tần suất các block lặp để khôi phục thông tin thống kê, không suy ra chế độ mã hóa từ entropy.
 
@@ -24,7 +24,7 @@ Cắt file theo block 16 byte và đếm giá trị phân biệt:
 
 Gọi `A` là block "tên + xe", `B` là block "hoa quả + OS". Vấn đề quy về việc tìm ba block `A` thuộc về Bob rồi đọc `B` đi kèm.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 Trước khi chốt đã kiểm tra và loại các kênh sau (log đầy đủ ở `notes.md`):
 
@@ -33,7 +33,7 @@ Trước khi chốt đã kiểm tra và loại các kênh sau (log đầy đủ 
 3. **Dùng con số "Bob - 5%" trong đề**: nhóm bị ràng buộc thật sự chứa đúng 2500 dòng, tức 1/12 chứ không phải 5%. Tỉ lệ tên trong đề không khớp dữ liệu quan sát; bảng hoa quả mới khớp dữ liệu.
 4. **So 8 byte đầu của các block `B` với nhau**: ECB mã hoá trọn block 16 byte, hai plaintext chỉ khác nửa sau vẫn cho ciphertext khác hoàn toàn. Ba block `B` của cùng một loại hoa quả không có chung byte nào.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Đếm block theo vị trí trong record.** Với mỗi record 32 byte, lấy `A = record[0:16]` và `B = record[16:32]`, dựng hai bảng tần suất và bảng tần suất của cặp `(A, B)`. Kết quả: 36 block `A` phân biệt, 18 block `B` phân biệt.
 
@@ -84,7 +84,7 @@ for bset, alist in groups.items():
 
 18 block tách đúng thành 6 cụm 3 block, tổng các cụm khớp chính xác từng dòng với bảng phân bố của đề, kể cả tỉ lệ 33.33% của hệ điều hành bên trong mỗi cụm. Ba block của nhóm Bob nằm gọn trong cụm 18%: chúng có cùng một loại hoa quả thật, phù hợp với ràng buộc Bob chỉ thích một loại hoa quả.
 
-## Flag
+## Kết quả
 
 ```bash
 python exploit.py files/data.db.enc
@@ -110,7 +110,7 @@ python exploit.py files/data.db.enc
 [+] flag: cdctf{Carrot}
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/data.db.enc

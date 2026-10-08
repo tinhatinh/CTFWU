@@ -15,7 +15,7 @@ the hostname `one`.
 `two`, `two` on `three`, `three` on `four`; then "no more" plus "peek at the floor", and the flag is
 passed back ("pass it back") until it "sits as bits down at `one`".
 
-## Initial analysis
+## Analysis
 
 `terminal` has two NICs (172.26.2.2, 172.26.3.2) but no `ip`/`ss`/`nc`; reading `/proc/net/route` and
 scanning 172.26.2.1-29 and 172.26.3.1-29 through `/dev/tcp` shows **only** `172.26.2.3:22` open.
@@ -92,7 +92,7 @@ sees its immediate neighbour, matching the `zero/one/two/three` ladder in the ve
 `sftp`, `scp`, `nc` and `bash` (no `python3`, no `socat`), and `/home/*/.ssh/key` is the read-only bind of
 the "Universal" key, so a root payload on `one` already has what it needs to upload `script` to `two`.
 
-## Ruled out
+## Approaches tried
 
 1. **Shell on `one`**: `ForceCommand internal-sftp`, every command returns "This service allows sftp
    connections only." Execution must go through SFTP plus `script`.
@@ -116,9 +116,9 @@ the "Universal" key, so a root payload on `one` already has what it needs to upl
   `/flag` on the last hop?).
 - `analysis/propagator.sh` contains the full self-replicating walker with the return path, **not yet run**.
 
-## Flag
+## Result
 
-None. The furthest point reached in this session is root code execution on hop `one`.
+None. The furthest point reached in the recorded run is root code execution on hop `one`.
 
 ## Reproduce
 

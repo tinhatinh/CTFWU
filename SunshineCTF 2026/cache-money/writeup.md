@@ -2,7 +2,7 @@
 
 **Flag:** `sun{s4fe_l1nk1ng_w0nt_s4ve_y0ur_tc4che}`
 
-## 1. Bài toán
+## Đề bài
 
 `cache_money` là một chương trình quản lý ví (wallet manager) hoạt động qua menu. Mỗi ví (wallet) là một struct có kích thước 0x30 byte được cấp phát bằng `calloc`, đi kèm với một "ledger" (sổ cái) được cấp phát bằng `malloc(size)`:
 
@@ -16,7 +16,7 @@ Mảng `wallets[16]` nằm ở vùng nhớ `.bss` tại địa chỉ `0x4040c0` 
 - `withdraw(i)` = `write(1, wallets[i]->ledger, wallets[i]->size)` -> Đọc dữ liệu ra từ chunk.
 - `open` = Gọi `calloc(0x30)` cho struct của ví, sau đó gọi `malloc(size)` cho ledger.
 
-## 2. Lỗ hổng
+## Lỗ hổng
 
 Hàm `transfer(src, dst)` giải phóng (free) ledger của ví `src`, nhưng sau đó lại gán chính con trỏ vừa bị free đó cho ví `dst`:
 
@@ -30,15 +30,14 @@ Hàm `transfer(src, dst)` giải phóng (free) ledger của ví `src`, nhưng sa
 
 Từ đây, ta có một lỗi Use-After-Free (UAF) trên heap: có thể đọc và ghi vào một chunk đang nằm trong tcache.
 
-## 3. Hai đặc điểm của allocator quyết định hướng khai thác
+## Hai đặc điểm của allocator quyết định hướng khai thác
 
 **(a) `calloc` không lấy chunk từ tcache, trong khi `malloc` thì có.**
-Trên hệ thống dùng glibc 2.39 của target, sau khi free ledger `X` và gọi `open` để tạo một ví mới, struct của ví mới sẽ được lấy từ top chunk, còn ledger của nó mới là chunk `X` vừa được pop ra từ tcache. Điều này có thể được kiểm chứng bằng chính chương trình: sau khi thực hiện `transfer(A->C)` rồi gọi `open B`, nếu ta gọi `withdraw(B)` thì nó vẫn in ra tên là `"B"` (struct vẫn còn nguyên vẹn) nhưng 48 byte đọc được lại chính là nội dung ta vừa ghi vào `C`, tức là `B->ledger == C->ledger`. Vì struct không bao giờ rơi vào chunk đã bị free, ta không thể dùng cách thông thường là "ghi đè ledger thành một struct giả".
+Trên hệ thống dùng glibc 2.39 của target, sau khi free ledger `X` và gọi `open` để tạo một ví mới, struct của ví mới sẽ được lấy từ top chunk, còn ledger của nó mới là chunk `X` vừa được pop ra từ tcache. Điều này có thể được kiểm chứng bằng chính chương trình: sau khi thực hiện `transfer(A->C)` rồi gọi `open B`, nếu ta gọi `withdraw(B)` thì nó vẫn in ra tên là `"B"` (struct vẫn còn nguyên vẹn) nhưng 48 byte đọc được lại chính là nội dung ta vừa ghi vào `C`, tức là `B->ledger == C->ledger`. Với thứ tự cấp phát và kích thước đã thử, struct không lấy chunk ledger vừa free, ta không thể dùng cách thông thường là "ghi đè ledger thành một struct giả".
 
-**(b) Safe-linking.**
-Chunk duy nhất nằm trong bin có con trỏ `fd = 0x2eea7`, trong khi base của heap là `0x2eea7xxx`. Điều này khớp với công thức `stored = ptr ^ (slot >> 12)`. Hệ quả rất thú vị ở đây là: khi bin đang rỗng (chưa trỏ đến chunk nào khác), giá trị `fd` đọc được chính là mask `heap_base >> 12`. Do đó, ta không cần phải leak riêng địa chỉ heap base nữa. Giá trị `key` là một số ngẫu nhiên theo từng thread nên không thể dùng để leak được.
+**(b) Safe-linking.** Khi chunk là phần tử duy nhất trong bin, `next = NULL` được mã hóa thành `pos >> 12`, với `pos` là địa chỉ trường next. Giá trị leak `0x2eea7` là mask của trang chứa chunk, không tự xác định toàn bộ heap base hoặc offset trong trang. Chuỗi khai thác dùng mask này và đối chiếu địa chỉ chunk kế tiếp nằm cùng trang. Trường `key` là khóa phát hiện double-free của tcache, không phải con trỏ heap để suy ra base.
 
-## 4. Chuỗi tấn công
+## Lời giải
 
 1. Gọi `open A(48)`, `open C(48)`, `open F(48)` -> Tạo ra các ledger tương ứng là `X`, `Z`, `W`.
 2. Gọi `transfer(A->C)` -> Chunk `X` bị đẩy vào tcache, `C->ledger = X`. Gọi `withdraw(C)` để đọc `fd` và thu được mask.
@@ -55,7 +54,7 @@ Chunk duy nhất nằm trong bin có con trỏ `fd = 0x2eea7`, trong khi base c�
 
 Bài này không cần dùng kỹ thuật ROP: dù không có hàm `system` trong PLT, nhưng do binary biên dịch với Partial RELRO nên ta có thể ghi đè GOT, và tham số `rdi` truyền vào cho `free()` cũng chính là con trỏ ledger mà ta hoàn toàn kiểm soát được nội dung.
 
-## 5. Debug nhanh trên môi trường host Windows
+## Debug nhanh trên môi trường host Windows
 
 Vì không cài sẵn `pwntools` hay `gdb` cho ELF Linux trên Windows, nên toàn bộ quá trình khai thác được thực hiện thông qua `objdump` và thao tác qua socket thô (raw socket). Có hai lỗi gây mất thời gian nhất và đều nằm ở phía client:
 

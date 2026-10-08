@@ -10,7 +10,7 @@ Tác giả cho một stream cipher đối xứng viết bằng Haskell (`GL2-88.
 ciphertext 44 ký tự. Nhiệm vụ: lấy lại plaintext theo format `cdctf{...}` mà không
 biết khoá (khoá 11 ký tự, bị `main` cưỡng chế độ dài).
 
-## Phân tích ban đầu
+## Phân tích
 
 Mỗi ký tự plaintext được biến đổi bằng một ma trận 2x2 trên Z67:
 
@@ -29,7 +29,7 @@ Ba điểm bất thường dẫn tới hướng đánh:
 3. Lock sinh keystream (`concat . iterate go` rồi 12 vòng `round`) hoàn toàn không
    phụ thuộc plaintext, Điều này cho phép phân tích keystream riêng; tính affine theo khóa được kiểm tra ở bước sau.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Port keystream sang Python và đối chiếu bằng GHC thật.** Không có GHC trên
 máy, nên biên dịch đúng source của đề bằng Wandbox (trình `ghc-9.10.1`, chỉ thay `main`).
@@ -45,7 +45,7 @@ Qux`OtZS\NfEotCec>>G}eRxrJD[XXsMftQy<qmkYsog
 Port Python khớp byte-by-byte cả 4 test vector; chúng được khoá lại thành
 `GHC_VECTORS` + `assert` trong `exploit.py::selftest`.
 
-**Bước 2 - Chứng minh hai tính chất suy giảm độ phức tạp.** `structure_report` kiểm
+**Bước 2 - Kiểm tra hai tính chất dùng để giảm không gian tìm kiếm.** `structure_report` kiểm
 tra trên 5 khoá ngẫu nhiên:
 
 ```python
@@ -91,7 +91,7 @@ ngẫu nhiên. Không có plaintext đọc được.
 2. **Giả định `}` ở cuối chuỗi** chưa loại trừ được bằng dữ liệu; hướng dim-5
    (chỉ giữ `cdctf{`, 1.35 tỉ khoá) đang chạy ở `analysis/scanF.py`.
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py            # selftest GHC vector + do khong gian khoa (~40 giay)

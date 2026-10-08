@@ -7,7 +7,7 @@
 Hệ thống mô phỏng môi trường Terminal của tập đoàn Sparrow Freight, quản lý các bản kê khai hàng hoá (manifest) và được giới hạn truy cập cho tài khoản admin. Trong kịch bản, người chơi đóng vai trò một người dùng thông thường. Tuy nhiên, hệ thống thiết kế tính năng tiếp nhận ý kiến phản hồi (feedback) và hiển thị trực tiếp dữ liệu này.
 Mục tiêu là khai thác hệ thống, nâng cấp đặc quyền (privilege escalation) lên mức "management" (quản lý) để truy cập tài liệu mật manifest.
 
-## Phân tích ban đầu
+## Phân tích
 
 Giải nén file `manifest.zip`, trích xuất binary chính (binary), cùng thư viện `libc.so.6` (phiên bản glibc 2.39, môi trường Ubuntu 24.04) và trình nạp (loader) đi kèm.
 Phân tích thông tin file bằng công cụ `scripts/triage.cjs`:
@@ -33,16 +33,16 @@ Hàm view_manifest:
 
 Mục tiêu: Cập nhật biến cờ `is_admin` định dạng `DWORD`, đặt tại địa chỉ `0x40407c` (phân đoạn bộ nhớ `.bss`).
 
-Phân tích cấu trúc không gian ngăn xếp (layout): Khi hàm `feedback` được gọi, nó thực hiện các lệnh: `push rbp; mov rbp,rsp; sub rsp,0xd0`. Quá trình này cấp phát bộ đệm `buf` nằm tại đỉnh stack `rsp`. 
+Phân tích cấu trúc không gian ngăn xếp (layout): Khi hàm `feedback` được gọi, nó thực hiện các lệnh: `push rbp; mov rbp,rsp; sub rsp,0xd0`. Quá trình này cấp phát bộ đệm `buf` nằm tại đỉnh stack `rsp`.
 Khi hệ thống chạy lệnh `call printf`, theo quy ước ABI, 6 đối số (parameter) đầu tiên được truyền qua thanh ghi (`rdi` chứa chuỗi định dạng; `rsi/rdx/rcx/r8/r9` chứa các vararg từ 1 đến 5). Từ đối số vararg thứ 6, dữ liệu được truyền qua stack (nằm tại địa chỉ trả về return address) - chính xác tại địa chỉ `buf+0`.
 
 Từ cấu trúc này, xác định 2 toạ độ bộ nhớ (offset):
 - Vị trí `buf+0` tương ứng với đối số định dạng thứ 6 (Mã cấu trúc: `%6$`)
 - Vị trí `buf+8` tương ứng với đối số định dạng thứ 7 (Mã cấu trúc: `%7$`)
 
-## Quá trình khai thác
+## Lời giải
 
-**Bước 1 - Xác định địa chỉ để định vị bộ đệm buffer.** 
+**Bước 1 - Xác định địa chỉ để định vị bộ đệm buffer.**
 Nhập chuỗi kiểm tra `MARKER-%6$p-%7$p-...` vào hệ thống:
 
 ```text
@@ -60,8 +60,8 @@ Khối độn ("CCCC")  +  Khối thực thi ("%7$n")  +  Địa chỉ p64(0x404
 Khoảng: 0..3             Khoảng: 4..7                Khoảng: 8..15
 ```
 
-**Bước 3 - Lỗi phát sinh: Hàm `%n` ghi giá trị 0.** 
-Ở lần thử đầu tiên, khối kích hoạt `%7$n` được đặt ở đầu buffer (Dạng: `"%7$n" + b"AA" + địa_chỉ`). Quá trình không gây lỗi hệ thống (không crash), nhưng biến `is_admin` không thay đổi, hệ thống từ chối truy cập manifest. 
+**Bước 3 - Lỗi phát sinh: Hàm `%n` ghi giá trị 0.**
+Ở lần thử đầu tiên, khối kích hoạt `%7$n` được đặt ở đầu buffer (Dạng: `"%7$n" + b"AA" + địa_chỉ`). Quá trình không gây lỗi hệ thống (không crash), nhưng biến `is_admin` không thay đổi, hệ thống từ chối truy cập manifest.
 Nguyên nhân của vấn đề bao gồm hai điểm quan trọng:
 
 - Lệnh định dạng `%n` ghi TỔNG SỐ KÝ TỰ đã được lệnh in hiển thị tới thời điểm nó được gọi. Do đặt ở đầu chuỗi, số ký tự đếm được là 0.
@@ -69,14 +69,14 @@ Nguyên nhân của vấn đề bao gồm hai điểm quan trọng:
 
 Phương án điều chỉnh: Đảo ngược cấu trúc. Nhập 4 ký tự đệm (có thể in được, như `CCCC`) ở đầu payload; chuyển khối thực thi `%7$n` sang vị trí offset 4-7. Cấu trúc này đảm bảo địa chỉ mục tiêu nằm đúng tại toạ độ `buf+8`. Khi `%n` thực thi, nó ghi nhận 4 ký tự đệm và ghi giá trị 4 vào bộ nhớ - giá trị lớn hơn 0, đáp ứng điều kiện vòng kiểm duyệt `test eax,eax`.
 
-**Bước 4 - Khai thác quyền hệ thống và đọc Manifest.** 
+**Bước 4 - Khai thác quyền hệ thống và đọc Manifest.**
 Thực thi nhánh menu số `2`:
 
 ```text
 [manifest] clearance code: H7CTF{a2b24085-c670-4a87-93cb-293cfec6196c}
 ```
 
-## Flag
+## Kết quả
 ```bash
 python exploit.py pwn.h7tex.com 42506
 ```

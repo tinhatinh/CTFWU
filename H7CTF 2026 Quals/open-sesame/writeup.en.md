@@ -9,11 +9,11 @@ A cheap garage remote emits a fresh code on every press, and the challenge gives
 baseband. The hint: "unguessable" is not the same as "unpredictable". The job is to compute the code the remote will
 transmit on the 9th press and submit it to the service.
 
-## Initial Analysis
+## Analysis
 
 `capture.cf32` = I/Q float32 LE @ 1 MHz. The host has no GNU Radio and no urh, so the demodulation is done by hand.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Envelope.** `env = I^2 + Q^2`, smoothed over a 20 µs window to flatten ripple within one chip.
 
@@ -69,7 +69,7 @@ code    = 4f122809d61d
 first 32 bits are identical in every frame, and the counter difference between two consecutive frames is always `0x30`.
 For each frame, the crc recomputed from the formula equals the last nibble exactly.
 
-## Flag
+## Result
 ```
 python solve.py https://web-7a56034b5423964c.web.h7tex.com analysis/capture.cf32 --submit
 [*] /unlock -> 200

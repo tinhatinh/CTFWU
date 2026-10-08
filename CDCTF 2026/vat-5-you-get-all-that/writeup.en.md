@@ -3,7 +3,7 @@
 **Flag:** `cdctf{8u88l3_848813_fl4g_pa55ing}`
 **Files:** `captured_cred_call.mp3` (151244 B, sha256 `687fecc9b0868355f0af53b347d8a3a5e918522d936cda0cd46d89504799f803`), `cred_call_transcript.txt` (254 B, sha256 `41eb65db34be1d35090b7d694d2bd065d1afbee97d57172f3aa9ead6aab00fea`)
 
-## Problem Description
+## Challenge
 
 The challenge ships an automated voice call placed to one of Jeffery Barrett's employees,
 plus its transcript. The message says a credential is being shared and that it has been
@@ -11,7 +11,7 @@ plus its transcript. The message says a credential is being shared and that it h
 separated by periods. The card is worth 500 points, tagged OSINT + Crypto, authored by `b0b`,
 with flag format `cdctf{ex4mp13_f14g}`. There is no remote service.
 
-## Initial Analysis
+## Analysis
 
 The provided transcript contains all 17 word groups needed by the decoder. Use it directly rather than transcribing the audio again. The accompanying MP3 is 24 kHz mono with tag `TSSE = Lavf61.7.100`.
 
@@ -26,7 +26,7 @@ generates in `fingerprint_bubblebabble` (`sshkey.c`).
 
 Container, spectral and ASR experiments are preserved in `notes.md`. The solution below only needs the supplied transcript.
 
-## Exploitation Chain
+## Solution
 
 **Step 1 - Turn the structure into BubbleBabble parameters.** The function emits `x`, then per
 round prints 5 characters derived from one byte pair, with `-` between rounds:
@@ -79,7 +79,7 @@ guess that `z` was a mis-read `x` was wrong). The plaintext also explains itself
 `cdctf{` plus the closing `}` obey the stated format. One side property of the code acts as a
 safety valve: some character errors produce indices outside 0..3. This structural check does not detect every possible alteration.
 
-## Flag
+## Result
 
 ```bash
 python exploit.py files/cred_call_transcript.txt

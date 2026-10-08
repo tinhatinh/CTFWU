@@ -6,7 +6,7 @@
 
 **Flag:** `sun{you_must_be_some_sort_of_nimble_space_navigator}`
 
-## Initial Analysis
+## Analysis
 
 The binary is PIE, NX, Partial RELRO, with a full symbol table. It contains no `pop reg; ret` gadgets, no `system`/`execve` in the PLT, and every input buffer restricts the read size accurately.
 
@@ -34,7 +34,7 @@ The early-return branch skips writing to `*out`. Every call site passes an unini
 
 Providing non-numeric input causes the program to print 4 bytes of stack data as a signed integer, providing a memory read primitive.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Flag placement.** The flag is scattered across the stack by `place_flag()` before the menu runs:
 

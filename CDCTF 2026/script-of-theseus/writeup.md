@@ -8,7 +8,7 @@
 "xóa hết rồi viết lại từng dòng" trên Windows. Yêu cầu: tìm điểm khác nhau và nộp hex in hoa của một
 byte nằm trong điểm khác nhau đó, cờ dạng `cdctf{FF}`. Bài chỉ có file, không có instance.
 
-## Phân tích ban đầu
+## Phân tích
 
 Hai file gần như cùng kích thước, 156 và 163 byte, lệch nhau 7 byte. `file` mô tả cả hai là
 `Python script, ASCII text executable`, nhưng chỉ bản `replaced` mang đuôi nhận xét
@@ -36,7 +36,7 @@ Hexdump hai phần đầu thì thấy ngay: bản gốc kết thúc dòng bằng
 Điều cần chứng minh không phải là "có CRLF", mà là ngoài CRLF không còn thay đổi nào khác: nếu người
 bạn còn sửa chữ nào đó thì byte khác biệt sẽ không đơn nhất.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **Script bị sửa nội dung (tên biến, chuỗi, thụt lề, thêm dòng)**: bỏ `0d` khỏi bản `replaced` rồi so
    với bản gốc thì `cmp` trả về giống hệt, và số dòng của hai file bằng nhau (7 với cả hai).
@@ -48,7 +48,7 @@ bạn còn sửa chữ nào đó thì byte khác biệt sẽ không đơn nhất
    trôi toàn bộ chỉ số phía sau; output này so hai chuỗi lệch pha nên không đọc được gì. Loại cách đo,
    chuyển sang so tần suất byte và so sau khi chuẩn hoá.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Đo tần suất byte thay vì diff text.** Đếm số lần từng giá trị byte ở hai file rồi lấy hiệu
 theo cả hai chiều; `analysis/byte_freq.py` làm phép đo này và in kèm số LF/CR của từng bản.
@@ -89,7 +89,7 @@ tr -d '\r' < files/replaced_epic_python_script.py | cmp - files/original_epic_py
 giong het ban goc
 ```
 
-## Flag
+## Kết quả
 
 ```bash
 python exploit.py
@@ -111,7 +111,7 @@ python exploit.py
 cdctf{0D}
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/original_epic_python_script.py files/replaced_epic_python_script.py

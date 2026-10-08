@@ -10,7 +10,7 @@ anything unusual". The target is an instance running `mediamtx` (MediaMTX), give
 
 The task: read the data the attacker sends out.
 
-## Initial Analysis
+## Analysis
 
 `curl -I /` returns `Server: mediamtx`, so this is a media streamer rather than a web app. MediaMTX serves
 HLS at the route `<path-name>/index.m3u8`, while the `/v3/...` API here is closed (301 then 404). Trying a list of
@@ -27,7 +27,7 @@ segments. Downloading 7 segments gives 47.85 s of AAC mono 48 kHz audio.
 Two questions to answer in order: is the data in the container or in the signal? and if it is in the signal, in what
 modulation form?
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Looking at the spectrum by eye.** `ffmpeg -lavfi showspectrumpic` gives a spectrum image (saved as `analysis/spectrogram.png`).
 Nine energy bursts are visible at once, each ~1.7 s, repeating at a steady ~5.68 s spacing, sitting entirely inside
@@ -63,7 +63,7 @@ H7CTF{7f0cb1b6-34ee-46c0-945b-1f069dff2a29}
 9th is cut mid-way (`...dff`) precisely because the capture window ends in the middle of it. A coincidental decode
 cannot repeat verbatim 8 times; this is also evidence that the message is looped out over the live feed.
 
-## Flag
+## Result
 ```bash
 python exploit.py https://web-021fc06a681e8dca.web.h7tex.com/boardroom 60   # khi instance còn chạy
 python exploit.py files/352f5b477507_main_seg15.ts                          # re-run from the saved segment

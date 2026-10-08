@@ -4,11 +4,11 @@
 **Materials:** repo `https://github.com/shkorodi/notekeeper` (8 commits, `main` at `a531ea3`), artifact `files/app.py` (5,311 B, SHA256 `a089e78dab3ce7ca45f6303d380ba077e0fcbbd6e266474fa4bad334c63e4eaf`)
 **Author:** b0b
 
-## Problem Description
+## Challenge
 
 The repo owner reports being hacked mid-development of a Flask note-taking app: an attacker allegedly edited the code before the push, yet nothing showed up in the diff. The challenge provides a public GitHub repository, no binary and no network service. The task is to identify the change the attacker introduced and extract the flag string it hides.
 
-## Initial Analysis
+## Analysis
 
 The clone contains 8 commits on `main`, no tags, and no dangling objects reported by `git fsck --full --dangling`. Three refs point to `a531ea371475532d0a6aef72a051d3bd44d1c689`. The payload can be investigated in the available commits; a fresh clone cannot establish whether the remote was ever force-pushed.
 
@@ -41,7 +41,7 @@ exec(tags_list)
 
 `notes_list` is used nowhere else except the loop that builds `tags_list`, and `exec(tags_list)` sits at module level, so it runs on import, i.e. every app start. The offset `0xE0000` matches the start of the Unicode Tag block: U+E0020-U+E007E maps exactly onto ASCII 0x20-0x7E, and U+E000A is a newline. The whole block is zero-width, not rendered in the editor and GitHub diff views inspected, so line 6 looks like an empty string. `app.py` holds 395 characters in U+E00xx, all of them on line 6 (425 characters, 1611 bytes); the other 13 files of the repo hold 0.
 
-## Ruled-Out Directions
+## Approaches tried
 
 `analysis/scan_hidden_unicode.py` scans the working tree, every blob in history, and every commit message with author and committer:
 
@@ -52,7 +52,7 @@ exec(tags_list)
 5. **Malicious code in another file** (templates, static, tests, `db.py`, `helpers.py`): `git grep -nE "exec\(|eval\(|subprocess|os\.system|base64"` over all revisions returns only `exec(tags_list)`, in the four `app.py` versions from `bd75399` onward. Ruled out.
 6. **Executing the payload to catch the request**: `example.com` is an RFC 2606 reserved domain and the path is the flag XORed with `random.randbytes(32)`, so each run emits a different URL. The solution is static analysis with no network access.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Locate the infected commit.** Count tag characters in `app.py` for every commit:
 
@@ -127,7 +127,7 @@ flag: cdctf{G1455w0rM_w4s_pr3tTy_c0oL}
 
 Both blobs are 32 bytes, the XOR yields a fully printable string matching `cdctf{...}` with the leetspeak structure the challenge describes. `k` repeats a 6-byte period `67 42 06 72 17 61` while `f` does not, Their roles follow from the XOR operation in the payload.
 
-## Flag
+## Result
 
 ```bash
 python exploit.py files/app.py

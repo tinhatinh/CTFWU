@@ -1,16 +1,13 @@
-# Welcome to Crimson Clinic BONUS 2 - AI/OSINT (500 points) - CHƯA CÓ CỜ
-
-**Flag:** chưa thu được
-**Files:** không có artifact kèm đề
+# Crimson Clinic Bonus 2 - AI/OSINT (500 points)
 
 ## Đề bài
 
-Câu hỏi duy nhất: "What is the name of Jeffery Barrett's cat?", format `cdctf{Name}`. Thẻ không kèm URL hay file.
+Tìm tên con mèo của Jeffery Barrett theo dữ liệu của Crimson Clinic. Thẻ đề không kèm URL hoặc artifact.
 
-## Trạng thái
+## Kết quả
 
-Ba kênh công khai đã loại (chi tiết và lệnh đã chạy ở `notes.md`): nhân vật có thật khớp tên, site "Crimson Clinic" trên hạ tầng Crimson Defense, và source công khai của series trên GitHub org `UACrimsonDefense`.
+Chưa có flag hoặc dữ liệu trực tiếp xác định tên con mèo.
 
-Có giả thuyết dữ liệu nằm trong kiosk Discord của Crimson Clinic, nhưng chưa có phản hồi bot để xác nhận. Cần nội dung liên quan đến Jeffery Barrett trước khi kết luận.
+## Giới hạn
 
-File `exploit.py` vẫn là template, chưa có thuật giải.
+Chưa xác định được nguồn dữ liệu của challenge. Các phép tra cứu đã lưu trong `notes.md` không thu được câu trả lời; `exploit.py` vẫn là template chưa triển khai.

@@ -21,7 +21,7 @@ and states that the image and the signing material are freshly generated for eac
 understand that sentence fully: it changes per connection, not per instance. The job is to find the 24 input bytes
 that make the core traverse the whole graph and emit the flag.
 
-## Initial Analysis
+## Analysis
 
 The machine has no pwntools and no ghidra/r2, so everything was done with `objdump -d` + `readelf` plus
 self-written tooling (`fd.py` prints vma ranges, `records.py` parses the image). The binary has only a handful of
@@ -141,7 +141,7 @@ Boot `entry=30137`, 40 records, 129 edges. Classified by payload length:
   `ret`, the HALT does not matter.
 * The deny sink: payload `0f` = HALT. Every other record has a `dflt` pointing back to it.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Ruling out the forward direction.** The walk is deterministic in the input, `RUN` only returns `denied`
 (no step count, nothing to hill-climb on), and the input is 192 bits. There is no oracle to probe bit by bit.
@@ -184,7 +184,7 @@ connect -> GET (image) -> 129 x MINT (phân loại edge) -> solve (ngược) -> 
 loop) run forward on the input just found yields `(win, 52312, 26)`, matching the real `RUN`, and three
 consecutive `RUN` calls on the same socket all return the same flag string. The actual walk is 26 records long.
 
-## Flag
+## Result
 ```bash
 python solve_live.py
 ```

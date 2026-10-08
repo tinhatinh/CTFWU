@@ -8,7 +8,7 @@ Sparrow Freight's terminal keeps the cargo manifest behind admin privileges. We 
 terminal "loves feedback and takes to heart everything you say". Objective: escalate to "management" and read the
 manifest.
 
-## Initial Analysis
+## Analysis
 
 `manifest.zip` gives the binary + exactly `libc.so.6` (glibc 2.39, Ubuntu 24.04) + the loader.
 Triage with `scripts/triage.cjs`:
@@ -43,7 +43,7 @@ are varargs 1-5), and vararg 6 onward is read from the stack immediately above t
 - `buf+0` is argument number 6 (`%6$`)
 - `buf+8` is argument number 7 (`%7$`)
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Confirming the buffer position with a leak.** Send `MARKER-%6$p-%7$p-...`:
 
@@ -79,7 +79,7 @@ the address landing exactly at buf+8. Now `%n` writes the value 4 - non-zero is 
 [manifest] clearance code: H7CTF{a2b24085-c670-4a87-93cb-293cfec6196c}
 ```
 
-## Flag
+## Result
 ```bash
 python exploit.py pwn.h7tex.com 42506
 ```

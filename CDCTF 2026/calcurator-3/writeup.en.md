@@ -6,17 +6,17 @@
 
 Recover the missing information required in the Echo Request payload.
 
-## Initial analysis
+## Analysis
 
 All four inputs share the same SHA-256. Analysis used Python 3.12 and GNU objdump without executing the sample.
 
 After checking the type, the first payload byte must be c; the next 19 bytes undergo an XOR comparison.
 
-## Discarded approaches
+## Approaches tried
 
 An Echo Request alone is insufficient because the first-byte check and XOR loop reject an incorrect payload. The stored target is not the plaintext key: received bytes are XORed before comparison.
 
-## Solution chain
+## Solution
 
 Packet offset 28 must contain 0x63. The loop at `0x12b500` uses key indices 2..20 at `0x5e700f` and target indices 1..19 at `0x5c62db`. XOR them and prepend c. The subsequent parser also requires a callback address and positive port after the key; it uses `%15s %d` and requires an address string of at least 7 characters.
 
@@ -41,7 +41,7 @@ print(trigger.decode())
 
 The flag was derived and printed locally; no accepted submission was recorded.
 
-## Flag
+## Result
 
 ```bash
 python exploit.py files/calculator

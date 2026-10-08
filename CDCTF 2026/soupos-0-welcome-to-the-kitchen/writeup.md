@@ -55,13 +55,13 @@ gcc -O0 -w -idirafter "../soupos/src" -o soupctest.exe stubs.c main.c \
 `-idirafter` (không phải `-I`) là bắt buộc: handout có `src/stdio.h` riêng remap `printf` sang `doom_printf`,
 dùng `-I` là harness dùng header của đề và biên dịch lỗi.
 
-## Cờ
+## Kết quả
 
 ```text
 cdctf{soupOS_is_better_than_arch}
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 tar -xzf soupos-handout.tar.gz && grep -n 'FLAG[1-4]' soupos/src/challenge.c

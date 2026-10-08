@@ -9,7 +9,7 @@
 in addition to the classic crunchy tacobell taco". Từ khóa là `extra` và `in addition to`: dữ liệu cần tìm
 nằm thêm ra ngoài phần ảnh mà trình xem hiển thị.
 
-## Phân tích ban đầu
+## Phân tích
 
 `file` báo PNG 1244x700 RGBA non-interlaced, 578053 byte. Duyệt các chunk thì ảnh kết thúc ở `IEND`
 offset 459177, còn lại 118876 byte nối đuôi. Ngay trước `IEND` có một chunk private 4 byte tên `deBG`,
@@ -19,7 +19,7 @@ Hai điểm bất thường định hướng luôn: `deBG` là chunk không có 
 chiếm 20% dung lượng file. Phần đuôi mở đầu bằng `0A 00 00 00 0D 49 48 44 52`, tức là một byte newline rồi chunk `IHDR` dài 13 byte ( chiều rộng `0x04ED` = 1261) nhưng thiếu 8 byte chữ ký PNG. Thiếu chữ ký nên công cụ
 quét magic bytes không thấy gì.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **Ảnh hiển thị:** 56 chunk `IDAT` có CRC hợp lệ và giải mã được ảnh mèo. Lời giải tập trung vào PNG nối sau `IEND`; CRC hợp lệ không loại trừ stego trong pixel.
 2. **Bọc archive hoặc file khác định dạng**: quét `PK\x03\x04`, `\x1f\x8b`, `7zXZ`, `Rar!`, `\xff\xd8\xff`
@@ -30,7 +30,7 @@ quét magic bytes không thấy gì.
 4. **Chuỗi "Extra data is no fun!!" cuối file**: 80 byte ASCII thuận, tự nó nói "extra data is no fun",
    trái ngược hẳn với gợi ý của đề. Loại, đây là mồi.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Tách PNG thứ hai.** Duyệt chunk từ đầu, lấy offset ngay sau `IEND` của ảnh đầu, tìm `IHDR`
 đầu tiên trong phần đuôi rồi ghép lại 8 byte chữ ký. File dựng lại có 19 chunk, tất cả CRC hợp lệ,
@@ -85,7 +85,7 @@ taco3}
 `tac0b311`. Toàn bộ ký tự nằm trong bảng chữ cái cờ (`A-Za-z0-9_{}`), cặp ngoặc `{}` đóng đúng một lần
 ở cuối, và mỗi glyph đều nằm trong hai dải y liên tục không có dòng nào bị bỏ sót.
 
-## Flag
+## Kết quả
 
 ```bash
 python exploit.py files/fat_tacocat.png
@@ -101,7 +101,7 @@ python exploit.py files/fat_tacocat.png
 FLAG: cdctf{I_really_rea11y_1ik3_th3_tac0b311_classic_crunchy_taco3}
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/fat_tacocat.png

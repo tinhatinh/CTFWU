@@ -7,7 +7,7 @@
 
 MAT rèn luyện forensics của CDCTF: một file `suspicious.xz` kèm một trang tutorial chia 4 part, cuối trang có quiz. Thẻ đề báo trước có 5 cờ và cả 5 phải nộp riêng lên CTFd. Trang tutorial nói rõ không có đường tắt trong source của nó và không có câu trả lời nào bỏ qua được bước thực hành.
 
-## Phân tích ban đầu
+## Phân tích
 
 `file` trả về XZ, `xz -l` báo khối giải nén 500.0 MiB. Ảnh giải nén mở đầu bằng MBR bảo vệ rồi tới block "EFI PART": đây là ảnh đĩa GPT, không phải archive. Bảng partition có 4 mục, nhãn do tác giả đặt, mỗi mục một loại filesystem:
 
@@ -22,14 +22,14 @@ Bốn loại này khớp đáp án câu q4 của quiz (vfat, ext2, ext4, btrfs),
 
 Parser trong `exploit.py` dùng `struct` của Python để đọc cấu trúc filesystem. Bước đọc QR dùng `pyzbar`, với phương án thay thế bằng OpenCV.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **Quét `cdctf{` trên cả ảnh để tìm cờ dạng plaintext.** Chỉ ra đúng một chuỗi, `cdctf{d3l3te_w0_sync_h0l3y_C0W}`, 6 lần trong partition `main`. Ba cờ kia không ở dạng plaintext, và cờ quiz thì không nằm trong artifact. Loại làm đường tắt chung, nhưng đây chính là lời giải Part 4.
 2. **Recover `flag1.png` từ directory record đã xoá.** Record LFN của nó bị đánh dấu `0xE5` nhưng cluster = 0 và size = 0, không có dữ liệu. Bản đang sống của cùng tên cho 405 byte, trùng con số quiz hỏi ở bước "Recovering Files".
 3. **Coi QR trong `flag2.jpg` là cờ.** Ảnh 610x610 giải ra một câu thách thức, không phải cờ. Phần lõi của Part 2 nằm ở lớp StegHide.
 4. **Carve `flag2.jpg` từ offset tìm thấy JPEG magic.** Cách đó cho một JPEG không có EOI. Nguyên nhân thật là thuật toán đọc block: các block đi qua single indirect bị gán logical block number bằng 0, nên dữ liệu bị xáo thứ tự. Đọc theo inode cho ra 82757 byte, kết thúc bằng `FFD9`, `exiftool` nhận baseline DCT 610x610.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Part 1: FAT32, sửa magic PNG, đọc QR.** boot sector cho bytes/sector 512, sector/cluster 1, reserved 32, FAT32 dài 75 sector, root cluster 2. Entry `FLAG1 PNG` có size 405, cluster 4. Tám byte đầu của dữ liệu là `504e470d0a1a0a00`: PNG signature thiếu byte `0x89` nên toàn bộ nội dung lệch một byte sang trái, byte dôi nằm ở cuối file. Sửa = thêm `0x89` ở đầu và bỏ byte cuối. Sau khi sửa, CRC của cả 6 chunk đều khớp và `IDAT` giải nén ra đúng `1665 = 111 * 15` byte, xác nhận cấu trúc PNG và dữ liệu IDAT sau khi sửa.
 
@@ -83,7 +83,7 @@ Chưa trích được payload StegHide. Cần thử extraction với passphrase 
 2. Nếu passphrase rỗng fail, dùng `stegseek` với wordlist; ứng viên tự nhiên nhất là các chuỗi QR mà bài đã cho sẵn (câu thách thức trong `flag2.jpg`, đoạn chữ trong `flag3.png`).
 3. Aperi'Solve chạy toàn bộ các kỹ thuật cùng lúc, nhưng phải upload artifact của bài lên bên thứ ba.
 
-## Flag
+## Kết quả
 
 ```bash
 python exploit.py files/suspicious.xz
@@ -126,7 +126,7 @@ python exploit.py files/suspicious.xz
 [xoa] C:\Users\ADMINI~1\AppData\Local\Temp\cdctf_forensics_disk.img
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/suspicious.xz

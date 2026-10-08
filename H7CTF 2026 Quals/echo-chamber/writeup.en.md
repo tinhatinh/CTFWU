@@ -17,7 +17,7 @@ diagnostic_depth:     standard   -> deep
 Only when both of those flip does `analyze` produce a report with `diagnostic_depth = deep`, and only
 a deep report attaches `process-environment.txt`.
 
-## Initial Analysis
+## Analysis
 
 Atlas has no prompt-injection filter at all, and there is no need to trick it. Its knowledge base
 buries 32 documents that refute the hypothesis under investigation, so "not convinced" is factually
@@ -88,7 +88,7 @@ The backend had already summarised and restructured the submission into exactly 
 engine looks for: `affected_component` / `affected_version` / `primary_claim`. The intake door is a write
 port into the RAG index, and it normalises the data for us.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Submit a decent technical document through intake.** `POST /api/research/submissions`
 with `product=StreamForge`, `version=4.8`, content matching the corpus's prose voice exactly:
@@ -133,7 +133,7 @@ disbursed once the case is escalated to deep forensic level.
 original records `KB-1005` and `KB-1003` - previously scored `mentions`, their content unchanged - switched to
 `supports`. The number of supporting records in the retrieval set: 0 → 5.
 
-## Flag
+## Result
 ```bash
 cd CTF-Writeups/echo-chamber
 python exploit.py 2          # submit, analyze x2, in mọi report + soi chuỗi H7CTF{

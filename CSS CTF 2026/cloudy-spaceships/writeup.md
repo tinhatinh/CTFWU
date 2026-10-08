@@ -5,10 +5,10 @@
 
 ## Đề bài
 
-Đề cung cấp một ứng dụng web xây dựng bằng SvelteKit tại địa chỉ `http://34.116.80.78:9143/`. Giao diện hiển thị danh sách năm tàu vũ trụ và cung cấp chức năng "đo nhiệt độ thân tàu" thông qua các nút bấm tương ứng. Gợi ý đính kèm của đề bài là: "What's your forecast looking like?". Mục tiêu là lấy flag (flag) có định dạng chuẩn `CSSCTF{...}`.
+Đề cung cấp một ứng dụng web xây dựng bằng SvelteKit tại địa chỉ `http://34.116.80.78:9143/`. Giao diện hiển thị danh sách năm tàu vũ trụ và cung cấp chức năng "đo nhiệt độ thân tàu" thông qua các nút bấm tương ứng. Gợi ý đính kèm của đề bài là: "What's your forecast looking like?". Mục tiêu là lấy flag có định dạng chuẩn `CSSCTF{...}`.
 Đặc điểm kỹ thuật: Giao diện hoàn toàn không có trường nhập liệu (input form). Mọi tương tác của người dùng đều kích hoạt một lệnh gọi mạng tới địa chỉ `/api/v1/ship/<tên>/temperature`, sau đó ứng dụng sẽ hiển thị một giá trị số.
 
-## Phân tích ban đầu
+## Phân tích
 
 Kiểm tra phản hồi từ đường dẫn gốc (`GET /`), hệ thống trả về thông số `x-sveltekit-page: true` và phần header `link:` liệt kê toàn bộ các gói (bundle) đính kèm. Dữ liệu trạng thái xuất phía máy chủ (server-rendered data) là `null`, đồng thời tuyến API (route) không được cấu hình hiển thị trực tiếp trong mã HTML. Do đó, quy trình phân tích yêu cầu phải trích xuất file Javascript `_app/immutable/nodes/2.CftUi-UM.js`. Quá trình kiểm tra file này phát hiện các đoạn mã trọng tâm sau:
 
@@ -44,9 +44,9 @@ Từ bảng kết quả kiểm thử, hệ thống rút ra ba nguyên tắc ho�
 2. Việc sử dụng giao thức `http` hay `https` đều trả về một giá trị tương đồng đối với cùng một trang, xác nhận giao thức không ảnh hưởng tới kết quả tính toán.
 3. Việc thiếu Header hoặc lỗi cú pháp đều bị từ chối bằng mã 451. Hệ thống không có cấu hình dự phòng mặc định, do đó trường `resolver` luôn bị kiểm soát và định tuyến theo dữ liệu truyền vào.
 
-## Chuỗi khai thác
+## Lời giải
 
-**Bước 1 - Khởi tạo Header theo đúng tiêu chuẩn của gói (bundle).** 
+**Bước 1 - Khởi tạo Header theo đúng tiêu chuẩn của gói (bundle).**
 Cấu trúc yêu cầu ký tự tiền tố `X` kết hợp với chuỗi base64 của một JSON chứa khóa `resolver`. Việc giữ lại ký tự `X` là bắt buộc do máy chủ thực thi bước kiểm duyệt cú pháp chuỗi này:
 
 ```python
@@ -54,7 +54,7 @@ def resolver_header(url):
     return "X" + base64.b64encode(json.dumps({"resolver": url}).encode()).decode()
 ```
 
-**Bước 2 - Khai thác thông qua SSRF (Server-Side Request Forgery).** 
+**Bước 2 - Khai thác thông qua SSRF (Server-Side Request Forgery).**
 Do quá trình xử lý diễn ra trên máy chủ, cần thiết lập một cổng hứng dữ liệu (callback) để kiểm chứng lưu lượng trả về. Phương án khả thi là sử dụng dịch vụ đường hầm qua tính năng chuyển tiếp cổng `ssh` (port forwarding) bằng Git Bash:
 
 ```bash
@@ -68,7 +68,7 @@ Dịch vụ Serveo phản hồi một địa chỉ công khai, ví dụ: `https:
 [+] Khai thác SSRF thành công, HTTP 200, giá trị temperature='2.4'
 ```
 
-**Bước 3 - Trích xuất thông tin định danh (Credential).** 
+**Bước 3 - Trích xuất thông tin định danh (Credential).**
 Dịch vụ Serveo có khả năng duy trì nguyên trạng phần header do máy khách gửi đi (chỉ bổ sung các cờ `x-forwarded-*`). Các luồng thông tin thu thập được phản ánh chính xác cấu trúc mà ứng dụng phát sinh (`analysis/capture.log`, chuỗi token được lược bớt để bảo mật). Máy chủ lưu vết đường dẫn tại gốc `/` do cấu hình định tuyến của serveo.
 
 ```text
@@ -83,14 +83,14 @@ Dịch vụ Serveo có khả năng duy trì nguyên trạng phần header do má
 
 Dữ liệu ghi nhận ba yêu cầu diễn ra liên tiếp trong cùng một phút chứa một token định danh giống hệt nhau. Điều này chứng minh hệ thống đang áp dụng cơ chế bộ nhớ đệm (caching) cho token. Khi phiên hoạt động giãn cách khoảng 20 phút, token mới được khởi tạo và phát hiện giá trị `expires_in` của token mới là 3363 giây.
 
-**Bước 4 - Xác thực tính hợp lệ của token.** 
+**Bước 4 - Xác thực tính hợp lệ của token.**
 Gửi token lên điểm cuối `oauth2.googleapis.com/tokeninfo`. Hệ thống xác nhận và định danh đây là Access Token chuẩn của nền tảng Google OAuth, loại bỏ khả năng token là một chuỗi giả lập.
 
 ```text
 [+] Kiểm tra tokeninfo: HTTP 200, phạm vi scope=https://www.googleapis.com/auth/cloud-platform, exp=1790850141, expires_in=3333
 ```
 
-**Bước 5 - Truy tìm danh tính dự án.** 
+**Bước 5 - Truy tìm danh tính dự án.**
 Nỗ lực gọi dịch vụ `cloudresourcemanager` bị chặn bởi mã lỗi 403 (do không được kích hoạt), nhưng chính phản hồi lỗi này đã làm lộ thông tin Project Number. Dịch vụ `storage` cấp quyền thực thi một phần, và thông báo lỗi 403 của nó đã tiết lộ trực tiếp tài khoản dịch vụ (Service Account) và Project ID:
 
 ```text
@@ -100,8 +100,8 @@ Nỗ lực gọi dịch vụ `cloudresourcemanager` bị chặn bởi mã lỗi 
 
 Việc tài khoản dịch vụ sử dụng từ khóa `meteorologist` (nhà khí tượng học) hoàn toàn phù hợp với ngữ cảnh giả định của bài toán (người dự báo thời tiết của đội tàu).
 
-**Bước 6 - Khai thác Secret Manager.** 
-Với quyền hạn (scope) ở mức `cloud-platform`, quá trình truy xuất hệ thống `secretmanager` đã thành công. Toàn bộ tài khoản dự án chỉ có duy nhất một bí mật, một phiên bản. Phương thức gọi truy xuất `:access` trực tiếp trả về giá trị cờ (flag):
+**Bước 6 - Khai thác Secret Manager.**
+Token có scope `cloud-platform`, và request tới Secret Manager đã thành công với quyền của service account trong instance này. Scope riêng lẻ không bảo đảm quyền IAM truy cập mọi secret. Request liệt kê trả về một secret và một phiên bản mà tài khoản này nhìn thấy. Phương thức gọi truy xuất `:access` trực tiếp trả về giá trị flag:
 
 ```text
 [+] Kiểm tra secretmanager: HTTP 200, totalSize=1, danh sách secrets=['goog_encryption_secret']
@@ -109,7 +109,7 @@ Với quyền hạn (scope) ở mức `cloud-platform`, quá trình truy xuất 
 ```
 **Kiểm chứng:** `exploit.py` nhận token từ request tới tunnel, kiểm tra tiền tố `CSSCTF{`, lưu kết quả vào `flag.txt` và trả exit code 0 khi đạt điều kiện đó. Ba lần chạy với ba token khác nhau trả cùng flag 45 ký tự.
 
-## Flag
+## Kết quả
 
 Chạy script:
 

@@ -2,11 +2,11 @@
 
 **Flag:** `cdctf{Y_m4ny_functi0s_wh3n_f3w_d0_trick}` · **Files:** `low_on_fun.py`, 8690 B, sha256 `cb043a7dc96d316c7e46825268511bf5b0c2da38599ede991af237ccb7edff5f`
 
-## Problem Description
+## Challenge
 
 The challenge ships a single Python file and asks what the author did to declare functions "more efficiently". The program is a flag checker: it reads input, validates the format, then prints a verdict. The goal is the input string the checker accepts, in the form `cdctf{...}`.
 
-## Initial Analysis
+## Analysis
 
 Every function body is missing. Only an empty `changing()` and a 3069-byte blob on line 3 remain:
 
@@ -38,7 +38,7 @@ That's the wrong length!
 
 `dis` under 3.12 and 3.11 also returns nonsense (the first instruction is `POP_JUMP_IF_NOT_NONE`, and a function that only calls `input()` contains `LIST_TO_TUPLE` and `BEFORE_ASYNC_WITH`), because the inline cache width differs and the opcode framing shifts. Only CPython 3.14 runs the artifact, so all analysis below uses `py -3.14`.
 
-## Routes Ruled Out
+## Approaches tried
 
 Before settling on this path, the following channels were tested and rejected (full log in `notes.md`):
 
@@ -46,7 +46,7 @@ Before settling on this path, the following channels were tested and rejected (f
 2. **Trusting that `marshal.loads` succeeds and executing under 3.11 / 3.12**: both segfault (exit 139), since `marshal.loads` does not validate the cache layout and the interpreter runs mixed-version bytecode. Rejected.
 3. **Brute-forcing input through the checker as an oracle**: the checker compares all 40 bytes once and returns one of two strings, `b"That's it!"` or `b'heck nah'`, with no per-character comparison and no recorded per-position oracle. Rejected as unnecessary, see Step 3.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Pin the version and split the three functions.** Use `py -3.14` as the decoder and dump each code object into `analysis/`:
 
@@ -89,7 +89,7 @@ flag = bytes(a ^ b for a, b in zip(check, keystream))
 
 **Step 5 - Verification.** Length 40 matches the `init_checks` constraint and the prefix matches `cdctf`. Re-running the challenge's own checker under Python 3.14 prints `That's it!` for the full string while changing only the last character from `k` to `l` prints `heck nah`, confirming the checker distinguishes the recovered input from the tested incorrect input.
 
-## Flag
+## Result
 
 ```bash
 python exploit.py files/low_on_fun.py

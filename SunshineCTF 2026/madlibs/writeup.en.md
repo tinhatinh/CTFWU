@@ -7,7 +7,7 @@
 Target `nc chal.sunshinectf.games 26001`, with `mad_libs`, `libc.so.6`, `ld-linux-x86-64.so.2` attached.
 499 points, 38 solves, author Oreomeister.
 
-## Initial Analysis
+## Analysis
 
 The binary is 14584 bytes, a 64-bit PIE ELF, stripped. Mitigations: PIE, NX, canary, partial RELRO
 (no `BIND_NOW`), libc is Ubuntu glibc 2.39.
@@ -22,9 +22,7 @@ for (i = 0; i <= 7; i++) {
 }
 ```
 
-The buffer is at `[rbp-0x110]`, i.e. 272 bytes wide, while `fgets` only reads 256 bytes, so there is
-no overflow and no reaching the return address. The program has one single primitive: `printf(buf)`
-with `buf` entirely chosen by us, repeated 8 times.
+The buffer at `[rbp-0x110]` is 272 bytes. `fgets(buf, 0x100, stdin)` reads at most 255 data bytes and adds NUL, so this call does not overflow it. The exploit uses the input-controlled format string in `printf(buf)` across eight iterations.
 
 `.rela.plt` gives the GOT positions, and because RELRO is only partial this region is writable:
 
@@ -32,7 +30,7 @@ with `buf` entirely chosen by us, repeated 8 times.
 0x4000 puts   0x4008 __stack_chk_fail   0x4010 printf   0x4018 fgets   0x4020 setvbuf
 ```
 
-## Exploit Chain
+## Solution
 
 ### Step 1, locating the stack
 
@@ -95,7 +93,7 @@ uid=1337(mad_libs) gid=1337(mad_libs)
 /ctf/flag.txt:  -rw-r----- 1 root mad_libs 27
 ```
 
-## Flag
+## Result
 ```
 sun{f1ll_iN_th3_g0T_eNtry}
 ```

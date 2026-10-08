@@ -9,7 +9,7 @@
 exfiltrate dữ liệu. Nhiệm vụ là tìm cờ trong đống video đó. Thẻ đề báo định dạng
 `cdctf{word_word_word_word_word}`.
 
-## Phân tích ban đầu
+## Phân tích
 
 15 file mp4, mỗi file 3,0-4,1 MB, H.264 + AAC, thời lượng 10-13 s. `ffprobe` và `exiftool` không cho
 thấy gì đáng ngờ: nhãn chỉ có `encoder = Lavc libx264` và các `creation_time` ngày 2026-10-03, cho biết thời điểm và encoder ghi trong metadata; chưa xác định lịch sử tạo file chỉ từ các tag này. Khung hình là reel thông thường (con chó kéo quần ông chủ, watermark `@SNOPFEED`).
@@ -21,14 +21,14 @@ Khác biệt thật nằm ở mức container. Duyệt box MP4 cho thấy cả 1
 đó đọc được `%PDF-1.4`, `1 0 obj`, `/Type /Pages`, `xref`, `trailer`, `startxref`, `%%EOF` và một
 đoạn mở đầu `x\xda`. Mỗi video đang giữ một lát cắt của cùng một file PDF.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **Nhãn metadata**: `udta/meta` 53 byte chỉ chứa tag encoder, `free` đúng 8 byte rỗng,
    `creation_time` khác nhau nhưng không theo quy luật nào.
 2. **Stego trong khung hình và âm thanh**: không khai thác. Sau khi 15 lát cắt PDF khép lại bằng
    ràng buộc `xref` thì kênh này không còn lý do; mới chỉ xem vài frame bằng mắt, chưa đo LSB hay phổ.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Carve lát cắt.** Box `uuid` có 4 byte size, 4 byte type rồi **16 byte extended_type**,
 nên payload bắt đầu ở offset `o+24` (dùng `o+16` là lệch 8 byte và không khớp UUID nào). 15 payload
@@ -64,7 +64,7 @@ startxref   839                 ->  offset thật của `xref`: 839
 Các lát cắt được ghép đủ và các offset nội bộ khớp cấu trúc PDF. `fitz` render ra một trang duy nhất,
 content stream dài 946 byte chứa một "internal memo" về chỉ số retention, dòng áp chót là cờ.
 
-## Flag
+## Kết quả
 
 ```bash
 python exploit.py files/chunks
@@ -95,7 +95,7 @@ ET
 
 Thẻ đề hứa năm từ, cờ thật là năm từ kèm một dấu `!` dính vào từ cuối.
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/chunks           # 15 lát cắt đã carve, không cần video

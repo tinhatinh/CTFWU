@@ -6,7 +6,7 @@
 
 Một con chuột có tên người, mật khẩu của nó đúng bằng tên. Đề cho một hash MD5 `fe00ab6a1d242513c9f246344bf7da1d` và ba ràng buộc về hình thức của tên: dài không quá 8 ký tự, ký tự đầu in hoa, các ký tự còn lại in thường. Không có file nhị phân, không có dịch vụ; nhiệm vụ chỉ là thu hồi chuỗi thỏa mãn hash và đúng ràng buộc. Cờ theo dạng `cdctf{Name}`.
 
-## Phân tích ban đầu
+## Phân tích
 
 Ba ràng buộc của đề không phải gợi ý để đoán tên, chúng là một mask. Tập mật khẩu hợp lệ là đúng một lớp ký tự:
 
@@ -26,7 +26,7 @@ Wordlist vẫn được thử trước, và cả ba corpus đều âm tính:
 
 Các wordlist đã thử không chứa ứng viên khớp hash. Vì đề quy định rõ độ dài và charset, có thể tiếp tục bằng mask attack mà không cần bổ sung danh sách tên.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Kiểm tra mask bằng một hash đã biết.** Dùng hash MD5 của `Felix` để kiểm tra cấu hình hashcat trước khi chạy với hash của đề.
 
@@ -83,13 +83,13 @@ print(hashlib.md5(b"Jaqurtis").hexdigest())   # fe00ab6a1d242513c9f246344bf7da1d
 - `Jaqurtis` dài 8 ký tự, bắt đầu bằng chữ hoa và có các ký tự còn lại viết thường.
 - Các mask độ dài 1..7 đã chạy hết mà không tìm thấy kết quả; ứng viên được tìm thấy ở độ dài 8. Ba wordlist đã thử trước đó không chứa tên này.
 
-## Flag
+## Kết quả
 
 ```text
 cdctf{Jaqurtis}
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py --selftest    # kiem machine sinh ung vien (md5 cua "Felix")

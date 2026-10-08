@@ -4,7 +4,7 @@
 
 ## Đề bài
 
-> "VecNet makes use of AI embedding technologies to speed up your database needs. Get started today!" 
+> "VecNet makes use of AI embedding technologies to speed up your database needs. Get started today!"
 
 Mục tiêu tấn công là ứng dụng web tại `https://vec.web.2026.sunshinectf.games/`, không có bất kỳ file suorce nào được cung cấp.
 
@@ -12,7 +12,7 @@ Thử thách này dẫn dắt người chơi qua một hành trình 4 lớp vỏ
 
 Đối với phần bề mặt còn lại (như SQLi, SSRF, XSS), không có bất kỳ ngõ ngách nào để khai thác. Danh sách các giả thuyết thất bại được tổng hợp ở cuối bài.
 
-## Phân tích ban đầu
+## Phân tích
 
 Kiểm tra hạ tầng mạng cơ bản:
 ```text
@@ -21,9 +21,9 @@ Kiểm tra hạ tầng mạng cơ bản:
 8000  GET /api/v2 -> {"nanosecond heartbeat": ...}   Đây chính là dịch vụ Chroma
 ```
 
-Cổng 8000 được phát hiện thông qua kỹ thuật quét cổng (port scan) công khai. Công cụ `paths.py` gọi thử đường dẫn `/api/v2` đồng loạt trên cả ba cổng 443, 8025 và 8000; chỉ có duy nhất cổng 8000 phản hồi một chuỗi JSON nhịp tim (heartbeat) sống động.
+Cổng 8000 được phát hiện thông qua kỹ thuật quét cổng (port scan) công khai. Công cụ `paths.py` gọi thử đường dẫn `/api/v2` đồng loạt trên cả ba cổng 443, 8025 và 8000; chỉ có duy nhất cổng 8000 phản hồi một JSON heartbeat.
 
-## Chuỗi khai thác
+## Lời giải
 
 ### Bước 1 - Phục hồi dữ liệu từ `/.git`
 
@@ -46,7 +46,7 @@ define('MAIL_ADMIN_PASS', 'Emb3dPass2026!');
 define('INTERNAL_API_KEY', 'vsk_live_aX92kLmNpQrStUvWxYz');
 ```
 
-Khoá `INTERNAL_API_KEY` hoàn toàn vô dụng. Dịch vụ Chroma tại đây xác thực trực tiếp thông qua HTTP Basic Auth, và khoá này không tạo ra bất kỳ khác biệt nào trong các phản hồi của hệ thống.
+`INTERNAL_API_KEY` không thay đổi các phản hồi trong những phép thử đã ghi. Dịch vụ Chroma tại đây xác thực trực tiếp thông qua HTTP Basic Auth, và khoá này không tạo ra bất kỳ khác biệt nào trong các phản hồi của hệ thống.
 
 ### Bước 2 - Manh mối từ hòm thư MailHog
 
@@ -163,24 +163,24 @@ $ cat analysis/unpacked/flag.txt
 sun{k33p_your_emb3ddings_secur3!}
 ```
 
-## Flag
+## Kết quả
 ```
 sun{k33p_your_emb3ddings_secur3!}
 ```
 
-## Khám nghiệm các giả thuyết đã chết (Rabbit Holes)
+## Hướng đã thử
 
 | Giả thuyết | Nguyên nhân tử vong |
 | --- | --- |
 | Lỗi SSRF qua cổng `fetch.php` | Hệ thống kiểm tra chặt chẽ `hash_equals` với một chuỗi cố định tĩnh, chỉ nhận GET, và chỉ đọc file cục bộ qua lệnh `readfile` |
 | Hòm thư IMAP/SMTP mailstore | Có dấu hiệu chỉ điểm trong file `index.html` nhưng cổng không cho phép kết nối ngoại mạng |
-| Token uỷ quyền cho Chroma | Biến `INTERNAL_API_KEY` hoàn toàn vô dụng, không thay đổi phản ứng của 626 route API đã bị rà quét |
+| Token uỷ quyền cho Chroma | `INTERNAL_API_KEY` không thay đổi phản hồi trong tập route đã thử |
 | Route `/api/v2/collections` | Đây là bóng ma của phiên bản v1; bản Chroma 1.x báo `route not allowed` vì endpoint này đã bị khai tử |
-| Cờ nằm rải rác trong MailHog | Đã cày xới nát 3 bức thư nội bộ, hoàn toàn vắng bóng từ khoá `sun{` |
+| Cờ nằm rải rác trong MailHog | Đã kiểm tra ba thư nội bộ; không tìm thấy prefix `sun{` |
 | Mật khẩu nằm trong số các mật khẩu nhặt được | Mọi ứng viên đều bị tiện ích 7z từ chối với thông báo "Wrong password" |
 | Sử dụng thư viện sentence-transformers để sinh vector đối chiếu | Mô hình `jxm/gtr__nq__32` trên HuggingFace là điểm neo dành riêng cho phần mềm vec2text chứ không phải là mô hình của ST (sentence-transformers); hướng đi này cụt lủn. May thay, khối sửa lỗi (corrector) đã tích hợp sẵn cơ chế nhúng (embedder) nội bộ nên ta vẫn tính toán được chỉ số cosine oracle |
 
-## Phục dựng (Reproduce)
+## Tái hiện
 
 ```bash
 python exploit.py            # Quét mã băm, thời gian ~40 giây, không đòi hỏi PyTorch

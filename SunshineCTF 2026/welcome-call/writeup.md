@@ -9,7 +9,7 @@
 
 Thử thách cung cấp duy nhất một file mạng định dạng `.pcap`.
 
-## Phân tích ban đầu
+## Phân tích
 
 Kiểm tra file cho thấy đây là luồng bắt gói (capture) của một phiên đàm thoại VoIP qua giao thức SIP. Cuộc gọi bắt đầu bằng bản tin `INVITE` từ địa chỉ `192.0.2.10` gửi tới `sip:board@192.0.2.20`, và lần lượt nhận được các phản hồi tiêu chuẩn như `100 Trying`, `180 Ringing`, `200 OK`, kết thúc bằng `ACK`. Giao thức mô tả phiên (SDP) của hai phía thống nhất thông số như sau:
 
@@ -21,7 +21,7 @@ Dùng `scapy` để đọc pcap và ghép RTP payload; môi trường đã thử
 
 Kiểm tra sequence number và timestamp để ghép các RTP payload theo thứ tự, rồi giải mã âm thanh theo thông số SDP.
 
-## Chuỗi khai thác
+## Lời giải
 
 Giải mã payload G.711 mu-law sang chuẩn PCM thô:
 
@@ -55,7 +55,7 @@ sun{thankyouforplaying}
 ```
 Lời đọc yêu cầu chữ thường và bỏ dấu cách, cho `sun{thankyouforplaying}`.
 
-## Flag
+## Kết quả
 ```bash
 $ python solve_call.py
 [2] RTP: 778 packets, 124480 payload bytes, 0 sequence gaps, 0 bad timestamps

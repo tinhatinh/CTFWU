@@ -32,7 +32,7 @@ Bốn dòng đầu cho thấy họ không so chuỗi. Mã đã parse IP literal 
 
 Hai dòng cuối lại lọt, và vì hai lý do khác nhau hoàn toàn: IPv6 loopback bị bỏ sót khỏi deny list, còn hostname thì không bao giờ được resolve để kiểm tra. Bằng chứng là drone trả `ERR_CONNECTION_REFUSED` cho cả bốn cái tên đó, tức nó đã bắt TCP thật, chỉ là cổng 80 không có ai nghe.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1: tìm cổng mở trên loopback.** `http://[::1]:3000/` trả Status 200, Files fetched 10, có snapshot. Cổng 80, 8080, 3001 đều `ERR_CONNECTION_REFUSED`. 3000 là app SiteCheck; nginx phía trước chỉ forward traffic từ ngoài vào.
 
@@ -54,7 +54,7 @@ POST /scan   url=http://[::1]:3000/profile#clearance
 
 Ảnh trả về hiện nguyên plate. Crop và phóng to lên để đọc từng ký tự, vì số `0` trong `ct10ns` là chữ số không có gạch chéo chứ không phải chữ O.
 
-## Flag
+## Kết quả
 ```
 sun{fr4gm3nt3d_r3fl3ct10ns_1n_th3_futur3}
 ```

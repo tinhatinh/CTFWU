@@ -15,7 +15,7 @@ victimDeposited && vault.balanceOf(victim) == 0 && token.balanceOf(address(vault
 
 Đoạn mã yêu cầu 3 sự kiện đồng thời: Nhà đầu tư đã thực hiện giao dịch nạp tiền (`victimDeposited`), nhưng không nhận được cổ phần nào (`vault.balanceOf(victim) == 0`), và tổng lượng token trong hầm chứa đã được trích xuất (ít hơn 1 ether).
 
-## Phân tích ban đầu
+## Phân tích
 
 Kiểm tra file `Setup.sol`, định danh nhà đầu tư lớn (victim) được cố định vào một địa chỉ:
 
@@ -42,21 +42,21 @@ function convertToShares(uint256 assets) public view returns (uint256) {
 function sync() external { reserve = asset.balanceOf(address(this)); }   // Lỗi nghiêm trọng: Hàm mở, không kiểm soát quyền truy cập
 ```
 
-Hàm `convertToShares` không áp dụng cơ chế cộng bù trừ ảo (virtual shares/virtual assets) của chuẩn ERC4626. Đồng thời, hàm đồng bộ tài sản `sync()` có thể được thực thi bởi bất kỳ người dùng nào. Sự kết hợp của hai lỗi này mở ra phương pháp tấn công lạm phát cổ phần (Inflation Attack): Nếu làm cho tổng cung (`totalSupply`) rất nhỏ trong khi tổng dự trữ (`reserve`) rất lớn, các giao dịch nạp tiền sau đó sẽ bị làm tròn thành 0 khi quy đổi ra cổ phần.
+Hàm `convertToShares` không áp dụng cơ chế cộng bù trừ ảo (virtual shares/virtual assets) thường được dùng để giảm rủi ro rounding/inflation trong các implementation ERC4626. Đồng thời, hàm đồng bộ tài sản `sync()` có thể được thực thi bởi bất kỳ người dùng nào. Sự kết hợp của hai lỗi này mở ra phương pháp tấn công lạm phát cổ phần (Inflation Attack): Nếu làm cho tổng cung (`totalSupply`) rất nhỏ trong khi tổng dự trữ (`reserve`) rất lớn, các giao dịch nạp tiền sau đó sẽ bị làm tròn thành 0 khi quy đổi ra cổ phần.
 
-## Quá trình khai thác
+## Lời giải
 
 Quy trình khai thác bao gồm 6 giao dịch, thực hiện tuần tự qua tài khoản EOA, không yêu cầu thiết lập contract trung gian.
 
-1. **Giai đoạn 1: Thiết lập nguồn cung (Inflation).** 
+1. **Giai đoạn 1: Thiết lập nguồn cung (Inflation).**
    Khi hầm chứa Vault chưa có dữ liệu (`supply == 0`), gửi một giao dịch nạp giá trị tối thiểu `deposit(1, player)`. Phép toán `supply == 0 ? assets : ...` cấp 1 wei cổ phần (share). Kết quả: `totalSupply = 1`, giá trị cung nhỏ nhất.
-2. **Giai đoạn 2: Lạm phát dự trữ và đồng bộ hóa `sync()`.** 
-   Chuyển toàn bộ số token trong ví trực tiếp vào hầm chứa (chuyển qua giao dịch cơ bản), sau đó gọi hàm `sync()`. Hệ thống sẽ cập nhật biến `reserve` gánh thêm toàn bộ tài sản được gửi. Trên hệ thống thật, `reserve` tăng lên `200.000.000.000.000.000.000` trong khi `totalSupply` duy trì mức `1`. 
+2. **Giai đoạn 2: Lạm phát dự trữ và đồng bộ hóa `sync()`.**
+   Chuyển toàn bộ số token trong ví trực tiếp vào hầm chứa (chuyển qua giao dịch cơ bản), sau đó gọi hàm `sync()`. Hệ thống sẽ cập nhật biến `reserve` gánh thêm toàn bộ tài sản được gửi. Trên hệ thống thật, `reserve` tăng lên `200.000.000.000.000.000.000` trong khi `totalSupply` duy trì mức `1`.
    Lúc này, nếu một giao dịch 100 ether được nạp, số cổ phần quy đổi: `convertToShares(100e18) = 100e18 * 1 / 2e20 = 0`. Mọi khoản nạp tiếp theo đều trả về 0 share.
-3. **Giai đoạn 3: Thực thi giao dịch đầu tư.** 
-   Gọi hàm `setup.victimDeposit()`. `reserve` của hệ thống tăng lên `3e20`. Giao dịch nạp khoản 100e18 bị hệ thống làm tròn và trả về 0 share cho nhà đầu tư. 
+3. **Giai đoạn 3: Thực thi giao dịch đầu tư.**
+   Gọi hàm `setup.victimDeposit()`. `reserve` của hệ thống tăng lên `3e20`. Giao dịch nạp khoản 100e18 bị hệ thống làm tròn và trả về 0 share cho nhà đầu tư.
    Kết quả: Điều kiện `vault.balanceOf(victim) == 0` được thỏa mãn, biến `victimDeposited == true` được cập nhật.
-4. **Giai đoạn 4: Trích xuất toàn bộ hầm chứa.** 
+4. **Giai đoạn 4: Trích xuất toàn bộ hầm chứa.**
    Cuối cùng, thực hiện lệnh `redeem(1, player, player)` để thanh lý 1 wei cổ phần sở hữu ở bước 1. Phép tính `convertToAssets(1) = 1 * reserve / 1` trả về toàn bộ tài sản hiện có trong kho `reserve`. Các biến `reserve` và `totalSupply` giảm nhanh chóng về 0, hoàn tất điều kiện thứ ba `token.balanceOf(vault) < 1 ether`.
 
 Cấu trúc tài sản (Trạng thái sau từng thao tác, trích xuất từ `solve.mjs`):
@@ -69,7 +69,7 @@ Cấu trúc tài sản (Trạng thái sau từng thao tác, trích xuất từ `
 | Gọi `setup.victimDeposit()` | 300,000,000,000,000,000,000 | 1 | 0 | 300 | Sai (false) |
 | Hút cạn `redeem(1, me, me)` | 0 | 0 | 0 | 0 | Đúng (true) |
 
-## Flag
+## Kết quả
 Kết quả thực thi tự động (sử dụng lệnh `CTF_PK=<private_key> node solve.mjs`):
 
 ```text
@@ -82,7 +82,7 @@ Khi trạng thái `isSolved() = true` được cập nhật, đề cung cấp c�
 H7CTF{346df380-9ca8-41a7-8853-5a6f23c601ad}
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 node solve.mjs

@@ -10,7 +10,7 @@ hai operative của Crimson Offense, trong đó họ "đưa cho nhau một lá c
 ghi 500 điểm, hạng OSINT + Crypto, tác giả `b0b`, định dạng cờ `cdctf{Ex4mpl3_flag}`. Không
 có service từ xa, không có hint kèm theo; toàn bộ dữ kiện nằm trong 97 giây âm thanh.
 
-## Phân tích ban đầu
+## Phân tích
 
 `file` báo MP3 có ID3v2.4, MPEG-2 layer III, 48 kbps, 24 kHz, đơn kênh. `exiftool` chỉ ra ID3
 dài 34 byte với duy nhất frame `TSSE = Lavf61.7.103`, tức file được sinh ra bằng ffmpeg và
@@ -26,7 +26,7 @@ thời gian cùng formant chuyển động, tức nguồn phát là giọng ngư
 60 ms đo được f0 trung vị 103.9 Hz với 884/1617 khung hữu thanh. Bài không phải mode số, bài
 là một cuộc gọi radio nói.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 Trước khi chốt đã kiểm tra và loại các kênh sau (log đầy đủ ở `notes.md`):
 
@@ -38,7 +38,7 @@ Trước khi chốt đã kiểm tra và loại các kênh sau (log đầy đủ 
 4. **Morse/on-off keying**: các khoảng lặng là ranh giới cụm từ, sóng mang bị biến điệu biên
    độ liên tục chứ không bật/tắt.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Chuyển audio thành văn bản.** Decode sang WAV rồi chạy Whisper trên CPU. Bản
 `base` (beam 5) nghe đúng nội dung nhưng gom chuỗi số thành cụm:
@@ -91,7 +91,7 @@ flag = bytes.fromhex(hexs).decode("ascii")
 `Correction` và bản `Repeat` trùng nhau từng byte; bản đầu tiên bị từ chối đúng vì lẻ hex.
 Độ dài 34 ký tự chẵn, toàn bộ 17 byte là ASCII in được, prefix và dấu `}` khớp luật đề.
 
-## Flag
+## Kết quả
 
 ```bash
 python exploit.py files/transcript_small_flagpart.txt
@@ -107,7 +107,7 @@ python exploit.py files/transcript_small_flagpart.txt
 [+] da luu flag.txt
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/transcript_small_flagpart.txt

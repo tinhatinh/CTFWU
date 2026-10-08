@@ -12,7 +12,7 @@ instead. The challenge ships `voicemail.mp3`, 660.792 s long, plus `VAT_key`, a 
 and the passphrase `Password123!`. The task is to rebuild the message that was read out and then
 decrypt it.
 
-## Initial analysis
+## Analysis
 
 `ffprobe` reports MPEG layer III v2, 48 kbps, 24 kHz, mono, `duration=660.792000`, no ID3
 carrying content. The container resembles the other VAT files, suggesting a shared audio-generation pipeline.
@@ -31,7 +31,7 @@ three-syllable words for odd positions, designed precisely for reading bytes ove
 So each word is one byte, and a word's index within the parity-correct list is the byte value. The
 byte stream is the whole ASCII armor text, including CR, LF and the CRC line.
 
-## Ruled out
+## Approaches tried
 
 1. **The given passphrase is wrong**: `--export-secret-keys` printed `Bad passphrase`, but the two
    failing keyIDs do not belong to this challenge's keyring. Signing and then verifying returns
@@ -47,7 +47,7 @@ byte stream is the whole ASCII armor text, including CR, LF and the CRC line.
 6. **Skip the audio and find the ciphertext elsewhere**: `gpg --list-packets VAT_key` shows only
    five packets, no user attribute and no comment/URI signature subpacket. Ruled out.
 
-## Exploit chain
+## Solution
 
 **Step 1 - Apply parity constraints with a Viterbi decode.** For each token the state is the current parity; a
 word that is an exact hit in the parity-correct list scores 3, a close match scores 1, and two
@@ -119,7 +119,7 @@ gpg: encrypted with rsa1024 key, ID C87AFF55F4097C91, created 2026-10-03
 [+] plaintext: 'Good work: cdctf{pr3t7y_g00d_piv4cy_fl4G}\n'
 ```
 
-## Flag
+## Result
 
 ```bash
 python exploit.py files/voicemail.mp3

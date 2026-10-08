@@ -2,7 +2,7 @@
 
 **Flag:** `sun{you_must_be_some_sort_of_nimble_space_navigator}`
 
-## Phân tích ban đầu
+## Phân tích
 
 Binary được bảo vệ bằng hàng loạt cơ chế bảo mật: PIE, NX, Partial RELRO và vẫn còn giữ nguyên bảng symbol. Đặc biệt, file không chứa bất kỳ gadget dạng `pop reg; ret` nào (`5f c3`, `5e c3`, `5a c3`), bảng PLT cũng hoàn toàn vắng bóng các hàm thực thi shell như `system` hay `execve`. Không những thế, mọi bộ đệm tiếp nhận dữ liệu đầu vào đều được kiểm soát kích thước.
 
@@ -29,9 +29,9 @@ Nhánh thoát sớm này đã vô tình bỏ qua việc gán giá trị cho con 
 ```
 Khi input không phải số nguyên, chương trình in bốn byte đang có trên stack dưới dạng số nguyên có dấu. Dùng kết quả này làm memory leak cho bước sau.
 
-## Khai thác
+## Lời giải
 
-**Bước 1 - Truy tìm vị trí cờ trên stack.** 
+**Bước 1 - Truy tìm vị trí cờ trên stack.**
 Cờ không nằm một chỗ mà đã bị xé lẻ trên stack bởi hàm `place_flag()` (hàm này được thực thi trước khi hiển thị menu):
 
 ```asm
@@ -46,8 +46,8 @@ loop i = 0..12:
 Hàm sử dụng một khung stack (frame) khổng lồ lên tới 0x2060 byte, sau đó giải phóng và return. Dựa vào vị trí con trỏ `rbp` của hàm `main`, 13 mảnh cờ 4-byte được rải rác tại các vị trí:
 `rbp_main - {0xb64,0xbe4,0xc84,0xcd4,0xd04,0xda4,0xdf4,0xe24,0xec4,0xf14,0xf44,0xf64,0xfe4}`. Điều đáng nói là toàn bộ các mảnh này đều nằm chìm sâu trong vùng stack cũ – nơi mà các menu gọi tiếp theo sẽ sử dụng và ghi đè lên.
 
-**Bước 2 - Điều hướng ngăn xếp (Stack Navigation).** 
-Độ sâu của ô nhớ bị rò rỉ (`rbp_cancel_plan - 0x204`) hoàn toàn phụ thuộc vào đường đi (path) của người dùng xuyên qua cấu trúc cây menu. Nguyên lý là `rbp_callee = rbp_caller - (frame_size + 16)` và kích thước của mọi frame luôn là bội số của 0x10. 
+**Bước 2 - Điều hướng ngăn xếp (Stack Navigation).**
+Độ sâu của ô nhớ bị rò rỉ (`rbp_cancel_plan - 0x204`) hoàn toàn phụ thuộc vào đường đi (path) của người dùng xuyên qua cấu trúc cây menu. Nguyên lý là `rbp_callee = rbp_caller - (frame_size + 16)` và kích thước của mọi frame luôn là bội số của 0x10.
 
 Khảo sát bảng kích thước frame:
 ```
@@ -63,7 +63,7 @@ Ví dụ:
 | Mảnh 0 (`sun{`) | Nhấn `1 -> 6 -> 2` (gọi điện -> vấn đề khác -> huỷ), rò rỉ tại `rbp_main - 0x764` |
 | Mảnh 12 (`tor}`) | Nhấn `1 -> 6 -> 2`, sau đó kích hoạt đệ quy gọi `cancel_plan` 2 lần liên tiếp (bằng cách chọn lý do huỷ = 4) |
 
-**Bước 3 - Quá trình trích xuất.** 
+**Bước 3 - Quá trình trích xuất.**
 Kịch bản thực thi một lượt gọi `cancel_plan` diễn ra như sau:
 - Menu `start_position` sẽ xoá cờ tại `userData+4`, sau đó gọi `login_roleplay` (trình bày 3 câu hỏi liên tiếp).
 - Ở Câu hỏi 1: Nhập vào một ký tự chữ cái (không phải số nguyên) -> nội dung biến trên stack không bị thay đổi.

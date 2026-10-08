@@ -10,7 +10,7 @@ Mã đã hết hạn sử dụng, nhưng từ đó phải recovery lại đượ
 dùng ở chỗ khác. Đề cho ba tham số: `n=8`, hash có folding, không dùng seed. Thẻ bài ghi
 500 điểm, hạng OSINT + Crypto + Password Cracking, tác giả `b0b`, format `cdctf{password}`.
 
-## Phân tích ban đầu
+## Phân tích
 
 `ffprobe` báo MPEG layer III v2, 48 kbps, 24 kHz, đơn kênh, không có ID3 mang nội dung. Cùng
 kiểu container với các phần khác của chuỗi VAT, gợi ý cùng pipeline tạo audio; payload nằm ở lời đọc,
@@ -25,7 +25,7 @@ nằm trong từ điển, các token còn lại dài 5-6 ký tự nên chắc ch
 Bài toán còn lại là tìm đúng ba thứ: cách đóng gói 64 bit thành sáu từ, hàm bước của chuỗi hash,
 và mật khẩu. Hai thứ đầu có thể kiểm chứng bằng dữ liệu, không cần đoán.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **Dữ liệu ngoài lời đọc**: frame MP3 đều, không ID3, không kênh phụ.
 2. **Nhận dạng bị ràng buộc từ điển**: Vosk grammar 2048 từ trên từng lát cắt 1.1 s trả về rỗng
@@ -39,7 +39,7 @@ và mật khẩu. Hai thứ đầu có thể kiểm chứng bằng dữ liệu, 
    chịu lỗi. Chỉ khi chuyển sang so giá trị 64 bit (bỏ 2 bit checksum) thì phép thử mới có nghĩa.
    Ghi lại vì đây là chỗ âm tính dễ đọc sai nhất của bài.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Chốt cách đóng gói bằng vector của RFC.** Phân tích Appendix C của RFC 2289
 (27 vector pass phrase + seed + count -> hex -> sáu từ, lưu nguyên văn ở
@@ -107,13 +107,13 @@ không phải lỗi chuỗi.
 
 **Bước 4 - Kiểm tra với key PGP đi kèm.** Đã thử `gpg --import` với mật khẩu tìm được trên `VAT_key` (S2K iter+salt SHA1, protect-count 65011712, AES-256); output báo `secret key imported`. Import thành công chưa đủ chứng minh passphrase giải mã được private key; cần thêm thao tác ký hoặc giải mã để xác minh.
 
-## Flag
+## Kết quả
 
 ```text
 cdctf{idontcare1}
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python analysis/skey_kat.py           # 27/27 vector RFC 2289 + sang loc checksum

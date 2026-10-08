@@ -9,7 +9,7 @@ Phần 3/5 của chuỗi Crypto Cat, chỉ gồm 179 ký tự bản mã in trong
 instance. Bản mã giữ nguyên dấu cách, cặp ngoặc `{}` và ba dấu nháy đơn, nên phần word hình (độ dài
 token, vị trí ngoặc) đọc được trực tiếp từ đề.
 
-## Phân tích ban đầu
+## Phân tích
 
 - 151 chữ cái, 22 chữ phân biệt, Index of Coincidence = 0.0580. Văn bản tiếng Anh một bảng chữ cái
   đo khoảng 0.066, Vigenère nhiều bảng rơi về 0.045; 0.0580 gợi ý thử một bảng chữ cái, nhưng mẫu ngắn không đủ để kết luận riêng từ IC.
@@ -18,7 +18,7 @@ token, vị trí ngoặc) đọc được trực tiếp từ đề.
 - Nếu các từ lặp tương ứng cùng plaintext và cùng pha khóa, chu kỳ Vigenère phải chia 59 và 75, tức L = 1. Đây là giả định để ưu tiên monoalphabetic substitution, không phải chứng minh loại trừ mọi cipher đa bảng.
 - Ba dấu nháy đơn (`nvk'n...`, `npq'p...`, `nv'll...`) ban đầu gợi ý các dạng rút gọn. Sau khi giải mã, chúng nằm trong `sub'stitution`, `sta'tistical`, `su'fficient`; cần giữ nguyên dấu nháy khi chép plaintext.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 Toàn bộ số liệu ở `analysis/triage_poly.py` (`analysis/triage_poly.out`).
 
@@ -35,7 +35,7 @@ Toàn bộ số liệu ở `analysis/triage_poly.py` (`analysis/triage_poly.out`
    không chia 59, còn L = 8 và 16 cũng nằm trong vùng nhiễu của mẫu 151 chữ cái. Không đủ cơ sở,
    và đã bị (1) và (2) phủ.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Crib định dạng cờ.** Token đầu `wcwpl{qgj` có dạng `ABACD{`, khớp `cdctf{`, cho bốn ánh xạ
 đầu tiên `w→c, c→d, p→t, l→f`.
@@ -83,7 +83,7 @@ co : q k w c r l o m e . y u s g h z . f n p v t . d j .
 ma : a b c d e f g h i j k l m n o p q r s t u v w x y z
 ```
 
-## Flag
+## Kết quả
 
 ```bash
 python exploit.py files/ciphertext.txt
@@ -102,7 +102,7 @@ python exploit.py files/ciphertext.txt
 [+] da luu flag.txt
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/ciphertext.txt

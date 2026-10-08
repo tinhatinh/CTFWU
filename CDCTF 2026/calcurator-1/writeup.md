@@ -6,17 +6,17 @@
 
 Tìm tên mà thành phần độc hại tự đổi thành sau khi khởi động.
 
-## Phân tích ban đầu
+## Phân tích
 
 Cả bốn file có cùng SHA-256. Phân tích tĩnh bằng Python 3.12 và GNU objdump; không thực thi mẫu.
 
 Strings cho thấy `wpad` ở offset `0x5c832d`. Cần kiểm tra cross-reference để phân biệt tên tiến trình với chuỗi không liên quan.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 Tên calculator ban đầu không phải đáp án: code daemon ghi đè `argv[0]`. Không có bằng chứng sử dụng `prctl(PR_SET_NAME)`; kết luận chỉ áp dụng cho tên dòng lệnh.
 
-## Chuỗi khai thác
+## Lời giải
 
 Tại `0xf0f58` code gọi `setsid()`, rồi `chdir()`. Tại `0xf0f7e`, nó nạp địa chỉ `0x5c832d`; tại `0xf0f8a` gọi `strncpy(argv[0], "wpad", strlen(argv[0]))`. Vòng lặp sau đó xóa các đối số còn lại bằng dấu cách.
 
@@ -39,7 +39,7 @@ print(f"cdctf{{{name}}}")
 
 Flag được suy ra và in bởi script cục bộ; chưa có bằng chứng submission được chấp nhận.
 
-## Flag
+## Kết quả
 
 ```bash
 python exploit.py files/calculator
@@ -49,7 +49,7 @@ python exploit.py files/calculator
 cdctf{wpad}
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/calculator

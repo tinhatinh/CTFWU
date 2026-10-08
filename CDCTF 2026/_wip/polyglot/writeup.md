@@ -11,7 +11,7 @@ hồi nhưng mỗi dòng thiếu mất một phần. Nhiệm vụ là lấy lạ
 `KEY` mà `Program1.hs` import. Gợi ý "far depths of Glasgow, Scotland" chỉ tới GHC và phương ngữ
 Glasgow; format cờ là `cdctf{ABunchOfTitleCaseWords}`.
 
-## Phân tích ban đầu
+## Phân tích
 
 `Program1.hs` dùng type-level programming (`DataKinds`, `TypeFamilies`, `UndecidableSuperClasses`) và
 `import Secrets (KEY)`, với `KEY` là một `Symbol`. Chạy trực tiếp không được vì máy không có GHC và cũng
@@ -37,7 +37,7 @@ bằng đúng độ dài `KEY`, tức `len(KEY) = 32` và body cờ là 25 ký t
 Dữ liệu tự kiểm chứng cách đọc này: 32 dòng answer đều có đúng 3 fragment, và category của fragment khớp
 thứ tự question từng dòng. Parser được đối chiếu với đủ 96 fragment quan sát được.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **Homoglyph hoặc stego trong byte**: cả ba file không có byte nào ngoài ASCII; histogram dấu cách cuối
    dòng là uniform (Answers 1/dòng do mỗi variant kết thúc bằng space, Questions 0).
@@ -55,7 +55,7 @@ thứ tự question từng dòng. Parser được đối chiếu với đủ 96 
 6. **Chạy GHC để lấy oracle**: không có `ghc`/`runghc`/`stack` trên máy, và `import Data.List (zipWith6)`
    cũng không có trong `Data.List` chuẩn. Loại, mô hình viết tay đã đủ và có self-test.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Dựng lại semantics và kiểm tra parser.** `exploit.py` mô phỏng đúng `locales` cho cả 6 chuỗi rồi
 ngược lại: sinh ràng buộc từ answer, ép mỗi fragment phải đứng đúng cột mà question hỏi.
@@ -137,7 +137,7 @@ nó là một cụm từ tiếng Anh. Bài này vì thế cần tác giả xác 
 chuyển từ dev sang testing, script verify bỏ sót input vẫn pass, và checker đã được đổi thành regex tính
 từ vùng mơ hồ, tức mọi đuôi sau `cdctf{SecretOfComp` đều được chấp nhận.
 
-## Flag
+## Kết quả
 
 Vùng đã chứng minh bằng dữ liệu:
 
@@ -151,7 +151,7 @@ Chuỗi nộp theo checker mới của tác giả:
 cdctf{SecretOfCompartmentalized}
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/Polyglot1.zip

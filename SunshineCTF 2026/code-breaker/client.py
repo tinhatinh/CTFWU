@@ -9,7 +9,7 @@
     1. server -> [01][key16]            RAW (gửi bằng send_raw, chưa có state)
     2. client -> [02][peer16]           RAW
     3. client -> [03][check16]          MÃ HOÁ với recv_off=0
-       check16[i] = state[i] ^ SBOX[state[(i+5)&15]]
+       check16[i] = state[(i+5)&15] ^ SBOX[state[i]]
     4. server -> [04][00]               MÃ HOÁ với send_off=0
 
 Lệnh (payload đã mã hoá): 10 PUT, 11 GET, 12 WRITE, 13 FREE, 14 ALIAS, 15 RUN, 16 INFO.

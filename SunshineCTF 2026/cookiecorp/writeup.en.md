@@ -15,7 +15,7 @@
 > ones whose recipes earn the Chief's Golden Seal, take home the grand prize. Only the Chief can
 > award that seal, though. And the Chief is a very busy robot.
 
-## Initial Analysis
+## Analysis
 
 The app lets a baker create a recipe whose ingredients are `name=value` pairs. On submit, an
 inspector bot visits `/review/{id}` and runs `mixer.js`:
@@ -53,7 +53,7 @@ What was measured:
 So there is no direct overwrite path. One option remains: make the old `role` cookie no longer exist
 in the jar when the bot calls `/api/seal`.
 
-## Exploit Chain
+## Solution
 
 ### Cookie jar overflow
 
@@ -112,7 +112,7 @@ Submitted, waiting for bot...
 FLAG: sun{c00kie_jar_0verfl0w_ev1cts_the_chief}
 ```
 
-## Flag
+## Result
 ```
 sun{c00kie_jar_0verfl0w_ev1cts_the_chief}
 ```

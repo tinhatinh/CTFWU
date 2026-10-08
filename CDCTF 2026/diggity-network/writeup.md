@@ -6,20 +6,20 @@
 
 Đề cho một capture mạng và mô tả người bạn đã dùng `cat` để gửi file chứa cờ vào netcat. Mục tiêu là khôi phục dữ liệu được truyền và tìm cờ dạng `cdctf{...}`. Bài thuộc Forensics, trị giá 500 điểm.
 
-## Phân tích ban đầu
+## Phân tích
 
 File là PCAPNG. Thống kê bằng tshark cho thấy 59 frame, tổng 101971 byte ở tầng frame, chỉ gồm Ethernet/IP/TCP. Có một kết nối: `172.21.0.3:34012 → 172.21.0.2:8080`, tương ứng TCP stream 0.
 
 Frame 4 có payload đầu tiên, sequence number tương đối 1, dài 2048 byte. Tám byte đầu là `89 50 4e 47 0d 0a 1a 0a`, chữ ký PNG. Vì netcat gửi byte của file trực tiếp qua TCP, hướng giải là ghép payload phía gửi theo sequence number rồi mở ảnh.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **Tìm cờ dạng chuỗi ASCII trong capture:** quét chuỗi in được chứa `flag`, `cdctf`, `cat` hoặc `net` không có kết quả. Cách tìm trực tiếp này không cho ra cờ; payload PNG giải thích vì sao cờ viết tay không xuất hiện dưới dạng plaintext.
 2. **Phân tích như HTTP hoặc TLS:** không có lớp HTTP/TLS trong thống kê giao thức, và payload bắt đầu ngay bằng chữ ký PNG. Khôi phục file từ TCP là đủ; không cần giải mã hay export đối tượng HTTP.
 
 Lệnh và bằng chứng của từng hướng được lưu trong `notes.md`.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Xác định kết nối và chữ ký file.** Chạy từ thư mục bài:
 
@@ -51,7 +51,7 @@ for seq, payload in parts:
 
 Cờ được đọc trực tiếp từ chữ viết tay trong ảnh. Script chỉ khôi phục và kiểm tra PNG, sau đó nhận bản chép cờ bằng tay. Chuỗi cờ chứa `http`, nhưng dữ liệu trong capture được gửi trực tiếp qua TCP.
 
-## Flag
+## Kết quả
 
 ```powershell
 python exploit.py files/network_traffic_with_a_flag_in_there.pcapng
@@ -69,7 +69,7 @@ Manual visual step: open the PNG and transcribe its handwritten flag.
 
 Cờ đã lưu trong `flag.txt`. Chưa có bằng chứng submission được hệ thống chấp nhận trong bản ghi.
 
-## Reproduce
+## Tái hiện
 
 Cần Python 3 và Wireshark/tshark trong PATH. Chạy từ thư mục `diggity-network`, mở `analysis/recovered_flag.png` rồi nhập cờ vào prompt của script. Trên Windows có thể dùng `--open-image` để mở ảnh bằng ứng dụng mặc định.
 

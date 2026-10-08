@@ -15,7 +15,7 @@
 > ones whose recipes earn the Chief's Golden Seal, take home the grand prize. Only the Chief can
 > award that seal, though. And the Chief is a very busy robot.
 
-## Phân tích ban đầu
+## Phân tích
 
 Ứng dụng cho phép người dùng (baker) tạo ra các công thức (recipe) gồm nhiều thành phần (ingredient) dưới dạng cặp khóa-giá trị `name=value`. Khi người dùng nộp công thức, một con bot kiểm duyệt (inspector) sẽ truy cập vào đường dẫn `/review/{id}` và kích hoạt đoạn mã `mixer.js`:
 
@@ -44,10 +44,10 @@ Các đặc điểm nổi bật của ứng dụng:
 - Khi đăng nhập hoặc đăng ký, máy chủ sẽ gán một cookie với nội dung `role=baker; Path=/; HttpOnly; SameSite=Lax`.
 - Cờ `HttpOnly` đóng vai trò ngăn chặn việc sử dụng `document.cookie` để ghi đè hoặc thay đổi giá trị của cookie `role` từ phía client.
 - Bản thân bot kiểm duyệt có một `role` riêng biệt (không phải là `chief`), do đó nó chỉ nhận được dấu xác nhận tiêu chuẩn (standard seal).
-- Máy chủ yêu cầu cookie phải có `role=chief` trong yêu cầu gửi tới `/api/seal` thì mới cấp phát Dấu Vàng (Golden Seal) chứa cờ (flag).
+- Máy chủ yêu cầu cookie phải có `role=chief` trong yêu cầu gửi tới `/api/seal` thì mới cấp phát Dấu Vàng (Golden Seal) chứa flag.
 - Các ký tự đặc biệt như dấu chấm phẩy (`;`), khoảng trắng và dấu bằng (`=`) trong tên và giá trị của thành phần đều bị máy chủ loại bỏ, khiến cho việc tiêm (inject) các thuộc tính cookie trở nên bất khả thi.
 
-## Chuỗi khai thác
+## Lời giải
 
 Trình duyệt web có một cơ chế giới hạn số lượng cookie tối đa cho mỗi tên miền (khoảng 180 cookie đối với Chromium). Khi vượt quá giới hạn này, trình duyệt sẽ tự động loại bỏ (evict) những cookie cũ nhất, bao gồm cả những cookie được bảo vệ bằng cờ `HttpOnly`. Dựa vào đặc điểm này, ta có thể xây dựng chuỗi khai thác như sau:
 
@@ -101,7 +101,7 @@ Submitted, waiting for bot...
 FLAG: sun{c00kie_jar_0verfl0w_ev1cts_the_chief}
 ```
 
-## Flag
+## Kết quả
 ```
 sun{c00kie_jar_0verfl0w_ev1cts_the_chief}
 ```

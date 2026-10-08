@@ -6,7 +6,7 @@
   window.createGithubEditor = () => {
     const directory = document.querySelector('[data-source-directory]').dataset.sourceDirectory;
     const parts = directory.split('/');
-    if (parts.length !== 2 || parts.some(part=>!part || part==='.' || part==='..')) throw new Error('Invalid source directory');
+    if (![2,3].includes(parts.length) || (parts.length===3 && !/^Wave [1-9]\d*$/.test(parts[1])) || parts.some(part=>!part || part==='.' || part==='..' || /[\\\u0000-\u001f]/.test(part))) throw new Error('Invalid source directory');
     let credential, owner, expires = 0;
     const normalize = value=>value.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
     const auth = () => {

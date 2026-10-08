@@ -4,7 +4,7 @@
 
 ## Đề bài
 
-Trò chơi sử dụng công cụ FoundryProof, có chức năng kiểm tra tương đương: xác nhận thiết kế mạch tổ hợp có "tương đương" (equivalent) với bản vẽ vàng (golden reference) hay không trước khi chấp nhận (tape-out). Thêm vào đó, sau khi mạch được sản xuất, hệ thống sẽ kiểm tra ngẫu nhiên xem có mạch bị sửa đổi hay không. 
+Trò chơi sử dụng công cụ FoundryProof, có chức năng kiểm tra tương đương: xác nhận thiết kế mạch tổ hợp có "tương đương" (equivalent) với bản vẽ vàng (golden reference) hay không trước khi chấp nhận (tape-out). Thêm vào đó, sau khi mạch được sản xuất, hệ thống sẽ kiểm tra ngẫu nhiên xem có mạch bị sửa đổi hay không.
 Điều kiện đánh giá được trình bày trong file `SPEC.md`:
 
 ```text
@@ -15,7 +15,7 @@ Giá trị mục tiêu (sabotage value): MAGIC   = 0xB105F00D
 
 Yêu cầu: Tạo ra một bản thiết kế (netlist) vượt qua được bài kiểm tra tương đương, đồng thời tạo ra giá trị phá hoại tại điểm kiểm tra (audit vector).
 
-## Phân tích ban đầu
+## Phân tích
 
 File bao gồm 3 file: `hdl.py` (parser + simulator + bộ xử lý biểu thức z3), `verifier.py` (trình xác thực) và bản tham chiếu `reference.hdl`:
 
@@ -44,9 +44,9 @@ Kiểm tra điểm audit, mốc kiểm tra nằm ở `0xDEADBEEF` - nằm ngoài
 
 Hướng giải quyết: Ta không cần phá vỡ thuật toán kiểm tra tính tương đương - chỉ cần tận dụng giới hạn phạm vi kiểm tra của nó là đủ.
 
-## Chuỗi khai thác
+## Lời giải
 
-**Bước 1 - Tạo biến cờ (Vượt ngoài phạm vi kiểm tra).** 
+**Bước 1 - Tạo biến cờ (Vượt ngoài phạm vi kiểm tra).**
 Hàm `eq` trong Tiny-HDL có đặc điểm: trả về `0xFFFFFFFF` khi 2 vế bằng nhau, và trả về `0x00000000` khi khác biệt. Áp dụng vào điều kiện:
 
 ```text
@@ -54,7 +54,7 @@ hi    = shr a 16      # Khối lệnh này sẽ luôn = 0 với mọi input thu�
 islow = eq hi zero    # Cờ báo: 0xFFFFFFFF khi nằm trong miền, 0 khi nằm ngoài phạm vi
 ```
 
-**Bước 2 - Kỹ thuật multiplexer với hàm `mux`.** 
+**Bước 2 - Kỹ thuật multiplexer với hàm `mux`.**
 Hoạt động của hàm `mux s x y = (x & s) | (y & ~s)` là lựa chọn theo từng bit một. Nếu sử dụng mask toàn 1 hoặc toàn 0, nó hoạt động như một bộ chuyển mạch (multiplexer) cơ bản:
 
 ```text
@@ -79,11 +79,11 @@ y = Cú lừa mux islow yref magic
 Đầu ra output y
 ```
 
-Vận hành thử: 
+Vận hành thử:
 - Khi `a < 2^16`: `islow = 0xFFFFFFFF` -> Hệ thống sẽ trả về `y = yref` tương đương hoàn toàn (bit-for-bit) -> z3 không xác định lỗi (counterexample) -> Cộp dấu CERTIFIED (Đã cho thấy).
 - Khi `a >= 2^16`: `islow = 0` -> Hệ thống trả về `y = MAGIC`.
 
-**Bước 3 - Kiểm thử cục bộ.** 
+**Bước 3 - Kiểm thử cục bộ.**
 Trong môi trường không cài z3, sử dụng trực tiếp bộ mô phỏng Tiny-HDL tích hợp vào script exploit để kiểm tra 2 nhánh logic:
 
 ```text
@@ -103,7 +103,7 @@ Cảnh báo: sign-off compromised -- a certified design carries a trojan (Xác n
 H7CTF{afd4beac-e86e-409b-907d-b519bb748599}
 ```
 
-## Flag
+## Kết quả
 ```bash
 python exploit.py pwn.h7tex.com 40634
 ```

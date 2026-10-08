@@ -8,7 +8,7 @@
 "I just got a call from the flag factory, they said they were looking for their favorite CTFer?"
 A single pcap file.
 
-## Initial Analysis
+## Analysis
 
 The capture is one VoIP session: SIP `INVITE` from `192.0.2.10` to `sip:board@192.0.2.20`, answered by
 `100 Trying` / `180 Ringing` / `200 OK` / `ACK`. The SDP both sides agree on:
@@ -23,7 +23,7 @@ The machine has no tshark, so `scapy` is used to read the pcap and stitch the pa
 
 After verifying no steganography in RTP fields, the audio content was analyzed directly.
 
-## Exploit Chain
+## Solution
 
 Decode the G.711 mu-law payload to PCM:
 
@@ -60,7 +60,7 @@ sun{thankyouforplaying}
 This matches the pattern of the same author's challenge in this series (`sun{praisethesun}`), so the
 prefix `sun{` is consistent.
 
-## Flag
+## Result
 ```
 $ python solve_call.py
 [2] RTP: 778 packets, 124480 payload bytes, 0 sequence gaps, 0 bad timestamps

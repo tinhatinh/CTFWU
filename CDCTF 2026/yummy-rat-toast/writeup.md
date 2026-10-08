@@ -10,7 +10,7 @@ a good friend of his". Nhân vật kể chuyện có bạn là chuột Remy, và
 một người bạn thông thái. Hai chi tiết đó chỉ thẳng sang phim Ratatouille: Remy, Alfredo Linguini, đầu bếp
 Auguste Gusteau. Cờ theo định dạng `cdctf{...}` của giải.
 
-## Phân tích ban đầu
+## Phân tích
 
 Bài không kèm file; đầu vào chỉ là digest 16 byte, nên việc đầu tiên là xác định độ khó thật của nó bằng
 oracle ngoài. DB tra ngược md5 của gromweb (832.927.522 tổng đã biết) trả lời không tìm thấy:
@@ -31,7 +31,7 @@ Exhausted  11881376/11881376
 
 Gợi ý Ratatouille định hướng wordlist theo tên nhân vật, gồm cả họ tên có khoảng trắng và hậu tố số. Các mask trước đó chưa loại trừ mọi dạng mật khẩu khác.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **Mật khẩu phổ biến**: 27.7 triệu dòng từ xato-net-10M, Pwdb_top-10M, darkc0de, alleged-gmail,
    openwall.net-all, rockyou-75, chạy thuần và với `best64` (2.138.454.780 candidate, Exhausted) và
@@ -50,7 +50,7 @@ Gợi ý Ratatouille định hướng wordlist theo tên nhân vật, gồm cả
 6. **Chuỗi chữ thường độ dài 1-8 và chuỗi số 1-12**: Exhausted hoàn toàn, nên mật khẩu buộc phải có chữ
    hoa hoặc ký tự khác. Loại mọi đoán kiểu `linguini`, `ratatouille`, `anyonecancook` ở dạng thuần.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Dựng wordlist đúng bối cảnh.** Lấy dàn nhân vật và ê-kíp phim Ratatouille (tên từ thẻ wiki của
 bộ phim: Remy, Alfredo Linguini, Skinner, Django, Émile, Anton Ego, Auguste Gusteau, Colette Tatou, Horst,
@@ -105,13 +105,13 @@ FLAG             : cdctf{Alfredo Linguini01}
 written          : C:\Users\Administrator\Downloads\CTFWU\CDCTF 2026\yummy-rat-toast\flag.txt
 ```
 
-## Flag
+## Kết quả
 
 ```
 cdctf{Alfredo Linguini01}
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/hash.txt

@@ -2,11 +2,11 @@
 
 **Flag:** `cdctf{Jaqurtis}` · **Files:** `files/hash.txt` (33 bytes, sha256 `66ad6348...d1c48f`)
 
-## Problem
+## Challenge
 
 A pet rat has a human name and always uses that name as its password. The challenge provides one MD5 hash, `fe00ab6a1d242513c9f246344bf7da1d`, plus three formatting rules for the name: at most 8 characters, first character uppercase, all remaining characters lowercase. No binary and no network service; the task is only to recover the string that matches the hash and the rules. Flag format: `cdctf{Name}`.
 
-## Initial Analysis
+## Analysis
 
 The three rules are not hints for guessing a name - they are a mask. The set of valid passwords is exactly one character class:
 
@@ -26,7 +26,7 @@ Wordlists were still tried first, and all three corpora came back negative:
 
 The tested wordlists contained no matching candidate. The statement defines a bounded charset and length, so a mask attack covers that space without needing another name list.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Check the mask with a known hash.** Recover the MD5 of `Felix` to validate the hashcat configuration before attacking the challenge hash.
 
@@ -83,7 +83,7 @@ print(hashlib.md5(b"Jaqurtis").hexdigest())   # fe00ab6a1d242513c9f246344bf7da1d
 - Length 8, `J` uppercase and the rest lowercase, matching "begins with a capitol, and the rest is lower case" literally.
 - Masks for lengths 1..7 completed without a match; the candidate was found at length 8. It was absent from the three wordlists tested earlier. This does not establish uniqueness among all length-8 candidates.
 
-## Flag
+## Result
 
 ```text
 cdctf{Jaqurtis}

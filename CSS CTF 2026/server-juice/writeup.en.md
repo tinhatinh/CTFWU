@@ -22,7 +22,7 @@ CSSCTF{premiumreserve}
 Reply
 ```
 
-## Flag
+## Result
 
 ```text
 CSSCTF{premiumreserve}

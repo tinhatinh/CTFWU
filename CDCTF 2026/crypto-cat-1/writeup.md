@@ -16,7 +16,7 @@ Chuỗi này là minor key thứ nhất trong bốn key của ngục tối. Tên
 many keys" nhưng mô tả nói rõ đó là bùa của khoá master, và toàn bộ bốn flag thành
 phần sẽ được dùng lại ở phần 5, nên từng phần lẻ là một mật mã độc lập.
 
-## Phân tích ban đầu
+## Phân tích
 
 - Ciphertext dài 29 ký tự, chỉ gồm chữ thường, chữ số, `_`, `{`, `}`.
 - Vị trí các ký tự đặc biệt: `{` ở chỉ số 5, bốn dấu `_` ở 14, 17, 20, 23, `}` ở
@@ -26,7 +26,7 @@ phần sẽ được dùng lại ở phần 5, nên từng phần lẻ là một
 - Đề không nói trước prefix cờ, nên mỗi hướng ứng viên được chấm bằng cách nhìn 5
   ký tự đầu (`xwxgu`) có biến thành một tag ra nghĩa không.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **XOR một byte** (đúng cái tên của series): dò cả 256 khoá trên toàn chuỗi. 16
    khoá cho output nằm trọn trong dải ASCII in được, nhưng chỉ khoá `0x00` (tức
@@ -44,7 +44,7 @@ giải bên dưới.
 
 Log đầy đủ ở `notes.md`.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Xác định khung ciphertext.** Đếm vị trí `{`, `}`, `_` để nhận diện cấu trúc cờ, rồi chạy bảng 25 Caesar và 256 XOR một byte để loại hai hướng
 đầu tiên:
@@ -76,7 +76,7 @@ về đúng ciphertext gốc, và điều này đã được assert trong `explo
 nếu không khớp). Prefix `cdctf` khớp định dạng cờ của giải, phần thân chỉ còn chữ
 thường - số - gạch dưới, và nội dung tự đọc được (`atbash 1n it up 1n h3re`), phù hợp với kết quả giải mã.
 
-## Flag
+## Kết quả
 
 ```bash
 python exploit.py files/ciphertext.txt
@@ -92,7 +92,7 @@ python exploit.py files/ciphertext.txt
 [+] da luu flag.txt
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/ciphertext.txt

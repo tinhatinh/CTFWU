@@ -9,7 +9,7 @@
 loader trao nó cho bạn." Không có upload: `/unhex.elf` biến text hex thành byte thô, `jot` để gõ, làm việc
 trong `/prep`, và `cook` phải dùng đường dẫn tuyệt đối.
 
-## Phân tích ban đầu
+## Phân tích
 
 Cờ được `kmalloc` rồi ghim trên heap, không bao giờ ghi đĩa:
 
@@ -47,7 +47,7 @@ Loader kiểm tra **đích** (`p_vaddr`, `p_memsz`, có chống tràn) nhưng kh
 `MAX_ELF = 256 * 1024`, và `buf + p_offset` là số học con trỏ 32 bit, nên chọn `p_offset` đủ lớn sẽ
 **quay vòng** xuống dưới cả heap.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **Đọc cờ bằng soupyc (`read(open("/FLAG3..."))`)** — cờ không nằm trên đĩa, stage 3 cố tình không có
    file.
@@ -60,7 +60,7 @@ Loader kiểm tra **đích** (`p_vaddr`, `p_memsz`, có chống tràn) nhưng kh
    chạy cả hai scenario trong harness (xem Bước 1).
 4. **Upload binary**: không có kênh upload, mọi thứ phải gõ dưới dạng hex qua `jot` + `/unhex.elf`.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Dựng ELF và chứng minh bằng harness trước khi gõ.** `analysis/build_elf.py` build đúng ELF 174
 byte, **replay nguyên văn vị từ của `load_segment`** và chạy một micro-VM i386 để xem payload làm gì, kèm
@@ -132,13 +132,13 @@ cdctf{mise_en_place_two_paths_one_check}
 Dòng thứ hai là FLAG1 của stage 1: nó nằm trong `.rodata` nên cũng lọt cửa sổ quét — bằng chứng độc lập
 rằng primitive đọc đúng là "kernel memory", không phải đọc file.
 
-## Cờ
+## Kết quả
 
 ```text
 cdctf{bad_recipe_the_loader_reads_wide}
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 # local: dựng ELF + chạy 3 scenario (1 dương, 2 âm)

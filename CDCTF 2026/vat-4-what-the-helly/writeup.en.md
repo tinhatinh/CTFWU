@@ -12,7 +12,7 @@ codes are stale, but the original password behind them should be recoverable, an
 is supposedly reused elsewhere. Three parameters are given: `n=8`, hashes are folded, no seed.
 Card: 500 pts, OSINT + Crypto + Password Cracking, author `b0b`, format `cdctf{password}`.
 
-## First analysis
+## Analysis
 
 `ffprobe` reports MPEG layer III v2, 48 kbps, 24 kHz, mono, no content-bearing ID3 tag. Same
 container style as the other parts of the VAT series, i.e. TTS output, so the payload is the
@@ -28,7 +28,7 @@ value plus 2 spare bits.
 Three things had to be pinned: how 64 bits become six words, what the chain step function is, and
 the password. The first two are falsifiable from data, so they were settled before any guessing.
 
-## Ruled out
+## Approaches tried
 
 1. **Data outside the speech**: uniform MP3 frames, no ID3, no secondary channel. Rejected.
 2. **Dictionary-constrained ASR**: Vosk with a 2048-word grammar on the 1.1 s slices returned no
@@ -42,7 +42,7 @@ the password. The first two are falsifiable from data, so they were settled befo
    tolerance of one word threw away the true model. The test only means something once the
    comparison is on the 64-bit value with the checksum bits dropped.
 
-## Exploit chain
+## Solution
 
 **Step 1 - Pin the encoding with RFC vectors.** Parse Appendix C of RFC 2289 (27 vectors of
 pass phrase + seed + count -> hex -> six words, kept verbatim in
@@ -111,7 +111,7 @@ listening errors, not chain errors.
 
 **Step 4 - Check the accompanying PGP key.** `gpg --import` was attempted with the recovered password on `VAT_key` (iterated-and-salted SHA1 S2K, protect-count 65011712, AES-256), and reported `secret key imported`. Successful import alone does not demonstrate that the passphrase unlocks the private key; signing or decryption is needed to verify that.
 
-## Flag
+## Result
 
 ```text
 cdctf{idontcare1}

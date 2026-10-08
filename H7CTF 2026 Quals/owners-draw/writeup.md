@@ -8,7 +8,7 @@
 Hệ thống thanh toán OrionPay sử dụng một cổng webhook nhận thông báo, hoạt động theo phương thức xác thực chữ ký số (signature) của yêu cầu gửi lên.
 Đề cung cấp một cơ chế chi trả (payout) yêu cầu quyền hạn tài khoản admin. Thông tin được cung cấp gồm một phiếu thanh toán (slip) hợp lệ (với nội dung và chữ ký số đính kèm), yêu cầu thí sinh tự phân tích để vượt qua cơ chế xác thực và nhận quyền thanh toán đặc biệt.
 
-## Phân tích ban đầu
+## Phân tích
 
 Lệnh kiểm tra:
 ```text
@@ -17,19 +17,19 @@ Gọi GET /sample -> Trả về thân nội dung body : event=payment.succeeded&
                    Hệ thức ký signing         : Bằng thuật toán SHA256(secret || body)
 ```
 
-Gửi lại toàn bộ payload slip gốc vào cổng `POST /webhook`, kết quả trả về `{"ok": true, "role": "guest", "note": "no owner payout"}`. 
+Gửi lại toàn bộ payload slip gốc vào cổng `POST /webhook`, kết quả trả về `{"ok": true, "role": "guest", "note": "no owner payout"}`.
 Thông tin quan trọng: Hệ thống xác thực chữ ký TRƯỚC KHI xử lý tham số body, và biến `role` là tham số quyết định quyền kích hoạt chi trả payout.
 
-Điểm yếu cấu trúc hệ thống nằm ở công thức tạo mã ký: `SHA256(secret || body)`. Đây là cơ chế tạo Message Authentication Code (MAC) dựa trên nối chuỗi (prefix-based MAC) của hàm băm Merkle - Damgård. Hạn chế của thuật toán là kết quả băm được trả ra công khai thực chất là trạng thái nội bộ (internal state) của chu trình SHA-256 sau khi xử lý thông điệp đã nối thêm dữ liệu đệm (padding). 
+Điểm yếu cấu trúc hệ thống nằm ở công thức tạo mã ký: `SHA256(secret || body)`. Đây là cơ chế tạo Message Authentication Code (MAC) dựa trên nối chuỗi (prefix-based MAC) của hàm băm Merkle - Damgård. Hạn chế của thuật toán là kết quả băm được trả ra công khai thực chất là trạng thái nội bộ (internal state) của chu trình SHA-256 sau khi xử lý thông điệp đã nối thêm dữ liệu đệm (padding).
 Hệ quả: Nếu có được một mã hash hợp lệ và chiều dài thông điệp ban đầu, có thể tiếp tục chu kỳ tạo hash (Length Extension Attack). Việc bổ sung chuỗi văn bản sẽ tạo ra một hàm băm mới hợp lệ cho thông điệp `body || padding || extra`. Không cần biết giá trị khoá bí mật `secret` là gì.
 
 Thử nghiệm với API `/v2/webhook` (sử dụng HMAC-SHA256), máy chủ trả về lỗi 401 khi nhận chữ ký giả mạo bằng SHA-256 LEA. API phiên bản v2 đã khắc phục lỗ hổng bảo mật này. Thử thách yêu cầu khai thác 1 lỗ hổng trên cổng v1.
 
-## Quá trình khai thác
+## Lời giải
 
 ### Bước 1: Tái tạo thuật toán SHA-256 bằng Python
 
-Thư viện `hashlib` mặc định không hỗ trợ API khởi tạo hàm băm từ một digest có sẵn, do đó cần tự triển khai hàm `compress(state, block)` (bao gồm chu kỳ message schedule và 64 chu kỳ tính toán SHA-256). Việc lập trình cần tính chính xác cao, vì lỗi tham số sẽ khiến hệ thống không thể hoạt động đúng cách.
+Thư viện `hashlib` mặc định không hỗ trợ API khởi tạo hàm băm từ một digest có sẵn, do đó cần tự triển khai hàm `compress(state, block)` (bao gồm chu kỳ message schedule và 64 chu kỳ tính toán SHA-256). Implementation được đối chiếu với digest đã biết trước khi dùng cho payload.
 
 ```python
 def compress(h, block):
@@ -50,7 +50,7 @@ def compress(h, block):
 
 ### Bước 2: Ghép chuỗi padding (Splice)
 
-Thông điệp khởi tạo là `secret || body`, chiều dài toàn cục `L = len(secret) + 76`. (Thông tin thiếu sót là chiều dài `len(secret)`). 
+Thông điệp khởi tạo là `secret || body`, chiều dài toàn cục `L = len(secret) + 76`. (Thông tin thiếu sót là chiều dài `len(secret)`).
 Chuỗi dữ liệu đệm (padding) của SHA-256 có định dạng `0x80 || 00*k || be64(8L)`. Cần phải bao gồm phần đệm đó vào nội dung body nối thêm:
 
 ```python
@@ -75,9 +75,9 @@ Máy chủ liên tục trả về lỗi 401, cho đến khi xác định đượ
 [+] Gõ /webhook -> Nhận mã 200 {"ok": true, "payout": "authorized", "flag": "H7CTF{786dff67-75cd-4d4e-8b74-55edb1353aad}"}
 ```
 
-Kiểm tra đối chiếu: 8 byte thông tin chiều dài trong phần splice padding là `0x2d8` = 728 bit = 91 byte = 15 (secret) + 76 (body) - Thông số này là minh chứng rõ ràng cho việc tính toán thành công `len(secret)`. Điều này khẳng định thuật toán Length Extension Attack hoạt động hoàn toàn chính xác.
+Padding chứa độ dài `0x2d8 = 728 bit = 91 byte`, được tạo từ giả định secret dài 15 byte và body dài 76 byte. Số này kiểm tra phép tính của payload, không phải bằng chứng độc lập về độ dài secret. Phản hồi `/webhook` chấp nhận tag và trả flag mới là bằng chứng cho ứng viên đã dùng.
 
-## Flag
+## Kết quả
 ```bash
 $ python solve_draw.py
 [+] FLAG: H7CTF{786dff67-75cd-4d4e-8b74-55edb1353aad}

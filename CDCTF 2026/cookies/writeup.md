@@ -9,7 +9,7 @@ Trang chủ "Cookie Trading Post" bán một cờ với giá một cookie, nhưn
 set 0 cookie. Muốn lấy cờ phải làm việc với instance Web: mở `/`, để script trên trang gọi
 `/get_cookie`, rồi POST `/purchase_flag`. Định dạng cờ `cdctf{Fl4gGo3sH3re!}`.
 
-## Phân tích ban đầu
+## Phân tích
 
 - `GET /get_cookie` trả `Set-Cookie: user_cookie_balance=<JWT>; Path=/`. Balance không nằm trong
   cookie thường mà trong payload JWT `{"user_cookie_balance":0}`, header `{"alg":"HS256","typ":"JWT"}`.
@@ -20,7 +20,7 @@ set 0 cookie. Muốn lấy cờ phải làm việc với instance Web: mở `/`,
 - Mô tả đề và các dòng `X-LLM-Agent-Instruction` / `X-LLM-Policy` là cơ chế chặn agent tự động của
   giải, không phải một bước của lời giải.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **Sửa chuỗi balance trong cookie**: giá trị là JWT ba segment do server ký, sửa tay làm hỏng
    signature.
@@ -29,7 +29,7 @@ set 0 cookie. Muốn lấy cờ phải làm việc với instance Web: mở `/`,
 3. **Secret đoán trước**: 17 ứng viên theo theme (`cookies`, `chocolate`, `Cookies-and-All-That`,
    `alex`, `cdctf`, `user_cookie_balance`, secret rỗng...) đều `Invalid token!`.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Bẻ khoá HMAC của token gốc.** Signature chỉ 32 byte và payload đã biết, cố định,
 nên bài quy về việc tìm khoá HS256. `rockyou.txt` (14344392 dòng) chứa khoá: 8 worker Node tìm thấy khóa ở dòng 251496 sau 35.9 s.
@@ -88,13 +88,13 @@ forged token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2Nvb2tpZV9iYWxhbmNlI
 Token Python xuất ra trùng từng ký tự với token Node đã gửi khi solve, nên cờ ở Bước 2 là kết quả của
 đúng token mà script đóng gói tái tạo được.
 
-## Flag
+## Kết quả
 
 ```text
 cdctf{0mNomN0mNomC00k1E5!_24a480be}
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 # Instance là per-player và đã hết hạn (POST trả 403 error code: 1010), cần instance mới

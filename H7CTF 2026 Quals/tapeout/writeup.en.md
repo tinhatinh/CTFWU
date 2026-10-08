@@ -15,7 +15,7 @@ Win = your netlist is certified AND T(A_AUDIT) == MAGIC
 
 We need a netlist that is both certified equivalent and produces the sabotage value at the audit point.
 
-## Initial Analysis
+## Analysis
 
 The three given files are `hdl.py` (parser + simulator + z3 formula generator), `verifier.py`
 (the certifier verbatim) and `reference.hdl`:
@@ -47,7 +47,7 @@ once" is the decisive detail: a single check point, and that point lies outside 
 
 So there is no need to beat the equivalence checking problem - only to exploit its scope.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Building an "outside the proof" indicator.** `eq` in Tiny-HDL returns `0xFFFFFFFF` when equal,
 `0x00000000` when different, so:
@@ -106,7 +106,7 @@ sign-off compromised -- a certified design carries a trojan.
 H7CTF{afd4beac-e86e-409b-907d-b519bb748599}
 ```
 
-## Flag
+## Result
 ```bash
 python exploit.py pwn.h7tex.com 40634
 ```

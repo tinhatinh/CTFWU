@@ -13,7 +13,7 @@ Ciphertext: ESUITO{gwfvb_xejqnf_nimgt_b_whhrlv}
 ```
 Đề cho format `CSSCTF{...}`. Dùng sáu chữ `CSSCTF` làm known-plaintext crib để tính các độ dịch ban đầu.
 
-## Phân tích ban đầu
+## Phân tích
 
 đối chiếu giá trị chênh lệch (shift) modulo 26 cho từng vị trí dựa trên manh mối đã có:
 
@@ -28,23 +28,23 @@ Ciphertext: ESUITO{gwfvb_xejqnf_nimgt_b_whhrlv}
 
 Dãy độ dịch thu được là `2 0 2 6 0 9`. Đối chiếu chuỗi số này với dữ liệu đầu vào, có thể nhận thấy nó trùng khớp với sáu chữ số đầu tiên của mốc thời gian trong message: `20260921143507` (loại bỏ các ký tự phân cách từ `2026-09-21 14:35:07`). Câu hướng dẫn "the time is always the key" có giá trị tham chiếu trực tiếp: khóa giải mã chính là chuỗi ký tự số của mốc thời gian, áp dụng trên hệ mã Vigenère dạng số (Mật mã Gronsfeld) với chu kỳ là 14.
 
-## Chuỗi khai thác
+## Lời giải
 
-**Bước 1 - Trích xuất khóa (Key) từ thông điệp.** 
+**Bước 1 - Trích xuất khóa (Key) từ thông điệp.**
 Sử dụng biểu thức chính quy để loại bỏ tất cả các ký tự phi số, giữ lại chuỗi số thuần túy làm khóa:
 
 ```python
 key = re.sub(r"\D", "", "2026-09-21 14:35:07")   # Kết quả: '20260921143507'
 ```
 
-**Bước 2 - Xác thực bằng manh mối ban đầu (Crib).** 
+**Bước 2 - Xác thực bằng manh mối ban đầu (Crib).**
 Thực hiện mã hóa thử sáu ký tự đầu tiên của bản rõ bằng sáu chữ số đầu của khóa để kiểm chứng mô hình:
 
 ```text
 CSSCTF -> ESUITO : Áp dụng độ dịch (shift) [2, 0, 2, 6, 0, 9]   # Khớp hoàn toàn với key[0:6]
 ```
 
-**Bước 3 - Giải mã toàn bộ bản mã.** 
+**Bước 3 - Giải mã toàn bộ bản mã.**
 Thiết kế logic giải mã: Hệ số đếm (index) của khóa chỉ tiến lên khi gặp các ký tự thuộc bảng chữ cái. Các ký tự đặc biệt như `{`, `}`, và `_` sẽ được bỏ qua trong bước tính độ dịch và giữ nguyên trong kết quả cuối cùng. Việc áp dụng sai bộ đếm (bao gồm cả ký tự đặc biệt) sẽ dẫn đến giải mã lỗi.
 
 ```python
@@ -62,7 +62,7 @@ Chạy toàn bộ bản mã qua kịch bản, hệ thống xuất ra chuỗi: `C
 
 Mã hóa lại plaintext bằng khóa đã tìm được cho đúng ciphertext ban đầu. Plaintext cũng khớp mẫu `[a-z0-9_]*` ở phần thân. Các ca thay đổi chữ hoa, giờ thành `15:35:07` hoặc crib `ESUITO` thành `XSUITO` được dùng để kiểm tra các điều kiện của script.
 
-## Flag
+## Kết quả
 
 Chạy script:
 

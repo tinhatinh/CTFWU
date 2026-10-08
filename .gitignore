@@ -1,6 +1,8 @@
 # Python
 __pycache__/
 *.py[cod]
+# Original challenge bytecode is an artifact, not a Python runtime cache.
+!**/files/**/*.pyc
 *.egg-info/
 *.egg
 dist/

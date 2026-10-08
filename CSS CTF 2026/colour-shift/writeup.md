@@ -7,15 +7,15 @@
 
 Nội dung cung cấp bao gồm một file định dạng BMP và một mô tả văn bản liên quan đến định luật phân tích ánh sáng của Isaac Newton. File đính kèm duy nhất là `colorshiftctf.bmp`, và mô tả đề cập tới nguyên lý tách ánh sáng thành các thành phần quang phổ màu cơ bản. Định dạng cờ được quy định là `CSSCTF{...}`.
 
-## Phân tích ban đầu
+## Phân tích
 
 Ảnh BMP có kích thước 599×602, 24 bit/pixel, dùng `BI_RGB`. `bfOffBits=138` và `biSizeImage=1083600`; tổng hai giá trị bằng kích thước file, nên không có dữ liệu nối thêm sau pixel array. Header là `BITMAPV5HEADER` dài 124 byte, bitmask `ff/ff00/ff0000`, `biClrUsed=0`; ảnh không có palette.
 
 Ảnh nền là *The Dark Side of the Moon*, khá tối và có nhiễu. Giá trị trung bình R/G/B lần lượt là 15.4, 32.1 và 38.1. Kênh R có dải 0–255, trong khi G đạt tối đa 240 và B đạt 215; do đó kiểm tra riêng từng kênh màu.
 
-## Chuỗi khai thác
+## Lời giải
 
-**Bước 1 - Phân tách cấu trúc thành phần màu.** 
+**Bước 1 - Phân tách cấu trúc thành phần màu.**
 Tăng contrast của cả ảnh cũng làm nhiễu rõ hơn. Thay vào đó, ước lượng nền bằng median filter rồi lấy hiệu giữa ảnh và nền:
 
 ```python
@@ -26,12 +26,12 @@ def residual(chan):
 
 Kernel 41 pixel lớn hơn độ dày nét chữ, nên có thể dùng để ước lượng nền. Trong thử nghiệm này, median filter tạo ít halo quanh nét chữ hơn Gaussian filter.
 
-**Bước 2 - Phân tích đối chiếu trên từng kênh.** 
+**Bước 2 - Phân tích đối chiếu trên từng kênh.**
 Sau khi normalize bằng median absolute deviation (MAD) và phóng lớn, dòng chữ hiện rõ ở kênh R và ảnh hiệu `R - B`. Trong cùng vùng, G và B không cho thấy dòng chữ tương ứng. `R - B` giảm phần nhiễu nền chung và làm chữ dễ đọc hơn.
 
 *(Hình ảnh minh họa kết quả phân tích ba kênh màu: `analysis/channels.png`)*
 
-**Bước 3 - Giải mã nội dung văn bản.** 
+**Bước 3 - Giải mã nội dung văn bản.**
 Vùng dải tín hiệu chứa văn bản định vị tại trục tung y từ dòng 404 đến dòng 436, trải dài qua toàn bộ trục hoành (bề ngang) của ảnh.
 
 ```text
@@ -40,10 +40,10 @@ C S S C T F { S H I N E   O N }
 
 Dòng chữ có khoảng trắng giữa `E` và `O`. Khoảng này rộng khoảng 47 pixel, so với khoảng cách ký tự trung bình 33 pixel. Bản dùng Gaussian filter từng xuất hiện một nét giống `/`; nét đó không còn ở bản median filter.
 
-**Bước 4 - Xác thực quy trình (Kiểm chứng).** 
+**Bước 4 - Xác thực quy trình (Kiểm chứng).**
 Dòng chữ được đọc trực tiếp từ vùng y=404–436 của ảnh đã xử lý. Kiểm tra ảnh ba kênh và ảnh hiệu để đối chiếu các ký tự, đặc biệt khoảng trắng trong `SHINE ON`.
 
-## Flag
+## Kết quả
 
 Chạy script:
 

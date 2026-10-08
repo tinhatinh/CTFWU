@@ -1,6 +1,6 @@
 # soupOS 2: Salt to Taste - Rev Eng pwn (489 điểm)
 
-**Cờ:** FLAG2, in ra bởi `chef special` (chuỗi không được ghi lại verbatim trong phiên này)
+**Cờ:** FLAG2, in ra bởi `chef special` (chuỗi không được ghi lại verbatim trong bản ghi đã lưu)
 · **Điểm:** 489 · **Tác giả:** soup (CDCTF)
 **Handout:** `soupos-handout.tar.gz` + `symbols.txt` (dùng chung với stage 0 và 1)
 
@@ -8,7 +8,7 @@
 
 "Only the headchef knows today's special. The kitchen roster is world-readable."
 
-## Phân tích ban đầu
+## Phân tích
 
 Roster là một file FAT đọc được bằng chính lệnh của shell (`/etc/kitchen` world-readable):
 
@@ -33,7 +33,7 @@ Hai hệ quả ngay từ source:
 
 `alphasoup("soup") = e7d471fc` khớp dòng `cook`, dùng làm test vector cho implementation của hàm hash.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **Gõ mật khẩu redact `xxxxxxxx`.** Handout có `roster[0].hash = hash_secret("xxxxxxxx")` nhưng
    `alphasoup("xxxxxxxx") = 0e4273c9` ≠ `f63a9eb7` ⇒ ảnh gốc đã được build lại với secret khác.
@@ -44,7 +44,7 @@ Hai hệ quả ngay từ source:
    `* NOODLE` với NOODLE lẻ, `^ h>>17`), nên chia chuỗi 7 ký tự thành 3 + 4 và gặp nhau ở giữa rẻ hơn
    ~450 lần. Giữ lại như phương án dự phòng.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Đảo hàm băm để làm meet-in-the-middle.** Với mỗi byte, phép trộn là song ánh trên 32 bit state,
 nên viết được chiều ngược: `rotr 13`, nhân nghịch đảo modulo 2^32, và `x = z ^ (x >> s)` giải bằng 4 vòng
@@ -86,11 +86,11 @@ headchef's secret: saohjea
   Today's special: cdctf{...}
 ```
 
-## Cờ
+## Kết quả
 
 `chef special` in cờ stage 2 trên VM. Đội đã báo cáo dùng cách này để mở stage 3, nhưng giá trị cờ chưa được lưu trong bản ghi. Kết quả local xác nhận `saohjea` cho hash `f63a9eb7` và `users_check()` trả uid 0 với roster thử nghiệm.
 
-## Reproduce
+## Tái hiện
 
 ```bash
 # local: sinh tiền ảnh và kiểm chứng bằng chính source của đề

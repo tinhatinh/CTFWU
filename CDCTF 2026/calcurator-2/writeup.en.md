@@ -6,17 +6,17 @@
 
 Identify the packet type accepted by the backdoor handler.
 
-## Initial analysis
+## Analysis
 
 All four inputs share the same SHA-256. Analysis used Python 3.12 and GNU objdump without executing the sample.
 
 Function `0x12b460` opens a raw socket with arguments 2, 3, 1, then compares the ICMP type byte with 8.
 
-## Discarded approaches
+## Approaches tried
 
 HTTP/TLS is excluded by the IPPROTO_ICMP socket. An ordinary Echo Request passes only the type check, not the later key check.
 
-## Solution chain
+## Solution
 
 At `0x12b490`, socket(2,3,1) means AF_INET/SOCK_RAW/IPPROTO_ICMP. The receive buffer starts at rsp+0x20; at `0x12b4c8`, [rsp+0x34] is compared with 8. Offset 20 is the ICMP type after a 20-byte IPv4 header. Type 8 is Echo Request.
 
@@ -42,7 +42,7 @@ print(f"cdctf{{{protocol} {packet}}}")
 
 The flag was derived and printed locally; no accepted submission was recorded.
 
-## Flag
+## Result
 
 ```bash
 python exploit.py files/calculator

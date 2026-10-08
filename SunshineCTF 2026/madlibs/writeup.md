@@ -7,7 +7,7 @@
 Mục tiêu được cung cấp qua địa chỉ `nc chal.sunshinectf.games 26001`, kèm theo các file `mad_libs`, `libc.so.6`, và `ld-linux-x86-64.so.2`.
 Bài có trị giá 499 điểm với tổng cộng 38 lượt giải thành công, tác giả là Oreomeister.
 
-## Phân tích ban đầu
+## Phân tích
 
 File thực thi là một ELF 64-bit PIE đã bị loại bỏ thông tin gỡ lỗi (stripped) với kích thước 14584 byte. Các cơ chế bảo vệ được bật bao gồm PIE, NX, stack canary, và Partial RELRO (không sử dụng `BIND_NOW`). Thư viện C được cung cấp là Ubuntu glibc 2.39.
 
@@ -21,7 +21,7 @@ for (i = 0; i <= 7; i++) {
 }
 ```
 
-Vùng đệm `buf` nằm tại địa chỉ `[rbp-0x110]`, cung cấp khoảng trống 272 byte, nhưng hàm `fgets` chỉ cho phép đọc tối đa 256 byte. Kích thước này ngăn chặn hoàn toàn khả năng buffer overflow và không cho phép ghi đè trực tiếp lên return address. Chương trình chỉ tồn tại duy nhất một điểm yếu (primitive): hàm `printf(buf)` được gọi trực tiếp với chuỗi định dạng `buf` hoàn toàn nằm dưới sự kiểm soát của người chơi, và quá trình này được lặp lại 8 lần.
+Buffer tại `[rbp-0x110]` dài 272 byte. `fgets(buf, 0x100, stdin)` đọc tối đa 255 byte dữ liệu rồi thêm NUL, nên lời gọi này không tràn buffer. Primitive được dùng là `printf(buf)` với format string do input điều khiển; vòng lặp cho phép tám lần nhập.
 
 Bảng thông tin `.rela.plt` chỉ ra vị trí của bảng GOT. Vì chương trình chỉ biên dịch với Partial RELRO, các địa chỉ hàm trong bảng GOT hoàn toàn có thể bị ghi đè:
 
@@ -29,7 +29,7 @@ Bảng thông tin `.rela.plt` chỉ ra vị trí của bảng GOT. Vì chương 
 0x4000 puts   0x4008 __stack_chk_fail   0x4010 printf   0x4018 fgets   0x4020 setvbuf
 ```
 
-## Chuỗi khai thác
+## Lời giải
 
 ### Bước 1: Khảo sát và định vị stack
 
@@ -77,7 +77,7 @@ uid=1337(mad_libs) gid=1337(mad_libs)
 /ctf/flag.txt:  -rw-r----- 1 root mad_libs 27
 ```
 
-## Flag
+## Kết quả
 ```
 sun{f1ll_iN_th3_g0T_eNtry}
 ```

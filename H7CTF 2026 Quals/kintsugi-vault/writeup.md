@@ -1,6 +1,6 @@
 # Kintsugi Vault - Rev (Hard)
 
-## 0. Tóm tắt
+## Tổng quan
 
 Hệ thống lõi `vmrun` là một máy ảo (VM) nội bộ sử dụng tập lệnh gồm 14 opcode. Mỗi điểm dữ liệu (node, file `.shard`) lưu trữ một bảng hoán vị opcode 256 byte (đóng vai trò "từ điển biên dịch") và một mã nhị phân dài 649 byte. Chương trình tiếp nhận 8 byte khóa (key), xử lý qua cấu trúc 3 tầng thuật toán `LUT` kết hợp trộn XOR tuyến tính, và đối chiếu 8 thanh ghi với 8 hằng số đích. Chuỗi 32 byte seed dùng để xác thực hệ thống là tổ hợp 8 byte khóa trích xuất từ 4 node. Quy trình thực hiện:
 
@@ -18,7 +18,7 @@ H7CTF{9df8f215-6ef3-4ee2-a336-42d628680738}
 
 Lưu ý quan trọng nằm ở mục 7: File đính kèm trên trang chủ là phiên bản thử nghiệm tĩnh; hệ thống thực tế yêu cầu bộ dữ liệu tải qua `GET /handout.tar.gz`.
 
-## 1. Phân tích định dạng Shard
+## Phân tích định dạng Shard
 
 ```text
 0x000  4 byte   Định danh 'KSHD'
@@ -41,9 +41,9 @@ Lỗ hổng nghiêm trọng: Người dùng có quyền kiểm soát nội dung 
 
 Cấu trúc Key: 16 ký tự hex, xử lý qua lệnh SSE và phân bổ 8 byte vào bộ nhớ tại `rsp+0x58`.
 
-## 2. Giải mã Tập lệnh (ISA)
+## Giải mã Tập lệnh (ISA)
 
-Hệ thống điều phối: `op = table[prog[pc]]`. Nếu `op == 0` -> Dừng thực thi (HALT), ghi nhận `OK` (mã 0). Nếu `op > 13` -> Lỗi `bad opcode` (mã 2). Hành vi vượt giới hạn `pc >= proglen` được đánh giá là thực thi thành công. 
+Hệ thống điều phối: `op = table[prog[pc]]`. Nếu `op == 0` -> Dừng thực thi (HALT), ghi nhận `OK` (mã 0). Nếu `op > 13` -> Lỗi `bad opcode` (mã 2). Hành vi vượt giới hạn `pc >= proglen` được đánh giá là thực thi thành công.
 Bảng nhảy (jump table) tại `0x486ba8` (chỉ mục số nguyên 32-bit tương đối) xác định tập lệnh:
 
 | Mã lệnh (op) | Ký hiệu (mnemonic) | Kích thước | Chức năng |
@@ -67,14 +67,14 @@ Kiến trúc thanh ghi gồm 12 block 32-bit cấp phát tại `rsp+0x30..0x57`.
 
 Mã máy ảo được mô phỏng hoàn thiện tại script `vm.py`, đảm bảo khả năng tính toán chéo.
 
-## 3. Phân loại cấu trúc xử lý Node
+## Phân loại cấu trúc xử lý Node
 
 Phân tích mã vận hành 7 file shard cho thấy có 2 phương pháp tổ chức cấu trúc lệnh:
 
 - Nhóm A (chứa ID `f6f11ad1`, `080ec62d`, `3e3a0fc9`, `cfa1fa34`): Thực thi 3 lớp `LUT` lồng ghép ma trận XOR, chốt bằng 8 lệnh `CMP` với hằng số thuộc chuẩn 1 byte. Cấu trúc mã là hệ thuật toán 64-bit chắc chắn.
 - Nhóm B (chứa ID `3df10ef4`, `63bafd7f`, `f14ad4e2`): Vận hành theo chu trình đơn giản `KEY -> LUT -> ADD -> ROL -> MUL -> OR -> XORI -> CMP` với hằng số 32-bit. Lệnh `MUL` và `OR` là các hàm phân rã dữ liệu, dẫn đến tỷ lệ lỗi phân tích cao (mã `3df10ef4` có thể chấp nhận hơn 500 key). Chúng là các node trung gian cho cấu trúc mạng mesh, không lưu cờ đích.
 
-## 4. Tái tạo Bảng biên dịch (Decode Table)
+## Tái tạo Bảng biên dịch (Decode Table)
 
 `vmrun` từ chối thực thi các shard nhóm A nếu cờ bit0 bị tắt và bảng decode không được cung cấp. Bảng tích hợp của chúng bị làm rối (random 158..163 byte độc nhất).
 
@@ -87,7 +87,7 @@ Quy trình chạy lại bảng decode:
 Hai ID `080ec62d` và `3e3a0fc9` có cấu trúc tương đồng, có thể sao chép ánh xạ `(pc, op)` từ file `f6f11ad1`. ID `cfa1fa34` có vòng lặp biến đổi khác nên phải xử lý bằng thuật toán tự động. Bảng decode thu được:
 `f7=KEY 79=XORI 4e=ANDI d6=LUT 4c=XOR c1=MOV bc=CMP 44=HALT`.
 
-## 5. Phân tích ngược tính toán khóa
+## Phân tích ngược tính toán khóa
 
 Cấu trúc lệnh Nhóm A:
 
@@ -99,12 +99,12 @@ Giai đoạn 4: Vùng đệm bằng MOV r0,r0 56 lần
 Giai đoạn 5: So sánh (CMP r0..r7, byte chuẩn) -> HALT
 ```
 
-Phần lớn phép toán có thể nghịch đảo, ngoại trừ `ANDI`: Các bit bị lọc bởi mask của ANDI (reset về 0) không có ảnh hưởng tới phép toán tiếp theo, tạo thành các bit tự do (free bit). 
+Phần lớn phép toán có thể nghịch đảo, ngoại trừ `ANDI`: Các bit bị lọc bởi mask của ANDI (reset về 0) không có ảnh hưởng tới phép toán tiếp theo, tạo thành các bit tự do (free bit).
 Quá trình tính toán ngược bắt đầu từ 8 lệnh `CMP`, cho kết quả từng byte `key[i]` và các tổ hợp bit tự do, dẫn đến mỗi node có khoảng 16 đến 64 key hợp lệ.
 
 Lỗi trong quá trình tính toán các biến thể (variants): Yêu cầu tất cả nhánh bit tự do phải được xử lý ở 2 trạng thái 0 và 1. Khởi tạo chúng về 1 sẽ loại bỏ 50% khả năng chính xác. Đây là nguyên nhân khiến quá trình xác nhận seed không thành công ở giai đoạn thử nghiệm đầu tiên.
 
-## 6. Tổng hợp hệ Seed Xác thực
+## Tổng hợp hệ Seed Xác thực
 
 Kết hợp 4 khối khóa (mỗi khối 8 byte), 24 hoán vị kết hợp, số lượng biến thể ước tính (16 x 32 x 32 x 64). Tính toán được xử lý nhanh chóng:
 
@@ -118,9 +118,9 @@ Tính public key từ seed candidate rồi so sánh với `pubkey` để kiểm 
 
 Các phỏng đoán trước đó bao gồm lấy 8 byte mục tiêu CMP, sử dụng thông số XORI, hoặc sửa định dạng endian đều cho kết quả sai.
 
-## 7. Xác thực API (Attestation) - Sự khác biệt phiên bản
+## Xác thực API (Attestation) - Sự khác biệt phiên bản
 
-Thực hiện lệnh `GET /attest` -> Lấy 24 byte `nonce` (chuỗi hex), gửi yêu cầu `POST /attest` với `nonce` và `sig` (chữ ký). 
+Thực hiện lệnh `GET /attest` -> Lấy 24 byte `nonce` (chuỗi hex), gửi yêu cầu `POST /attest` với `nonce` và `sig` (chữ ký).
 Dù kết quả mã chữ ký chính xác dựa trên `pubkey.bin` (đã chứng minh bằng hai thuật toán độc lập), máy chủ liên tục trả về lỗi `400 attestation incomplete`. Nhiều phương án thay đổi cấu trúc truy vấn, thẻ HTTP và định dạng payload đều không khả thi.
 
 Nguyên nhân lỗi: Máy chủ trả về cùng một mã thông báo lỗi cho các trường hợp chữ ký sai định dạng, thiếu độ dài, hay `nonce` không hợp lệ. Hành vi này ngăn cản phương pháp thử tự động (brute-force).

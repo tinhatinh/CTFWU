@@ -1,10 +1,10 @@
 # Kuiper Belt Relay Core - Pwn (Beginner)
 
-**Event:** CSS CTF 2026  
-**Category:** pwn  
+**Event:** CSS CTF 2026
+**Category:** pwn
 **Level:** Beginner (50 points)
 
-## Problem Description
+## Challenge
 
 `vuln()` reads input with `gets()` into `char buffer[64]`. `win()` reads and prints the flag, but normal execution does not call it. The objective is to overwrite the return address and call `win()`.
 
@@ -47,14 +47,14 @@ int main() {
 }
 ```
 
-## Initial Analysis
+## Analysis
 
 - Buffer memory specification: The `char buffer[64]` array is allocated starting at offset 0 on the stack frame of the `vuln` function.
 - Technique for determining the buffer overflow boundary via external interaction (Black-box testing): When transmitting a payload consisting of the string `"A"*71`, the program still operates stably and prints the message `Goodbye!`. However, with the payload `"A"*72`, this message no longer appears, confirming the program has encountered a segmentation fault (crash) before the final print instruction in the `main` function is executed.
 - Based on this result, the system affirms the return address is located at **offset 72** (Including 64 bytes for the buffer and 8 bytes for the Base Pointer register - saved RBP).
 - The binary is compiled compatible with x86-64 architecture and does not activate the PIE (Position Independent Executable) mechanism. Scanning static addresses is successful and confirms all partitions are within the `0x40xxxx` range.
 
-## Excluded Directions
+## Approaches tried
 
 ### Stack leak through the echo output
 
@@ -62,7 +62,7 @@ The payload `b"A"*n + b"%s%s%s..."` did not disclose a useful address. The sourc
 
 `gets()` also appends a NUL byte immediately after the input. Printing the buffer with `%s` stops at that byte. This approach did not provide a stack leak, so the solution used the server response to probe candidate addresses instead.
 
-## Exploitation Chain
+## Solution
 
 **Step 1 - Precisely locate the return address boundary.**
 
@@ -95,7 +95,7 @@ Completed Payload structure: `b"A"*72 + b"\x16\x12\x40"`.
 
 The payload was tested in three independent connections. All three called `win()` and returned the flag.
 
-## Flag
+## Result
 
 Result:
 ```text

@@ -3,13 +3,13 @@
 **Flag:** `cdctf{Lamar Hackson}` · **File:** `corpo_rat.zip` (128747 B, SHA-256 `5109835422566de5...486a45f7f6c5a66`)
 **Contents:** `audit.log`, `auth.log`, `cron.log`, `syslog`, `users.txt` (98-employee roster)
 
-## Problem
+## Challenge
 
 Four log files from one host, `ubnt-app02` (auditd, sshd/sudo, cron, syslog), plus a roster of 98
 employees. One of them left a RAT on the server and leaked documents outside. The task is to name
 that person; the flag is the full name from the roster, format `cdctf{Firstname Lastname}`.
 
-## Initial triage
+## Analysis
 
 Record type counts in `audit.log`:
 
@@ -57,7 +57,7 @@ is `203.0.113.77:8443`. Same IP in both: one connection on the download port and
 port. In `cron.log`, 569 lines of `CMD (/tmp/.cache/.upd >/dev/null 2>&1)` account for both counts:
 root's cron invokes the implant, and each invocation opens one beacon connection.
 
-## Routes excluded
+## Approaches tried
 
 Three leads look attacker-like but do not connect to the implant (full log in `notes.md`):
 
@@ -71,7 +71,7 @@ Three leads look attacker-like but do not connect to the implant (full log in `n
    `Invalid user` lines in `auth.log`. All 457 `Accepted password` lines come from `10.50.x.x`; none
    of the scanning IPs ever got a session. Excluded.
 
-## Exploit chain
+## Solution
 
 **Step 1 - Tie the implant to the original login account.** The `crontab` record in `audit.log` carries `auid`
 (the original login uid); `uid=0` only says the command ran through sudo. The `REPLACE` line in
@@ -119,7 +119,7 @@ Sep 20 02:26:15 ubnt-app02 sshd[4344]: pam_unix(sshd:session): session closed fo
 ```
 
 Three secondary details point at the same person: 10.50.44.233 appears only twice in the whole
-`auth.log` and both lines are this session (`lhackson`'s other 9 sessions come from 10.50.12.188);
+`auth.log` and both lines are the recorded run (`lhackson`'s other 9 sessions come from 10.50.12.188);
 the other 455 sessions in the log are numbered contiguously from 40000 to 40454 by systemd-logind,
 only this one received 50695; and on Sep 23 the same user ran `sudo /bin/ls -la /tmp/.cache/`, going
 back to check the directory holding the implant, the same command recorded in `audit.log` as records
@@ -169,7 +169,7 @@ line. The two files disagree on port (syslog puts every beacon on 8443, audit re
 is missing one connection at the end of the window, so the figures usable for cross-checking are the
 IP and the connection counts, not the port.
 
-## Flag
+## Result
 
 Full output of `python exploit.py files/corpo_rat.zip`:
 

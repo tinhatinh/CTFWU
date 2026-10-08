@@ -19,7 +19,7 @@ handout ships `ccu_premium`, libc Ubuntu GLIBC 2.35-0ubuntu3.15, the matching lo
 line. Versus tier 1 the new part is the seccomp-bpf filter (`install_filter` is called
 before `do_login`) and the extra header line `TERMINAL HARDENING: ACTIVE`.
 
-## Initial analysis
+## Analysis
 
 `file` reports `ELF 64-bit LSB executable, x86-64, dynamically linked, not stripped`, so
 the binary is **non-PIE**: every address inside it (`0x400000` + offset) is a constant and
@@ -41,8 +41,7 @@ Four observations drive the whole solution:
    ```
 
    i.e. `read, write, open, openat, lseek, fstat, brk, mmap, munmap, exit, exit_group`.
-   **No `execve`, no `fork/clone`, and no `mprotect` (10)** - so no shell spawn and no JIT
-   shellcode. The exploit uses an open/read/write chain.
+   **No `execve`, no `fork/clone`, and no `mprotect` (10)** - so approaches requiring those syscalls are unavailable. Missing `mprotect` alone does not exclude executable `mmap`. The exploit uses an open/read/write chain.
 
 2. Every record is a fixed-size page: `open_account` @0x401f31 and `attach_memo` @0x402590
    both `malloc(0x180)` then `read_full(ptr, 0x180)`. `read_full` @0x401693 loops
@@ -71,7 +70,7 @@ returns the just-freed record chunk (tcache LIFO, same size), and the memo path 
 **no field fixups** (unlike `open_account`), so the memo's 384 bytes become the record body
 with `+0x28` chosen by us.
 
-## Ruled out
+## Approaches tried
 
 1. **Format string in `show_summary`**: the hypothesis that `printf(branch_page)` uses our
    data as the format. Wrong. The only string printed around the value is
@@ -99,7 +98,7 @@ with `+0x28` chosen by us.
    `context.default.timeout` an `AttributeError` (the correct form is `context.timeout`);
    the server needs generous timeouts and buffer-based reads rather than line-based ones.
 
-## Exploit chain
+## Solution
 
 **Step 1 - Spray 7 chunks into tcache and 2 into the unsorted bin to leak libc.**
 Open 9 records, then close all 9 in order. `n_accounts` is not decremented, so all 9 are
@@ -172,7 +171,7 @@ exactly `"/flag\0\0\0"` before `open` runs, proving the scratch page is writable
 dumped content is exactly 32 bytes, matching the length of the local `flagfile`. The chain
 ran 5/5 consecutive times in the lab.
 
-## Flag
+## Result
 
 Not captured from the instance. The local lab only reads back a self-made flag:
 
@@ -203,4 +202,4 @@ python exploit.py                        # HOST, PORT = "chal", 2324 -> change t
 - The `+0x28 = RATE_TABLE[type-1]` and `+0x27 = 0` writes in `open_account`: inferred from
   the local run (a directly submitted page cannot hold a callback) rather than quoted line by
   line here; the full listing is at `_scratch/ccu/dis.txt`.
-- `limits()` values (RLIMIT/alarm): not re-read during this session.
+- `limits()` values (RLIMIT/alarm): not re-read during the recorded run.

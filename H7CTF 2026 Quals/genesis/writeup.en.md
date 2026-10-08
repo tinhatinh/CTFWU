@@ -18,7 +18,7 @@ victimDeposited && vault.balanceOf(victim) == 0 && token.balanceOf(address(vault
 That is, three things must happen at once: the anchor has deposited, they hold no shares, and the vault is nearly
 empty.
 
-## Initial Analysis
+## Analysis
 
 `Setup.sol` defines the anchor with a constant address:
 
@@ -26,7 +26,7 @@ empty.
 address public constant victim = address(0xC0FFEE);
 ```
 
-This address is not a contract, so no code interacts with the vault on the anchor's behalf. Yet `Setup` exposes
+The source uses this fixed address to identify the anchor. Yet `Setup` exposes
 `victimDeposit()` as `external`, with no `onlyOwner`, meaning the player can call it on the anchor's behalf, and
 `deposit(assets, receiver)` lets you name the receiver, so the shares of that deposit are credited straight to
 `victim`. This is not a bug to exploit, but the switch that triggers exactly the timing sequence the challenge
@@ -49,11 +49,11 @@ function convertToShares(uint256 assets) public view returns (uint256) {
 function sync() external { reserve = asset.balanceOf(address(this)); }   // anyone can call it
 ```
 
-`convertToShares` adds no virtual shares/virtual assets like the reference ERC4626 does, and `sync()` sits outside
+`convertToShares` adds no virtual shares/virtual assets as some ERC4626 implementations do to mitigate rounding/inflation risk, and `sync()` sits outside
 owner control. Together they make a rounding puzzle: keep `totalSupply` extremely small while `reserve` is extremely
 large, and a very large deposit converts to 0 shares.
 
-## Exploit Chain
+## Solution
 
 Four beats, and all six transactions are sent from a plain EOA, no intermediary contract needed.
 
@@ -80,7 +80,7 @@ State after each step, taken from the output of `solve.mjs`:
 | `setup.victimDeposit()` | 300000000000000000000 | 1 | 0 | 300 | false |
 | `redeem(1, me, me)` | 0 | 0 | 0 | 0 | true |
 
-## Flag
+## Result
 The last line of `CTF_PK=<private key from GET /> node solve.mjs` (the `show()` function prints the state after each transaction):
 
 ```

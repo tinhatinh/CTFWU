@@ -1,6 +1,6 @@
 # soupOS 4: Too Many Cooks - Rev Eng pwn (489 điểm) — ĐANG MỞ
 
-**Cờ:** FLAG4, in ra bởi `serve_the_special()` — **chưa capture được trong phiên này**
+**Cờ:** FLAG4, in ra bởi `serve_the_special()` — **chưa capture được trong bản ghi đã lưu**
 · **Điểm:** 489 · **Tác giả:** soup (CDCTF)
 **Handout:** `soupos-handout.tar.gz` + `symbols.txt` (dùng chung cả chain)
 
@@ -18,7 +18,7 @@ void serve_the_special(void) {
 }
 ```
 
-## Phân tích ban đầu
+## Phân tích
 
 Hai đặc điểm trong `soupyc.c`:
 
@@ -53,7 +53,7 @@ static struct {
     if (sc_state.after_hook) sc_state.after_hook();     /* soupyc.c:1575 */
 ```
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Tính offset cần ghi.** Trên i386: `val_t = {int type; int ival; char sval[48]}` = 56 byte,
 `arr_t = {int used; int len; val_t elems[48]}` = 2696 byte, nên `pool[0].elems` ở `sc_state + 56` và
@@ -101,7 +101,7 @@ dùng địa chỉ có thật trong kernel.
 
 Lệnh ở Bước 2 chưa được xác nhận trên VM. Cần chạy lệnh và lưu output trước khi ghi nhận flag. Lỗi `array index out of range` có thể cho biết instance đã chặn chỉ số âm; cần kiểm tra build thực tế.
 
-## Reproduce
+## Tái hiện
 
 ```bash
 # local: chứng minh lệch bộ nhớ + chứng minh hook chạy

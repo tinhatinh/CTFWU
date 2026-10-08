@@ -8,7 +8,7 @@
 
 A single file, no remote instance, no hint to open. Author oatzs.
 
-## Initial Analysis
+## Analysis
 
 The file follows the Microsoft Keyboard Layout Creator format, beginning with `KBD kbdusx "US"`, followed by `SHIFTSTATE`, `LAYOUT` and `ENDKBD`.
 
@@ -28,14 +28,14 @@ character in state 1, and `-1`. The two states are not symmetric:
 The black square and the `}` both sit on H, so H is the destination. Each key therefore carries
 two layers: a direction to travel and a character to collect.
 
-## Approaches Ruled Out
+## Approaches tried
 
 Triage confirms the keyboard-layout structure. The file ends with `ENDKBD
 ` and has no trailing data after that marker. The flag is assembled by following the arrows, rather than read as a contiguous string in the file.
 
 The log of each branch is in `notes.md`.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - extracting the data.** Parse the 18 `LAYOUT` lines, dropping `SPACE` (scan code `0x39`,
 both states are a space so it carries nothing). Arrange the remaining 17 keys into three physical
@@ -57,7 +57,7 @@ Q A Z X S W E D C V F R T G B N H
 s u n { q w e r t y _ s u c k s }
 ```
 
-## Flag
+## Result
 ```bash
 python exploit.py files/suntrail.klc
 ```

@@ -12,7 +12,7 @@
 
 Đề bài giới thiệu một bảng điều khiển thời tiết (weather console) đang liên tục phát cùng một bản tin từ năm 1993. Mục tiêu là truy tìm nguồn gốc nơi hệ thống lấy dữ liệu.
 
-## Phân tích ban đầu
+## Phân tích
 
 Giao diện trang web chính rất đơn điệu, chỉ có một khung nhập liệu (form) nhưng lại bị vô hiệu hoá bằng thẻ comment trong mã nguồn HTML. Bù lại, chính những dòng comment này lại là bản vẽ sơ đồ hệ thống vô giá mà tác giả bỏ quên:
 
@@ -50,7 +50,7 @@ NOTE(ops): ... mainly updating from wkhtmltopdf 0.12.5
 
 Nhìn rộng ra bên ngoài, container này đã bị khoá chặt đường ra (no egress). Để kiểm chứng, tôi đã thử dựng một trạm DNS riêng (kết quả trang hiển thị trên trạm, nhưng console lại chê `bytes=0`). Qua phân tích sâu hơn, vấn đề nằm ở chỗ hệ thống có thể phân giải (resolve) được tên miền nhưng tường lửa lại chặn toàn bộ kết nối TCP ra ngoài. Vì không có giao thức `gopher://` trong các từ điển payload phổ biến, hướng đi này tạm thời đóng lại ở khâu nhận diện công cụ client của server.
 
-## Bác bỏ các giả thuyết sai lầm
+## Hướng đã thử
 
 | # | Giả thuyết (Rabbit Hole) | Kết luận |
 |---|---|---|
@@ -61,9 +61,9 @@ Nhìn rộng ra bên ngoài, container này đã bị khoá chặt đường ra 
 | H10 | Máy chủ mock metadata có chứa cờ | CHẾT. Dù có smuggle được header để lọt vào đọc trọn vẹn toàn bộ cây `/computeMetadata/v1/`, thì bên trong cũng chỉ rỗng tuếch các thông số GCP tiêu chuẩn. |
 | H14 | Thẻ `<iframe src="file://...">` có khả năng hiển thị (render) nội dung file | CHẾT. File tuy có bị fetch (gọi) thật, nhưng thư viện Qt từ chối vẽ văn bản (text) của các khung con (subframe), dẫn đến file PDF sinh ra không có bất kỳ dòng chữ (text operator) nào. |
 
-## Chuỗi khai thác
+## Lời giải
 
-**Bước 1 - Lắng nghe tiếng khóc của lỗi (Error Message) để vạch mặt Client.** 
+**Bước 1 - Lắng nghe tiếng khóc của lỗi (Error Message) để vạch mặt Client.**
 Khi có sự cố, trang lỗi sẽ phun trực tiếp toàn bộ exception ra thẻ `<p class="fault">...</p>`. Bằng cách truyền vào 18 lớp dữ liệu lỗi cố ý, ta thu được các phản ứng sau:
 
 ```text
@@ -106,7 +106,7 @@ content=<h1>Feb 2 Summary</h1>
 
 Phản hồi trả về `bytes=11230`, kèm theo JSON chứa đầy đủ các khoá `document`, `bytes`, `encoding`, `data`. Điều này chứng tỏ `wkhtmltopdf` đã thực sự bị kích hoạt. Nếu tiện tay nhét thêm `Metadata-Flavor: Google` vào khuôn request này, ta sẽ kéo được trọn vẹn cây metadata, qua đó chấm dứt ảo tưởng ở H10 rằng cờ nằm trong infra.
 
-**Bước 4 - Khai thông kênh truyền văn bản.** 
+**Bước 4 - Khai thông kênh truyền văn bản.**
 Sử dụng thẻ `<iframe src="file:///etc/passwd">` sinh ra một file PDF nhưng không chứa bất kỳ văn bản nào. Phân tích sâu hơn cho thấy file thực sự đã được thư viện đọc: gọi `file:///ctf/flag.txt` thì máy chủ báo lỗi `ContentNotFoundError` (vì không tìm thấy file), trong khi gọi `/etc/passwd` thì máy chủ im lặng nuốt gọn. Vấn đề cốt lõi là trình xuất (renderer) Qt từ chối vẽ loại nội dung text/plain bên trong khung con. Mọi nỗ lực dùng `<meta refresh>` hay `location=` để ép chuyển hướng đều vỡ mộng với thông báo `unknown error`.
 
 Payload `<script>document.title="JSWORKS123"</script>` làm trường `/Title` trong PDF chứa marker này, xác nhận JavaScript chạy trong renderer. Có thể dùng `document.title` để đưa dữ liệu đọc được vào metadata; chuỗi trong `/Title` được mã hóa UTF-16BE.
@@ -123,10 +123,10 @@ document.title = "OK:" + x.responseText;
 ```
 Phép thử đọc `/etc/hostname` trả `OK:d89c16037bd5`. Trong môi trường này, XHR tới `http://` báo `NETWORK_ERR`, còn request tới file local hoạt động. Body POST dùng form-urlencoded, nên dấu `+` phải được percent-encode để tránh bị đổi thành dấu cách.
 
-**Bước 6 - Truy tìm kho báu.** 
+**Bước 6 - Truy tìm kho báu.**
 dò dẫm đường dẫn: Các ứng viên `/ctf/flag.txt` (đường dẫn đặc trưng của các bài pwn cùng kỳ), `/flag`, `/app/flag.txt`, `/opt/flag.txt` đều đâm đầu vào hướng không cho kết quả `ContentNotFoundError`. Rút cục, vị trí `/flag.txt` chói loà trả về flag trọn vẹn.
 
-## Flag
+## Kết quả
 ```
 sun{s1x_m0r3_w33ks_0f_g0ph3r_ssrf}
 ```

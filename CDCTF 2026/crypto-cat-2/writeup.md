@@ -9,7 +9,7 @@ Phần 2/5 của chuỗi Crypto Cat. Thẻ đề chỉ in 45 token hex, không c
 instance. Câu "it seems you have cracked my first key" chỉ vào phần 1 (bản chất là phép Atbash
 đổi `xwxgu{...}` thành `cdctf{...}`), còn bản thân bản mã không cho biết thuật toán.
 
-## Phân tích ban đầu
+## Phân tích
 
 - 45 token hex, mỗi token gồm hai chữ số, gom lại thành đúng 45 byte, không có byte thừa.
 - Dải giá trị `0x85` đến `0xfd`, 24 giá trị phân biệt. Không một byte nào nhỏ hơn `0x80`.
@@ -17,7 +17,7 @@ instance. Câu "it seems you have cracked my first key" chỉ vào phần 1 (b�
   đầu tiên là XOR một byte. Byte `0x85` nằm ngoài `0xba`-`0xfd` (phần còn lại của dải) và là dấu
   vết của một plaintext `0x0a`: `0x85 ^ 0x8f = 0x0a`, tức bản mã kết thúc bằng ký tự xuống dòng.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **XOR/Vigenère byte nhiều khóa (L = 2..15, các chiều `xor`, `sub`, `add`, `beaufort`).**
    `analysis/triage.py` quét mỗi cột theo ràng buộc "toàn bộ byte giải mã phải in được". Với điều kiện ASCII in được (`0x20`-`0x7e`) chỉ `xor` còn ứng viên, và mỗi cột còn 20-94 ứng viên nên khóa không xác
@@ -28,7 +28,7 @@ instance. Câu "it seems you have cracked my first key" chỉ vào phần 1 (b�
    trong vùng in được, 6 byte đầu ra `0x13 0x14 0x13 0x04 0x16 0x0b`. Chiếu nghiệm cho cùng bộ đếm
    với khóa `0x8f` cho 44/45, nên con số 11/45 là phép đo biết báo dương chứ không phải mặc định.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Quét toàn bộ 256 khóa một byte.** Đếm số khóa mà mọi byte giải mã đều in được, tách
 làm hai chuẩn: ASCII in được tuyệt đối (`0x20`-`0x7e`) và chuẩn có cho phép thêm tab/LF/CR.
@@ -72,7 +72,7 @@ hit = [k for k in loose if dec(k).startswith(b"cdctf{")]
 
 Đầu ra dài 45 byte phủ hết bản mã, phần thân cờ không chứa ký tự trắng và cặp ngoặc `{}` đóng một lần.
 
-## Flag
+## Kết quả
 
 ```bash
 python exploit.py files/ciphertext.txt
@@ -93,7 +93,7 @@ python exploit.py files/ciphertext.txt
 [+] da luu flag.txt
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/ciphertext.txt

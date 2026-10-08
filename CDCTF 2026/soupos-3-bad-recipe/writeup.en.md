@@ -3,13 +3,13 @@
 **Flag:** `cdctf{bad_recipe_the_loader_reads_wide}` · **Points:** 498 · **Author:** soup (CDCTF)
 **Handout:** `soupos-handout.tar.gz` + `symbols.txt` (shared by the whole chain)
 
-## The task
+## Challenge
 
 "Somewhere in kernel memory is a string that is never written to disk. Build a binary that convinces the
 loader to hand it to you." There is no upload: `/unhex.elf` turns hex text into raw bytes, `jot` is the
 editor, work in `/prep`, and `cook` needs absolute paths.
 
-## First look
+## Analysis
 
 The flag is `kmalloc`'d and pinned on the heap, never written to disk:
 
@@ -48,7 +48,7 @@ The loader checks the **destination** (`p_vaddr`, `p_memsz`, with overflow prote
 `kmalloc(MAX_ELF)` with `MAX_ELF = 256 * 1024`, and `buf + p_offset` is 32-bit pointer arithmetic, so a
 large enough `p_offset` **wraps below the entire heap**.
 
-## Routes ruled out
+## Approaches tried
 
 1. **Reading a flag file through soupyc** - there is no flag file; that is the point of stage 3.
 2. **Pointing `p_vaddr` at `0x17600c` so memcpy writes into the kernel** - `p_vaddr` is confined to
@@ -60,7 +60,7 @@ large enough `p_offset` **wraps below the entire heap**.
 4. **Uploading a binary** - no upload channel; everything must be typed as hex through `jot` +
    `/unhex.elf`.
 
-## The chain
+## Solution
 
 **Step 1 - build the ELF and prove it locally first.** `analysis/build_elf.py` produces the exact 174-byte
 file, **replays the real `load_segment` predicate**, and runs an i386 micro-VM over the resulting image with
@@ -133,7 +133,7 @@ cdctf{mise_en_place_two_paths_one_check}
 The second line is stage 1's FLAG1: it lives in `.rodata`, so it also fell inside the window - independent
 proof that the primitive really read kernel memory rather than a file.
 
-## Flag
+## Result
 
 ```text
 cdctf{bad_recipe_the_loader_reads_wide}

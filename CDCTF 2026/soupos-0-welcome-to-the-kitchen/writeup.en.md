@@ -3,7 +3,7 @@
 **Flag:** `cdctf{soupOS_is_better_than_arch}` · **Points:** 431 · **Author:** soup (CDCTF)
 **Handout:** `soupos-handout.tar.gz` (redacted source) + `symbols.txt` (kmap of the running kernel)
 
-## The task
+## Challenge
 
 Free flag of a five-card soupOS chain: a 32-bit OS "vibe-coded" from scratch. The card itself says there
 are **four places where it trusts the wrong thing**, and one instance serves all five challenges. The flag
@@ -56,7 +56,7 @@ gcc -O0 -w -idirafter "../soupos/src" -o soupctest.exe stubs.c main.c \
 `-idirafter` (not `-I`) is mandatory: the handout ships its own `src/stdio.h` that remaps `printf` to
 `doom_printf`, and `-I` makes the harness pick up the challenge header and fail to build.
 
-## Flag
+## Result
 
 ```text
 cdctf{soupOS_is_better_than_arch}

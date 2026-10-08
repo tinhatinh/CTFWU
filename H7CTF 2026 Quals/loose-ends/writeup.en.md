@@ -8,7 +8,7 @@
 Sparrow Freight's ledger. The bookkeepers do not erase old entries as carefully as they think, and there is an audit
 that reads out the day's pass code which nobody has ever called. Tie the loose ends together.
 
-## Initial Analysis
+## Analysis
 
 ```
 ET_EXEC no PIE | NX on | canary present (menu/idx/audit)
@@ -35,7 +35,7 @@ Two details make the challenge easier than expected. The heap is not randomised:
 `0x4062b0`, right after BSS. RELRO ends at `0x404000`: the whole PLT GOT is writable, and with no PIE there is nothing
 to leak at all.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Leak `heap >> 12` to beat safe-linking.** glibc 2.39 encrypts the tcache pointer:
 `stored = (pos >> 12) ^ real`. When `free(A)` runs and A is the bin's last element, `real = NULL`, so A's first 8
@@ -77,7 +77,7 @@ python -u exploit.py pwn.h7tex.com 42589
 
 `exploit.py` uses only `socket` + `struct`, and is self-generating with no libc leak needed.
 
-## Flag
+## Result
 ```
 [audit] H7CTF{4d0e9693-88bd-4749-87d8-c64dd2ef80ab}
 ```

@@ -1,14 +1,14 @@
 # soupOS 2: Salt to Taste - Rev Eng pwn (489 points)
 
-**Flag:** FLAG2, printed by `chef special` (the string was not captured verbatim in this session)
+**Flag:** FLAG2, printed by `chef special` (the string was not captured verbatim in the recorded run)
 · **Points:** 489 · **Author:** soup (CDCTF)
 **Handout:** `soupos-handout.tar.gz` + `symbols.txt` (same files as stages 0 and 1)
 
-## The task
+## Challenge
 
 "Only the headchef knows today's special. The kitchen roster is world-readable."
 
-## First look
+## Analysis
 
 The roster is a FAT file readable with a normal shell command (`/etc/kitchen` is world-readable):
 
@@ -34,7 +34,7 @@ Two consequences straight from the source:
 Hash test vector: `alphasoup("soup") = e7d471fc`, exactly the `cook` line - proof that we are reading
 the right file and modelling the right hash before spending effort on `headchef`.
 
-## Routes ruled out
+## Approaches tried
 
 1. **Typing the redacted literal `xxxxxxxx`.** The handout contains `roster[0].hash = hash_secret("xxxxxxxx")`,
    but `alphasoup("xxxxxxxx") = 0e4273c9` ≠ `f63a9eb7` ⇒ the shipped image was built with a different
@@ -47,7 +47,7 @@ the right file and modelling the right hash before spending effort on `headchef`
    `* NOODLE` with odd NOODLE, `^ h>>17`), so splitting the 7-character string 3 + 4 and meeting in the
    middle is ~450x cheaper. Kept as a fallback.
 
-## The chain
+## Solution
 
 **Step 1 - invert the hash to build a meet-in-the-middle table.** Each byte is a bijection on the 32-bit
 state, so the reverse steps exist: `rotr 13`, a modular inverse multiply, and `x = z ^ (x >> s)` solved by
@@ -88,7 +88,7 @@ headchef's secret: saohjea
   Today's special: cdctf{...}
 ```
 
-## Flag
+## Result
 
 `chef special` prints the stage-2 flag on the VM. The team reported using this method to unlock stage 3, but the flag value was not saved. Local tests confirm that `saohjea` hashes to `f63a9eb7` and `users_check()` returns uid 0 with the test roster.
 

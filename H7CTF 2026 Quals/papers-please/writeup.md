@@ -7,10 +7,10 @@
 
 ## Đề bài
 
-Hệ thống kiểm tra thông tin người dùng mô phỏng trạm kiểm soát. Hệ thống yêu cầu tên, lưu vào nhật ký log, rồi thông báo: "Access denied ... Turn back." (Từ chối truy cập... Quay xe đi.) trước khi ngắt kết nối. 
-Hệ thống tồn tại một hàm cấp quyền. Tuy nhiên, luồng thực thi thông thường không bao giờ gọi hàm này. Nhiệm vụ là: Khai thác hệ thống, điều hướng thực thi vào hàm cấp quyền để trả về cờ (flag).
+Hệ thống kiểm tra thông tin người dùng mô phỏng trạm kiểm soát. Hệ thống yêu cầu tên, lưu vào nhật ký log, rồi thông báo: "Access denied ... Turn back." (Từ chối truy cập... Quay xe đi.) trước khi ngắt kết nối.
+Hệ thống tồn tại một hàm cấp quyền. Tuy nhiên, luồng thực thi thông thường không bao giờ gọi hàm này. Nhiệm vụ là: Khai thác hệ thống, điều hướng thực thi vào hàm cấp quyền để trả về flag.
 
-## Phân tích ban đầu
+## Phân tích
 
 Đưa file qua công cụ phân tích `triage.cjs`, xác định được cấu trúc:
 
@@ -42,12 +42,12 @@ Lỗ hổng xuất hiện ở hàm `checkpoint`:
 
 Lệnh `read(0, buf, 0x100)` truyền 256 byte dữ liệu vào bộ đệm chỉ có dung lượng 64 byte. Không có cơ chế bảo vệ canary, đây là một lỗi tràn bộ đệm (stack overflow) cơ bản.
 
-## Quá trình khai thác
+## Lời giải
 
-**Bước 1 - Xác định khoảng cách (offset) tới đích return address.** 
+**Bước 1 - Xác định khoảng cách (offset) tới đích return address.**
 Bộ đệm nằm ở `[rbp-0x40]` (kích thước 64 byte), liền kề là lưu trữ rbp (saved rbp) nằm tại `[rbp]` (kích thước 8 byte), và return address nằm tại `[rbp+8]`. Tính toán Offset = 64 + 8 = 72 byte. Lệnh `read` cho phép truyền tới 256 byte, đủ không gian cho payload.
 
-**Bước 2 - Điều chỉnh stack (stack alignment).** 
+**Bước 2 - Điều chỉnh stack (stack alignment).**
 Quy tắc hệ điều hành (ABI) yêu cầu: tại lệnh mở màn của một hàm, con trỏ stack phải thỏa mãn `rsp % 16 == 8`.
 
 - Chuyển hướng trực tiếp vào hàm `grant_access` qua lệnh `leave; ret`: Lệnh `leave` gán `rsp = rbp_checkpoint`, lệnh `pop rbp` điều chỉnh con trỏ lên 8 byte, lệnh `ret` điều chỉnh thêm 8 byte. Kết quả: `rsp = rbp_main + 8`. Hàm `main` khởi tạo cơ bản bằng `push rbp` rồi call trực tiếp, dẫn tới `rbp_main % 16 == 0`. Tổng hợp lại: Truy cập vào `grant_access` với `rsp % 16 == 0`, sai lệch 8 byte so với chuẩn ABI.
@@ -86,7 +86,7 @@ ACCESS GRANTED: H7CTF{b66621cc-c85c-4042-b908-0d3dd36a71e5}
 
 **Bước 5 - Xác nhận cờ.** Sử dụng biểu thức chính quy `H7CTF\{[^}\n]*\}` trích xuất dữ liệu nhận từ socket, lưu trực tiếp cờ vào file `flag.txt`.
 
-## Flag
+## Kết quả
 ```text
 H7CTF{b66621cc-c85c-4042-b908-0d3dd36a71e5}
 ```

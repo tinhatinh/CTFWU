@@ -10,7 +10,7 @@ name of a good friend of his". The narrator's friend is a rat called Remy, and R
 by a wise friend. Both details point at the film Ratatouille: Remy, Alfredo Linguini, chef Auguste Gusteau.
 Flag format for the event is `cdctf{...}`.
 
-## Initial analysis
+## Analysis
 
 There is no artifact, the input is a 16-byte digest, so the first job was to measure how hard it actually is.
 The gromweb reverse-md5 database (832,927,522 known sums) finds nothing:
@@ -31,7 +31,7 @@ Exhausted  11881376/11881376
 
 The Ratatouille clue motivates a wordlist of character names, including full names with spaces and numeric suffixes. The earlier masks do not exclude all other password formats.
 
-## Ruled out
+## Approaches tried
 
 1. **Common passwords**: 27.7M lines from xato-net-10M, Pwdb_top-10M, darkc0de, alleged-gmail,
    openwall.net-all and rockyou-75, plain and with `best64` (2,138,454,780 candidates, Exhausted) and
@@ -53,7 +53,7 @@ The Ratatouille clue motivates a wordlist of character names, including full nam
    something other than `a-z`. This removes every plain guess of the `linguini`, `ratatouille`,
    `anyonecancook` type.
 
-## Exploit chain
+## Solution
 
 **Step 1 - Build a wordlist for the actual setting.** Take the cast and crew of Ratatouille (Remy, Alfredo
 Linguini, Skinner, Django, Émile, Anton Ego, Auguste Gusteau, Colette Tatou, Horst, Lalo, Mustafa, Talon
@@ -108,7 +108,7 @@ FLAG             : cdctf{Alfredo Linguini01}
 written          : C:\Users\Administrator\Downloads\CTFWU\CDCTF 2026\yummy-rat-toast\flag.txt
 ```
 
-## Flag
+## Result
 
 ```
 cdctf{Alfredo Linguini01}

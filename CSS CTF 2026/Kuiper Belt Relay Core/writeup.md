@@ -49,13 +49,13 @@ int main() {
 ```
 
 
-## Phân tích ban đầu
+## Phân tích
 
 - Buffer có kích thước 64 byte.
 - Payload `"A"*71` vẫn nhận được `Goodbye!`; với `"A"*72`, thông báo này không xuất hiện. Kết quả phù hợp với việc return address bị ảnh hưởng ở offset 72: 64 byte buffer và 8 byte saved RBP.
 - Các địa chỉ tìm được thuộc dải `0x40xxxx` và có thể dùng lại giữa các lần kết nối trong thử nghiệm.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 ### Stack leak qua output của echo
 
@@ -63,7 +63,7 @@ int main() {
 
 Ngoài ra, `gets()` thêm NUL ngay sau input; việc in buffer bằng `%s` dừng ở NUL này. Vì vậy, output của echo không cung cấp stack leak cho cách thử trên. Lời giải chuyển sang dò địa chỉ dựa trên phản hồi của server.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Xác định offset của return address.**
 
@@ -95,14 +95,14 @@ Với địa chỉ `0x401216`, payload dùng ba byte thấp `0x16 0x12 0x40`: `b
 
 Gửi payload trong ba phiên độc lập. Cả ba đều gọi được `win()` và trả flag.
 
-## Flag
+## Kết quả
 
 ```text
 CSSCTF{s1gn4l_r3c0v3r3d_fr0m_th3_v01d}
 ```
 
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py

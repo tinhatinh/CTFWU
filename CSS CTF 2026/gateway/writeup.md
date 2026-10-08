@@ -7,7 +7,7 @@
 
 Gateway yêu cầu vượt qua ba điều kiện của contract: gọi từ một contract khác (`tx.origin != msg.sender`), gửi ether qua `receive()`, và cung cấp đúng password. Instance được quản lý qua `nc 34.116.80.78:31337`.
 
-## Phân tích ban đầu
+## Phân tích
 
 - `Gate` lưu trạng thái `stepped`, `funded` và `solved`. Password hash nằm ở storage slot 1.
 - Password hash là `keccak256("gateway to the flag")`; có thể đối chiếu bằng `eth_getStorageAt`.
@@ -15,7 +15,7 @@ Gateway yêu cầu vượt qua ba điều kiện của contract: gọi từ mộ
 - Sau khi tạo lại instance, launcher trả UUID, RPC endpoint, private key và địa chỉ `Setup`.
 - RPC dùng mainnet fork với chainId 1, ở khoảng block 26 triệu. Tài khoản người chơi có 5000 ETH trong instance.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Tạo instance và lấy thông tin kết nối.**
 
@@ -97,14 +97,14 @@ echo -e "3\nR3:TURИ" | nc 34.116.80.78 31337
 
 Flag đầy đủ là `CSSCTF{CSS{B451C_BL0CKCH41N_5K1LL5}}`.
 
-## Flag
+## Kết quả
 
 ```text
 CSSCTF{CSS{B451C_BL0CKCH41N_5K1LL5}}
 ```
 
 
-## Reproduce
+## Tái hiện
 
 ```bash
 export CSS_RPC=http://34.116.80.78:8545/47c4a887-8b71-4b92-aa4d-eea88f7669f2

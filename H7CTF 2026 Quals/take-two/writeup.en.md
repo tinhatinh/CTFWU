@@ -11,7 +11,7 @@ points at the break: a one-time signature leaf is allowed to sign again.
 `lms.py` ships with the challenge, and it confesses itself: *"the vulnerability is operational (a leaf reused
 via a counter reset), not in this code"*.
 
-## Initial Analysis
+## Analysis
 
 The scheme is WOTS+ sealed inside a Merkle tree of 16 leaves:
 
@@ -34,16 +34,13 @@ The API gives exactly the three things needed: `POST /sign` (signs a message of 
 A quick test: the first signature lands on leaf 1, after one rollback the leaf goes back to 0 and every later signing
 reuses leaf 0. That is the "second take".
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Gathering many signatures on the same leaf.** The `rollback -> sign("benign-<i>")` loop runs 260 times,
 all of them on `leaf = 0`. For each coordinate `j` out of the 67 coordinates, record the smallest digit ever seen,
 `mins[j]`, and the chain value `base[j] = sig[j]` at that digit.
 
-**Step 2 - Why enough signatures are enough.** Digits are distributed uniformly over 0..15, so each coordinate has
-probability `1-(15/16)^k` of having seen a 0 after `k` signatures. With `k = 260` the expectation is that almost every
-coordinate reaches 0; the measured result is `max(mins) = 1`, `sum(mins) = 1` - 66/67 coordinates already have their
-base at digit 0, one coordinate stops at 1.
+**Step 2 - Check the coordinate minima.** For the 64 digest digits, an independent uniform-nibble model gives probability `1-(15/16)^k` of observing zero after `k` signatures. The three checksum digits do not follow that independent distribution. After 260 signatures, the observed `max(mins) = 1` and `sum(mins) = 1` mean 66 coordinates have minimum zero and one has minimum one. The next step checks the target against these measured minima.
 
 **Step 3 - Signing the forbidden message.** For a target message whose digit is `t[j]`, all that is needed is
 `t[j] >= mins[j]` to build:
@@ -65,7 +62,7 @@ blindly guessing at a "deploy"; it also proves the signature is genuinely valid 
 {"ok": true, "booted": true, "flag": "H7CTF{63b0dde3-3edd-4a95-92d3-4e8c26e38483}"}
 ```
 
-## Flag
+## Result
 ```bash
 python exploit.py https://web-18955a87eb148fa7.web.h7tex.com
 ```

@@ -1,30 +1,12 @@
-# Đề bài - broken-telephone
+# Đề bài — Broken Telephone
 
-## Nguyên văn đề
+Chưa lưu nguyên văn thẻ đề hoặc định dạng cờ.
 
-```text
-<<DÁN NGUYÊN VĂN ĐỀ VÀO ĐÂY: mô tả bài, gợi ý, số điểm, thể loại>>
-```
+## Artifact hiện có
 
-## Thông tin đã xác minh từ file
+| File | Byte | SHA-256 |
+|---|---:|---|
+| `files/MURMUR-1.2.md` | 4073 | `3f028d63840e05d54b984381fc110bda1abf640864d59d9e8f875369ffde9392` |
+| `files/murmur_crypto.py` | 11287 | `29dcd32c04460d939e77b06a1f38b283207c6e89a76b72da5d26173bc177bbdd` |
 
-| Mục | Giá trị |
-| --- | --- |
-| Artifact | `files/<artifact>` (copy từ: `<đường dẫn gốc>`) |
-| Kích thước | <kích thước> |
-| SHA-256 | `<sha256>` |
-| Loại file | <file type> |
-| Nhiệm vụ | <cần tìm gì> |
-| Định dạng cờ | `<PREFIX>{...}` |
-
-## Hướng giải (tóm tắt)
-
-<2-4 câu: primitive chính và cách ghép thành cờ.>
-
-## Chạy lại lời giải
-
-```bash
-python exploit.py files/<artifact>
-```
-
-Kết quả: `<PREFIX>{...}` (đã lưu trong `flag.txt`).
+Chưa có lời giải hoặc output xác nhận.

@@ -7,7 +7,7 @@
 
 A CDCTF forensics training MAT: one `suspicious.xz` file plus a tutorial page split into 4 parts, with a quiz at the end. The card announces 5 flags and says all five must be submitted separately to CTFd. The tutorial page states that nothing can be skipped and that there is no shortcut hidden in its source.
 
-## First look
+## Analysis
 
 `file` reports XZ and `xz -l` reports a 500.0 MiB uncompressed block. The decompressed artifact starts with a protective MBR followed by an "EFI PART" block, so this is a GPT disk image, not an archive. The partition table has four entries, labelled by the author, and each one holds a different filesystem:
 
@@ -22,14 +22,14 @@ Those four types match the answer key of quiz question q4 (vfat, ext2, ext4, btr
 
 The filesystem parsers use Python `struct`. QR decoding uses `pyzbar`, with an OpenCV fallback.
 
-## Routes ruled out
+## Approaches tried
 
 1. **Sweep the whole image for `cdctf{` and take everything at once.** It yields exactly one string, `cdctf{d3l3te_w0_sync_h0l3y_C0W}`, six times inside partition `main`. The other three flags are not plaintext, and the quiz flag is not in the artifact at all. Ruled out as a general shortcut, but this is precisely the Part 4 solution.
 2. **Recovering `flag1.png` from the deleted directory record.** Its LFN record carries the `0xE5` deletion marker, but cluster = 0 and size = 0, so there is nothing to recover. The live entry with the same name gives 405 bytes, the number the quiz asks for in the "Recovering Files" step.
 3. **Treating the QR inside `flag2.jpg` as the flag.** The 610x610 image decodes to a taunt sentence, not a flag. The real core of Part 2 is the StegHide layer.
 4. **Carving `flag2.jpg` from the offset where the JPEG magic was found.** That produces a JPEG without EOI. The actual cause was my block reader: blocks reached through the single indirect pointer were all assigned logical block number 0, which scrambles the order. Reading through the inode gives 82757 bytes ending with `FFD9`, and `exiftool` reports baseline DCT 610x610.
 
-## Exploit chain
+## Solution
 
 **Step 1 - Part 1: FAT32, repair the PNG magic, read the QR.** The boot sector gives bytes/sector 512, sectors/cluster 1, 32 reserved sectors, a 75-sector FAT32 and root cluster 2. The `FLAG1 PNG` entry has size 405 and cluster 4. The first eight data bytes are `504e470d0a1a0a00`: the PNG signature lost its `0x89` byte, so the whole file is shifted one byte to the left and the leftover byte sits at the end. Repair = prepend `0x89`, drop the last byte. After the repair all six chunk CRCs validate and `IDAT` inflates to exactly `1665 = 111 * 15` bytes, so nothing else is broken.
 
@@ -83,7 +83,7 @@ The StegHide payload has not been extracted. Try extraction with an empty passph
 2. If the empty passphrase fails, use `stegseek` with a wordlist; the most natural candidates are the QR strings the MAT itself hands out (the taunt in `flag2.jpg`, the text inside `flag3.png`).
 3. Aperi'Solve runs every technique at once, but it means uploading the challenge artifact to a third party.
 
-## Flag
+## Result
 
 ```bash
 python exploit.py files/suspicious.xz

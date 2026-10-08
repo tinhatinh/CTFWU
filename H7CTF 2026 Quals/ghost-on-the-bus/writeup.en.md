@@ -8,7 +8,7 @@
 
 A logic analyzer was clipped onto the "NoiseGate" board and everything was recorded while it booted. The device puts its provisioning key out during the wake-up routine, but "never says the whole thing in any one place". The key has to be recovered from the recording itself.
 
-## Initial Analysis
+## Analysis
 
 The index page gives the format and the channel list:
 
@@ -30,7 +30,7 @@ AUX       transitions=1                                                         
 
 8500 ns/bit is 117650 baud, exactly 2 MHz / 17 samples, matching the logic cadence the index page publishes.
 
-## Exploit Chain
+## Solution
 
 ### Step 1: the UART is the datasheet
 
@@ -80,7 +80,7 @@ key = bytes(a ^ b for a, b in zip(part_a, part_b))
 [+] FLAG: H7CTF{10d9b516-d19b-4895-9634-45b27a7591c3}
 ```
 
-## Flag
+## Result
 ```
 $ python solve_bus.py files/capture.vcd
 [+] FLAG: H7CTF{10d9b516-d19b-4895-9634-45b27a7591c3}

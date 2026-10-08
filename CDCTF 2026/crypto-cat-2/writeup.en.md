@@ -3,14 +3,14 @@
 **Flag:** `cdctf{exclus1ve_x0r1n_these_byt3s_and_5tuff}` · **Files:** `files/ciphertext.txt`, 135 bytes, sha256 `fc729a7d866ee019d3da211dd885f86922885d6d2205e51e558c1c318c1360dd`
 **Event:** CDCTF 2026 (Crimson Defense CTF) · **Author:** alex
 
-## Problem Description
+## Challenge
 
 Part 2/5 of the Crypto Cat series. The challenge card prints 45 hex tokens and nothing else: no
 download, no instance. The line "it seems you have cracked my first key" points back at part 1,
 which was plain Atbash (`xwxgu{...}` to `cdctf{...}`), but the ciphertext itself says nothing about
 the algorithm.
 
-## Initial Analysis
+## Analysis
 
 - 45 hex tokens, each containing two hex digits, packing into exactly 45 bytes with nothing left over.
 - Byte values span `0x85` to `0xfd`, 24 distinct values. No byte is below `0x80`.
@@ -19,7 +19,7 @@ the algorithm.
   (`0xba`-`0xfd`) and is the fingerprint of a plaintext `0x0a`: `0x85 ^ 0x8f = 0x0a`, so the
   ciphertext ends with a line feed.
 
-## Rejected Approaches
+## Approaches tried
 
 1. **Multi-byte XOR / byte-wise Vigenère (L = 2..15 over `xor`, `sub`, `add`, `beaufort`).**
    `analysis/triage.py` keeps a key byte for a column only if every byte in that column decodes to a
@@ -33,7 +33,7 @@ the algorithm.
    counter run with the winning key reports 44/45, so "11/45" comes from a probe that can detect a
    positive. Rejected.
 
-## Exploitation Chain
+## Solution
 
 **Step 1 - Sweep all 256 single-byte keys.** Count keys for which every decoded byte is printable,
 under two standards: strictly printable ASCII, and ASCII plus tab/LF/CR.
@@ -78,7 +78,7 @@ string printed on the card.
 
 All 45 bytes are consumed, the flag body contains no whitespace, and the `{}` pair closes once.
 
-## Flag
+## Result
 
 ```bash
 python exploit.py files/ciphertext.txt

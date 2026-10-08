@@ -8,7 +8,7 @@
 
 A pair of NoiseGate earbuds talks to the app over BLE, and the recording holds more than just them. Two secrets are in the capture: one that the earbuds leak themselves during a config read, and one that is only handed over after the app authenticates. Take both.
 
-## Initial Analysis
+## Analysis
 
 The home page points at a single file:
 
@@ -27,7 +27,7 @@ The host has no `tshark`, `capinfos`, `btlejack`. Dumping each packet by hand sh
 
 So the parsing is done by hand: `payload = packet[11:-3]`.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Pinning down the transport format.** Three payload shapes are distinguishable by length and context:
 
@@ -75,7 +75,7 @@ Both ciphertexts are 43 bytes long, and 43 bytes is exactly the length of the fl
 end. A reassembler with a wrong offset, or one that confuses a request with continuation data, cannot produce a
 string like that; so the chunk order and the offsets are right, not a lucky coincidence.
 
-## Flag
+## Result
 ```
 python solve.py analysis/capture.pcap
 

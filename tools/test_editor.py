@@ -212,6 +212,30 @@ class CTFTimeTests(unittest.TestCase):
             self.assertTrue((stage / record["cover"].lstrip("/")).is_file())
 
 
+class WaveLayoutTests(unittest.TestCase):
+    def test_wave_paths_keep_legacy_urls_and_map_both_editor_languages(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            event = root / 'Example CTF'
+            for relative in ['Wave 1/sample', 'Wave 2/sample', 'Wave 2/_wip/private']:
+                case = event / relative
+                case.mkdir(parents=True)
+                for name in ['writeup.md', 'writeup.en.md']:
+                    (case / name).write_text('# Sample - Web\n', encoding='utf-8')
+            (event / 'README.md').write_text('| Challenge | Category |\n|---|---|\n| [sample](Wave%201/sample/writeup.md) | Web |\n| [sample](Wave%202/sample/writeup.md) | Crypto / Pwn |\n', encoding='utf-8')
+            self.assertEqual(list(build_site.case_directories(str(event))), ['Wave 1/sample', 'Wave 2/sample'])
+            self.assertEqual(build_site.challenge_key('Example CTF', 'Wave 1/sample'), 'example-ctf-sample')
+            self.assertEqual(build_site.challenge_key('Example CTF', 'Wave 2/sample'), 'example-ctf-wave-2-sample')
+            with patch.object(build_site, 'ROOT', str(root)):
+                categories = build_site.readme_categories('Example CTF')
+            self.assertEqual(categories['Wave 2/sample'], 'Crypto / Pwn')
+            store = EditorStore(root, rebuild=lambda: None)
+            self.assertEqual(store.path('example-ctf-sample', 'vi'), (event / 'Wave 1/sample/writeup.md').resolve())
+            self.assertEqual(store.path('example-ctf-wave-2-sample', 'en'), (event / 'Wave 2/sample/writeup.en.md').resolve())
+            with self.assertRaises(EditError):
+                store.path('example-ctf-wave-2-private', 'vi')
+
+
 class CertificateTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()

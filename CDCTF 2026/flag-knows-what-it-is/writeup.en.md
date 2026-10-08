@@ -4,17 +4,17 @@
 **Attached file:** `files/cipher.txt`, 149 bytes, sha256 `23b75625f0b46c16e92de1844d77ece044918557cd472c0a398cb94da2afea75`
 **Event:** CDCTF 2026 (Crimson Defense CTF) · **Author:** alex
 
-## Problem Description
+## Challenge
 
 The description gives a 148-character hex string and claims the flag "knows what it is because it knows what it isn't". The required format is `cdctf{...}`. There is no attachment and no instance; the hex string in the description is the whole dataset.
 
-## Initial Analysis
+## Analysis
 
 - 148 hex characters is an even count, so 74 bytes with no stray separators.
 - Measured byte range is `0x82-0xdf`. No byte is below `0x80`, so this is not raw text; that range is exactly the image of printable ASCII (`0x20-0x7e`) under a bitwise NOT (`0xdf-0x81`).
 - The phrase "it knows what it isn't" describes the NOT operation: `x ^ 0xFF = ~x`.
 
-## Exploitation Chain
+## Solution
 
 **Step 1 - Apply the bitwise NOT to the first six bytes.** If the cipher really is NOT, those bytes must decode to the `cdctf{` prefix.
 
@@ -51,7 +51,7 @@ for key in range(256):
 
 **Step 3 - Verification.** The sweep can return several keys that all produce printable text; it returned exactly one, under the stated prefix, suffix and printable-ASCII conditions. The plaintext is a coherent English sentence that reuses the wording of the challenge text ("it is sure ... within reason ... it knows where it was"), and all 74 bytes are consumed with nothing left undecoded.
 
-## Flag
+## Result
 
 ```text
 cdctf{it is sure where it isn't, within reason, and it knows where it was}

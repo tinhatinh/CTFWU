@@ -10,7 +10,7 @@ Dịch vụ xác thực dạng console hỏi `When are you at your happiest?: ` 
 câu trả lời. Đề cho một binary duy nhất, không có địa chỉ mạng; cờ là chính câu trả lời, dạng
 `cdctf{secret cat phrase}`.
 
-## Phân tích ban đầu
+## Phân tích
 
 `cat_club_authenticator.out` là ELF x86-64 liên kết tĩnh glibc, còn symbol. Symbol ứng dụng duy nhất
 là `main` tại `0x403035`; hàm định nghĩa kế tiếp là `call_fini` tại `0x4033e0`, nên phần code của bài
@@ -37,7 +37,7 @@ Trước vòng lặp, code áp một ràng buộc độ dài:
 40330e: mov    DWORD PTR [rbp-0x14c],0x0   ; wrong length -> valid flag = 0
 ```
 
-## Các hướng đã loại
+## Hướng đã thử
 
 Trước khi chốt đã kiểm tra và loại các kênh sau (log đầy đủ ở `notes.md`):
 
@@ -48,7 +48,7 @@ Trước khi chốt đã kiểm tra và loại các kênh sau (log đầy đủ 
 3. **`handle_zhaoxin` tại `0x403430`**: chạy `cpuid` lá 4 và duyệt cache descriptor theo modulo 3, là
    code khởi tạo CPU của glibc, `main` không gọi.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Đọc vòng so sánh.** Toàn bộ phép kiểm nằm ở đây; `A[i]` là slot `[rbp-0x140+4i]`,
 `input` là buffer của `fgets` tại `[rbp-0x80]`:
@@ -117,7 +117,7 @@ When are you at your happiest?: INVALID. You are NOT a cat. You are NOT welcome 
 
 Binary không in cờ; giá trị nộp là bản thân câu trả lời, đặt trong `cdctf{...}` theo định dạng đề yêu cầu.
 
-## Cờ
+## Kết quả
 
 ```bash
 python exploit.py files/cat_club_authenticator.out
@@ -142,7 +142,7 @@ cdctf{with a glass in my paw and milk on my whiskers}
 *Cờ tính bằng cách giải mã cục bộ, đã kiểm chứng bằng cách chạy binary với đúng input này (mục Chuỗi
 khai thác); chưa đối chiếu bằng submission trên nền tảng.*
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/cat_club_authenticator.out

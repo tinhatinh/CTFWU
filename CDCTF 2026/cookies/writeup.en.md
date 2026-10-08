@@ -3,13 +3,13 @@
 **Flag:** `cdctf{0mNomN0mNomC00k1E5!_24a480be}`
 **Files:** no artifact, only the instance `https://xhlvnfzc.i.cdctf.net`
 
-## Problem Description
+## Challenge
 
 The "Cookie Trading Post" front page sells one flag for one cookie and states that every user is set
 to 0 cookies. Solving means interacting with the web instance: load `/`, let the page script call
 `/get_cookie`, then POST to `/purchase_flag`. Flag format `cdctf{Fl4gGo3sH3re!}`.
 
-## Initial Analysis
+## Analysis
 
 - `GET /get_cookie` returns `Set-Cookie: user_cookie_balance=<JWT>; Path=/`. The balance is not a plain
   cookie but a JWT payload `{"user_cookie_balance":0}` with header `{"alg":"HS256","typ":"JWT"}`.
@@ -20,7 +20,7 @@ to 0 cookies. Solving means interacting with the web instance: load `/`, let the
 - The challenge description and the `X-LLM-Agent-Instruction` / `X-LLM-Policy` response headers are the
   event's automation block, not a step of the solution.
 
-## Ruled Out
+## Approaches tried
 
 1. **Editing the balance in the cookie**: the value is a three-segment JWT signed by the server, so any
    manual edit breaks the signature. Rejected.
@@ -29,7 +29,7 @@ to 0 cookies. Solving means interacting with the web instance: load `/`, let the
 3. **Guessable secrets**: 17 theme-based candidates (`cookies`, `chocolate`, `Cookies-and-All-That`,
    `alex`, `cdctf`, `user_cookie_balance`, empty secret...) all returned `Invalid token!`. Rejected.
 
-## Exploitation Chain
+## Solution
 
 **Step 1 - Recover the HMAC key of the original token.** The signature is 32 bytes and the payload is
 known and fixed, so the challenge reduces to finding the HS256 key. `rockyou.txt` (14344392 lines) holds
@@ -89,7 +89,7 @@ forged token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2Nvb2tpZV9iYWxhbmNlI
 The Python token is byte-identical to the Node token that was sent during the solve, so the flag in
 Step 2 is the result of exactly the token the packaged script reproduces.
 
-## Flag
+## Result
 
 ```text
 cdctf{0mNomN0mNomC00k1E5!_24a480be}

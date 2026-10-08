@@ -12,7 +12,7 @@ tổ bầu cử; `votes.log` ghi 1067 phiếu bầu cho một trong bốn đản
 soát bao nhiêu block, và đó là những block nào (danh sách cần cho phần 2). Cờ chỉ chứa con số,
 định dạng `cdctf{##}`.
 
-## Phân tích ban đầu
+## Phân tích
 
 Định dạng ba file như sau (dòng đầu và dòng cuối của mỗi file):
 
@@ -33,7 +33,7 @@ giao nhau rỗng, tức hai log không chia sẻ khoá.
 
 Hai log tăng theo thời gian, số thứ tự tăng 1 mỗi dòng và cùng có 1067 dòng. Lời giải giả định cử tri bỏ phiếu theo thứ tự check-in (FIFO), rồi ghép dòng i với dòng i. Khoảng cách thời gian 560..1184 s, trung bình 869 s, phù hợp với giả định này nhưng không tự chứng minh thứ tự bỏ phiếu.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **Nối hai log bằng số thứ tự**: `set(receipt) & set(ballot)` rỗng vì hai dãy đánh số độc lập.
 2. **Dịch pha một dòng** (phiếu i thuộc điểm danh i-1 hoặc i+1): hai cách này chỉ ghép được 1066 cặp,
@@ -45,7 +45,7 @@ Hai log tăng theo thời gian, số thứ tự tăng 1 mỗi dòng và cùng c�
    thể lệ count nào, nhưng không block nào hoà phiếu và cách tính "nhiều phiếu nhất thì giành block"
    được dùng làm giả định tính kết quả theo plurality.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Khôi phục quan hệ giữa phiếu và cử tri.** Vì hai log không có khoá chung, ghép theo thứ tự FIFO giả định, đồng thời in ra khoảng cách thời gian để thấy phép gán đó hợp lệ:
 
@@ -112,7 +112,7 @@ cả hai đều thắng sát nên đều phụ thuộc phép gán ở Bước 1.
 Cờ là số block, không phải chuỗi có sẵn trong file, nên giá trị `cdctf{12}` chưa được đối chiếu qua
 nộp bài; bằng chứng ở đây là toàn bộ dữ liệu 1067 phiếu khớp với 1067 lượt điểm danh và 36 block.
 
-## Flag
+## Kết quả
 
 ```bash
 python exploit.py files/catcounty_results.zip
@@ -135,7 +135,7 @@ python exploit.py files/catcounty_results.zip
 [+] flag: cdctf{12}
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/catcounty_results.zip     # loi giai day du, ghi flag.txt

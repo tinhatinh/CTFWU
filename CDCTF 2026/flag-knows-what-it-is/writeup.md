@@ -8,13 +8,13 @@
 
 Đề cho một chuỗi hex 148 ký tự và nói rằng cờ "biết nó là gì vì nó biết nó không phải là gì". Định dạng cờ là `cdctf{...}`. Không có file kèm theo, không có instance; toàn bộ dữ liệu là chuỗi hex trong mô tả.
 
-## Phân tích ban đầu
+## Phân tích
 
 - 148 ký tự hex là số chẵn, tức 74 byte, không có ký tự ngăn cách thừa.
 - Dải giá trị byte đo được là `0x82-0xdf`. Không byte nào nhỏ hơn `0x80`, nên đây không phải text thô; dải này đúng bằng ảnh của các giá trị ASCII in được (`0x20-0x7e`) qua phép đảo bit (`0xdf-0x81`).
 - Câu "nó biết nó không phải là gì" mô tả đúng phép NOT: `x ^ 0xFF = ~x`.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Thử phép đảo bit trên 6 byte đầu.** Nếu đúng là NOT thì 6 byte đầu phải dịch ra prefix `cdctf{`.
 
@@ -51,13 +51,13 @@ for key in range(256):
 
 **Bước 3 - Kiểm chứng.** Phép quét có thể sinh ra nhiều key cùng cho text in được, thực tế chỉ trả về 1 kết quả, với điều kiện prefix, suffix và ASCII in được đã đặt. Đầu ra là câu tiếng Anh trọn nghĩa, khớp cách dùng từ của chính đề bài ("it is sure ... within reason ... it knows where it was"), và 74 byte phủ hết bản mã, không còn phần nào chưa decode.
 
-## Flag
+## Kết quả
 
 ```text
 cdctf{it is sure where it isn't, within reason, and it knows where it was}
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/cipher.txt

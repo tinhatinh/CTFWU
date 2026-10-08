@@ -8,7 +8,7 @@ Certmarq is a course-certificate issuing platform: design a template once, merge
 in bulk. The crux of the challenge: the designer renders certificates on their server so the issuer can preview them,
 and "it trusts the designer a little more than it should".
 
-## Initial Analysis
+## Analysis
 
 Issuer registration needs no email verification and goes straight to `/designer`. The page says it clearly:
 *"every template runs through our content filter before it renders"* - so the challenge knows SSTI exists and has put
@@ -28,7 +28,7 @@ The sink is `POST /designer/preview` with a single field, `body`. Fingerprinting
 The most valuable finding: the filter searches for one single string, `__`. It blocks every literal containing a
 dunder inside the template, but it does not look at the query string.
 
-## Exploit Chain
+## Solution
 
 The idea: keep the template free of any `__`, and bring the real dunder names in from outside through
 `request.args`:
@@ -48,7 +48,7 @@ challenge confirms itself: *"Direct, unsandboxed Jinja2 SSTI ... a standard Jinj
 
 The full payload together with the `fetch()` call is in `analysis/payload.md`.
 
-## Flag
+## Result
 ```
 WEBVERSE{8ba2f569dafeedea7f4f6848757e1917}
 ```

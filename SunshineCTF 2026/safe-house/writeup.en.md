@@ -7,7 +7,7 @@
 
 "The safe house takes reports and keeps notes for the field. Get past the front desk to reach the vault." A single flag.
 
-## Initial Analysis
+## Analysis
 
 x86-64 ELF, no PIE, NX, no canary in the functions that enter the ROP chain, GNU_RELRO covering all of `.got` (the GOT is not writable), stripped. The service is two processes talking over a socketpair; only the parent process receives input from us.
 
@@ -49,9 +49,9 @@ e = 0x4060b0 + idx*0x40c
 if (e.state == 2) { pread(e.fd, buf, 0x400, 0); return to fd 3 }
 ```
 
-`0x4060b0` is exactly the 4th entry of the fd table, so `idx = -4` points precisely at `0x405080` = the fd of `flag.txt`. To leak the flag, `rdx` (length parameter) needs to be controlled during the ROP chain execution.
+`0x4060b0` is exactly the entry at index 4 (zero-based) of the fd table, so `idx = -4` points precisely at `0x405080` = the fd of `flag.txt`. To leak the flag, `rdx` (length parameter) needs to be controlled during the ROP chain execution.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - the gadget lives in the error branch.** When `size & 0xff == 0`, the handler prints `"ERR bad size\n"` (`mov edx,0xd`) and then returns, never passing through `read` and never through `OK\n` → `rdx = 13` at the ret. The string `"256"` placed in a NOTE gives exactly `bl = 0`.
 
@@ -81,7 +81,7 @@ $ python -u exploit4.py -4
 
 **Step 5 - Verification.** Re-ran 3 times over 3 different connections, 3 completely different keys, the same flag.
 
-## Flag
+## Result
 ```
 sun{n3gat1ve_h4ndl3s_0pen_s3cret_d00rs}
 ```

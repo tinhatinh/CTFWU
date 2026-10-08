@@ -10,7 +10,7 @@ A "Sparrow Freight dispatch" terminal asks for a waybill number and then logs it
 `read` takes 512, and the binary hands you no `system` and no `/bin/sh` string. Objective: take the flag from
 the running instance.
 
-## Initial Analysis
+## Analysis
 
 ```
 $ node ~/.qoder/skills/ctf-solve/scripts/triage.cjs dispatch
@@ -42,7 +42,7 @@ The banner received from `pwn.h7tex.com:41136` matches the string inside `dispat
 instance runs exactly the binary provided, so static analysis is enough (the win32 host has no qemu/docker, so the
 ELF was never executed locally).
 
-## Exploit Chain
+## Solution
 
 ### Step 1: manufacture the leak with ROP, no libc base needed
 
@@ -96,7 +96,7 @@ Both payloads are sent over a single connection because ASLR re-randomises on ev
 leaked three different bases (`0x7f57a5a00000`, `0x7f57c4c00000`, `0x7f3bfbc00000`), so a leak is only worth
 something inside the very connection that produced it.
 
-## Flag
+## Result
 ```
 H7CTF{0b79ca94-3b66-4509-9365-34d224d5cfe2}
 ```

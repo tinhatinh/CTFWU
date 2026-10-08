@@ -3,12 +3,12 @@
 **Flag:** `CSSCTF{STARmaPdElAUNaYTriaNGulATioNDIjKStrAVoRonoiGrAPHSdetERmiNaNTcolineaRALGOrITHmSLeEandsCHAcHTERTANgEnTSmErGECirCuMcIrcLEcOnVEXhuLLgeOMeTRy}`
 **Attached file:** `map.zip` (Size: 2,663,657 B, SHA256: `31c44f1b...a97525f9`)
 
-## Problem Description
+## Challenge
 
 The challenge provides a database comprising 10,000 Markdown format files representing a galactic map. Each file corresponds to a planet, containing information including: ID, coordinates, and a list of neighboring planets presented in wiki link tag format (`[[wikilink]]`). The requirement is to find a route from planet `S0jRxc` to planet `yRJyDb` "in a reasonable amount of time".
 Flag assembly rule: Begin by taking the 1st letter of the first stop, the 2nd letter of the second stop, continuing to increment and loop back (modulo) to the 1st letter at the 7th, 13th, 19th stops, etc. This assembly process is case-sensitive.
 
-## Initial Analysis
+## Analysis
 
 Proceeding to scan all 10,000 files, the data exactly displays only three types of information fields:
 
@@ -17,12 +17,12 @@ Counter({'wikilink': 59944, 'title': 10000, 'coords': 10000})
 ```
 The files contain no time or speed field, so coordinate distance is used as the edge weight. The script checks 59,944 directed edges, corresponding to 29,972 undirected edges, with no asymmetric edges or links to missing IDs. The mean vertex degree is about 5.99.
 
-## Exploitation Chain
+## Solution
 
-**Step 1 - Construct the graph directly from the archive file.** 
+**Step 1 - Construct the graph directly from the archive file.**
 No manual extraction is needed; a Python script uses the `zipfile` library to sequentially read each `map/<ID>.md` file, from which it extracts the coordinate fields and neighbor planet lists to form the graph.
 
-**Step 2 - Apply Dijkstra's algorithm with Euclidean distance weights.** 
+**Step 2 - Apply Dijkstra's algorithm with Euclidean distance weights.**
 Utilize the Euclidean distance formula between two coordinates as the weight for the edges, then apply Dijkstra's algorithm:
 
 ```text
@@ -33,7 +33,7 @@ Dynamic programming on the Dijkstra result counts one shortest path under the se
 
 BFS finds a 13-hop route with total coordinate distance 199.95; distance-weighted Dijkstra gives 144.93. These optimize different criteria. The Dijkstra route is checked against the message assembled from its IDs in the next step.
 
-**Step 4 - Validate via hidden message.** 
+**Step 4 - Validate via hidden message.**
 Applying the letter assembly rule `id[i % 6]` (including both the starting and ending vertices `S0jRxc` and `yRJyDb`), the system obtains a result string 136 characters long. When reading this string, the content forms a clearly semantic message:
 
 ```text
@@ -41,10 +41,10 @@ STAR MAP · DELAUNAY TRIANGULATION · DIJKSTRA VORONOI · GRAPHS · DETERMINANT 
 ```
 The resulting string reads as a list of computational-geometry terms. This supports the coordinate-distance interpretation; it is checked together with edge validity and the stated letter-selection rule.
 
-**Step 5 - Test the flag assembly rule.** 
+**Step 5 - Test the flag assembly rule.**
 The problem provides an illustrative example of the assembly rule: (ASTART, BCDEFG, hijklm, NOPQRS, tuvwxy, ZFINAL -> `ACjQxL`). This example is integrated into the exploit script (`exploit.py`) as a unit test checkpoint. If an incorrect assembly rule is applied (e.g., always extracting the first letter), the unit test will detect it and report an error immediately.
 
-## Flag
+## Result
 
 Run the script:
 

@@ -3,7 +3,8 @@
 
 Kho writeup theo thu muc van la nguon duy nhat:
     <Event>/<slug>/writeup.md        ban tieng Viet
-    <Event>/<slug>/writeup.en.md     ban tieng Anh (thieu thi bai do bi loai o cay en)
+    <Event>/<slug>/writeup.en.md     ban tieng Anh (thieu thi dung VI kem nhan fallback)
+    <Event>/Wave N/<slug>/          cau truc tuy chon cho cuoc thi chia wave
 
 Hai cay doc lap giup trang chu / categories / archive chi liet ke bai cua ngon ngu
 hien tai. Layout rieng trong site/_layouts dung chung metadata tu kho writeup;
@@ -97,13 +98,13 @@ Mọi bài trên trang này là writeup do chính mình viết, tức phần c�
 **{team}** ([CTFTime team 449538](https://ctftime.org/team/449538)). Lời giải của các thành viên
 khác không nằm ở đây.
 
-Mỗi đề là một thư mục trong repo [`tinhatinh/CTFWU`](https://github.com/tinhatinh/CTFWU) gồm
-`de.md` (đề nguyên văn + metadata đã kiểm chứng), `writeup.md` (cách giải), `notes.md` (nhật ký giả
-thuyết, kể cả hướng sai), `exploit.py` (script chạy lại được) và `files/` (artifact gốc đã đối
-chiếu sha256).
+Mỗi đề là một thư mục trong repo [`tinhatinh/CTFWU`](https://github.com/tinhatinh/CTFWU).
+`de.md` lưu đề và metadata, các bản `writeup` trình bày lời giải. Nhật ký, script tái hiện và
+artifact đi kèm được giữ trong `notes.md`, các file script và `files/` khi có dữ liệu.
 
-Toàn bộ lời giải chỉ dựa vào artifact của chính đề bài, không tra writeup của người khác.
-Flag là giá trị riêng theo team, nên copy từ đây về nộp sẽ không hợp lệ.
+Mỗi bài ghi lại dữ liệu đầu vào, thao tác và kết quả đã thu thập; nguồn tham khảo kỹ thuật
+được dẫn khi cần. Một số cuộc thi dùng artifact hoặc flag riêng theo đội, nên kết quả
+cần được đối chiếu với dữ liệu và định dạng của từng challenge.
 
 ## Đội
 
@@ -123,13 +124,14 @@ Every post here is a writeup I wrote myself, which is my share of what team
 **{team}** ([CTFTime team 449538](https://ctftime.org/team/449538)) solved. Teammates publish
 their own solutions elsewhere.
 
-Each challenge is a folder in the [`tinhatinh/CTFWU`](https://github.com/tinhatinh/CTFWU) repo
-holding `de.md` (the statement plus verified metadata), `writeup.md` (the solution), `notes.md`
-(the hypothesis log, wrong turns included), `exploit.py` (a script that replays the solve) and
-`files/` (original artifacts, sha256 checked).
+Each challenge is a folder in the [`tinhatinh/CTFWU`](https://github.com/tinhatinh/CTFWU) repo.
+`de.md` records the statement and metadata; the writeup editions explain the solution.
+Available investigation logs, reproduction scripts and artifacts are kept in `notes.md`,
+script files and `files/`.
 
-Every solution comes from the challenge's own artifact only, with no outside writeups consulted.
-Flags are per team, so copying one from here will not be accepted.
+Each post records its inputs, operations and observed results, with technical references where needed.
+Some events issue team-specific artifacts or flags, so results must be checked against the data
+and format of the individual challenge.
 
 ## Team
 
@@ -197,7 +199,8 @@ def readme_categories(event):
     p = os.path.join(ROOT, event, "README.md")
     if not os.path.exists(p):
         return m
-    rows = [ln for ln in open(p, encoding="utf-8").read().split("\n") if ln.startswith("|")]
+    with open(p, encoding='utf-8') as source:
+        rows = [ln for ln in source.read().split('\n') if ln.startswith('|')]
     hdr = next((r for r in rows if re.search(r"\bCategory\b", r)), None)
     if not hdr:
         return m
@@ -209,10 +212,32 @@ def readme_categories(event):
         cells = [c.strip() for c in r.strip("|").split("|")]
         if len(cells) <= ic:
             continue
-        mm = re.search(r"\]\(([^)/]+)/writeup\.md\)", cells[0])
+        mm = re.search(r"\]\(<?([^)>]+?)/writeup\.md>?\)", cells[0])
         if mm:
-            m[mm.group(1)] = cells[ic]
+            m[unquote(mm.group(1)).replace('\\', '/')] = cells[ic]
     return m
+
+
+def case_directories(event_root):
+    """Enumerate direct cases and one Wave N level, excluding unfinished folders."""
+    for name in sorted(os.listdir(event_root)):
+        folder = os.path.join(event_root, name)
+        if not os.path.isdir(folder) or name.startswith(('.', '_')):
+            continue
+        if re.fullmatch(r'Wave [1-9]\d*', name):
+            for case in sorted(os.listdir(folder)):
+                target = os.path.join(folder, case)
+                if os.path.isdir(target) and not case.startswith(('.', '_')):
+                    if os.path.commonpath([os.path.realpath(event_root), os.path.realpath(target)]) == os.path.realpath(event_root):
+                        yield name + '/' + case
+        elif os.path.commonpath([os.path.realpath(event_root), os.path.realpath(folder)]) == os.path.realpath(event_root):
+            yield name
+
+
+def challenge_key(event, case):
+    # Wave 1 retains the previously published permalink and editor key.
+    identity = case[len('Wave 1/'):] if case.startswith('Wave 1/') else case
+    return slugify(event) + '-' + slugify(identity)
 
 
 def challenge_categories(label):
@@ -227,6 +252,7 @@ def challenge_categories(label):
         "scanning": "Scanning", "nta": "NTA", "steg": "Steg",
         "warm-up": "Warm-up", "web3": "Web3", "ai": "AI", "cloud": "Cloud",
         "hardware": "Hardware", "mobile": "Mobile", "exp": "EXP",
+        "game hacking": "Game Hacking",
     }
     # Longest labels first also handles legacy strings without '+' delimiters.
     pattern = r"(?<!\w)(?:" + "|".join(re.escape(a) for a in sorted(aliases, key=len, reverse=True)) + r")(?!\w)"
@@ -313,11 +339,12 @@ def collect(lang):
     events = []
     times = solve_times()
     seen = set()
+    identities = set()
     for i, event in enumerate(event_dirs()):
         fname = "writeup.md" if lang == "vi" else "writeup.en.md"
         catmap = readme_categories(event)
         posts = []
-        for case in sorted(os.listdir(os.path.join(ROOT, event))):
+        for case in case_directories(os.path.join(ROOT, event)):
             w = os.path.join(ROOT, event, case, fname)
             fallback = False
             if not os.path.isfile(w):
@@ -339,16 +366,23 @@ def collect(lang):
             if not categories:
                 raise ValueError("Missing challenge category: %s/%s" % (event, case))
             key = "%s/%s" % (event, case)
+            identity = challenge_key(event, case)
+            if identity in identities:
+                raise ValueError('Duplicate challenge permalink: ' + identity)
+            identities.add(identity)
             seen.add(key)
             mod = git_time(w)
-            solved, exact = times.get(key) or (flag_time(event, case), True)
+            legacy_key = event + '/' + case[len('Wave 1/'):] if case.startswith('Wave 1/') else key
+            if legacy_key in times:
+                seen.add(legacy_key)
+            solved, exact = times.get(key) or times.get(legacy_key) or (flag_time(event, case), True)
             if not solved:
                 solved = mod or dt.datetime.fromtimestamp(os.path.getmtime(w), CONTEST_TZ)
                 exact = False
             posts.append({
                 "case": case, "path": w, "text": text, "title": title,
                 "date": solved, "exact": exact, "mod": mod,
-                "key": "%s-%s" % (slugify(event), slugify(case)),
+                "key": identity,
                 "cat": categories[0], "cats": categories, "fallback": fallback,
             })
         if posts:
@@ -394,7 +428,7 @@ def write_post(stage, ev, p, lang, base):
         dst = os.path.join(stage, "assets", "writeups", ev["slug"], p["case"], relative)
         os.makedirs(os.path.dirname(dst), exist_ok=True)
         shutil.copyfile(src, dst)
-        url = "/assets/writeups/%s/%s/%s" % (ev["slug"], quote(p["case"], safe=""), quote(relative, safe="/"))
+        url = "/assets/writeups/%s/%s/%s" % (ev["slug"], quote(p["case"], safe="/"), quote(relative, safe="/"))
         copied[src] = url
         return url
 
@@ -408,6 +442,29 @@ def write_post(stage, ev, p, lang, base):
         return "![%s](%s)" % (alt, url)
 
     body = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", hold, body)
+    def source_link(match):
+        label, target = match.group(1), unquote(match.group(2).strip().strip('<>'))
+        path, _, fragment = target.partition('#')
+        if re.match(r'^(?:[a-z]+:|/|#)', target, re.I) or not path.endswith('.md'):
+            return match.group(0)
+        source = os.path.realpath(os.path.join(case_root, path))
+        if os.path.commonpath([os.path.realpath(ROOT), source]) != os.path.realpath(ROOT) or not os.path.isfile(source):
+            return match.group(0)
+        relative = os.path.relpath(source, ROOT).replace(os.sep, '/')
+        parts = relative.split('/')
+        other_case = '/'.join(parts[1:-1])
+        if len(parts) >= 3 and parts[-1] in ('writeup.md', 'writeup.en.md') and other_case in case_directories(os.path.join(ROOT, parts[0])):
+            url = base + '/posts/' + challenge_key(parts[0], other_case) + '/'
+        else:
+            url = 'https://github.com/tinhatinh/CTFWU/blob/main/' + quote(relative, safe='/')
+        if fragment:
+            url += '#' + fragment
+        return '[' + label + '](' + url + ')'
+    # Keep Markdown examples and captured payloads inside fenced code unchanged.
+    prose_parts = re.split(r'(```.*?```|`[^`\n]*`)', body, flags=re.S)
+    for i in range(0, len(prose_parts), 2):
+        prose_parts[i] = re.sub(r'(?<!!)\[([^\]]+)\]\(([^)]+)\)', source_link, prose_parts[i])
+    body = ''.join(prose_parts)
     statement_images = []
     statement_path = os.path.join(case_root, "de.md")
     statement = ""

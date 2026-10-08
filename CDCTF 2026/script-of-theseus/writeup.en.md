@@ -9,7 +9,7 @@ a version where a friend "deleted and rewrote every line" on Windows. The task i
 and submit the uppercase hex code of one byte of that difference, as `cdctf{FF}`. The challenge ships
 files only, there is no instance.
 
-## Initial analysis
+## Analysis
 
 The two files are close in size: 156 and 163 bytes, a 7-byte gap. `file` describes both as
 `Python script, ASCII text executable`, but only the `replaced` copy carries the extra note
@@ -38,7 +38,7 @@ A hexdump of the first bytes settles it: the original ends each line with `0a`, 
 What still needs proving is not that CRLF exists, but that nothing else changed: if the friend had also
 edited a token somewhere, the differing byte would not be unique.
 
-## Routes ruled out
+## Approaches tried
 
 1. **The script body was edited (variable names, strings, indentation, extra lines)**: remove `0d` from
    the replaced copy and compare with the original - `cmp` reports the files as identical, and both
@@ -52,7 +52,7 @@ edited a token somewhere, the differing byte would not be unique.
    single inserted byte at `0x16` shifts every later index, so the two streams are compared out of
    phase. The measurement method is dropped in favour of byte-frequency counts and a normalized compare.
 
-## Exploitation chain
+## Solution
 
 **Step 1 - Count bytes instead of diffing text.** Take the frequency of each byte value in both files and
 subtract in both directions. `analysis/byte_freq.py` performs this and also prints the LF/CR totals.
@@ -95,7 +95,7 @@ tr -d '\r' < files/replaced_epic_python_script.py | cmp - files/original_epic_py
 giong het ban goc
 ```
 
-## Flag
+## Result
 
 ```bash
 python exploit.py

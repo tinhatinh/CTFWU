@@ -45,7 +45,7 @@ Do phím backtick (`` ` ``) chỉ đóng vai trò kích hoạt trạng thái dea
 sun{praisethesun}
 ```
 
-## Flag
+## Kết quả
 ```bash
 $ python solve_klc.py files/boardwriter.klc
 [*] keystrokes: '`sun{praisethesun}'

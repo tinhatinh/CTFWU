@@ -7,9 +7,9 @@
 
 > `im lost, but you can find the way!`
 
-Đề bài chỉ cung cấp duy nhất một file mồ côi, không kèm theo dịch vụ (instance) từ xa nào để kết nối, và cũng không có bất kỳ gợi ý (hint) nào cần phải mở khoá. Bài do tác giả `oatzs` biên soạn.
+Đề bài chỉ cung cấp duy nhất một file, không kèm theo dịch vụ (instance) từ xa nào để kết nối, và cũng không có bất kỳ gợi ý (hint) nào cần phải mở khoá. Bài do tác giả `oatzs` biên soạn.
 
-## Phân tích ban đầu
+## Phân tích
 
 Đừng để cái đuôi mở rộng đánh lừa, `.klc` không phải là file bản quyền của phần mềm diệt virus Kaspersky như lầm tưởng. Nó thực chất là mã nguồn cấu hình của công cụ Microsoft Keyboard Layout Creator. Mở đầu file là dòng khai báo quen thuộc `KBD kbdusx "US"`, tiếp theo là khối định nghĩa `SHIFTSTATE` (trạng thái phím Shift), và chốt lại bằng từ khoá `ENDKBD`.
 
@@ -26,7 +26,7 @@ Thứ tự các cột mang ý nghĩa lần lượt là: mã quét phần cứng 
 
 Phím `H` chứa cả ô vuông đen và `}`, nên dùng làm điểm kết thúc. Với mỗi phím, state 0 cho hướng đi và state 1 cho ký tự cần lấy.
 
-## Chuỗi khai thác
+## Lời giải
 
 Parse 18 dòng `LAYOUT` và bỏ `SPACE` (`0x39`) vì hai state của phím này đều là dấu cách. Xếp 17 phím còn lại theo scan code:
 - Hàng trên: `Q W E R T`
@@ -56,7 +56,7 @@ Q A Z X S W E D C V F R T G B N H
 s u n { q w e r t y _ s u c k s }
 ```
 
-## Flag
+## Kết quả
 ```bash
 python exploit.py files/suntrail.klc
 ```

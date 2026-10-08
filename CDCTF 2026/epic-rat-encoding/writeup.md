@@ -11,7 +11,7 @@ về một buổi gặp bí mật (ở đâu và lúc nào). Trong file C, dòng
 (`char* message = ""; // I think that Ratón deleted this part.`), nên chỉ còn lại hàm mã hoá và
 đầu vào là 8 số. Định dạng cờ: `cdctf{Place_Place_Place_at_time_time_time_Time}`.
 
-## Phân tích ban đầu
+## Phân tích
 
 - `nums[j] += message[i + 8 * j]` chạy 8 lần cho mỗi `j`, và `nums[j] = nums[j] << 8` chỉ chạy khi
   `i != 7`. Không có shift sau byte cuối, do đó byte đầu tiên của chunk được đẩy lên 8 bit cao:
@@ -20,7 +20,7 @@ về một buổi gặp bí mật (ở đâu và lúc nào). Trong file C, dòng
   tức khoảng 47-64 byte, nên đúng 8 số là đủ chứa toàn bộ thông điệp, không thiếu dữ liệu.
 - `uint64_t nums[8];` chưa được khởi tạo, nên source C có undefined behavior. Lời giải diễn giải tám số đã cho thành byte big-endian; khi dựng encoder để đối chiếu cần khởi tạo mảng bằng 0.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **`+=` là phép cộng số học thuần tuý** (mỗi `nums[j]` chỉ là tổng 8 byte, thông tin bị mất):
    nếu đúng thì 8 số chỉ mang khoảng 8 bit mỗi số, không thể dựng lại 61 ký tự. Cách hiểu đóng
@@ -30,7 +30,7 @@ về một buổi gặp bí mật (ở đâu và lúc nào). Trong file C, dòng
    giải mã ra toàn dấu chấm xen kẽ chữ. Thêm `-D__USE_MINGW_ANSI_STDIO=1` và in bằng `%llu` thì
    số quay lại đúng 19-20 chữ số như đề. Đây là bẫy của môi trường dựng, không phải của bài.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Đổi mỗi số về 8 byte big-endian và nối lại.** Không có khoá, không có phép biến đổi
 nào ngoài đúng một phép đóng gói.
@@ -72,13 +72,13 @@ identical         : True
 
 Hai byte cuối giải mã thành `0x25 0x6c` = `%l`, giống đầu chuỗi format `"%lu "`. Vòng lặp đọc 64 byte trong khi thông điệp có 61 ký tự và NUL, nên có thể đọc vượt chuỗi. Không thể xác định vị trí các byte này trong bộ nhớ chỉ từ source và tám số đã cho.
 
-## Flag
+## Kết quả
 
 ```text
 cdctf{Tom_Bevill_Building_at_noon_next_week_Thursday}
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/nums.txt

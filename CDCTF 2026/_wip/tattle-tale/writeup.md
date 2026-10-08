@@ -14,7 +14,7 @@ không cho binary, không cho địa chỉ service nào ngoài hostname `one`.
 trên `three`, `three` trên `four`; xong "no more" thì "peek at the floor", cờ truyền ngược
 ("pass it back") cho tới khi "sits as bits down at `one`".
 
-## Phân tích ban đầu
+## Phân tích
 
 `terminal` có hai NIC (172.26.2.2, 172.26.3.2) nhưng không có `ip`/`ss`/`nc`; đọc `/proc/net/route`
 và quét 172.26.2.1-29, 172.26.3.1-29 bằng `/dev/tcp` cho thấy **duy nhất** `172.26.2.3:22` mở. DNS
@@ -91,7 +91,7 @@ hàng xóm kế tiếp, đúng như chuỗi `zero/one/two/three` trong thơ. Tr�
 `nc`, `bash` (không có `python3`, không có `socat`), và `/home/*/.ssh/key` là bản read-only bind của
 key "Universal" - nghĩa là payload chạy root ở `one` có key cần thiết để upload `script` sang `two`.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **Vào `one` bằng shell**: `ForceCommand internal-sftp`, mọi lệnh trả "This service allows sftp
    connections only." Loại; mọi thực thi phải đi qua kênh SFTP + `script`.
@@ -116,11 +116,11 @@ key "Universal" - nghĩa là payload chạy root ở `one` có key cần thiết
 - Chuỗi payload hoàn chỉnh (tự nhân bản xuống `four`, rồi kéo cờ ngược về `/home/zero/scripts` trên `one`)
   đã viết ở `analysis/propagator.sh` nhưng **chưa chạy**.
 
-## Flag
+## Kết quả
 
-Chưa có. Lần chạy xa nhất trong phiên này là root code execution trên hop `one`.
+Chưa có. Lần chạy xa nhất trong bản ghi đã lưu là root code execution trên hop `one`.
 
-## Reproduce
+## Tái hiện
 
 ```bash
 # tu terminal cua instance

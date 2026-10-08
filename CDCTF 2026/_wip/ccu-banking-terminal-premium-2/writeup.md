@@ -18,7 +18,7 @@ Các mục menu yêu cầu "branch page" thì phải gửi đúng 384 byte thô,
 Điểm mới so với bản tier 1: thêm seccomp-bpf (`install_filter` được gọi trước `do_login`)
 và header in thêm dòng `TERMINAL HARDENING: ACTIVE`.
 
-## Phân tích ban đầu
+## Phân tích
 
 `file` cho `ELF 64-bit LSB executable, x86-64, dynamically linked, not stripped`, tức
 **non-PIE**: mọi địa chỉ trong binary (`0x400000` + offset) là hằng số, không cần leak
@@ -40,8 +40,7 @@ Bốn điểm bất thường định hướng toàn bộ lời giải:
    ```
 
    Tức `read, write, open, openat, lseek, fstat, brk, mmap, munmap, exit, exit_group`.
-   **Không có `execve`, không có `fork/clone`, và không có `mprotect` (10)** - nên không
-   thể spawn shell và không thể JIT shellcode. Chuỗi được sử dụng ở đây là ORW (open/read/write).
+   **Không có `execve`, không có `fork/clone`, và không có `mprotect` (10)** - nên các phương án cần những syscall này không dùng được. Việc thiếu `mprotect` riêng lẻ chưa loại trừ `mmap` với quyền executable. Chuỗi được sử dụng ở đây là ORW (open/read/write).
 
 2. Mỗi record là một trang cố định: `open_account` @0x401f31 và `attach_memo` @0x402590
    đều `malloc(0x180)` rồi `read_full(ptr, 0x180)`. `read_full` @0x401693 là vòng
@@ -69,7 +68,7 @@ Ghép 2 + 3 + 4: nếu đóng record rồi attach memo, `malloc(0x180)` của me
 chunk record vừa free (tcache LIFO, cùng size), và memo **không bị sửa field nào** khi nạp
 (khác `open_account`), nên 384 byte của memo trở thành thân record với `+0x28` do ta chọn.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **Format string trong `show_summary`**: giả thuyết rằng `printf(branch_page)` dùng data
    của ta làm format. Sai. Chuỗi duy nhất in ra quanh giá trị là
@@ -96,7 +95,7 @@ chunk record vừa free (tcache LIFO, cùng size), và memo **không bị sửa 
    `AttributeError` (đúng là `context.timeout`); server cần timeout dài và đọc theo
    buffer chứ không theo dòng.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Đưa 7 chunk vào tcache, 2 chunk xuống unsorted bin để leak libc.**
 Mở 9 record, đóng cả 9 theo thứ tự. `n_accounts` không giảm nên 9 record vẫn được duyệt.
@@ -167,7 +166,7 @@ in ở `rec+0x08` thỏa điều kiện canonical và `== libc_base + 0x21ACE0`,
 `open` chạy, chứng tỏ trang scratch ghi được; (c) nội dung in ra đúng 32 byte theo độ dài
 `flagfile` local. Chuỗi chạy 5/5 lần liên tiếp trên lab.
 
-## Flag
+## Kết quả
 
 Chưa capture từ instance. Lab local chỉ đọc được flag tự dựng:
 
@@ -183,7 +182,7 @@ cdctf{LOCAL_FAKE_FLAG_not_real}
 `exploit.py` (đã đổi `HOST, PORT = "chal", 2324`), chạy, và ghi cờ vào `flag.txt` rồi
 chuyển bài ra khỏi `_wip/`.
 
-## Reproduce
+## Tái hiện
 
 ```bash
 # Lab local: một terminal
@@ -198,4 +197,4 @@ python exploit.py                        # HOST, PORT = "chal", 2324 -> đổi s
 - Dòng `+0x28 = RATE_TABLE[type-1]` và `+0x27 = 0` trong `open_account`: suy ra từ lần chạy
   local (trang gửi trực tiếp không chiếm được callback) chứ chưa chỉ ra bằng từng dòng
   disassembly trong writeup này; bản listing đầy đủ ở `_scratch/ccu/dis.txt`.
-- `limits()` đặt RLIMIT/alarm: chưa đọc lại từng giá trị trong phiên này.
+- `limits()` đặt RLIMIT/alarm: chưa đọc lại từng giá trị trong bản ghi đã lưu.

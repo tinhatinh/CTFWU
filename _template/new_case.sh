@@ -29,11 +29,12 @@ fi
 mkdir -p "$CASE/analysis" "$CASE/files"
 cp "$TPL/de.md"      "$CASE/de.md"
 cp "$TPL/writeup.md" "$CASE/writeup.md"
+cp "$TPL/writeup.en.md" "$CASE/writeup.en.md"
 cp "$TPL/notes.md"   "$CASE/notes.md"
 cp "$TPL/solve.py"   "$CASE/exploit.py"
 
 # Ten bai vao tung file
-for f in de.md writeup.md notes.md exploit.py; do
+for f in de.md writeup.md writeup.en.md notes.md exploit.py; do
   sed -i "s|<tên bài>|$SLUG|g; s|<Challenge Name>|$SLUG|g" "$CASE/$f"
 done
 
@@ -57,4 +58,4 @@ echo "Da tao $CASE"
 find "$CASE" -mindepth 1 | sed "s|$CASE/|  |"
 echo ""
 echo "Nho: copy anh the de vao files/de.png va chen ![de](files/de.png) vao de.md;"
-echo "     xong thi commit trong $ROOT (chi push khi nguoi dung yeu cau)."
+echo "     chi commit/push khi nguoi dung cho phep, dac biet neu cuoc thi dang dien ra."

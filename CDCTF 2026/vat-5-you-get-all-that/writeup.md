@@ -10,7 +10,7 @@ Tin nói là một credential đang được chia sẻ và "đã được mã ho
 Phần code gồm 17 word đọc vô nghĩa, cách nhau bởi dấu chấm. Thẻ bài 500 điểm, hạng OSINT +
 Crypto, tác giả `b0b`, định dạng cờ `cdctf{ex4mp13_f14g}`. Không có service từ xa.
 
-## Phân tích ban đầu
+## Phân tích
 
 Đề đã cung cấp transcript của 17 nhóm từ. Dùng trực tiếp transcript làm đầu vào cho decoder; không cần nhận dạng lại audio. File MP3 là bản lời đọc đi kèm, định dạng 24 kHz mono, có tag `TSSE = Lavf61.7.100`.
 
@@ -25,7 +25,7 @@ hàm `fingerprint_bubblebabble` trong `sshkey.c`.
 
 Các phép thử container, phổ tín hiệu và ASR được lưu trong `notes.md`. Lời giải dưới đây chỉ cần transcript do đề cung cấp.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Đọc cấu trúc thành tham số của BubbleBabble.** Hàm này phát `x`, rồi mỗi vòng lặp in 5 ký tự từ một cặp byte, xen kẽ dấu `-`:
 
@@ -75,7 +75,7 @@ nhóm như transcript. Transcript khớp kết quả re-encode (đoán ban đầ
 `bubble_babble`, phần đuôi `fl4g_pa55ing` là `flag_passing`, prefix `cdctf{` và dấu `}` đúng
 luật đề. Một tính chất phụ của mã cũng được dùng làm van an toàn: một số lỗi ký tự có thể làm chỉ số vượt 0..3. Đây là phép kiểm tra cấu trúc, không bảo đảm phát hiện mọi thay đổi.
 
-## Flag
+## Kết quả
 
 ```bash
 python exploit.py files/cred_call_transcript.txt
@@ -92,7 +92,7 @@ python exploit.py files/cred_call_transcript.txt
 [+] da luu flag.txt
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/cred_call_transcript.txt

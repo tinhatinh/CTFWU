@@ -2,14 +2,14 @@
 
 **Flag:** 2/2 cờ
 `v1 = H7CTF{38b0e71c-6126-49f7-8692-3f0bf6bf31b0}` · `v2 = H7CTF{11945790-f241-4644-9e45-e19819bdc996}`
-**Mục tiêu:** `https://web-2c53753bcbf2c207.web.h7tex.com` 
+**Mục tiêu:** `https://web-2c53753bcbf2c207.web.h7tex.com`
 **File cung cấp:** `/capture.pcap` (2220 B, 50 gói tin packet)
 
 ## Đề bài
 
 Hệ thống ghi lại luồng giao tiếp sóng Bluetooth (BLE) giữa tai nghe NoiseGate và ứng dụng điện thoại. Thử thách yêu cầu phân tích bản ghi sóng vô tuyến, loại bỏ các thiết bị gây nhiễu và trích xuất hai flag: một cờ lộ ra trong quá trình đọc cấu hình hệ thống, và cờ còn lại được trả về sau khi ứng dụng hoàn tất bước xác thực (authenticate). Yêu cầu là lấy trọn vẹn cả hai cờ.
 
-## Phân tích ban đầu
+## Phân tích
 
 Giao diện đề cung cấp một thông điệp:
 
@@ -25,7 +25,7 @@ Khi không sử dụng các công cụ phân tích tự động như `tshark`, `
 
 Do không thể phụ thuộc vào công cụ tự động, việc trích xuất payload phải thực hiện thủ công bằng cấu trúc: `payload = packet[11:-3]`.
 
-## Quá trình khai thác
+## Lời giải
 
 **Bước 1 - Tái định dạng và phân loại luồng vận tải.** Dựa vào kích thước và ngữ cảnh, payload được phân thành 4 nhóm:
 
@@ -36,7 +36,7 @@ Do không thể phụ thuộc vào công cụ tự động, việc trích xuất
 | Khối 20 byte | `83 3c f9 ...` | Luồng dữ liệu phản hồi cho các request. |
 | >= 11 byte | `31 00 <16 byte data>` | Gói tin báo hiệu (notify) mang dữ liệu. |
 
-**Bước 2 - Trích xuất tài liệu đặc tả (Spec) từ file capture.** 
+**Bước 2 - Trích xuất tài liệu đặc tả (Spec) từ file capture.**
 Tổng hợp các mảng dữ liệu trả về từ thẻ handle `0x0041`, hệ thống thu được 322 byte văn bản ASCII thuần, giải thích cơ chế hoạt động:
 
 ```text
@@ -49,10 +49,10 @@ vault@0x0033: released after auth; plaintext = ct XOR ks,
 ```
 
 Đề cung cấp cơ chế mã hóa (scheme) chi tiết:
-- Chuỗi `config` là phép XOR giữa `value` và mã gốc `provkey`. 
+- Chuỗi `config` là phép XOR giữa `value` và mã gốc `provkey`.
 - Dữ liệu `vault` sử dụng phép XOR giữa văn bản mã (ct) và chuỗi khoá phái sinh `ks`. Trong đó, `ks` được sinh ra từ hàm băm của `provkey` và `nonce` (lấy từ gói tin notify). Hệ thống không yêu cầu thủ tục challenge-response, chỉ cần phép XOR hợp lệ.
 
-**Bước 3 - Trích xuất mã gốc (Provkey).** 
+**Bước 3 - Trích xuất mã gốc (Provkey).**
 Kiểm tra gói tin quảng bá của thiết bị NoiseGate, tại khối cấu trúc AD `14 FF 39 0F 01 ...` chứa mảng Dữ liệu Đặc quyền Nhà sản xuất (Manufacturer Specific Data). Khối này mở đầu với mã công ty `0x0F39`, nối tiếp là 1 byte định dạng `0x01`, và chứa nguyên vẹn 16 byte khoá gốc:
 
 ```text
@@ -74,10 +74,10 @@ v2 = bytes(c ^ ks[i] for i, c in enumerate(ct_0x33))
 
 Hai khối văn ciphertext này đều có chiều dài 43 byte, phù hợp với kích thước chuỗi flag hợp lệ.
 
-**Bước 5 - Xác thực chéo.** 
+**Bước 5 - Xác thực chéo.**
 Đoạn dữ liệu 322 byte của thẻ `0x0041` tạo thành một đoạn văn bản ASCII liền mạch. Việc ghép sai thứ tự hoặc lỗi trong trình ráp nối (reassemble) sẽ làm đoạn văn bản biến thành chuỗi ký tự lỗi. Văn bản đọc được hoàn chỉnh là bằng chứng xác thực thuật toán xử lý dữ liệu và offset hoàn toàn chính xác.
 
-## Flag
+## Kết quả
 ```bash
 python solve.py analysis/capture.pcap
 ```

@@ -18,7 +18,7 @@ many keys", but the story says clearly that XOR-with-many-keys protects the mast
 key, and all four part flags are needed in part 5. Each part is therefore a
 standalone cipher.
 
-## Initial Analysis
+## Analysis
 
 - 29 characters, lowercase letters, digits, `_`, `{`, `}` only.
 - Special character positions: `{` at index 5, four `_` at 14, 17, 20, 23, `}` at
@@ -27,7 +27,7 @@ standalone cipher.
 - The challenge never states the flag prefix, so each candidate cipher was judged
   on whether the 5 leading characters (`xwxgu`) turn into a readable tag.
 
-## Routes Ruled Out
+## Approaches tried
 
 1. **Single-byte XOR** (the name of the series): all 256 keys tested over the
    whole string. 16 keys give output inside the printable ASCII range, but only
@@ -44,7 +44,7 @@ and is the solution below.
 
 Full log in `notes.md`.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Read the ciphertext skeleton.** Counting the positions of `{`, `}` and
 `_` identifies the flag structure; `analysis/triage.py` then prints the 25
@@ -78,7 +78,7 @@ must return the original ciphertext, and `exploit.py` asserts that. The tag `cdc
 matches the event's flag format, the body contains only lowercase letters, digits
 and underscores, and the decoded body describes the Atbash transformation.
 
-## Flag
+## Result
 
 ```bash
 python exploit.py files/ciphertext.txt

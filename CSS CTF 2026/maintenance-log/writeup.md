@@ -8,7 +8,7 @@
 
 Dịch vụ mô phỏng giao diện bảo trì, nhận `summary` và `tag`, đồng thời in địa chỉ của report buffer. Mục tiêu là gọi `grant()` với đúng tham số để đọc `flag.txt`.
 
-## Phân tích ban đầu
+## Phân tích
 
 `chall` là ELF x86-64, no-PIE (`Type: EXEC`), có NX và partial RELRO, đã stripped. Địa chỉ code cố định nên không cần leak PIE base. Các địa chỉ sau được lấy từ disassembly; `0x40124d` và `0x40124f` là gadget, không phải điểm đầu của một hàm:
 
@@ -38,9 +38,9 @@ Disassembly cho thấy canary ở `io_setup`, `grant` và `main`, nhưng không 
 ```
 Lệnh đọc cuối cho phép ghi 33 byte vào buffer 32 byte. Byte thứ 33 ghi đè byte thấp của saved RBP.
 
-## Chuỗi khai thác
+## Lời giải
 
-**Bước 1 - Lập bản đồ bộ nhớ ngăn xếp (Stack layout).** 
+**Bước 1 - Lập bản đồ bộ nhớ ngăn xếp (Stack layout).**
 Đặt biến số `X = rbp_main`, ánh xạ theo đúng trình tự khối khởi tạo (prologue) và khối dọn dẹp (epilogue):
 
 ```text
@@ -60,7 +60,7 @@ Chỉ thị ret        -> Thiết lập điểm thực thi: rip = qword[B + z + 
 ```
 Payload điều khiển `z`, nên có thể chọn vị trí trong cửa sổ 256 byte quanh `X-0x20`. Từ địa chỉ leak `P`, tính `X = P + 0x70` và `B`, rồi chọn điểm để `ret` đọc ROP chain trong report buffer 80 byte.
 
-**Bước 3 - Cấu hình ràng buộc gọi vùng đệm.** 
+**Bước 3 - Cấu hình ràng buộc gọi vùng đệm.**
 Một chuỗi (chain) ROP thực thi phân quyền thành công cần quy tụ 5 vùng giá trị (tổng dung lượng 40 byte):
 
 ```text
@@ -115,14 +115,14 @@ Kiểm tra chu trình với kết nối lần 2 nhằm xác nhận độ tin c�
 ```
 Lần đầu dùng `offset=16`, lần sau dùng `offset=0`; `plan()` tính offset theo leak của từng kết nối. Flag trả về khác flag thử nghiệm `CSSCTF{definetely_not_flag}` trong file đính kèm.
 
-## Flag
+## Kết quả
 
 Kết quả:
 ```text
 CSSCTF{Duh_m4t3_1_4m_sl33py}
 ```
 
-## Reproduce
+## Tái hiện
 
 Chạy script để reproduce:
 

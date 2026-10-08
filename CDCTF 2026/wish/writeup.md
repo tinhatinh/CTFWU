@@ -17,7 +17,7 @@ connected. type HELP for commands.
 
 Kiến trúc suy ra từ log: server mô phỏng giữ trạng thái thế giới (vị trí, vận tốc, nhiên liệu) và dùng chung giữa mọi kết nối; client giữ trạng thái phiên, trong đó có cờ `authed`. Mỗi kết nối WebSocket spawn một process client mới, nên mọi thứ phải nằm trong một kết nối. Client chỉ nhận 7 lệnh: `STATUS`, `AUTHENTICATE`, `THRUST <name> <x> <z>`, `STOP <name>`, `INFO <name>`, `HELP`, `QUIT`.
 
-## Phân tích ban đầu
+## Phân tích
 
 Triage (`analysis/triage.txt`): `Type: EXEC` nên không PIE, text nằm cố định từ `0x400000`; `GNU_STACK RW` tức NX bật; RELRO chỉ phủ tới `0x40d000` trong khi `.got.plt` trải đến `0x40d258` và không có `BIND_NOW`, tức Partial RELRO; binary có `debug_info` và not stripped nên đọc được từng hàm trong namespace `sat::client`. Imports đáng chú ý: `malloc`/`free`, `popen`/`pclose` (đường gnuplot của `STATUS`), `strtod`, `strncmp`, `dlsym`.
 
@@ -64,7 +64,7 @@ Nó so snapshot body của hai lần `STATUS` liên tiếp; với mỗi body có
 
 `INFO` trên instance: Earth ở `(0,0,0)` radius 20 `mass: 0`, Satellite ở `(50,0,0)` radius 5 `mass: 1`, velocity `(0,0,0)`. `mass 0` kèm vận tốc không đổi giữa các lệnh không cho thấy tác động hấp dẫn trong các phép đo đã ghi; muốn chạm thì phải tự đẩy.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **Đoán mật khẩu**: `check_password` chỉ so `strlen(flag) == strlen(password)` rồi `strncmp` toàn bộ, phản hồi duy nhất là `authenticated` hoặc `authentication failed`, không có oracle vị trí sai.
 2. **Biến `dbg` thành RCE rồi đọc `/flag.txt`**: libc, heap và stack vẫn ASLR (binary link động), NX bật, và không có lệnh nào in ra một con trỏ. Primitive chỉ là `call [chunk+0x18]` với đối số `&session`.
@@ -73,7 +73,7 @@ Nó so snapshot body của hai lần `STATUS` liên tiếp; với mỗi body có
 5. **glibc >= 2.34 sẽ abort vì double free**: binary yêu cầu `__libc_start_main@GLIBC_2.34` và `dlsym@GLIBC_2.34`, mà `_int_free` từ 2.29 in `free(): double free detected in tcache 2`. Thực đo trên instance cho thấy chunk A vẫn được cấp lại trong cùng một lệnh và không có abort. Hướng này vẫn chạy được; lý do cụ thể (shim.so được `LD_PRELOAD`) chưa xác minh vì box không có shell để đọc `/opt/wish/shim.so`.
 6. **Chờ thế giới tự hồi phục hoặc ra lệnh reset**: `ECHO` trả `unknown command: ECHO (type HELP)`, bảng dispatch (0x408d6b) chỉ 7 lệnh, và vị trí vệ tinh tiếp tục tăng đơn điệu qua 5 kết nối mới (`-39048`, `-45188`, `-52655`, `-197933`). Loại, phải xin instance mới.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Dựng payload 32 byte.** Lấp `head[24]` rồi ghi địa chỉ `auth_bypass_dbg` vào `dbg`, little-endian. `memset(password, 0, 64)` đã có sẵn nên không cần lấp phần đuôi.
 
@@ -114,7 +114,7 @@ CONGRATULATIONS: cdctf{W!sh_Up0n_A_Sh0ot1ng_Star_81ab9a33}
 
 Kết quả phụ đã đo: va chạm xoá body nhẹ hơn. Sau pha bay xuyên ở kết nối đầu, `INFO Earth` trả `ERR no such body Earth` và `STATUS` chỉ còn vòng tròn nhãn `Satellite`, thế giới không còn đủ hai body nên không tạo được va chạm thứ hai. Nhiên liệu cũng cạn vĩnh viễn (`mass` kẹt ở `0.49999999999999994`, `THRUST` trả `OK` nhưng `velocity` không đổi). Instance đầu tiên vì thế hết dùng được và phải xin subdomain mới; lần lấy cờ chạy trên instance thứ hai.
 
-## Flag
+## Kết quả
 
 ```bash
 python exploit.py wss://sbrktohj.i.cdctf.net/ws
@@ -126,7 +126,7 @@ CONGRATULATIONS: cdctf{W!sh_Up0n_A_Sh0ot1ng_Star_81ab9a33}
 
 Cờ khớp định dạng `cdctf{...}` của đề, đã lưu trong `flag.txt`. Bản `exploit.py` trong case này là bản đã dọn của script chạy thật; hai instance đều đã hết hạn nên chưa chạy lại bản dọn, các block `text` ở trên là output nguyên văn từ phiên live (xem `analysis/live_session.log`).
 
-## Reproduce
+## Tái hiện
 
 ```bash
 pip install websockets

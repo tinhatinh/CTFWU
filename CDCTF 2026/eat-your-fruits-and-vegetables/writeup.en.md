@@ -2,13 +2,13 @@
 
 **Flag:** `cdctf{Carrot}` · **Files:** `data.db.enc`, 960000 bytes, sha256 `ea8bfa7cfc6f9f319ccf4f5efa12377beb84087ffb5885bd975656cc628e0374`
 
-## Problem
+## Challenge
 
 A stolen database encrypted with AES-128 in ECB mode is provided as `data.db.enc`. Once decrypted, each person occupies exactly 32 bytes: 8 bytes for the name, 8 for the car brand, 8 for the favourite produce item, 8 for the favourite operating system, all null padded. The statement gives the distribution of every field and states that everyone named Bob likes the same produce item. The task is to recover that item; the flag is `cdctf{Produce_Item}` and only two submissions are allowed.
 
 No key and no decryption oracle are available, so every bit of information has to come out of the ciphertext itself.
 
-## Initial analysis
+## Analysis
 
 The file is 960000 bytes, divisible by both 16 and 32. The statement specifies AES-ECB. The analysis uses repeated blocks and their frequencies, rather than inferring the mode from entropy.
 
@@ -24,7 +24,7 @@ Only 54 different values across 60000 ciphertext blocks. ECB maps each plaintext
 
 Call `A` the "name + car" block and `B` the "produce + OS" block. The problem reduces to finding the three `A` blocks that belong to Bob and then reading the `B` blocks next to them.
 
-## Approaches ruled out
+## Approaches tried
 
 Before settling on the solution, the following channels were tested and discarded (full log in `notes.md`):
 
@@ -33,7 +33,7 @@ Before settling on the solution, the following channels were tested and discarde
 3. **Using the "Bob - 5%" figure from the statement**: the constrained group actually holds exactly 2500 rows, that is 1/12, not 5%. The observed name frequencies disagree with the statement; the produce table matches the data. Discarded.
 4. **Comparing the first 8 bytes of `B` blocks against each other**: ECB encrypts the full 16-byte block, so two plaintexts differing only in the second half still produce completely different ciphertext. The three `B` blocks of one produce item share no byte. Discarded.
 
-## Exploit chain
+## Solution
 
 **Step 1 - Count blocks by position within the record.** For each 32-byte record take `A = record[0:16]` and `B = record[16:32]`, and build two frequency tables plus a frequency table of the `(A, B)` pairs. Result: 36 distinct `A` blocks and 18 distinct `B` blocks.
 
@@ -84,7 +84,7 @@ Against the table in the statement: Apple 10% = 3000, Orange 12% = 3600, Banana 
 
 The 18 blocks separate into exactly six clusters of three, and the cluster totals match the statement's distribution row for row, including the 33.33% split of operating systems inside each cluster. Bob's three blocks sit together inside the 18% cluster, consistent with the constraint that Bob likes one produce item.
 
-## Flag
+## Result
 
 ```bash
 python exploit.py files/data.db.enc

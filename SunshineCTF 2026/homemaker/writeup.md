@@ -46,7 +46,7 @@ Dưới đây là bố cục bộ nhớ của vùng `mem` (hàm điều phối t
 
 Bằng việc thay đổi cấu trúc của các frame đọc và ghi, ta có thể rò rỉ thành công stack canary, địa chỉ cơ sở của mã nguồn (base address) và con trỏ stack.
 
-## Chuỗi khai thác
+## Lời giải
 
 Dù file thực thi có nhập khẩu hàm `system`, môi trường thực thi trên máy chủ không tồn tại file `/bin/sh`. Điều này bắt buộc ta phải thực hiện chuỗi tấn công ORW (Open-Read-Write). Tuy nhiên, một trở ngại lớn là binary không chứa lệnh `syscall` hay bất kỳ đoạn mã libc nào để sử dụng làm ROP gadget.
 
@@ -75,13 +75,13 @@ pop rdi, 3          ; read@plt      # Thực hiện read(3, buf, 257)
 pop rdi, 1          ; write@plt     # Thực hiện write(1, buf, 257) -> in cờ trả về cho client
 ```
 
-## Flag
+## Kết quả
 
 ```
 sun{the_future_is_now_today_well_wait_how_are_you_reading_this}
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit_homemaker.py 3

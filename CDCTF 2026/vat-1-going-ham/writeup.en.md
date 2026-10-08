@@ -3,7 +3,7 @@
 **Flag:** `cdctf{N4T0_comms}`
 **Files:** `captured_radio.mp3`, 584028 B, sha256 `36a9039cd0dfe8416da8acc64a6cd1d4222da5e0312617cb72aff74cadca1d07`
 
-## Problem Description
+## Challenge
 
 The challenge ships a single audio file, `captured_radio.mp3`, described as an intercepted
 transmission between two Crimson Offense field operatives who are "passing an encoded flag".
@@ -11,7 +11,7 @@ The card is worth 500 points, tagged OSINT + Crypto, authored by `b0b`, with fla
 `cdctf{Ex4mpl3_flag}`. There is no remote service and no hint; every fact lives inside 97
 seconds of audio.
 
-## Initial Analysis
+## Analysis
 
 `file` reports an MP3 with an ID3v2.4 tag, MPEG-2 layer III, 48 kbps, 24 kHz, mono. `exiftool`
 shows the tag is 34 bytes holding only the `TSSE = Lavf61.7.103` frame, so the file was produced
@@ -27,7 +27,7 @@ comb moving over time together with travelling formants, i.e. the source is a hu
 Autocorrelation over 60 ms frames measures a median f0 of 103.9 Hz with 884/1617 voiced frames.
 The challenge is not a digital mode, it is a voice call.
 
-## Ruled-Out Approaches
+## Approaches tried
 
 Before committing, these channels were tested and rejected (full log in `notes.md`):
 
@@ -39,7 +39,7 @@ Before committing, these channels were tested and rejected (full log in `notes.m
 4. **Morse / on-off keying**: the silences are phrase boundaries, and the carrier is continuously
    amplitude modulated rather than switched. Rejected.
 
-## Exploitation Chain
+## Solution
 
 **Step 1 - Turn audio into text.** Decode to WAV and run Whisper on CPU. The `base` model
 (beam 5) captures the content but collapses digit runs:
@@ -94,7 +94,7 @@ exits 0 only when at least two independent readings agree on a string matching
 reading is rejected precisely because its hex length is odd. Length 34 is even, all 17 bytes are
 printable ASCII, and the prefix and closing `}` obey the stated format.
 
-## Flag
+## Result
 
 ```bash
 python exploit.py files/transcript_small_flagpart.txt

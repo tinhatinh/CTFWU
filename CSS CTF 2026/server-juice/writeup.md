@@ -2,9 +2,9 @@
 
 **Flag:** `CSSCTF{premiumreserve}`
 
-## Cách giải
+## Lời giải
 
-Đề bài gợi ý chúng ta theo dõi kênh mạng xã hội của cuộc thi để tìm manh mối. 
+Đề bài gợi ý chúng ta theo dõi kênh mạng xã hội của cuộc thi để tìm manh mối.
 
 1. Tìm kiếm và truy cập vào trang Instagram chính thức của ban tổ chức sự kiện: `@cybersecuritysydney`.
 
@@ -22,7 +22,7 @@ CSSCTF{premiumreserve}
 Reply
 ```
 
-## Flag
+## Kết quả
 
 ```text
 CSSCTF{premiumreserve}

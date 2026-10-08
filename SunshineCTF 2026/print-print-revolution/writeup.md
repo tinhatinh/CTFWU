@@ -8,10 +8,10 @@
 
 Nhiệm vụ của thử thách là phân tích hệ thống xuất (renderer) tuỳ chỉnh của máy in điểm để lấy flag. Đề bài không cung cấp thư viện `libc`, yêu cầu người chơi phải trích xuất mọi thông tin cần thiết trực tiếp từ dịch vụ đang chạy bằng các phương pháp thủ công, nghiêm cấm sử dụng các công cụ tự động như pwntools hay ROPgadget.
 
-## Phân tích ban đầu
+## Phân tích
 
 Binary là một ELF 64-bit ở định dạng `ET_EXEC` (không bật PIE, có địa chỉ cơ sở cố định tại `0x400000`), đã bị loại bỏ thông tin gỡ lỗi (stripped), và phân vùng mã nguồn `.text` nhỏ gọn với kích thước chỉ 0x4ea byte.
-Chương trình chỉ nhập khẩu (import) đúng năm hàm hệ thống: `write`, `strlen`, `strcspn`, `read`, và `setvbuf`. Đáng chú ý là sự vắng mặt hoàn toàn của các hàm mở file như `open` hay `fopen`, đồng nghĩa với việc binary không có khả năng tự thân đọc file. Do đó, để truy xuất nội dung file `/ctf/flag.txt`, giải pháp duy nhất là phải thực thi một chuỗi ROP (ROP chain) nhằm gọi lệnh `execve`.
+Chương trình chỉ import đúng năm hàm hệ thống: `write`, `strlen`, `strcspn`, `read`, và `setvbuf`. Đáng chú ý là sự vắng mặt hoàn toàn của các hàm mở file như `open` hay `fopen`, đồng nghĩa với việc binary không có khả năng tự thân đọc file. Do đó, để truy xuất nội dung file `/ctf/flag.txt`, giải pháp duy nhất là phải thực thi một chuỗi ROP (ROP chain) nhằm gọi lệnh `execve`.
 
 Vòng lặp chính của chương trình nằm tại địa chỉ `0x4010d0`:
 ```asm
@@ -40,7 +40,7 @@ lea rax,[rsp+0x30];  mov [rsp+0x28], rax ; vùng reg_save_area = rsp+0x30
 
 Một chi tiết mấu chốt là vùng `rsp+0x120` của renderer trỏ chính xác vào vùng đệm `buf` (do renderer cách hàm main đúng bằng 6 lần gọi `push` + 8 byte return address + phép trừ `sub 0xe8`, tổng cộng là 0x128 byte). Hệ quả là, từ tham số thứ 6 trở đi, dữ liệu sẽ được đọc trực tiếp từ chính vùng input của người dùng.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Trích xuất tập luật (grammar) của renderer.**
 Bằng cách phân tích nhánh lệnh so sánh nằm trong khoảng `0x4013e8..0x401524`, ta nhận diện được bốn đặc tả (format specifier) với các tính năng sau:
@@ -91,7 +91,7 @@ Tổng cộng chuỗi trên chiếm chính xác 59 byte. Chuỗi `/bin/sh` đã 
 **Bước 7 - Xác thực tính đúng đắn.**
 Để đảm bảo mọi thông số đều chính xác trước khi bung exploit, ta sử dụng một phép thử bằng cách thay thế vị trí `buf[0x18]` bằng `0x40114f` (phương án này loại bỏ lệnh syscall thực sự). Kết quả thu được từ luồng xử lý này là chuỗi `score>` in ra bình thường, minh chứng cho việc điều khiển luồng thực thi (control flow) hoàn toàn chính xác. Payload khai thác mở shell thành công khi server ngừng trả lời chuỗi nhắc lệnh và bắt đầu tiếp nhận trực tiếp các lệnh hệ thống từ luồng stdin.
 
-## Flag
+## Kết quả
 ```bash
 python exploit.py
 ```

@@ -1,17 +1,17 @@
 # Splice - Web (Hard)
 
-**Flag:** `WEBVERSE{fcb61c06cbb7cd020a371730b71521fe}` (Điểm: 300 pts) 
+**Flag:** `WEBVERSE{fcb61c06cbb7cd020a371730b71521fe}` (Điểm: 300 pts)
 **Môi trường:** H7TEX 2026 host trên nền tảng WebVerse
 **Máy chủ mục tiêu:** `https://ced0f13a-5765-splice-5ba63.mystery-challenges.webverselabs-pro.com` (Hệ thống Express, chạy sau proxy Cloudflare)
 **Tài nguyên:** Không có mã nguồn nào. Toàn bộ phân tích dựa trên mã nguồn thu thập từ ứng dụng qua các đường `/studio`, `/public/css/site.css`, và cấu trúc JSON trích xuất từ `/api/render`.
 
 ## Đề bài
 
-Bối cảnh: Hệ thống Tapedeck cung cấp dịch vụ podcast hosting. Cổng Studio cho phép tải lên một đoạn âm thanh, xử lý để tạo audiogram (poster) và tải về. 
-Yêu cầu: *"Hãy kiểm tra quá trình render đặt tên và xử lý các tệp trả về như thế nào"*. Nền tảng gợi ý lỗi là CMDI (Command Injection - Tiêm lệnh hệ thống). 
+Bối cảnh: Hệ thống Tapedeck cung cấp dịch vụ podcast hosting. Cổng Studio cho phép tải lên một đoạn âm thanh, xử lý để tạo audiogram (poster) và tải về.
+Yêu cầu: *"Hãy kiểm tra quá trình render đặt tên và xử lý các tệp trả về như thế nào"*. Nền tảng gợi ý lỗi là CMDI (Command Injection - Tiêm lệnh hệ thống).
 Lưu ý: Cờ (flag) lưu trữ trên máy chủ, người chơi không có file phân tích offline.
 
-## Phân tích ban đầu
+## Phân tích
 
 Giao diện `/studio` cho thấy 3 công đoạn của quy trình (pipeline):
 
@@ -45,9 +45,9 @@ Thử nghiệm cơ bản: Sử dụng một file WAV 2 giây tạo tự động,
 {"ok": true, "outputs": [{"file": "audiogram.png", "url": "/m/b9f13764512c81b7/audiogram.png"}], "errors": null}
 ```
 
-## Quá trình khai thác
+## Lời giải
 
-**Bước 1 - Xác định lỗ hổng tiêm tham số.** 
+**Bước 1 - Xác định lỗ hổng tiêm tham số.**
 Lỗ hổng Command Injection không cho phép thực thi shell, nhưng cho phép chèn tham số (argv):
 
 ```text
@@ -73,7 +73,7 @@ Payload: slug = "a.png -f concat -i /flag.txt b.png"
 ```
 Server đưa `stderr` vào trường `errors`, nên có thể đọc flag trực tiếp trong response.
 
-**Bước 3 - Xác định đường dẫn của cờ.** 
+**Bước 3 - Xác định đường dẫn của cờ.**
 Cùng một phương thức tiêm, ta có thể kiểm tra một file có tồn tại hay không thông qua phản hồi lỗi của hệ thống:
 
 ```text
@@ -84,11 +84,11 @@ Cùng một phương thức tiêm, ta có thể kiểm tra một file có tồn 
 ./flag.txt             -> Lỗi: No such file or directory
 ```
 
-**Bước 4 - Kiểm chứng độc lập.** 
-Kịch bản `exploit.py` được thiết kế để tự động khởi tạo phiên giao dịch (session) mới (cookie `td_session` sẽ tạo workspace riêng). Script tự động tạo file WAV, upload lên và gửi yêu cầu render. 
+**Bước 4 - Kiểm chứng độc lập.**
+Kịch bản `exploit.py` được thiết kế để tự động khởi tạo phiên giao dịch (session) mới (cookie `td_session` sẽ tạo workspace riêng). Script tự động tạo file WAV, upload lên và gửi yêu cầu render.
 Thử nghiệm trên một workspace hoàn toàn độc lập (`0d6a6fc0562fc2eb`), khác biệt so với lúc thử nghiệm dò đường (`b9f13764512c81b7`), hệ thống trả về đúng chuỗi cờ. Công đoạn trích xuất cờ qua biểu thức regex từ phản hồi và lưu vào `flag.txt`.
 
-## Flag
+## Kết quả
 ```bash
 python exploit.py https://ced0f13a-5765-splice-5ba63.mystery-challenges.webverselabs-pro.com
 ```

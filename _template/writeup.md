@@ -1,52 +1,49 @@
-# <Challenge Name> - <Category> (<Difficulty>)
+# <Challenge Name> - <Category>
 
-**Flag:** `<PREFIX>{...}` · **Files:** `<artifact>`, <size>, sha256 `<hash>`
+**Đầu vào:** `<artifact hoặc service>`
 
 ## Đề bài
 
-<2-4 câu: mục tiêu phải đạt là gì, đề cho những gì, tương tác với cái nào.>
+<Nêu mục tiêu và dữ liệu được cung cấp trong 2–3 câu. Chỉ thêm điểm/độ khó khi có trên thẻ đề.>
 
-## Phân tích ban đầu
+## Phân tích
 
-<Kết quả triage: loại file, mitigation/kích thước/entropy, những điểm bất thường đầu tiên.
-Nêu rõ vì sao những điểm đó gợi hướng này.>
+<Nêu trường dữ liệu, đoạn code hoặc hành vi dẫn đến lời giải. Bỏ mục này nếu bài chỉ cần đọc thông tin trực tiếp.>
 
-## Các hướng đã loại
+```text
+<Trích đoạn artifact hoặc output đã lưu, nếu cần.>
+```
 
-Trước khi chốt đã kiểm tra và loại các kênh sau (log đầy đủ ở `notes.md`):
+## Lời giải
 
-1. **<giả thuyết>**: <bằng chứng phản bác>. Loại.
-2. **<giả thuyết>**: <bằng chứng phản bác>. Loại.
+### <Tên thao tác hoặc cơ chế chính>
 
-## Chuỗi khai thác
-
-**Bước 1 - <việc làm>.** <kỹ thuật + vì sao làm bước này>
+<Giải thích từ dữ kiện đến thao tác và kết quả. Chia mục có tên cụ thể nếu bài dài; không ép số bước.>
 
 ```bash
-<lệnh>
+<Lệnh chạy từ thư mục challenge.>
 ```
 
-**Bước 2 - <việc làm>.** <code hoặc lệnh, kèm output thật>
-
-```python
-<đoạn code quyết định>
+```text
+<Output thật liên quan đến kết quả, nếu đã lưu.>
 ```
 
-**Bước N - Kiểm chứng.** <bằng chứng kết quả không phải trùng hợp:
-độ dài chẵn, magic hợp lệ, toàn bộ dữ liệu khớp, v.v.>
+<Chỉ thêm script khi giúp tái hiện. Chữ rõ trên ảnh thì đọc trực tiếp, không thêm OCR.>
 
-## Flag
+## Kết quả
 
-```bash
-python solve.py files/<artifact>
+```text
+<Flag hoặc đáp án đúng kiểu đề yêu cầu. Chưa thu được thì ghi bằng văn xuôi, không tạo cờ mẫu.>
 ```
 
-```
-<output thật của script, chứa cờ>
-```
+<Chỉ ghi submission thành công khi có phản hồi đã lưu. Nhận marker, giải mã artifact hoặc test local chưa chứng minh đã nộp thành công. Không kể chuyện người dùng/agent trao đổi.>
 
-## Reproduce
+## Tái hiện
+
+<Dependency và điều kiện instance cần thiết. Dùng placeholder cho token/cookie.>
 
 ```bash
 python exploit.py files/<artifact>
 ```
+
+<Chỉ giữ nhánh thất bại có ích cho cách giải. Nhật ký chi tiết nằm trong notes.md. Xóa mọi placeholder và lời dặn template trước khi bàn giao.>

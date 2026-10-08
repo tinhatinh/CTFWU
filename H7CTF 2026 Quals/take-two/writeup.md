@@ -9,7 +9,7 @@ Gợi ý "it is not above a second take" (không ở trên mức quay lại lầ
 
 Phân tích mã nguồn `lms.py`, chú thích xác nhận: *"lỗ hổng mang tính vận hành (lỗi sử dụng lại lá do reset bộ đếm), không nằm trong code mật mã"*.
 
-## Phân tích ban đầu
+## Phân tích
 
 Kiến trúc thuật toán (Scheme) áp dụng là chuẩn WOTS+ thuộc cây Merkle bao gồm 16 chiếc lá:
 
@@ -28,17 +28,15 @@ API có 3 endpoint: `POST /sign` (ký message bất kỳ, không chứa từ kh�
 
 Phân tích thử nghiệm: Chữ ký đầu tiên được gán cho lá (leaf) số 1. Thực hiện lệnh rollback, leaf quay về số 0, và mọi thao tác ký sau đó đều tái sử dụng lại leaf 0 này. Đây là cơ sở của lỗi "second take".
 
-## Chuỗi khai thác
+## Lời giải
 
-**Bước 1 - Gom chữ ký trên một leaf.** 
-Thực hiện vòng lặp API: `rollback -> sign("benign-<i>")` 260 lần. Tất cả thao tác ký được thực hiện trên `leaf = 0`. 
+**Bước 1 - Gom chữ ký trên một leaf.**
+Thực hiện vòng lặp API: `rollback -> sign("benign-<i>")` 260 lần. Tất cả thao tác ký được thực hiện trên `leaf = 0`.
 Với mỗi tọa độ `j` trong dải 67, ghi nhận chữ số thấp nhất từng xuất hiện `mins[j]`, và lưu trữ chuỗi băm `base[j] = sig[j]` tương ứng.
 
-**Bước 2 - Chứng minh tính khả thi.** 
-Do phân phối đều trong khoảng 0..15, xác suất để tọa độ bất kỳ đạt giá trị 0 sau `k` thao tác ký là `1-(15/16)^k`. 
-Với `k = 260`, kỳ vọng toán tử khớp tính toán rằng phần lớn tọa độ sẽ tiến về 0. Kết quả đo đạc: `max(mins) = 1`, `sum(mins) = 1` - Tương đương 66/67 tọa độ đạt giá trị 0, duy nhất 1 tọa độ giữ ở mức 1.
+**Bước 2 - Đối chiếu các giá trị nhỏ nhất.** Với 64 chữ số của digest, nếu coi chữ số độc lập và đều trong 0..15 thì xác suất gặp 0 sau `k` lần ký là `1-(15/16)^k`. Ba chữ số checksum không có phân phối độc lập như vậy. Sau 260 chữ ký, dữ liệu thực tế cho `max(mins) = 1` và `sum(mins) = 1`: 66 tọa độ có minimum 0, một tọa độ có minimum 1. Dùng tập minimum đã đo để kiểm tra message mục tiêu ở bước tiếp theo.
 
-**Bước 3 - Giả mạo chữ ký cho message bị cấm.** 
+**Bước 3 - Giả mạo chữ ký cho message bị cấm.**
 Để giả mạo message mục tiêu có giá trị `t[j]`, chỉ cần đảm bảo điều kiện `t[j] >= mins[j]` để tạo chữ ký hợp lệ:
 
 ```python
@@ -47,7 +45,7 @@ forged[j] = chain(base[j], t[j] - mins[j])
 
 Đặc biệt, mảng `mins` chủ yếu là 0, nên điều kiện trên thường xuyên được thỏa mãn. Chỉ cần 1 lần lặp (grind) để đáp ứng điều kiện trên tên file `HELIOS-OTA-BACKDOOR-1`.
 
-**Bước 4 - Kiểm chứng độc lập.** 
+**Bước 4 - Kiểm chứng độc lập.**
 Sử dụng thuật toán `verify` cục bộ, tính toán root từ chữ ký giả mạo và đối chiếu với nhánh root công khai - Hoàn toàn khớp. Bước này đảm bảo tính chính xác trước khi gửi payload, khẳng định chữ ký giả mạo hoàn toàn hợp lệ chứ không phải hệ thống bỏ qua bước xác thực.
 
 **Bước 5 - Ấn nút Deploy.**
@@ -56,7 +54,7 @@ Sử dụng thuật toán `verify` cục bộ, tính toán root từ chữ ký g
 {"ok": true, "booted": true, "flag": "H7CTF{63b0dde3-3edd-4a95-92d3-4e8c26e38483}"}
 ```
 
-## Flag
+## Kết quả
 ```bash
 python exploit.py https://web-18955a87eb148fa7.web.h7tex.com
 ```

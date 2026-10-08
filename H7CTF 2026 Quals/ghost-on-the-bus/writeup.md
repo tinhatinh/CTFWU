@@ -8,7 +8,7 @@
 
 Đề cung cấp kết quả phân tích logic (logic analyzer) của bảng mạch "NoiseGate" trong quá trình khởi động (boot). Thông số cho biết thiết bị cung cấp khoá cấu hình (provisioning key) trong quá trình này, tuy nhiên không trả về toàn bộ mã tại một vị trí duy nhất. Yêu cầu của bài toán là phân tích tín hiệu điện để tổng hợp lại mã khóa hệ thống.
 
-## Phân tích ban đầu
+## Phân tích
 
 Đánh giá tài liệu định dạng (Index page), hệ thống sử dụng định dạng file VCD với sơ đồ (pinout) của 8 kênh logic:
 
@@ -17,7 +17,7 @@ Bản ghi logic 8 kênh của quá trình boot thiết bị (Tần số lấy m�
 Các kênh: UART_TX, SCL, SDA, SPI_CLK, SPI_MOSI, SPI_MISO, SPI_CS, AUX
 ```
 
-File VCD sử dụng định dạng văn bản (text), do đó có thể xử lý và phân tích tự động bằng ngôn ngữ Python thay vì chỉ thao tác bằng `sigrok`. 
+File VCD sử dụng định dạng văn bản (text), do đó có thể xử lý và phân tích tự động bằng ngôn ngữ Python thay vì chỉ thao tác bằng `sigrok`.
 Dữ liệu tốc độ truyền (baud rate) không được cung cấp. Phân tích tốc độ tín hiệu qua biểu đồ tần suất (histogram) các khoảng thời gian chuyển đổi mạch (transition) bằng kịch bản `analysis/explore_vcd.py`:
 
 ```text
@@ -31,7 +31,7 @@ Kênh AUX       Ghi nhận 1 pha chuyển mạch                                
 
 Chu kỳ 8500 ns/bit tương đương với tốc độ 117.650 baud, phù hợp với tần số lấy mẫu 2 MHz / 17 mẫu, đúng với thông số khởi tạo 2 MHz của hệ thống.
 
-## Quá trình khai thác
+## Lời giải
 
 ### Bước 1: Trích xuất thông tin cấu hình từ luồng UART
 
@@ -83,7 +83,7 @@ Kết quả thu được:
 [+] FLAG: H7CTF{10d9b516-d19b-4895-9634-45b27a7591c3}
 ```
 
-## Flag
+## Kết quả
 ```bash
 $ python solve_bus.py files/capture.vcd
 [+] FLAG: H7CTF{10d9b516-d19b-4895-9634-45b27a7591c3}

@@ -9,7 +9,7 @@ We are given a intercepted Instagram group chat of the rival team Crimson Offens
 are supposedly the exfiltration channel. The flag has to be found in that pile of videos, and the
 card advertises the format `cdctf{word_word_word_word_word}`.
 
-## Initial analysis
+## Analysis
 
 15 mp4 files, 3.0-4.1 MB each, H.264 + AAC, 10-13 seconds long. `ffprobe` and `exiftool` turn up
 nothing suspicious: the only tags are `encoder = Lavc libx264` and `creation_time` values dated
@@ -23,7 +23,7 @@ the same UUID `5f0a6c1e-7b3d-5a8e-9c4f-2d1b6a7e3c90`. Its 68-69 byte payload mix
 bytes, and reads out `%PDF-1.4`, `1 0 obj`, `/Type /Pages`, `xref`, `trailer`, `startxref`, `%%EOF`
 plus an `x\xda` opening. Each video carries one slice of the same PDF file.
 
-## Ruled out
+## Approaches tried
 
 1. **Metadata tags**: the 53-byte `udta/meta` only holds the encoder tag, `free` is exactly 8 empty
    bytes, and the `creation_time` values differ without any pattern. Rejected.
@@ -31,7 +31,7 @@ plus an `x\xda` opening. Each video carries one slice of the same PDF file.
    constraint there was no reason to open that channel; only a few frames were inspected by eye, no
    LSB or spectral measurement was taken.
 
-## Exploit chain
+## Solution
 
 **Step 1 - Carving the slices.** A `uuid` box is 4 bytes size, 4 bytes type and then a **16 byte
 extended_type**, so the payload starts at `o+24` (using `o+16` shifts everything by 8 bytes and no
@@ -70,7 +70,7 @@ All slices are accounted for and the PDF offsets are internally consistent. `fit
 content stream holds an "internal memo" about retention metrics, and the second-to-last line is the
 flag.
 
-## Flag
+## Result
 
 ```bash
 python exploit.py files/chunks

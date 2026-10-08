@@ -7,7 +7,7 @@ Points: 498 · **Flag:** `sun{fr4gm3nt3d_r3fl3ct10ns_1n_th3_futur3}`
 
 SiteCheck is a website inspection service. Register an inspector account and submit a URL, and SiteCheck's "drone" goes to that address itself, measures the load time, counts the files downloaded, then returns a viewport screenshot. The drone refuses internal and local addresses. The problem is getting past that refusal to read something the site never hands back directly.
 
-## Recon
+## Analysis
 
 Server-side-rendered Express app, no JS bundle. Routes recovered from the HTML: `/register`, `/login`, `/dashboard`, `POST /scan`, `/result/<uuid>`, `/profile`, `/logout`, `/static/`, `/screenshots/`.
 
@@ -32,7 +32,7 @@ The first four rows show they do not compare strings. The code parses the IP lit
 
 The last two rows do get through, and for two completely different reasons: IPv6 loopback was left off the deny list, while hostnames are never resolved for the check at all. The proof is the drone returning `ERR_CONNECTION_REFUSED` for all four of those names, meaning it did open a real TCP connection, there is simply nobody listening on port 80.
 
-## Exploit Chain
+## Solution
 
 **Step 1: find an open port on loopback.** `http://[::1]:3000/` returns Status 200, Files fetched 10, with a snapshot. Ports 80, 8080, 3001 all give `ERR_CONNECTION_REFUSED`. 3000 is the SiteCheck app; the nginx in front only forwards traffic arriving from outside.
 
@@ -54,7 +54,7 @@ POST /scan   url=http://[::1]:3000/profile#clearance
 
 The image returned shows the plate in full. Crop and zoom it to read one character at a time, because the `0` in `ct10ns` is a digit without a slash rather than the letter O.
 
-## Flag
+## Result
 ```
 sun{fr4gm3nt3d_r3fl3ct10ns_1n_th3_futur3}
 ```

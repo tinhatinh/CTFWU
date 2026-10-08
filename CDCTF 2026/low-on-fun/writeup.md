@@ -6,7 +6,7 @@
 
 Đề cho một file Python duy nhất và hỏi "tôi đã làm gì để khai báo hàm hiệu quả hơn". Chương trình là một flag checker: đọc đầu vào, kiểm tra định dạng, rồi in ra kết luận. Mục tiêu là tìm chuỗi đầu vào khiến checker chấp nhận, theo định dạng `cdctf{...}`.
 
-## Phân tích ban đầu
+## Phân tích
 
 Toàn bộ thân hàm bị bỏ trống, chỉ còn một hàm rỗng `changing()` và một blob bytes 3069 byte trên dòng 3:
 
@@ -38,7 +38,7 @@ That's the wrong length!
 
 `dis` của 3.12 và 3.11 cũng cho kết quả vô nghĩa (instruction đầu tiên là `POP_JUMP_IF_NOT_NONE`, bên trong một hàm chỉ gọi `input()` lại có `LIST_TO_TUPLE` và `BEFORE_ASYNC_WITH`) vì độ rộng inline cache khác nhau làm lệch khung đọc opcode. Chỉ CPython 3.14 chạy được, nên mọi phân tích dưới đây dùng `py -3.14`.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 Trước khi chốt đã kiểm tra và loại các kênh sau (log đầy đủ ở `notes.md`):
 
@@ -46,7 +46,7 @@ Trước khi chốt đã kiểm tra và loại các kênh sau (log đầy đủ 
 2. **Chấp nhận `marshal.loads` thành công rồi chạy tiếp trên 3.11 / 3.12**: cả hai segfault (exit 139), do `marshal.loads` không kiểm tra layout cache nên interpreter thực thi bytecode lẫn lộn.
 3. **Brute-force đầu vào thông qua checker như một oracle**: checker chỉ so sánh cả 40 byte một lần rồi trả về một trong hai chuỗi `b"That's it!"` hoặc `b'heck nah'`, không so sánh theo từng ký tự và không có oracle theo từng vị trí được ghi nhận. Loại vì không cần, xem Bước 3.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Cố định phiên bản và tách ba hàm.** Dùng `py -3.14` làm bộ giải mã, xuất từng code object ra thư mục `analysis/`:
 
@@ -89,7 +89,7 @@ flag = bytes(a ^ b for a, b in zip(check, keystream))
 
 **Bước 5 - Kiểm chứng.** Độ dài 40 khớp ràng buộc của `init_checks`, prefix `cdctf` khớp. Chạy lại bằng chính checker gốc với Python 3.14, bản đầy đủ cho `That's it!` trong khi bản chỉ đổi ký tự cuối `k` thành `l` cho `heck nah`, xác nhận checker phân biệt được input đúng và input sai đã thử.
 
-## Cờ
+## Kết quả
 
 ```bash
 python exploit.py files/low_on_fun.py
@@ -111,7 +111,7 @@ python exploit.py files/low_on_fun.py
 cdctf{Y_m4ny_functi0s_wh3n_f3w_d0_trick}
 ```
 
-## Reproduce
+## Tái hiện
 
 ```bash
 py -3.14 analysis/dump_dis.py 1   # rang buoc dinh dang

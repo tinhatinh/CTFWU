@@ -9,7 +9,7 @@
 cách không chính thống". Ràng buộc đã cho: mỗi mật khẩu là một từ liên quan tới đám cưới
 nối với ba chữ số, cờ ghép theo thứ tự `password1-password2-password3`.
 
-## Phân tích ban đầu
+## Phân tích
 
 `file` và `exiftool` trả về một PNG 981x731, 8-bit RGB, không interlace. Cấu trúc chunk
 sạch: `IHDR, sRGB, gAMA, pHYs, iTXt, IDAT x3, IEND`, và `IEND` kết thúc file - không còn
@@ -30,7 +30,7 @@ a26cbed538ebe8baadca4d9c9b167de7f132d5bd30205ad6814b6c865dd7344a
 Ba chuỗi hex, mỗi chuỗi 128 ký tự (64 byte), phân tách bằng `-`. Độ dài 64 byte gợi tới
 SHA-512, nhưng gợi ý đó chỉ đúng về kích thước.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **SHA-512 / SHA3-512**: với ràng buộc `<từ> + 000..999`, cả hai hàm cho 0/3 digest khớp.
 
@@ -40,7 +40,7 @@ SHA-512, nhưng gợi ý đó chỉ đúng về kích thước.
 
 Các phép thử trên không thu được dữ liệu hữu ích ngoài XMP. Tiếp tục kiểm tra các hàm hash có digest 64 byte trên không gian mật khẩu mà đề mô tả.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Định danh thuật toán.** 128 ký tự hex là 64 byte, nhưng phép thử trực tiếp trên
 không gian mật khẩu đã cho thấy hàm đúng là BLAKE2b (digest mặc định 64 byte). Tên artifact
@@ -83,7 +83,7 @@ HIT honeymoon069 0fed6e840bbe32beda22f5ae7c0e41bc8c0995103a1ded55c694209f9118f53
 `files/wedding_words.txt` (521 từ, đã bổ sung nhóm từ cổ và từ văn học về đám cưới), nên lời
 giải reproduce được mà không cần file từ điển ngoài.
 
-## Flag
+## Kết quả
 
 ```bash
 python exploit.py files/blake.png
@@ -104,7 +104,7 @@ python exploit.py files/blake.png
 
 Cờ trên do ba mật khẩu tính ra cục bộ từ `blake.png`, chưa nộp lên nền tảng để đối chiếu.
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/blake.png                                   # 6,4 s

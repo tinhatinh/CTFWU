@@ -7,7 +7,7 @@
 
 "Có một file cờ trong root bowl và bạn không đọc được. `serve /` sẽ nói cho bạn biết lý do."
 
-## Phân tích ban đầu
+## Phân tích
 
 `serve` là lệnh liệt kê bowl **hiện tại** và không nhận tham số (`cmd_serve(void)`, `shell.c:545`), nên
 đúng như thẻ đề gợi ý thì phải gõ trần; gõ `serve /` rơi vào nhánh lệnh-lạ của shell:
@@ -49,7 +49,7 @@ if (strcmp(name, "open") == 0) {
 
 Đúng như tên bài: **hai đường dẫn, một phép kiểm**.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 1. **Gọn như thẻ đề: `serve /`** — shell không nhận tham số cho `serve`, nó rơi về nhánh
    `"No soup for you: '%s'"` (`shell.c:2489`). Phải dùng `serve` trần hoặc `cd <bowl>` rồi `serve`.
@@ -58,7 +58,7 @@ if (strcmp(name, "open") == 0) {
 4. **Đoán `SVAL_LEN` để đọc cả dòng**: `read()` cắt theo `SVAL_LEN - 1`, truyền số lớn hơn cũng vô ích;
    phải truyền đúng 47 để không bị cắt mất `}`. Đã kiểm bằng harness compile từ source thật.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Gọi thẳng builtin của interpreter, bỏ qua shell gate.** `pour` trong soupyc là lệnh in
 (`TK_POUR`, `soupyc.c:757`), không phải lệnh shell, và `read()` giới hạn 47 byte (`SVAL_LEN - 1`),
@@ -85,7 +85,7 @@ Lỗi này đã được tái lập chính xác trong harness trong quá trình 
 ./soupctest.exe 'pour read(open("/FLAG1.TXT"),47)'
 ```
 
-## Cờ
+## Kết quả
 
 ```text
 cdctf{mise_en_place_two_paths_one_check}
@@ -93,7 +93,7 @@ cdctf{mise_en_place_two_paths_one_check}
 
 Chuỗi cờ được ghi nhận trong output quét kernel memory ở stage 3, nơi `.rodata` cũng nằm trong vùng đọc. Bản ghi không có screenshot stage 1; cơ chế đọc qua soupyc được báo cáo đã nộp thành công.
 
-## Reproduce
+## Tái hiện
 
 ```text
 login: cook / soup

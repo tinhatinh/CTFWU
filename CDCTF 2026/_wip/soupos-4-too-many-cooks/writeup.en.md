@@ -1,10 +1,10 @@
 # soupOS 4: Too Many Cooks - Rev Eng pwn (489 points) — OPEN
 
-**Flag:** FLAG4, printed by `serve_the_special()` — **not captured in this session**
+**Flag:** FLAG4, printed by `serve_the_special()` — **not captured in the recorded run**
 · **Points:** 489 · **Author:** soup (CDCTF)
 **Handout:** `soupos-handout.tar.gz` + `symbols.txt` (shared by the whole chain)
 
-## The task
+## Challenge
 
 "soupyc runs in ring 0. There is a routine nothing ever calls, and your symbol map has its address."
 
@@ -18,7 +18,7 @@ void serve_the_special(void) {
 }
 ```
 
-## First look
+## Analysis
 
 Two pieces inside `soupyc.c`:
 
@@ -54,7 +54,7 @@ static struct {
     if (sc_state.after_hook) sc_state.after_hook();     /* soupyc.c:1575 */
 ```
 
-## The chain
+## Solution
 
 **Step 1 - compute the exact offset to write.** On i386 `val_t = {int type; int ival; char sval[48]}` is 56
 bytes and `arr_t = {int used; int len; val_t elems[48]}` is 2696, so `pool[0].elems` sits at

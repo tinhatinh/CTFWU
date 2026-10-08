@@ -4,7 +4,7 @@
 **Attached file:** `catcounty_results.zip` (37,241 B, SHA256 `462c4d84…5a9cb4`), containing `gerry_final_files/{info.csv, check_in.log, votes.log}`
 **Authors:** adlee7, reep236 (CDCTF)
 
-## Problem Description
+## Challenge
 
 Three leaked election logs from Cat County. `info.csv` lists 1067 voters with their `id`, name and
 the county block they live in. `check_in.log` records 1067 check-ins at the polling places.
@@ -12,7 +12,7 @@ the county block they live in. `check_in.log` records 1067 check-ins at the poll
 the Meowjority currently control, and which ones (the list is needed for part 2). The flag carries
 only the count, in the form `cdctf{##}`.
 
-## Initial Analysis
+## Analysis
 
 The three files look like this (first and last record of each):
 
@@ -33,7 +33,7 @@ The two sets do not intersect, so the logs share no key.
 
 Both logs increase in time, their sequence numbers increment by one, and both have 1067 lines. The solution assumes voters cast ballots in check-in order (FIFO), pairing line i with line i. The 560..1184 s time gaps (mean 869 s) are compatible with that assumption, but do not independently prove it.
 
-## Approaches Ruled Out
+## Approaches tried
 
 1. **Joining the two logs on their sequence numbers**: `set(receipt) & set(ballot)` is empty, the two
    ranges are independent numbering spaces. Rejected.
@@ -47,7 +47,7 @@ Both logs increase in time, their sequence numbers increment by one, and both ha
    6/20. The statement does not define the counting rule, but no block is tied and "most votes takes
    the block" is the rule that is consistent across all 36 blocks, so plurality was kept.
 
-## Exploitation Chain
+## Solution
 
 **Step 1 - Recover the ballot-to-voter relation.** The logs share no key, so the pairing follows the FIFO assumption. The check prints the time gap for every candidate shift:
 
@@ -117,7 +117,7 @@ The flag is a computed count rather than a string present in the files, so `cdct
 confirmed by a submission; the evidence here is that all 1067 ballots reconcile with 1067 check-ins
 across 36 blocks.
 
-## Flag
+## Result
 
 ```bash
 python exploit.py files/catcounty_results.zip

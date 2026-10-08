@@ -6,11 +6,11 @@
 
 ## Đề bài
 
-> "Safe house nhận báo cáo và lưu note cho thực địa. Vượt qua quầy lễ tân để vào hầm." 
+> "Safe house nhận báo cáo và lưu note cho thực địa. Vượt qua quầy lễ tân để vào hầm."
 
 Bài cung cấp một cờ duy nhất.
 
-## Phân tích ban đầu
+## Phân tích
 
 Binary là một ELF kiến trúc x86-64, không sử dụng cơ chế bảo vệ địa chỉ (no PIE), được kích hoạt NX, hoàn toàn vắng bóng stack canary ở các hàm nằm trên đường dẫn của chuỗi ROP. GNU_RELRO bao phủ toàn bộ vùng `.got` (nghĩa là không thể thực hiện thủ thuật ghi đè GOT), và binary đã bị loại bỏ thông tin gỡ lỗi (stripped).
 
@@ -28,14 +28,14 @@ Quá trình khởi tạo trong hàm `main` tại `0x401290`:
 4. Hàm mã hoá `0x401be0(buf, len, edx=key)`: Nhiệm vụ XOR dữ liệu với 4 byte khoá được mã hoá theo định dạng big-endian, lặp lại theo chu kỳ 4 byte.
 5. Hàm gửi dữ liệu `0x401d50(edi=kênh, rsi=data, edx=len)`: Xây dựng một phần đầu bản tin (header) với cấu trúc `[kênh][len_be16][0]`, áp dụng phép XOR, đẩy `write(3, header, 4)` lên luồng, rồi tiếp tục copy, mã hoá XOR và ghi `write(3, payload, len)`. Hàm tiện ích này được gọi từ cả hai phía nhờ vào việc nó chỉ thao tác độc lập trên mô tả file (file descriptor) số 3.
 
-Tập hợp lệnh của Front Desk bao gồm: 
+Tập hợp lệnh của Front Desk bao gồm:
 - `NOTE <0..7> <text>`: Ghi chú thông tin vào bảng tại `0x40a180` (mỗi mục cấp 0x40 byte, hàm `strncpy` giới hạn copy tối đa 0x3f byte).
 - `RELAY <1..4>`: Điều hướng về địa chỉ `0x401f70`.
 - `SUBMIT <size>`: Điều hướng về địa chỉ `0x401ed0`.
 
 Đặc điểm của giao thức AF_UNIX kết hợp kiểu `SOCK_STREAM` là truyền dữ liệu dạng chuỗi byte thuần túy, không giữ lại ranh giới giữa các bản tin (record boundary). Nhờ vậy, một lệnh `read(3, buf, n)` đơn lẻ hoàn toàn có khả năng lấy được đồng thời cả header lẫn nội dung tải trọng (payload) của câu trả lời.
 
-## Hai lỗ hổng định mệnh
+## Các lỗ hổng
 
 **1. Tràn bộ đệm stack tại Front Desk (`0x401ed0`, trình xử lý lệnh `SUBMIT`)**
 
@@ -45,7 +45,7 @@ if (bl) { write(1,"GO\n",3); read(0, rsp, bl); write(1,"OK\n",3); }
 add rsp,0x40; pop rbx; ret
 ```
 
-Khuôn bộ nhớ (frame) được cấp phát là `sub rsp,0x40` tương đương 64 byte, khiến return address bị đặt ở độ lệch 0x48. Tuy nhiên, hàm `read` lại sẵn sàng tiếp nhận lên tới 255 byte dữ liệu mà không bị stack canary cản trở. Khả năng tấn công ROP mở ra ngay trước mắt, nhưng rào cản là binary đã bật cả NX lẫn GNU_RELRO nên không thể áp dụng thủ thuật ghi đè bảng GOT. Mọi thứ trở nên gian nan hơn khi kho ROP gadget trong vùng `.text` ít: chỉ tồn tại lác đác `pop rdi` và `pop rsi`, hoàn toàn vắng bóng các gadget tối quan trọng như `pop rdx`, `syscall`, hay bất kỳ lệnh nào can thiệp được vào con trỏ stack `rsp`.
+Khuôn bộ nhớ (frame) được cấp phát là `sub rsp,0x40` tương đương 64 byte, khiến return address bị đặt ở độ lệch 0x48. Tuy nhiên, hàm `read` lại sẵn sàng tiếp nhận lên tới 255 byte dữ liệu mà không bị stack canary cản trở. Có thể dùng ROP, nhưng rào cản là binary đã bật cả NX lẫn GNU_RELRO nên không thể áp dụng thủ thuật ghi đè bảng GOT. Các gadget được tìm thấy trong `.text` có hạn: chỉ tồn tại lác đác `pop rdi` và `pop rsi`, hoàn toàn vắng bóng các gadget tối quan trọng như `pop rdx`, `syscall`, hay bất kỳ lệnh nào can thiệp được vào con trỏ stack `rsp`.
 
 **2. Lỗi chỉ số mảng âm tại Vault (`0x4019c0`, thao tác xử lý mã 3)**
 
@@ -57,16 +57,16 @@ e = 0x4060b0 + idx*0x40c
 if (e.state == 2) { pread(e.fd, buf, 0x400, 0); trả kết quả về fd 3 }
 ```
 
-Gốc toạ độ `0x4060b0` thực chất trỏ vào phần tử thứ 4 của bảng quản lý fd. Điều kỳ diệu xảy ra khi truyền vào `idx = -4`, con trỏ sẽ lùi thẳng về đúng vị trí `0x405080` – tức là lấy chính xác phần tử điều khiển file `flag.txt`. Lỗ hổng nghiêm trọng này cấp quyền đọc trực tiếp cờ từ hệ thống file, với điều kiện duy nhất là ta phải chạm được vào bộ máy bên trong tiến trình Vault. Tuy nhiên, lệnh `write` trả về kết quả cho ta lại đòi hỏi thanh ghi `rdx` phải đóng vai trò là tham số quyết định chiều dài dữ liệu.
+Gốc toạ độ `0x4060b0` thực chất trỏ vào phần tử có chỉ số 4 (đếm từ 0) của bảng quản lý fd. Khi truyền vào `idx = -4`, con trỏ sẽ lùi thẳng về đúng vị trí `0x405080` – tức là lấy chính xác phần tử điều khiển file `flag.txt`. Lỗ hổng nghiêm trọng này cấp quyền đọc trực tiếp cờ từ hệ thống file, với điều kiện duy nhất là ta phải chạm được vào bộ máy bên trong tiến trình Vault. Tuy nhiên, lệnh `write` trả về kết quả cho ta lại đòi hỏi thanh ghi `rdx` phải đóng vai trò là tham số quyết định chiều dài dữ liệu.
 
-## Chuỗi khai thác
+## Lời giải
 
 Khi byte thấp của `size` bằng 0, handler in `"ERR bad size\n"` với `edx=0xd`, rồi `ret` mà không gọi `read` hoặc in `"OK\n"`. Vì vậy `rdx=13` tại lúc `ret`. Lưu chuỗi `"256"` trong NOTE để parser tạo giá trị có `bl=0`.
 
-**Bước 2 - Bố trí mìn dữ liệu.** 
+**Bước 2 - Bố trí mìn dữ liệu.**
 Đặt lệnh `NOTE 0 = int32(-4)` (vì dãy số này không chứa bất kỳ byte null 0 nào, hàm `strncpy` sẽ sao chép trọn vẹn), đồng thời thiết lập `NOTE 3 = "256"`.
 
-**Bước 3 - Thi công chuỗi ROP.** 
+**Bước 3 - Thi công chuỗi ROP.**
 Mỗi vòng lặp là một lời gọi `SUBMIT 255` đi kèm với đoạn mã tải trọng chính xác 255 byte (`bl` vừa đóng vai trò thanh ghi `rdx`, vừa là giới hạn số byte lệnh `read` sẽ nuốt vào tải trọng, do đó kích thước tải trọng bắt buộc phải bằng đúng biến `bl`):
 
 ```text
@@ -79,7 +79,7 @@ pop rdi=1 ; pop rsi=REPLY ; write@plt              # đẩy dữ liệu: write(1
 ```
 Trong lần chạy đã ghi lại, lượt đọc đầu lấy 13 byte. Bốn lượt đọc thu đủ 4 byte header và 40 byte payload.
 
-**Bước 4 - Phá mã (decrypt) ngoại tuyến.** 
+**Bước 4 - Phá mã (decrypt) ngoại tuyến.**
 Cấu trúc nguyên bản (plaintext) của phần đầu bản tin luôn tuân theo công thức `[00][L>>8][L&0xff][00]`. Do đó, đối với mọi offset và mọi độ dài `L` khả dĩ, ta có thể đảo ngược toán học để tìm ra `key = ct ^ plaintext_suy_đoán`. Khi đã nắm trong tay khoá, phần việc còn lại chỉ là giải mã toàn bộ khối dữ liệu và rà quét chuỗi `sun{`. Toàn bộ thao tác này không đòi hỏi phải biết trước giá trị PID của tiến trình trên server.
 
 ```bash
@@ -89,10 +89,10 @@ $ python -u exploit4.py -4
 [+] CO: sun{n3gat1ve_h4ndl3s_0pen_s3cret_d00rs}
 ```
 
-**Bước 5 - Kiểm chứng độ tin cậy.** 
-Exploit script đã được chạy lại 3 lần độc lập qua 3 kết nối hoàn toàn khác nhau. Mỗi lần sinh ra một khoá bảo mật riêng biệt nhưng vẫn luôn đánh cắp thành công và cùng trả về một flag duy nhất.
+**Bước 5 - Kiểm chứng độ tin cậy.**
+Exploit script đã được chạy lại 3 lần độc lập qua 3 kết nối hoàn toàn khác nhau. Mỗi lần sinh ra một khoá bảo mật riêng biệt nhưng đều đọc được cùng một flag trong ba lần chạy đã lưu.
 
-## Flag
+## Kết quả
 ```
 sun{n3gat1ve_h4ndl3s_0pen_s3cret_d00rs}
 ```

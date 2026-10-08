@@ -10,7 +10,7 @@
 Hệ thống tính toán thống kê "DecryptoStat" ứng dụng một phiên bản rút gọn của cơ chế mã hóa đồng cấu CKKS, đảm bảo dữ liệu đầu vào không bị truy cập trực tiếp.
 Đề cung cấp hai cổng dịch vụ chạy song hành: một bản gốc (v1) và một bản có cấu hình bảo mật cao hơn (hardened rewrite - v2). Mục tiêu của thử thách là trích xuất secret key của cả hai hệ thống, gửi chúng vào cổng `/v1/recover` và `/v2/recover` để xác nhận cờ.
 
-## Phân tích ban đầu
+## Phân tích
 
 Truy vấn GET vào thư mục gốc `/` trả về bảng thông số kỹ thuật liệt kê các hàm API và cấu hình mạng tinh thể (hệ mật): `N=8`, `Q=2^40-87`, độ nhiễu `DELTA=2^25`. Điểm cần chú ý là điểm yếu hệ thống: *khoá bí mật là một ternary vector có độ dài 8 phần tử*.
 
@@ -37,7 +37,7 @@ Tổng hợp các thông tin trên, ta xác định phương pháp tiếp cận:
 
 Comment trong `ckks.py` đề cập decryption oracle, và v2 thêm `smudge` vào output của decrypt. Lời giải ở đây dùng keyspace nhỏ để kiểm tra các secret key từ ciphertext do `/vN/encrypt` trả về; không cần gọi decryption oracle.
 
-## Quá trình khai thác
+## Lời giải
 
 ### Bước 1: Yêu cầu mã hóa plaintext bằng 0
 
@@ -95,7 +95,7 @@ Gửi dữ liệu lên cổng `POST /v1/recover` và `POST /v2/recover`:
 
 Sai số đo được khi gọi `/v2/decrypt` là 2.94e-07, so với 1.95e-07 ở v1. Phép thử này ghi nhận hành vi của oracle; việc tìm key ở trên không phụ thuộc vào output decrypt của server.
 
-## Flag
+## Kết quả
 ```text
 Cổng v1  H7CTF{08a5c5eb-7571-4a3d-a80d-599ddd46c5ad}   (Khóa truy cập: [1,-1,0,-1,1,1,-1,-1])
 Cổng v2  H7CTF{89c0e6b2-9fca-49fd-a02f-07a70e359363}   (Khóa truy cập: [1, 0, 0,-1,-1,-1, 0, 1])

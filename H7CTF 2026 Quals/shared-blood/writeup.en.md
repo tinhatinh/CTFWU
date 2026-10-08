@@ -8,7 +8,7 @@
 VoltEye cameras ship a whole fleet that is identical, "same production line, same amount of hurry". Among them is one
 device whose console we want open. The challenge gives exactly three endpoints and no code at all.
 
-## Initial Analysis
+## Analysis
 
 ```
 GET /          -> "Device fleet console. Admin bootstrap required."
@@ -22,7 +22,7 @@ There is no decrypt oracle: only a single ciphertext, so the only path to the pl
 device's modulus completely. A 1024 bit integer does not factor itself, but "family resemblance runs deeper than you'd
 think" points straight at the classic fleet keygen bug: two devices drew the same prime.
 
-## Exploit Chain
+## Solution
 
 ### Step 1: pairwise GCD over the whole fleet
 
@@ -70,7 +70,7 @@ $ python solve_blood.py
 [+] FLAG: H7CTF{a727587f-67d5-4246-b7c3-e57798659fac}
 ```
 
-## Flag
+## Result
 ```
 H7CTF{a727587f-67d5-4246-b7c3-e57798659fac}
 ```

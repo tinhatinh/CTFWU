@@ -8,9 +8,9 @@
 
 Hệ thống điều khiển một loa thông minh nhận lệnh qua sóng âm thanh, sử dụng firmware `aria` r7.2. Để kích hoạt các lệnh kỹ thuật ẩn (engineering commands), cần vượt qua "bộ quét phổ âm thanh" hoạt động trong dải tần hẹp 300 - 3400 Hz. Yêu cầu của thử thách là vượt qua cơ chế bảo vệ này và trích xuất cờ từ hệ thống.
 
-## Phân tích ban đầu
+## Phân tích
 
-Hệ thống phòng vệ (Guard) không đơn thuần là một bộ lọc âm (filter). Nó là một bộ giải mã độc lập, phân tích tín hiệu *trước* khi tín hiệu đi qua bộ khuyếch đại phi tuyến (non-linear amplifier). Trong khi đó, bộ giải mã chính của hệ thống lại xử lý tín hiệu *sau* khâu phi tuyến. 
+Hệ thống phòng vệ (Guard) không đơn thuần là một bộ lọc âm (filter). Nó là một bộ giải mã độc lập, phân tích tín hiệu *trước* khi tín hiệu đi qua bộ khuyếch đại phi tuyến (non-linear amplifier). Trong khi đó, bộ giải mã chính của hệ thống lại xử lý tín hiệu *sau* khâu phi tuyến.
 Phương pháp khai thác: Truyền lệnh bằng tín hiệu phái sinh (tone hiệu) tạo từ hai sóng mang tần số cao 4 - 6 kHz. Ở giai đoạn gốc, tín hiệu không nằm trong dải tần số thấp nên vượt qua được Guard. Khi qua khâu phi tuyến, hiện tượng méo tín hiệu sẽ tạo ra các khung lệnh ở tần số thấp để bộ giải mã chính xử lý. Cơ chế này hoạt động tương tự hiện tượng "dog whistle" (âm thanh chỉ chó nghe được).
 
 | File đính kèm | Vai trò |
@@ -44,10 +44,10 @@ Truyền payload 01 01 0E bằng âm tần chuẩn -> Hệ thống kích hoạt 
 Truyền payload 01 01 0E bằng sóng mang phái sinh -> Hệ thống phản hồi PROFILE SELECTED: vùng 0x0e.
 ```
 
-## Quá trình khai thác
+## Lời giải
 
-**Bước 1 - Sử dụng sóng mang phái sinh.** 
-Bộ Guard phân tích tín hiệu gốc `x`, trong khi bộ giải mã chính phân tích tín hiệu méo `P(x)`. Trong công thức méo, thành phần `0.05u²` tạo ra sóng tần số hiệu `cos(2π(f_p−f_q)t)`. 
+**Bước 1 - Sử dụng sóng mang phái sinh.**
+Bộ Guard phân tích tín hiệu gốc `x`, trong khi bộ giải mã chính phân tích tín hiệu méo `P(x)`. Trong công thức méo, thành phần `0.05u²` tạo ra sóng tần số hiệu `cos(2π(f_p−f_q)t)`.
 Kỹ thuật: Kết hợp hai sóng mang ở bin `p = 51+B` và `q = 51` (tương đương 4.080 Hz và `(51+B)*80` Hz). Giao thoa tạo ra hiệu số `p−q = B`, rơi vào bin tần số điều khiển. Yêu cầu `B ∈ [10..25]`:
 
 - Tín hiệu `x` truyền vào chỉ chứa năng lượng ở các bin từ 26 trở lên, vuông góc (trực giao) với bin 10 đến 25. Guard phân tích bin điều khiển nhận giá trị 0, dẫn đến giải mã lỗi và không kích hoạt khóa hệ thống.
@@ -81,7 +81,7 @@ else { rdi = &g_hits; jmp g_cal_desc->fn; }     /* Thực thi qua con trỏ hàm
 ```
 Việc kiểm soát địa chỉ `desc.fn` cho phép thực thi mã tùy ý.
 
-**Bước 3 - Rò rỉ địa chỉ hàm qua `CAL ECHO`.** 
+**Bước 3 - Rò rỉ địa chỉ hàm qua `CAL ECHO`.**
 Lệnh `SELECT_PROFILE(0x0E)` in ra 16 byte đầu của mảng `g_cal`, chứa địa chỉ của con trỏ hàm `show_flag`:
 
 ```text
@@ -89,17 +89,17 @@ CAL ECHO xuất ra: 80 25 53 df bc 55 00 00 | d0 62 53 df bc 55 00 00
                  ^ Tương ứng base+0x2580    ^ Tương ứng base+0x62d0 = g_cal+0x30 (Con trỏ fn)
 ```
 
-**Bước 4 - Thực thi chuỗi lệnh khai thác.** 
+**Bước 4 - Thực thi chuỗi lệnh khai thác.**
 Quá trình tự động (`exploit.py`):
 
 1. Gửi lệnh `SELECT_PROFILE(0x0E)` qua sóng phái sinh, lấy địa chỉ `fn` từ chuỗi `CAL ECHO`.
 2. Gửi lệnh `SET_CAL_VECTOR(count=28)` với payload 56 byte: đoạn `0..39` gán giá trị `0`, cấu hình `g_cal+0x28 = 0x41` (duy trì tính nguyên vẹn của heap), và `g_cal+0x30 = fn` (trỏ tới `show_flag`).
 3. Luồng `0x2970` thực thi hàm `show_flag` và trả về cờ.
 
-**Bước 5 - Tối ưu thời lượng khung tin.** 
+**Bước 5 - Tối ưu thời lượng khung tin.**
 Gói tin `A5 5A 3E 01 01 0E 02 39 1C … CK` có kích thước 66 byte (132 ký hiệu âm thanh), yêu cầu ~1.65 giây truyền tải, nằm trong giới hạn 2 giây của hệ thống.
 
-## Flag
+## Kết quả
 ```bash
 python -u exploit.py
 ```

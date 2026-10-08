@@ -7,7 +7,7 @@
 
 `source.py` mô tả hệ mã; `out.txt` chứa public key gồm 34 đa thức và 3 ciphertext block. Private key không được cung cấp. Mục tiêu là tìm preimage của các block từ dữ liệu công khai và khôi phục flag `CSSCTF{...}` trong plaintext.
 
-## Phân tích ban đầu
+## Phân tích
 
 `keygen` dùng hai phép biến đổi affine `A1` (34x34), `A2` (32x32), cùng 16 đa thức thuần nhất bậc hai `q_a` trên 16 biến. Hệ mã còn có 18 đa thức `U_j` theo cấu trúc vinegar-oil: mỗi số hạng chứa ít nhất một biến trong nhóm 20 biến đầu. Central map được định nghĩa bởi:
 
@@ -25,7 +25,7 @@ Các tham số dùng trong lời giải:
 - `s = 4`: số biến vinegar cần duyệt, tương ứng `17^4 = 83521` trường hợp.
 - `m - t = 18`: số phương trình trên 12 biến oil. Các nghiệm thu được vẫn cần được kiểm tra trên public key.
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Khôi phục không gian `W` có bậc không quá 2.**
 
@@ -69,7 +69,7 @@ Với mỗi block, cố định `t*` rồi duyệt `17^4` giá trị vinegar. M�
 
 Thế từng ứng viên vào 34 public polynomial và đối chiếu ciphertext. Mỗi block trong dữ liệu đề có một ứng viên vượt qua kiểm tra. Ghép 3 block rồi đọc 8 chữ số đầu để lấy độ dài `L`; kiểm tra `2(4+L) ≤ 96` và phần sau vị trí `2(4+L)` đều bằng 0.
 
-## Flag
+## Kết quả
 
 ```bash
 python exploit.py files/out.txt
@@ -96,7 +96,7 @@ FLAG: CSSCTF{P35T0_5CH3M3_4TT4CK2026}
 
 Lời giải được thử với hai instance sinh từ `source.py`: cấu hình nhỏ `p=17, n=9, m=11, t=3, s=2` có 7 block, và cấu hình của đề `n=32, m=34` có 3 block với plaintext biết trước. Cả hai lần đều khôi phục đúng plaintext. Mã hóa lại plaintext bằng public key trong `out.txt` cũng cho đúng 3 ciphertext block của đề.
 
-## Reproduce
+## Tái hiện
 
 ```bash
 python exploit.py files/out.txt

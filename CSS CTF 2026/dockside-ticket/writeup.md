@@ -5,9 +5,9 @@
 
 ## Đề bài
 
-Thử thách là một hệ thống thiết bị phần mềm hỗ trợ bán vé ra cảng, được thiết kế với các nhóm tính năng: khởi tạo, hủy bỏ, chỉnh sửa và sử dụng vé. Về mặt nghiệp vụ, một khi vé đã bị hủy thì vé đó sẽ bị mất hiệu lực và không thể sử dụng. Tuy nhiên, mã nguồn thiết bị đang tồn tại các lỗ hổng quản lý vùng nhớ không an toàn. Mục tiêu của thử thách: Khai thác lỗ hổng đó để thao túng một chiếc vé đã hủy, biến nó thành công cụ mở một lối truy cập khẩn cấp.
+Thử thách là một chương trình hỗ trợ bán vé ra cảng, được thiết kế với các nhóm tính năng: khởi tạo, hủy bỏ, chỉnh sửa và sử dụng vé. Về mặt nghiệp vụ, một khi vé đã bị hủy thì vé đó sẽ bị mất hiệu lực và không thể sử dụng. Tuy nhiên, mã nguồn thiết bị đang tồn tại các lỗ hổng quản lý vùng nhớ không an toàn. Mục tiêu của thử thách: Khai thác lỗ hổng đó để thao túng một chiếc vé đã hủy, biến nó thành công cụ mở một lối truy cập khẩn cấp.
 
-## Phân tích ban đầu
+## Phân tích
 
 Đánh giá binary: Định dạng ELF 64-bit, hệ thống không áp dụng cơ chế PIE (Position Independent Executable), hỗ trợ RELRO một phần (partial RELRO), có kích hoạt tính năng chống thực thi (NX), và các bảng ký hiệu không bị tước bỏ (not stripped). Cấu trúc của chương trình tập trung vào sáu hàm lõi với định danh rõ ràng: `create_ticket`, `cancel_ticket`, `edit_ticket`, `use_ticket`, và hai hàm đích đến là `open_gate` và `deny_access`.
 
@@ -22,9 +22,9 @@ Trong hàm `create_ticket`, quá trình cấp phát tạo ra một vùng nhớ (
 4013ae:  mov    QWORD PTR [rax+0x20],rdx         # Chèn con trỏ hàm vào vị trí offset 0x20
 ```
 
-## Chuỗi khai thác
+## Lời giải
 
-**Bước 1 - Phân tích trạng thái quản lý con trỏ vùng nhớ.** 
+**Bước 1 - Phân tích trạng thái quản lý con trỏ vùng nhớ.**
 Kiểm tra hàm `cancel_ticket`, chức năng này chỉ thực hiện lời gọi hàm `free` và in ra thông báo:
 
 ```assembly
@@ -35,14 +35,14 @@ Kiểm tra hàm `cancel_ticket`, chức năng này chỉ thực hiện lời g�
 
 Khảo sát tổng thể binary cho thấy, biến toàn cục `active_ticket` chỉ được hệ thống gán dữ liệu **duy nhất một lần** (tại địa chỉ `create_ticket+0x2f`). Hậu quả của kiến trúc này là sau khi thực hiện thao tác hủy vé (gọi hàm `free`), biến toàn cục `active_ticket` không được thiết lập lại về null, mà nó vẫn tiếp tục duy trì trạng thái trỏ vào vùng nhớ đã bị giải phóng. Đây chính là lỗ hổng Use-After-Free (UAF).
 
-**Bước 2 - Thao tác can thiệp vùng nhớ đã giải phóng.** 
+**Bước 2 - Thao tác can thiệp vùng nhớ đã giải phóng.**
 Hàm `edit_ticket` triển khai cơ chế kiểm duyệt không đầy đủ: Nó chỉ kiểm tra điều kiện con trỏ biến khác 0, và sau đó gọi lệnh `read(0, active_ticket, 0x28)`. Khi gửi một payload có kích thước 40 byte, lượng dữ liệu này nằm hoàn toàn trong dung lượng của chunk. Nhờ vậy, dải dữ liệu từ byte 32 đến 39 (tương ứng với vị trí offset 0x20 chứa con trỏ hàm) sẽ chịu sự thao túng kiểm soát hoàn toàn bởi người dùng:
 
 ```python
 payload = b"A" * 32 + struct.pack("<Q", 0x40125F)   # Kích thước chuẩn xác 40 byte, khớp với giới hạn của hàm read(0x28)
 ```
 
-**Bước 3 - Triển khai quy trình kích hoạt.** 
+**Bước 3 - Triển khai quy trình kích hoạt.**
 Hàm `use_ticket` xử lý gọi thực thi trực tiếp con trỏ hàm đã được thiết lập, mà không triển khai quy trình xác minh tính hợp lệ (thẩm tra):
 
 ```assembly
@@ -52,7 +52,7 @@ Hàm `use_ticket` xử lý gọi thực thi trực tiếp con trỏ hàm đã đ
 
 Do cơ chế chống ngẫu nhiên hóa bộ nhớ PIE đã bị vô hiệu hóa, địa chỉ thực thi của hàm `open_gate` là hằng số cố định, người khai thác không cần sử dụng các kỹ thuật làm rò rỉ địa chỉ (memory leak).
 
-**Bước 4 - Xác thực tính toàn vẹn của địa chỉ đích.** 
+**Bước 4 - Xác thực tính toàn vẹn của địa chỉ đích.**
 Hàm `open_gate` được thiết kế để xuất ra màn hình ba chuỗi ký tự. Chuỗi thứ ba được nạp từ vùng nhớ tĩnh `.rodata` tại địa chỉ `0x402088` (ứng với địa chỉ vùng nhớ ảo vaddr 0x402000, tham chiếu tới file offset 0x2000). Kiểm tra khối dữ liệu này xuất ra chính xác chuỗi cờ yêu cầu:
 
 ```text
@@ -70,7 +70,7 @@ python exploit.py --run ./dockside_ticket
 python exploit.py --host <challenge_host> --port <port>
 ```
 
-## Flag
+## Kết quả
 
 Quá trình chạy thử tạo chuỗi payload byte:
 

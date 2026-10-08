@@ -9,7 +9,7 @@ adlee7 cho một file ciphertext duy nhất và gợi ý Tom & Jerry, cặp mèo
 nhau trong vòng lặp bất tận từ 1940". Cờ có dạng `cdctf{plaintextgoeshere}`, tức là
 kết quả giải mã phải là một chuỗi chữ cái viết thường, không khoảng trắng.
 
-## Phân tích ban đầu
+## Phân tích
 
 ```text
 //\ /\// /\\\ /\ \/// //// \/\ /\\ /\\\ //\/ /\\\ \/\ / \\\/ /\/ \\/\ \\\/ /\\\ \\/ /\ /// /\\ /\ /\ \/\ /\
@@ -26,7 +26,7 @@ kết quả giải mã phải là một chuỗi chữ cái viết thường, kh�
 - Tính lặp ở trên là dấu hiệu của bảng chữ cái thay thế một-một (mẫu = chữ cái),
   không phải mã bit theo vị trí.
 
-## Các hướng đã loại
+## Hướng đã thử
 
 Bằng chứng số liệu ở `analysis/triage.txt`, sinh lại bằng `python analysis/triage.py`.
 
@@ -46,7 +46,7 @@ Bằng chứng số liệu ở `analysis/triage.txt`, sinh lại bằng `python 
    `1e 18 78 e1 e1 de 3c 3c 63 98` (4/10 byte in được) và với bit đầu là 1 cho
    `e1 e7 87 1e 1e 21 c3 c3 9c 67` (2/10).
 
-## Chuỗi khai thác
+## Lời giải
 
 **Bước 1 - Nhận diện Code Tom-Tom.** Ciphertext dùng đúng hai ký tự, chia nhóm biến
 độ dài, tách chữ bằng space: đó là cấu trúc của một bảng chữ cái thay thế hai ký tự.
@@ -81,7 +81,7 @@ Kết quả được đối chiếu như sau: 26/26 nhóm đều có mặt trong
 bảng và ánh xạ là 1-1; re-encode khớp cả 107 byte của file; và 26 chữ cái ghép thành
 câu tiếng Anh "Friendship is a lot like cheese", đúng hướng gợi ý của đề.
 
-## Flag
+## Kết quả
 
 ```text
 cdctf{friendshipisalotlikecheese}
@@ -89,7 +89,7 @@ cdctf{friendshipisalotlikecheese}
 
 Cờ tính từ dữ liệu trong file đề, chưa đối chiếu bằng submission lên nền tảng CDCTF.
 
-## Reproduce
+## Tái hiện
 
 ```bash
 cd "CDCTF 2026/best-of-friends"

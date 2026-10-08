@@ -6,10 +6,10 @@
 
 ## Đề bài
 
-Hệ thống ghi nhận phát xạ vô tuyến từ thiết bị không xác định: không có tài liệu kỹ thuật (datasheet), không có thông tin giao thức (protocol notes). 
+Hệ thống ghi nhận phát xạ vô tuyến từ thiết bị không xác định: không có tài liệu kỹ thuật (datasheet), không có thông tin giao thức (protocol notes).
 Đề cung cấp file ghi baseband nguyên bản kèm yêu cầu: "Read it back" (Đọc nó đi). Nhiệm vụ là phân tích và đo đạc các thông số của một giao thức truyền tin chưa rõ ràng từ tín hiệu thô.
 
-## Phân tích ban đầu
+## Phân tích
 
 Phân tích thông tin máy chủ:
 ```bash
@@ -44,7 +44,7 @@ Xử lý khối tín hiệu qua thuật toán FFT (sử dụng cửa sổ Hannin
 ```
 Hai tone ở 35 kHz và 85 kHz, có tần số trung tâm 60 kHz và frequency deviation ±25 kHz.
 
-## Chuỗi khai thác
+## Lời giải
 
 ### Bước 1: Tính toán chu kỳ symbol từ tín hiệu
 
@@ -106,7 +106,7 @@ t35=1 nạp LSB   : Ký tự in được 18/54  -> Dữ liệu không hợp lệ
 
 Lưu ý hệ thống không gửi cờ qua HTTP: Hệ thống chỉ cung cấp file dữ liệu tĩnh (`Server: SimpleHTTP/0.6`), không có giao diện submit form. Yêu cầu gửi cờ trực tiếp lên hệ thống chấm điểm CTF.
 
-## Flag
+## Kết quả
 ```bash
 $ python solve_rf.py files/capture.cf32
 [+] FLAG: H7CTF{6780856d-db42-4cfa-8b56-c62109d8417c}

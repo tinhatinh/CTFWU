@@ -16,7 +16,7 @@ present in the database.
 
 The SQLi, SSRF and XSS probes used in this investigation did not yield a working path. Their results are listed at the end; the statement is limited to those probes.
 
-## Initial Analysis
+## Analysis
 
 ```
 443   Apache/2.4.68 + PHP/8.2.33   docroot = repo Git, /.git public
@@ -27,7 +27,7 @@ The SQLi, SSRF and XSS probes used in this investigation did not yield a working
 Port 8000 was found by scanning the host's public ports. `paths.py` tried calling `/api/v2` on
 443/8025/8000 alike; only 8000 returns the heartbeat JSON.
 
-## Exploit Chain
+## Solution
 
 ### Step 1 - `/.git`: a reverted file still has its object
 
@@ -53,7 +53,7 @@ define('MAIL_ADMIN_PASS', 'Emb3dPass2026!');
 define('INTERNAL_API_KEY', 'vsk_live_aX92kLmNpQrStUvWxYz');
 ```
 
-`INTERNAL_API_KEY` is no use at all. The Chroma here authenticates with HTTP Basic, and this key does
+`INTERNAL_API_KEY` did not change responses in the recorded tests. The Chroma here authenticates with HTTP Basic, and this key does
 not change the response of any route among the 626 shapes that were swept.
 
 ### Step 2 - MailHog gives the parameters, not the flag
@@ -191,12 +191,12 @@ $ cat analysis/unpacked/flag.txt
 sun{k33p_your_emb3ddings_secur3!}
 ```
 
-## Flag
+## Result
 ```
 sun{k33p_your_emb3ddings_secur3!}
 ```
 
-## Approaches Ruled Out
+## Approaches tried
 
 | Direction | Evidence for ruling it out |
 | --- | --- |

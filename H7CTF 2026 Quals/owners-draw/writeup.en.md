@@ -8,7 +8,7 @@
 OrionPay takes webhooks and only obeys paperwork when the paperwork "carries the right seal". One class of payout may
 only be touched by the owner. We are given exactly one legitimate slip (its body plus its signature) and curiosity.
 
-## Initial Analysis
+## Analysis
 
 ```
 GET /sample -> body        : event=payment.succeeded&amount=500&currency=usd&customer=cus_9f2a&role=guest
@@ -28,13 +28,12 @@ appended data and produce a valid tag for `body || padding || extra` - without k
 version closes exactly this hole (HMAC has inner and outer padding layers, so its state cannot be continued). The
 challenge has a single objective, so v2 is there as the control.
 
-## Exploit Chain
+## Solution
 
 ### Step 1: rebuilding SHA-256 compression in pure Python
 
 `hashlib` has no "continue from a digest" API, so `compress(state, block)` has to be written by hand (message schedule +
-64 rounds). This is where the challenge is harder than it looks: one wrong constant or one wrong state-update line
-makes the entire forge void.
+64 rounds). Check the implementation against a known digest before using it for the payload.
 
 ```python
 def compress(h, block):
@@ -81,10 +80,9 @@ for s_len in range(65):
 [+] /webhook -> 200 {"ok": true, "payout": "authorized", "flag": "H7CTF{786dff67-75cd-4d4e-8b74-55edb1353aad}"}
 ```
 
-The 8 length bytes in the spliced padding are `0x2d8` = 728 bit = 91 byte = 15 (secret) + 76 (body) - a
-self-verifying number: it points out the correct secret length without needing the server's response.
+The padding length `0x2d8 = 728 bits = 91 bytes` was constructed from the guess of a 15-byte secret and a 76-byte body. It checks the payload arithmetic, not the secret length independently. The `/webhook` response accepting the tag and returning the flag supports the candidate used.
 
-## Flag
+## Result
 ```
 $ python solve_draw.py
 [+] FLAG: H7CTF{786dff67-75cd-4d4e-8b74-55edb1353aad}

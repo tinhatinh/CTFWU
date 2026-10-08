@@ -7,9 +7,9 @@
 
 "Enterprise-grade encrypted key-value storage, all traffic passes through the proprietary cipher."
 
-## Initial Analysis
+## Analysis
 
-Connecting returns 20 binary bytes:
+The handshake message has a 2-byte length and a 17-byte payload, totaling 19 bytes:
 
 ```
 00 11 01 q é 9 Á Ï â Ù È Z h Ø Í . n 1 @
@@ -17,7 +17,7 @@ Connecting returns 20 binary bytes:
 
 `00 11` is the big-endian length (17), followed by 17 bytes of data. The binary imports `fopen/fread/system/read/write/malloc/free/atoi` and contains the strings `/dev/urandom`, `true`, `CodeBreaker`, and a 256-byte permutation at `0x2040`. It uses a custom protocol with an S-box.
 
-Traffic is encrypted in both directions. The binary (14 KB) is stripped. 4 main functions: init/handshake `0x1670`, main loop `0x1900`, `send_message` `0x1510`, `recv_message` `0x13f0/0x13a0`.
+After the plaintext handshake, payloads are encrypted in both directions. The binary (14 KB) is stripped. 4 main functions: init/handshake `0x1670`, main loop `0x1900`, `send_message` `0x1510`, `recv_message` `0x13f0/0x13a0`.
 
 ## Cipher
 
@@ -65,11 +65,11 @@ Binary analysis:
 - `readelf -l`: GNU_RELRO ends at `0x4000`, `.got.plt` extends to `0x404068` → GOT is writable.
 - INFO (`16`) allows reading `[0x40c0]` = `base + 0x1390` → PIE base leak.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - UAF.** `PUT slot1(0x100)` → P1; `ALIAS 0 1` makes slot0 and slot1 point at P1 with `ref=2`; `FREE 1` calls `free(P1)`, ref drops to 1 → ptr is not cleared, slot0 still points to a chunk in the tcache.
 
-**Step 2 - Safe-linking leak.** When the chunk is the only element in the bin, `tcache_put` stores `fd = PROTECT_PTR(pos, NULL) = pos >> 12`. `GET` through the alias returns `P>>12`.
+**Step 2 - Safe-linking leak.** When the chunk is the only element in the bin, `tcache_put` stores `fd = PROTECT_PTR(pos, NULL) = pos >> 12`. `GET` through the alias returns `P>>12`, the page mask for the next field. It does not determine the whole heap base; check the layout before applying the mask to another chunk.
 
 **Step 3 - Tcache poisoning.** Create P1 and P2 of the same size, free P2 then P1. Overwrite `P1->fd`. `counts = 2`: pop 1 takes P1, pop 2 returns the target pointer.
 
@@ -85,7 +85,7 @@ $ python -u client.py full "cat /ctf/flag.txt"
 sun{cr4ck_tHe_ciPh3r_fr33_thE_heaP}
 ```
 
-## Flag
+## Result
 ```
 sun{cr4ck_tHe_ciPh3r_fr33_thE_heaP}
 ```

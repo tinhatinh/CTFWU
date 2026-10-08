@@ -7,7 +7,7 @@
 
 A CAN bus capture taken from the OBD-II port of a vehicle in the shop. Most of it is engine gossip, but two devices are having a private conversation and one of them talks too much. The job: recover what the ECU handed back.
 
-## Initial Analysis
+## Analysis
 
 The home page is `Python SimpleHTTP/0.6` listing exactly one file:
 
@@ -27,7 +27,7 @@ Counting the frequency of CAN IDs:
 `0x7E0`/`0x7E8` are the standard request/response pair of UDS diagnostics over CAN, carried by ISO-TP
 (ISO 15765-2). The other eight IDs are periodic engine traffic, with no question-answer cadence.
 
-## Exploit Chain
+## Solution
 
 **Step 1 - Reassembling the ISO-TP messages.** The first 4 bits of the first byte are the PCI: `0` Single Frame,
 `1` First Frame, `2` Consecutive Frame. The First Frame gives the total length (`0x102E` → 46 bytes), and each CF
@@ -83,7 +83,7 @@ python solve.py --url https://web-5c6688f7ad7feac6.web.h7tex.com/capture.log
     ascii: b'H7CTF{6360cbb3-73fc-4ba5-a9e6-0229a3b1a008}'
 ```
 
-## Flag
+## Result
 ```
 H7CTF{6360cbb3-73fc-4ba5-a9e6-0229a3b1a008}
 ```

@@ -1,6 +1,6 @@
 # Kintsugi Vault - Rev (Hard)
 
-## 0. Summary
+## Summary
 
 `vmrun` is a custom 14-opcode VM; each guardian (`.shard`) holds a 256-byte opcode substitution table that acts as
 the "decryption key" plus a 649-byte program. That program reads an 8-byte key from the command line, mixes it with
@@ -25,7 +25,7 @@ H7CTF{9df8f215-6ef3-4ee2-a336-42d628680738}
 The decisive detail is in section 7: the handout on the challenge page is the author's sample; the instance
 serves its own copy at `GET /handout.tar.gz`.
 
-## 1. Shard format
+## Shard format
 
 ```
 0x000  4   'KSHD'
@@ -52,7 +52,7 @@ tables, as long as they make the program run correctly.
 Key: 16 hex characters, case-insensitive, decoded with SSE and written as 8 consecutive bytes
 at `rsp+0x58`.
 
-## 2. ISA
+## ISA
 
 Dispatch: `op = table[prog[pc]]`. `op == 0` -> HALT, prints `OK`, exit 0. `op > 13` -> `bad opcode`,
 exit 2. `pc >= proglen` also counts as success. The jump table at `0x486ba8` (signed, table-relative int32)
@@ -83,7 +83,7 @@ those indices - they are latent traps, not a mechanism.
 The whole opcode table and every trap were verified by reimplementing the VM (`vm.py`, the `VM` class)
 and cross-checking against the painstaking results of two independent reading passes.
 
-## 3. The two guardian lines
+## The two guardian lines
 
 Classifying the 7 shards by how they self-decode using the table inside their own file:
 
@@ -94,7 +94,7 @@ Classifying the 7 shards by how they self-decode using the table inside their ow
   hand analysis of `3df10ef4` yields about 528 accepted keys. They are the "dead bodyguards"
   in the mesh and carry no seed.
 
-## 4. Recovering the "glue" (the decode table)
+## Recovering the "glue" (the decode table)
 
 `vmrun` refuses to run a line-A shard lacking the bit0 flag unless we hand it a table. The real table does not exist
 in the file (their 0x32 region holds only 158..163 distinct values, i.e. random).
@@ -118,7 +118,7 @@ out of phase because its leading `XORI/ANDI` round runs 5 passes instead of 4, s
 its table is
 `f7=KEY 79=XORI 4e=ANDI d6=LUT 4c=XOR c1=MOV bc=CMP 44=HALT`.
 
-## 5. Inverting the key
+## Inverting the key
 
 With the correct table, a line-A program has the shape
 
@@ -138,7 +138,7 @@ The fatal trap when enumerating variants: free bits must be forced to both 0 and
 the bit (`k[s] |= 1 << b`) misses exactly half of the solution space, and that is why the first seed assembly
 returned 0 results even though the algorithm was already correct.
 
-## 6. Assembling the seed
+## Assembling the seed
 
 4 pieces of 8 bytes, 24 orderings, the product of the variants (16 x 32 x 32 x 64) - comfortably inside one minute of compute:
 
@@ -158,7 +158,7 @@ Hypotheses eliminated by this oracle (no match): the 8 target `CMP` bytes concat
 `XORI` immediates; every 32-byte window of every file in the handout; the header's 16-byte field pairs (`id`,
 `next`); reversed byte order.
 
-## 7. Attestation - state
+## Attestation - state
 
 Exactly as the README says, the contract is `GET /attest` -> a 24-byte nonce (48 hex characters), then
 `POST /attest` with `nonce` and `sig` (hex). Our own signature verifies against `pubkey.bin` (checked locally, with

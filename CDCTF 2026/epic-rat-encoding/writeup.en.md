@@ -4,14 +4,14 @@
 **Attached files:** `files/message_encoder.c`, 360 bytes, sha256 `738e4cbaa71cc9a48260ed6130718c04f66d910582a10d4760fc27466deb2734` · `files/nums.txt`, 160 bytes, sha256 `188ff63f2326345e495fffc6b2199384b87c021d92489a027354fe4d4f9085b5`
 **Event:** CDCTF 2026 (Crimson Defense CTF) · **Author:** alex
 
-## Problem Description
+## Challenge
 
 The challenge ships `message_encoder.c` plus eight integers that supposedly describe a secret
 meeting (where and when). The initialised string is gone from the C file
 (`char* message = ""; // I think that Ratón deleted this part.`), so only the encoder body and its
 numeric output remain. Required flag format: `cdctf{Place_Place_Place_at_time_time_time_Time}`.
 
-## Initial Analysis
+## Analysis
 
 - `nums[j] += message[i + 8 * j]` runs 8 times per `j`, and `nums[j] = nums[j] << 8` only runs when
   `i != 7`. With no shift after the last byte, the first byte of a chunk lands in the top 8 bits:
@@ -20,7 +20,7 @@ numeric output remain. Required flag format: `cdctf{Place_Place_Place_at_time_ti
   tokens, i.e. roughly 47-64 bytes, so eight numbers are enough to hold the whole message.
 - `uint64_t nums[8];` is uninitialised, so the C source has undefined behavior. Decode the supplied integers as big-endian bytes; initialise the array to zero in a reproduction of the encoder.
 
-## Ruled Out
+## Approaches tried
 
 1. **`+=` as plain arithmetic** (each `nums[j]` being only the sum of 8 bytes, information lost):
    eight numbers would then carry about 8 bits each and could never rebuild 61 characters. The
@@ -31,7 +31,7 @@ numeric output remain. Required flag format: `cdctf{Place_Place_Place_at_time_ti
    with `%llu` restored the 19-20 digit values seen in the description. That is a build-environment
    trap, not part of the challenge.
 
-## Exploitation Chain
+## Solution
 
 **Step 1 - Split each number into 8 big-endian bytes and concatenate.** There is no key and no
 transform beyond that single packing step.
@@ -73,7 +73,7 @@ identical         : True
 
 The final two decoded bytes are `0x25 0x6c` = `%l`, matching the start of `"%lu "`. The loop reads 64 bytes from a 61-character message plus NUL, so it can read beyond the string. The supplied source and integers do not establish the memory placement of those trailing bytes.
 
-## Flag
+## Result
 
 ```text
 cdctf{Tom_Bevill_Building_at_noon_next_week_Thursday}

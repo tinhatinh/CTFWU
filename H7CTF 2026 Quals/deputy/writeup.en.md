@@ -15,7 +15,7 @@ externalid  H7CTF{1dbe909840d15aabdd63}
 
 A partner called DeputyCorp integrates into our company. We are handed a low-privilege analyst key. We have to show how far an "absent-minded integration" can get: four flags, each stage one level deeper.
 
-## Initial Analysis
+## Analysis
 
 The instance is a mock AWS running `Werkzeug/3.1.8`. Three things were pinned down with just a few requests:
 
@@ -37,7 +37,7 @@ iam:ListRolePolicies(ci-runner)   -> ["ci-runner-permissions"]
 
 Those two documents spell out the entire route (full version in `de.md`): analyst has `iam:PassRole` scoped to `ci-runner-role` plus `lambda:CreateFunction|InvokeFunction`; `ci-runner-role` has `sts:AssumeRole` into `arn:aws:iam::999999999999:role/partner-admin-role`; the runner's trust policy only lets `lambda.amazonaws.com` assume it.
 
-## Exploit Chain
+## Solution
 
 ### Stage 1 - recon
 
