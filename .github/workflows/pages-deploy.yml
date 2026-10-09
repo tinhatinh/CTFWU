@@ -58,7 +58,7 @@ jobs:
           fi
 
       - name: Assemble site sources (vi + en)
-        run: python3 tools/build_site.py
+        run: python3 tools/build_site.py --require-solve-dates
 
       - name: Check editor data integrity and CTFTime parser
         run: |

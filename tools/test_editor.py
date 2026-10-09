@@ -212,6 +212,39 @@ class CTFTimeTests(unittest.TestCase):
             self.assertTrue((stage / record["cover"].lstrip("/")).is_file())
 
 
+class SolveDateTests(unittest.TestCase):
+    def test_edits_and_copied_flags_do_not_change_either_language_solve_date(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            case = root / 'Example CTF' / 'sample'
+            case.mkdir(parents=True)
+            for name in ['writeup.md', 'writeup.en.md']:
+                (case / name).write_text('# Sample - Web\n', encoding='utf-8')
+            recorded = dt.datetime(2026, 10, 3, tzinfo=build_site.CONTEST_TZ)
+            edited = dt.datetime(2026, 10, 9, tzinfo=build_site.CONTEST_TZ)
+            with patch.object(build_site, 'ROOT', str(root)), \
+                 patch.object(build_site, 'solve_times', return_value={'Example CTF/sample': (recorded, False)}), \
+                 patch.object(build_site, 'git_time', return_value=edited), \
+                 patch.object(build_site, 'flag_time', return_value=edited):
+                for language in ['vi', 'en']:
+                    post = build_site.collect(language, require_solve_dates=True)[0]['posts'][0]
+                    self.assertEqual(post['date'], recorded)
+                    self.assertEqual(post['mod'], edited)
+                    self.assertFalse(post['exact'])
+
+    def test_publication_rejects_missing_date_instead_of_using_editorial_commit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            case = root / 'Example CTF' / 'sample'
+            case.mkdir(parents=True)
+            (case / 'writeup.md').write_text('# Sample - Web\n', encoding='utf-8')
+            with patch.object(build_site, 'ROOT', str(root)), \
+                 patch.object(build_site, 'solve_times', return_value={}), \
+                 patch.object(build_site, 'git_time', return_value=dt.datetime.now(build_site.CONTEST_TZ)):
+                with self.assertRaisesRegex(ValueError, 'Missing declared solve date'):
+                    build_site.collect('vi', require_solve_dates=True)
+
+
 class WaveLayoutTests(unittest.TestCase):
     def test_wave_paths_keep_legacy_urls_and_map_both_editor_languages(self):
         with tempfile.TemporaryDirectory() as directory:

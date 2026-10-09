@@ -334,7 +334,7 @@ def cover_svg(name, i):
 """
 
 
-def collect(lang):
+def collect(lang, require_solve_dates=False):
     """Tra ve danh sach event -> bai viet cho mot ngon ngu."""
     events = []
     times = solve_times()
@@ -355,7 +355,8 @@ def collect(lang):
                 if not os.path.isfile(w):
                     continue
                 fallback = True
-            text = open(w, encoding="utf-8").read()
+            with open(w, encoding="utf-8") as source:
+                text = source.read()
             title = next((ln[2:].strip() for ln in text.split("\n")
                           if ln.startswith("# ")), "%s - %s" % (event, case))
             category_label = catmap.get(case)
@@ -375,9 +376,13 @@ def collect(lang):
             legacy_key = event + '/' + case[len('Wave 1/'):] if case.startswith('Wave 1/') else key
             if legacy_key in times:
                 seen.add(legacy_key)
-            solved, exact = times.get(key) or times.get(legacy_key) or (flag_time(event, case), True)
+            recorded = times.get(key) or times.get(legacy_key)
+            if not recorded and require_solve_dates:
+                raise ValueError("Missing declared solve date in tools/solve_times.json: " + key)
+            solved, exact = recorded or (flag_time(event, case), True)
             if not solved:
-                solved = mod or dt.datetime.fromtimestamp(os.path.getmtime(w), CONTEST_TZ)
+                # Draft preview only. Editorial commits are never solve evidence.
+                solved = dt.datetime.fromtimestamp(os.path.getmtime(w), CONTEST_TZ)
                 exact = False
             posts.append({
                 "case": case, "path": w, "text": text, "title": title,
@@ -715,7 +720,7 @@ def validate_certificates(stage):
         json.dump(records, output, ensure_ascii=False, indent=2)
 
 
-def build(lang):
+def build(lang, require_solve_dates=False):
     stage = os.path.join(ROOT, "_site_src" if lang == "vi" else "_site_src_en")
     base = "/CTFWU" if lang == "vi" else "/CTFWU/en"
     if os.path.isdir(stage):
@@ -729,7 +734,7 @@ def build(lang):
     t = re.sub(r"^tagline:.*$", 'tagline: "%s"' % UI[lang]["tagline"], t, flags=re.M)
     t = re.sub(r"^description:.*$", 'description: "%s"' % UI[lang]["description"], t, flags=re.M)
     open(cfg, "w", encoding="utf-8", newline="\n").write(t)
-    events = collect(lang)
+    events = collect(lang, require_solve_dates=require_solve_dates)
     pending = [p["key"] for ev in events for p in ev["posts"] if p.get("fallback")]
     n = 0
     for ev in events:
@@ -750,6 +755,8 @@ def build(lang):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--lang", choices=["vi", "en", "all"], default="all")
+    ap.add_argument("--require-solve-dates", action="store_true",
+                    help="Reject publication of writeups without declared solve dates")
     a = ap.parse_args()
     for lang in (["vi", "en"] if a.lang == "all" else [a.lang]):
-        build(lang)
+        build(lang, require_solve_dates=a.require_solve_dates)
