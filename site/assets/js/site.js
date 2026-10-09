@@ -2,11 +2,42 @@
 (() => {
   "use strict";
   const vi = document.body.dataset.language === "vi";
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const runningMotion = new Set();
+  const animate = (element, frames, options) => {
+    if (reducedMotion.matches || !element.animate) return;
+    const animation = element.animate(frames, options);
+    runningMotion.add(animation);
+    animation.finished.then(() => runningMotion.delete(animation), () => runningMotion.delete(animation));
+  };
+  reducedMotion.addEventListener("change", () => {
+    if (reducedMotion.matches) runningMotion.forEach(animation => animation.cancel());
+  });
+  // Content stays visible even if motion or IntersectionObserver is unavailable.
+  if ("IntersectionObserver" in window && !reducedMotion.matches) {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        observer.unobserve(entry.target);
+        animate(entry.target, [
+          { opacity: 0.45, transform: "translateY(14px)" },
+          { opacity: 1, transform: "translateY(0)" }
+        ], { duration: 440, easing: "cubic-bezier(.2,.7,.2,1)" });
+      });
+    }, { threshold: 0.08 });
+    document.querySelectorAll(".page-heading, .stats-strip, .section-heading, .feature-card, .certificate-card").forEach(element => observer.observe(element));
+  }
   const themeButton = document.querySelector("#theme-toggle");
+  themeButton?.setAttribute("aria-pressed", String(document.documentElement.dataset.theme === "dark"));
   themeButton?.addEventListener("click", () => {
     const theme =
       document.documentElement.dataset.theme === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = theme;
+    themeButton.setAttribute("aria-pressed", String(theme === "dark"));
+    animate(themeButton.querySelector("svg"), [
+      { transform: "rotate(-70deg) scale(.85)" },
+      { transform: "rotate(0) scale(1)" }
+    ], { duration: 320, easing: "ease-out" });
     document.querySelector('meta[name="theme-color"]').content =
       theme === "dark" ? "#111411" : "#f5f5ef";
     try {
@@ -18,18 +49,35 @@
 
   const menu = document.querySelector(".menu-toggle");
   const nav = document.querySelector("#main-nav");
+  const closeMenu = () => {
+    menu?.setAttribute("aria-expanded", "false");
+    nav?.classList.remove("is-open");
+  };
   menu?.addEventListener("click", () => {
     const open = menu.getAttribute("aria-expanded") !== "true";
     menu.setAttribute("aria-expanded", String(open));
     nav.classList.toggle("is-open", open);
+    if (open) animate(nav, [
+      { opacity: 0, transform: "translateY(-8px)" },
+      { opacity: 1, transform: "translateY(0)" }
+    ], { duration: 200, easing: "ease-out" });
   });
+  document.addEventListener("click", event => {
+    if (!event.target.closest(".header-inner")) closeMenu();
+  });
+  nav?.addEventListener("click", event => {
+    if (event.target.closest("a")) closeMenu();
+  });
+  document.addEventListener("focusin", event => {
+    if (!event.target.closest(".header-inner")) closeMenu();
+  });
+  window.matchMedia("(min-width: 601px)").addEventListener("change", closeMenu);
   document.addEventListener("keydown", (event) => {
     if (
       event.key === "Escape" &&
       menu?.getAttribute("aria-expanded") === "true"
     ) {
-      menu.setAttribute("aria-expanded", "false");
-      nav.classList.remove("is-open");
+      closeMenu();
       menu.focus();
     }
   });
@@ -66,6 +114,15 @@
     );
     let category = "";
     const update = (persist = true) => {
+      const previous = new Map();
+      if (persist && !reducedMotion.matches) {
+        rows.forEach(row => {
+          if (row.hidden) return;
+          const rect = row.getBoundingClientRect();
+          if (rect.bottom > 0 && rect.top < innerHeight) previous.set(row, rect.top);
+        });
+        runningMotion.forEach(animation => animation.cancel());
+      }
       const words = normalize(search.value.trim()).split(/\s+/).filter(Boolean);
       let visible = 0;
       for (const row of rows) {
@@ -92,6 +149,21 @@
       count.textContent = visible;
       empty.hidden = visible !== 0;
       list.hidden = visible === 0;
+      const clear = document.querySelector("#clear-filters");
+      if (clear) clear.hidden = !search.value.trim() && !category && !eventFilter.value && sort.value === "newest";
+      if (persist) {
+        ordered.filter(row => !row.hidden).forEach(row => {
+          const top = row.getBoundingClientRect().top;
+          if (top < 0 || top > innerHeight) return;
+          const from = previous.get(row);
+          if (from !== undefined && Math.abs(from - top) < 1) return;
+          animate(row, from === undefined ? [
+            { opacity: .35, transform: "translateY(6px)" }, { opacity: 1, transform: "translateY(0)" }
+          ] : [
+            { transform: `translateY(${from - top}px)` }, { transform: "translateY(0)" }
+          ], { duration: 230, easing: "cubic-bezier(.2,.7,.2,1)" });
+        });
+      }
       const params = new URLSearchParams();
       if (search.value.trim()) params.set("q", search.value.trim());
       if (category) params.set("category", category);
@@ -130,14 +202,16 @@
         update();
       }),
     );
-    document.querySelector("#reset-filters").addEventListener("click", () => {
+    const resetFilters = () => {
       search.value = "";
       eventFilter.value = "";
       sort.value = "newest";
       category = "";
       update();
       search.focus();
-    });
+    };
+    document.querySelector("#reset-filters").addEventListener("click", resetFilters);
+    document.querySelector("#clear-filters")?.addEventListener("click", resetFilters);
     document.addEventListener("keydown", (event) => {
       if (
         event.key === "/" &&
