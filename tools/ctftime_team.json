@@ -18,8 +18,8 @@
         "event": "CSS CTF 2026: Return of Nexus",
         "event_url": "https://ctftime.org/event/3434",
         "place": "12",
-        "rating_pending": true,
-        "rating_points": "0.000"
+        "rating_pending": false,
+        "rating_points": "26.661"
       },
       {
         "ctf_points": "10153.00",
