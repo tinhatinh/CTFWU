@@ -1,10 +1,26 @@
 {
-  "fetched": "2026-10-11",
+  "fetched": "2026-10-12",
   "team": "R3:TURИ",
   "team_id": 449538,
   "url": "https://ctftime.org/team/449538",
   "years": {
     "2026": [
+      {
+        "ctf_points": "6849.00",
+        "event": "KubSTU CTF",
+        "event_url": "https://ctftime.org/event/3446",
+        "place": "45",
+        "rating_pending": false,
+        "rating_points": "0.000"
+      },
+      {
+        "ctf_points": "5371.00",
+        "event": "FooBar CTF 2026",
+        "event_url": "https://ctftime.org/event/3445",
+        "place": "3",
+        "rating_pending": false,
+        "rating_points": "33.333"
+      },
       {
         "ctf_points": "197.39",
         "event": "CubeCTF 2026",
