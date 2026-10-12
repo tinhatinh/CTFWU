@@ -2,7 +2,6 @@
 
 26 writeup, mỗi bài gồm bản VN và EN. Đề, lời giải, code và kết quả nằm trong từng file Markdown.
 
-Thời gian solve lấy từ bảng Solves đã cung cấp, hiển thị theo UTC+7. Với EchoChamber, timestamp là mốc của echochamber-user; bảng không có mốc riêng cho root flag.
 
 | Challenge | Category | VN | EN | Solve (UTC+7) |
 |---|---|---|---|---|
