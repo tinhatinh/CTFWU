@@ -72,9 +72,9 @@ Flag trong sourcemap, legacy console và provenance là decoy. Descriptor dùng 
 ## Lời giải
 
 1. Xác định asset thật theo Content-Type và kích thước, vì unknown path trả index.html với status 200.
-2. Decode legacy.masked bằng base64 rồi XOR lặp pepper v3 `meridian::provenance::v3::do-not-share`. Memo nêu cách dựng descriptor. Signature check là 12 hex đầu SHA-256 của accession|title|curator|pepper.
+2. Decode legacy.masked bằng base64 rồi XOR lặp pepper v3 `meridian::provenance::v3::do-not-share`. Memo nêu cách dựng descriptor. Signature check là 12 hex đầu SHA-256 của `accession|title|curator|pepper`.
 3. Năm record verify dưới pepper hiện tại có curator E. Vantar, R. Oikawa, H. Delacroix, K. Adeyemi, S. Marchetti. Tổng năm là 9959; rounds=1000+(9959 mod 4096)=2767.
-4. Đưa descriptor trong object __proto__ viết bằng `\u005f` escape. Base64url-encode JSON và gắn `#/vault?s=...`. deepMerge làm vault thành inherited property; sanitizer không xóa được và view mở vault.
+4. Đưa descriptor trong object `__proto__` viết bằng `\u005f` escape. Base64url-encode JSON và gắn `#/vault?s=...`. deepMerge làm vault thành inherited property; sanitizer không xóa được và view mở vault.
 5. Dùng Node crypto dựng lại iterated SHA-256/AES-GCM với AAD meridian-vault. final() xác thực cùng plaintext như live page, là kiểm tra độc lập với implementation browser.
 
 | Accession | Year | Curator |
@@ -121,7 +121,7 @@ isfcr{d33p_m3rg3_p0llut3s_th3_pr0v3n4nc3_v4ult_1n_th3_m3r1d14n}
 
 ## Tái hiện
 
-Cần Node.js 18+ và live assets hoặc file local `data/meridian-data.js`. Lưu script thành solve.js. Code đọc memo, verify current certificate, dựng descriptor, decrypt và in deep link. Giữ nguyên unicode escape của __proto__ khi tạo payload; base64url không padding.
+Cần Node.js 18+ và live assets hoặc file local `data/meridian-data.js`. Lưu script thành solve.js. Code đọc memo, verify current certificate, dựng descriptor, decrypt và in deep link. Giữ nguyên unicode escape của `__proto__` khi tạo payload; base64url không padding.
 
 ```powershell
 node solve.js https://<instance>.chals.io/

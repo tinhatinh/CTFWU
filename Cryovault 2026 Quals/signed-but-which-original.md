@@ -28,7 +28,7 @@ entries.bin có magic ISFCRLOG, length big-endian 4 byte và record TLV. Key dec
 
 ## Lời giải
 
-1. Dựng Merkle root kiểu RFC 6962: leaf SHA256(0x00||record), node SHA256(0x01||left||right). Check root/signature/authorization của từng checkpoint. Chọn size 46; chỉ record 0…45 thuộc snapshot. Size 50 sai root, 52 dùng key chưa active, 55 sai signature; size 33 hợp lệ nhưng nhỏ hơn.
+1. Dựng Merkle root kiểu RFC 6962: leaf `SHA256(0x00||record)`, node `SHA256(0x01||left||right)`. Check root/signature/authorization của từng checkpoint. Chọn size 46; chỉ record 0…45 thuộc snapshot. Size 50 sai root, 52 dùng key chưa active, 55 sai signature; size 33 hợp lệ nhưng nhỏ hơn.
 2. Xác minh root-signed key timeline. editor-desk key cũ bị revoke tại position 15; replacement bắt đầu ở vị trí đó. Kiểm tra signer tại record position và reject manifest không canonical.
 3. Capture manifest `mf-326c47df321e` ở index 6 do principal đúng ký; ingest record index 7 nối asset digest tới incident.
 4. Theo `parent_asset_sha256` và thứ tự log để nối capture, crop, resize, redact. Chain manifest lần lượt kết thúc `321e`, `da36`, `846e`, `8137`; dùng đầy đủ digest trong bảng.
