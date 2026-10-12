@@ -1181,7 +1181,6 @@ select {
   border: 1px solid var(--border);
   border-radius: 5px;
 }
-.prose table,
 .team-profile {
   display:flex;
   align-items:center;
@@ -1203,6 +1202,7 @@ select {
   .team-profile { align-items:flex-start; padding:14px; gap:12px; }
   .team-profile-logo img { width:48px; height:48px; }
 }
+.prose table,
 .results-table {
   width: 100%;
   border-collapse: collapse;
