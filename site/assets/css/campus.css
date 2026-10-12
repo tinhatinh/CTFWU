@@ -1182,6 +1182,27 @@ select {
   border-radius: 5px;
 }
 .prose table,
+.team-profile {
+  display:flex;
+  align-items:center;
+  gap:16px;
+  margin-bottom:24px;
+  padding:18px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:7px;
+}
+.team-profile-logo { display:block; flex-shrink:0; border-radius:5px; overflow:hidden; }
+.team-profile-logo img { display:block; width:64px; height:64px; object-fit:contain; }
+.team-profile-info { min-width:0; }
+.team-profile-name { margin:0 0 6px; font-size:18px; font-weight:600; color:var(--text); }
+.team-affiliation { display:flex; flex-wrap:wrap; gap:4px 10px; margin:0; font-size:13px; }
+.team-affiliation strong { color:var(--muted); font-size:12px; font-weight:500; }
+.team-affiliation a { overflow-wrap:anywhere; }
+@media (max-width:600px) {
+  .team-profile { align-items:flex-start; padding:14px; gap:12px; }
+  .team-profile-logo img { width:48px; height:48px; }
+}
 .results-table {
   width: 100%;
   border-collapse: collapse;
