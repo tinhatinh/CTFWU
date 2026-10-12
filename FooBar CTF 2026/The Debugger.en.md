@@ -20,7 +20,7 @@ points: 346
 >
 > Your mission is to investigate the application, uncover its hidden development features, and follow the trail to retrieve the secret stored on the server.
 >
-> Hint: The application knows more about itself than it tells you.
+
 
 ## Analysis
 
