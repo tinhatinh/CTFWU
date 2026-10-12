@@ -52,7 +52,7 @@ n2//g = 994968716706863102369833380787709626349619403477733635786408693620172374
 
 Ước chung lớn hơn 1, nên hai khoá sinh trùng nhau một thừa số nguyên tố. Đặt `p = gcd(n1, n2)`, `q1 = n1 // p`, `q2 = n2 // p`; phép chia hết được kiểm tra lại bằng `p*q1 == n1` và `p*q2 == n2`, cả hai đều `True`. Với mỗi khoá, `phi = (p-1)*(q-1)` cho phép tính `d = pow(e, -1, phi)` và giải mã bình thường. Dùng `phi` kiểu Euler thay vì `lcm(p-1, q-1)` vẫn đúng vì `e` nguyên tố cùng nhau với `phi`.
 
-Hai dữ liệu gây nhiễun rõ giải mã ra khác nhau về dạng:
+Hai bản rõ giải mã ra khác nhau về dạng:
 
 ```text
 [Key 1] bytes=b'CBYMHAI6NC44Iw0yMy4jKg0iKyAkIjclOg=='

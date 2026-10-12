@@ -74,7 +74,7 @@ Danh sách ga gồm Akurdi, sáu ga trung gian và Kamshet: tám ga nếu tính 
 OWASP{Kamshet}
 ```
 
-Giá trị là dẫn xuất trong quá trình làm của người chơi: ga thứ 7 khi đếm từ Akurdi trên tuyến Pune Jn → Lonavala, đồng thời là ga gần đỉnh Tikona (neo EXIF) với khoảng cách khớp "20–22 km". Không có dòng chấp nhận submission riêng cho bài này trong dữ liệu gây nhiễun ghi; bài được liệt kê là đã giải trong dữ liệu gây nhiễung solved của sự kiện, và đó là nguồn ghi nhận chấp nhận.
+Giá trị là dẫn xuất trong quá trình làm của người chơi: ga thứ 7 khi đếm từ Akurdi trên tuyến Pune Jn → Lonavala, đồng thời là ga gần đỉnh Tikona (neo EXIF) với khoảng cách khớp "20–22 km". Không có dòng chấp nhận submission riêng cho bài này trong bản ghi; bài được liệt kê là đã giải trong bảng solved của sự kiện, và đó là nguồn ghi nhận chấp nhận.
 
 ## Tái hiện
 
@@ -119,4 +119,4 @@ Kiểm chứng ga Kamshet và tuyến dừng local train (mạng):
 $ curl -s "https://en.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext&exintro&titles=Kamshet%20railway%20station&format=json"
 ```
 
-Thứ tự ga Pune Jn → Lonavala trong dữ liệu gây nhiễung đếm ga ở mục Lời giải là dữ liệu ghi nhận trong quá trình giải, đối chiếu với vị trí các ga trên cùng tuyến.
+Thứ tự ga Pune Jn → Lonavala trong bảng đếm ga ở mục Lời giải là dữ liệu ghi nhận trong quá trình giải, đối chiếu với vị trí các ga trên cùng tuyến.

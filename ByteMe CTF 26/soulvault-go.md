@@ -11,7 +11,7 @@ language: "vi"
 **Flag:** `OWASP{s0ul_v4ult_byt3c0d3_vm_r3v3rs3d_7a8f9c2e}`
 **Artifact:** `soulvault` (1,806,496 B) — ELF x86-64, Go 1.27.1 static, đã stripped. Tác giả: Suyog Jadhav.
 
-Tên bài trùng với một challenge khác cũng của ByteMe CTF 26 mang tên SoulVault nhưng thuộc category Mobile (slug `soulvault-mobile`); bài này là dữ liệu gây nhiễun binary Go, không liên quan tới dữ liệu gây nhiễun Mobile.
+Tên bài trùng với một challenge khác cũng của ByteMe CTF 26 mang tên SoulVault nhưng thuộc category Mobile (slug `soulvault-mobile`); bài này là bản binary Go, không liên quan tới bản Mobile.
 
 ## Đề bài
 
@@ -42,11 +42,11 @@ update     : h = i*0xd + c*0x11 + h*0x1f        (i = index, c = byte value)
 target     : h == 0x1248d50d
 ```
 
-Cặp hằng `0x5a17f00d` / `0x1248d50d` là điều kiện duy nhất của tầng này; không có dữ liệu gây nhiễung tra hay state nào khác được dùng tới.
+Cặp hằng `0x5a17f00d` / `0x1248d50d` là điều kiện duy nhất của tầng này; không có bảng tra hay state nào khác được dùng tới.
 
 ### Tầng 2 — `ProcessAccessSequence`
 
-Chuỗi đạt tầng 1 được ánh xạ thành buffer `buf` qua ba dữ liệu gây nhiễung hằng số trong `.rodata`:
+Chuỗi đạt tầng 1 được ánh xạ thành buffer `buf` qua ba bảng hằng số trong `.rodata`:
 
 ```text
 buf[i] = ROT_L8(seq[PERM[i]] ^ XORKEY[i], (i % 7) + 1) + ADDKEY[i]
@@ -119,7 +119,7 @@ FLAG = b'OWASP{s0ul_v4ult_byt3c0d3_vm_r3v3rs3d_7a8f9c2e}'
 OWASP{s0ul_v4ult_byt3c0d3_vm_r3v3rs3d_7a8f9c2e}
 ```
 
-Cờ là kết quả tái dựng tĩnh từ binary đã cho và được xác nhận bằng lần chạy thuận của emulator với chuỗi chấp nhận (`r0=1 halted=1 err=None steps=142 regs8-11==CHK: True`); dữ liệu gây nhiễun thân binary không hề được thực thi. Chưa lưu phản hồi submission.
+Cờ là kết quả tái dựng tĩnh từ binary đã cho và được xác nhận bằng lần chạy thuận của emulator với chuỗi chấp nhận (`r0=1 halted=1 err=None steps=142 regs8-11==CHK: True`); bản thân binary không hề được thực thi. Chưa lưu phản hồi submission.
 
 Bản ghi emulator kiểm tra trạng thái VM, nhưng chưa có phép kiểm độc lập đầy đủ cho tầng `ValidateStructureStage1`. Bài cũng chưa kèm emulator và các vòng ARX đầy đủ, nên chưa thể tái hiện toàn bộ từ hai file Markdown.
 
@@ -135,7 +135,7 @@ $ analyzeHeadless <dir> <proj> -import soulvault -process -nolog \
 $ strings -a soulvault | grep -E "ACCESS GRANTED|ACCESS DENIED|Flag: %s"
 ```
 
-Để dựng lại chuỗi chấp nhận, trích ba dữ liệu gây nhiễung hằng tại `0x5ab920`, `0x5ab940`, `0x5ab960` và các blob/`CHK`/`master` từ `.rodata`, rồi:
+Để dựng lại chuỗi chấp nhận, trích ba bảng hằng tại `0x5ab920`, `0x5ab940`, `0x5ab960` và các blob/`CHK`/`master` từ `.rodata`, rồi:
 
 1. Chạy ngược 8 vòng ARX của VM từ trạng thái `regs[8..11] == CHK` (cùng `seed = 0x5a17f00dc0ffee11`, `k32 = 1`, cùng bộ đa hình 23 opcode) để thu dữ liệu vào của VM.
 2. Áp `un_process` ở mục Phân tích để thu chuỗi, dạng `SV-...`.

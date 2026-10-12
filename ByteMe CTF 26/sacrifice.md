@@ -13,7 +13,7 @@ language: "vi"
 
 ## Đề bài
 
-Tên bài lấy từ dữ liệu gây nhiễung các bài đã giải của nền tảng; phần mô tả được lưu lại là:
+Tên bài lấy từ bảng các bài đã giải của nền tảng; phần mô tả được lưu lại là:
 
 ```text
 Exfiltrated communication was captured in a packet trace. Retrieve the hidden payload.
@@ -29,7 +29,7 @@ Two went down. Only one came back. Find the one who didn't.
 
 ### Định dạng và phạm vi trace
 
-`capinfos` đọc từ file cho thấy trace gói gọn trong 669 packet và toàn bộ traffic là loopback — mọi endpoint đều thuộc địa chỉ vòng lại, không có host ngoài. Trace không đi qua mạng nào, nó là dữ liệu gây nhiễun ghi lại một phiên truyền tệp trên máy.
+`capinfos` đọc từ file cho thấy trace gói gọn trong 669 packet và toàn bộ traffic là loopback — mọi endpoint đều thuộc địa chỉ vòng lại, không có host ngoài. Trace không đi qua mạng nào, nó là bản ghi lại một phiên truyền tệp trên máy.
 
 ### Phân tầng giao thức
 
@@ -37,7 +37,7 @@ Two went down. Only one came back. Find the one who didn't.
 $ tshark -r s0ul.pcap -q -z io,phs
 ```
 
-Cây phân tầng được ghi lại theo dạng tóm tắt (số liệu giữ nguyên như dữ liệu gây nhiễun ghi, không phải output đầy đủ của `io,phs`):
+Cây phân tầng được ghi lại theo dạng tóm tắt (số liệu giữ nguyên như bản ghi, không phải output đầy đủ của `io,phs`):
 
 ```text
 FTP      : 138 packet
@@ -69,7 +69,7 @@ Toàn bộ số liệu dùng ở trên (669 packet, 138 packet FTP, 22 lệnh `S
 
 ### Ảnh JPEG và marker nhúng mật khẩu
 
-Trong số các tệp được `STOR` có `manifest_final_047.jpg`. Ảnh JPEG cho phép các marker nằm ngoài phần dữ liệu ảnh; marker `FFFE` (COM, comment) trong tệp chứa một dòng văn dữ liệu gây nhiễun rõ:
+Trong số các tệp được `STOR` có `manifest_final_047.jpg`. Ảnh JPEG cho phép các marker nằm ngoài phần dữ liệu ảnh; marker `FFFE` (COM, comment) trong tệp chứa một dòng văn bản rõ:
 
 ```text
 This password might be useful XD : th3_ult1m4t3_s4cr1f1s3
@@ -128,7 +128,7 @@ Bốn lớp này không tự lộ ra nếu chỉ nhìn `file` trên blob gốc: 
 
 ### Chọn comm.log thật và giải mã dòng base64
 
-Tar chứa nhiều thư mục `comms/<hero>/`, mỗi thư mục một `comm.log`. Điểm phân biệt là kích thước: dữ liệu gây nhiễuy tệp `comm.log` có độ dài đúng 300 B và nội dung là dữ liệu ngẫu nhiên, không đọc được; tệp của Natasha dài 3.015 B và là một đoạn hội thoại văn dữ liệu gây nhiễun. Dòng "Find the one who didn't" trong README chỉ ra bước lọc này, và log 3.015 B là log thật.
+Tar chứa nhiều thư mục `comms/<hero>/`, mỗi thư mục một `comm.log`. Điểm phân biệt là kích thước: bảy tệp `comm.log` có độ dài đúng 300 B và nội dung là dữ liệu ngẫu nhiên, không đọc được; tệp của Natasha dài 3.015 B và là một đoạn hội thoại văn bản. Dòng "Find the one who didn't" trong README chỉ ra bước lọc này, và log 3.015 B là log thật.
 
 Bên trong đoạn hội thoại giữa Red Skull và Natasha có một dòng base64:
 

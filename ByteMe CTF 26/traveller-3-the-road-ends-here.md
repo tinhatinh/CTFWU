@@ -118,4 +118,4 @@ Xác nhận base village (mạng):
 $ curl -s "https://en.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext&titles=Tikona&format=json"
 ```
 
-Đoạn trích có "The village nearest to the fort is called Tikona-Peth". Các khoảng cách trong dữ liệu gây nhiễung Lời giải (Kamshet→Fort ~20.8 km, Tikona Peth→Fort ~1.3 km) lấy từ OSRM driving trên cùng bộ toạ độ OSM; chúng là số đo ghi nhận trong quá trình giải, đối chiếu với dải "20–22 km" và "1–2 km" của note.
+Đoạn trích có "The village nearest to the fort is called Tikona-Peth". Các khoảng cách trong bảng Lời giải (Kamshet→Fort ~20.8 km, Tikona Peth→Fort ~1.3 km) lấy từ OSRM driving trên cùng bộ toạ độ OSM; chúng là số đo ghi nhận trong quá trình giải, đối chiếu với dải "20–22 km" và "1–2 km" của note.

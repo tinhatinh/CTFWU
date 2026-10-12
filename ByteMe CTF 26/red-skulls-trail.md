@@ -9,13 +9,13 @@ language: "vi"
 # Red Skull's Trail
 
 **Flag:** `OWASP{PhantomSoul}`
-**Artifact:** `mr` — dữ liệu gây nhiễun clone của `https://github.com/Vormir-616/Missing-Record` (21 commit, mọi commit một tác giả). Tệp chứa cờ: `RECORD6`, 1,917,594 B, sha256 `3ee355d92ebe3405dc0544aaf7ed9dc8e8375f81286939a50f1c826b288ce86f`. Tác giả bài: Suyog Jadhav.
+**Artifact:** `mr` — bản clone của `https://github.com/Vormir-616/Missing-Record` (21 commit, mọi commit một tác giả). Tệp chứa cờ: `RECORD6`, 1,917,594 B, sha256 `3ee355d92ebe3405dc0544aaf7ed9dc8e8375f81286939a50f1c826b288ce86f`. Tác giả bài: Suyog Jadhav.
 
 ## Đề bài
 
 Easy, 100 điểm, 9 lượt solve, thẻ challenge tạo ngày 09/10/2026. Phần đính kèm của thẻ ghi `File Attachments: No attachments available.` — bài không phát tệp, toàn bộ dữ liệu nằm trên GitHub.
 
-Văn dữ liệu gây nhiễun câu đố của bài không được lưu lại trong workspace. Điều được ghi nhận là hướng đi mà câu đố mở ra: tài khoản GitHub `Vormir-616` và repository `Missing-Record`. Các số liệu về repo ở dưới lấy từ chính dữ liệu gây nhiễun clone và các trang/dữ liệu gây nhiễung JSON GitHub đã lưu trong `r/`; riêng ngày tạo repo `2026-09-20T17:34:17.000Z` đọc từ dữ liệu gây nhiễun `repo.html` lưu tại `repo.html`.
+Văn bản câu đố của bài không được lưu lại trong workspace. Điều được ghi nhận là hướng đi mà câu đố mở ra: tài khoản GitHub `Vormir-616` và repository `Missing-Record`. Các số liệu về repo ở dưới lấy từ chính bản clone và các trang/bảng JSON GitHub đã lưu trong `r/`; riêng ngày tạo repo `2026-09-20T17:34:17.000Z` đọc từ bản `repo.html` lưu tại `repo.html`.
 
 ## Phân tích
 
@@ -41,7 +41,7 @@ RECORD4  -> echoofvormir
 RECORD5  -> soulbound
 ```
 
-Bốn tệp này cùng một khuôn văn dữ liệu gây nhiễun; `RECORD5` còn mang dòng tiêu đề `SOUL STONE — RECORD 04` dù là tệp số 5, dấu hiệu của nội dung ghép sẵn chứ không phải dữ liệu hiện trường.
+Bốn tệp này cùng một khuôn văn bản; `RECORD5` còn mang dòng tiêu đề `SOUL STONE — RECORD 04` dù là tệp số 5, dấu hiệu của nội dung ghép sẵn chứ không phải dữ liệu hiện trường.
 
 `RECORD3` là tệp bị đánh dấu khác thường, nguyên văn 267 B ở HEAD:
 
@@ -95,9 +95,9 @@ have been classified.
 Record ends.
 ```
 
-Ba điểm quyết định, đo lại trực tiếp trên dữ liệu gây nhiễun clone tại thời điểm viết bài:
+Ba điểm quyết định, đo lại trực tiếp trên bản clone tại thời điểm viết bài:
 
-- `RECORD3` chưa từng có phiên dữ liệu gây nhiễun nào chứa một tên người. Bản 160 B ban đầu đã không có tên — nó chỉ khác dữ liệu gây nhiễun hiện tại ở dòng trạng thái `RECOVERED`. Vì vậy không có "thông tin bị xoá" nào để khôi phục; nói chính xác thì thứ bị thay đổi là trạng thái, không phải tên thủ phạm.
+- `RECORD3` chưa từng có phiên bản nào chứa một tên người. Bản 160 B ban đầu đã không có tên — nó chỉ khác bản hiện tại ở dòng trạng thái `RECOVERED`. Vì vậy không có "thông tin bị xoá" nào để khôi phục; nói chính xác thì thứ bị thay đổi là trạng thái, không phải tên thủ phạm.
 - Commit `4d71aab` có subject `Update RECORD3` nhưng đổi đúng 0 tệp. Commit `885dfc1` cùng subject cũng không in ra dòng đường dẫn nào trong `git log --all --name-status`.
 - Số dòng tên người trong history của `RECORD3` là 0, nên hướng "tìm username trong diff" đóng lại.
 
@@ -116,7 +116,7 @@ $ git log --all --follow --oneline -- RECORD6
 a28755b Add files via upload
 ```
 
-Chuỗi `soul_stone.png → Nothing_suspicious.png → Nothing_suspicious.md → Nothing_suspicious → RECORD6` cho thấy `RECORD6` ở HEAD chính là ảnh `soul_stone.png` được upload ở `a28755b`, không qua bất kỳ sửa đổi nào. Tác giả đổi tên để tệp trông như một bức ảnh vô hại, và tên tệp cuối bị trùng khuôn với các `RECORD*` văn dữ liệu gây nhiễun nên nó dễ bị bỏ qua khi chỉ đọc `README`/`RECORD1..5`.
+Chuỗi `soul_stone.png → Nothing_suspicious.png → Nothing_suspicious.md → Nothing_suspicious → RECORD6` cho thấy `RECORD6` ở HEAD chính là ảnh `soul_stone.png` được upload ở `a28755b`, không qua bất kỳ sửa đổi nào. Tác giả đổi tên để tệp trông như một bức ảnh vô hại, và tên tệp cuối bị trùng khuôn với các `RECORD*` văn bản nên nó dễ bị bỏ qua khi chỉ đọc `README`/`RECORD1..5`.
 
 ## Lời giải
 
@@ -169,7 +169,7 @@ b'PhantomSoul'
 
 Định dạng cờ của giải là `OWASP{...}` (theo thẻ challenge). Chuỗi giải mã được không có dấu ngoặc, nên việc bọc nó thành `OWASP{PhantomSoul}` là một bước suy luận, không phải dữ liệu đọc ra từ tệp.
 
-Cần nói rõ phạm vi của suy luận này: dữ liệu gây nhiễun ghi của người chơi liệt kê ba biến thể — `OWASP{PhantomSoul}`, `OWASP{phantomsoul}` và `OWASP{phantom_soul}` — và không có dòng phản hồi submission nào được lưu lại. Vì vậy tài liệu này không khẳng định được biến thể hoa/thường nào nền tảng chấp nhận; dữ liệu gây nhiễung các bài đã solve của sự kiện chỉ ghi nhận bài này đã solve.
+Cần nói rõ phạm vi của suy luận này: bản ghi của người chơi liệt kê ba biến thể — `OWASP{PhantomSoul}`, `OWASP{phantomsoul}` và `OWASP{phantom_soul}` — và không có dòng phản hồi submission nào được lưu lại. Vì vậy tài liệu này không khẳng định được biến thể hoa/thường nào nền tảng chấp nhận; bảng các bài đã solve của sự kiện chỉ ghi nhận bài này đã solve.
 
 ## Kết quả
 
@@ -194,4 +194,4 @@ $ tail -c 17 RECORD6 | base64 -d
 PhantomSoul
 ```
 
-`git log --all --name-status` là bước định hình lời giải: nó vừa cho thấy `RECORD3` không từng chứa tên nào, vừa lộ chuỗi đổi tên `R100` dẫn tới `RECORD6`. Nếu repo bị chuyển thành private hoặc bị xoá, dữ liệu gây nhiễun clone trong workspace vẫn giữ đủ history để chạy lại toàn bộ phép kiểm.
+`git log --all --name-status` là bước định hình lời giải: nó vừa cho thấy `RECORD3` không từng chứa tên nào, vừa lộ chuỗi đổi tên `R100` dẫn tới `RECORD6`. Nếu repo bị chuyển thành private hoặc bị xoá, bản clone trong workspace vẫn giữ đủ history để chạy lại toàn bộ phép kiểm.

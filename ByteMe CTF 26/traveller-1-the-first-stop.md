@@ -80,7 +80,7 @@ Danh sách ga gồm Akurdi, sáu ga trung gian và Kamshet: tám ga nếu tính 
 OWASP{Akurdi}
 ```
 
-Giá trị là dẫn xuất trong quá trình làm của người chơi (nơi ở Nigdi Pradhikaran → ga Akurdi, và đếm lùi 7 ga từ Kamshet), khớp chuỗi địa chỉ "Sector-26, Nigdi Pradhikaran". Không có dòng chấp nhận submission riêng cho bài này trong dữ liệu gây nhiễun ghi; bài được liệt kê là đã giải trong dữ liệu gây nhiễung solved của sự kiện, và đó là nguồn ghi nhận chấp nhận.
+Giá trị là dẫn xuất trong quá trình làm của người chơi (nơi ở Nigdi Pradhikaran → ga Akurdi, và đếm lùi 7 ga từ Kamshet), khớp chuỗi địa chỉ "Sector-26, Nigdi Pradhikaran". Không có dòng chấp nhận submission riêng cho bài này trong bản ghi; bài được liệt kê là đã giải trong bảng solved của sự kiện, và đó là nguồn ghi nhận chấp nhận.
 
 ## Tái hiện
 
@@ -117,4 +117,4 @@ Tra Wikipedia xác nhận ga khởi đầu (mạng):
 $ curl -s "https://en.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext&exintro&titles=Akurdi%20railway%20station&format=json"
 ```
 
-Đoạn trích có "Sector-26, Nigdi Pradhikaran". Thứ tự ga Pune Jn → Lonavala và việc tuyến này có local train dừng ở Kamshet lấy từ Wikipedia *Kamshet railway station*; dữ liệu gây nhiễung đếm ga ở mục Lời giải là dữ liệu ghi nhận trong quá trình giải.
+Đoạn trích có "Sector-26, Nigdi Pradhikaran". Thứ tự ga Pune Jn → Lonavala và việc tuyến này có local train dừng ở Kamshet lấy từ Wikipedia *Kamshet railway station*; bảng đếm ga ở mục Lời giải là dữ liệu ghi nhận trong quá trình giải.

@@ -44,7 +44,7 @@ for pr in sorted(vmm.process_list(), key=lambda p: p.pid):
 ### Hai quan sát định hướng
 
 - Ghép hai dòng hex đọc được cho `OWASP{soulstone_paint_`; phần còn lại nằm ở dòng bị cắt nên phải lấy từ chính ảnh RAM.
-- Chuỗi `OWASP{` dạng ASCII xuất hiện **0 lần** trong toàn ảnh, nhưng dạng UTF-16 xuất hiện 7 lần. Mọi phép tìm văn dữ liệu gây nhiễun về sau phải chạy trên cả hai encoding.
+- Chuỗi `OWASP{` dạng ASCII xuất hiện **0 lần** trong toàn ảnh, nhưng dạng UTF-16 xuất hiện 7 lần. Mọi phép tìm văn bản về sau phải chạy trên cả hai encoding.
 - Ảnh không còn giữ được pixel. Quét toàn ảnh: 671 signature PNG cho 393 chuỗi chunk hợp lệ nhưng tất cả đều là icon/tile ứng dụng (bề rộng lớn nhất 1077 pixel, ảnh có diện tích lớn nhất 620×620 gói trong 242 byte); 1450 signature JPEG không có ảnh nào mở được bằng PIL; bốn `BITMAPINFOHEADER` 24/32bpp (360×369, 1000×500, 1700×876, 1920×1033) có số màu 38k–434k và render ra nhiễu, tức dữ liệu đã nén bị diễn giải sai thành bitmap.
 - Ngược lại, header PNG của chính file ảnh đề bài thì còn: tại `0x2d13d000` có `IHDR 1152×573 bd=8 ct=2` cùng `sRGB`, `gAMA`, `pHYs` đều đúng CRC — trùng kích thước và kiểu màu với ảnh đính kèm. Nhưng chunk `IDAT` khai báo 18,632 byte không inflate được ở mọi chế độ `wbits` (15/-15/31/-8), nên phần dữ liệu nén không khôi phục được bằng các phép thử này; nguyên nhân có thể là thiếu hoặc hỏng trang nhớ.
 
@@ -70,7 +70,7 @@ OWASP{v0rm1r_clip_91a7}                     4 copies  e.g. ['0x1374e20c', '0x6c3
 OWASP{soulstone_paint_52af}                 1 copies  e.g. ['0x6cdc75d0']
 ```
 
-Bảy giá trị, mỗi cái một bộ chứa; `soulstone_paint_52af` là duy nhất chỉ có **một dữ liệu gây nhiễun** trong toàn ảnh.
+Bảy giá trị, mỗi cái một bộ chứa; `soulstone_paint_52af` là duy nhất chỉ có **một bản** trong toàn ảnh.
 
 ### Khớp fragment của ảnh đề bài
 
@@ -88,7 +88,7 @@ Bản UTF-16 đầy đủ nằm tại offset vật lý `0x6cdc760c` (điểm b�
 4f574153507b736f 756c73746f6e655f 7061696e745f353261667d
 ```
 
-giải mã ra 27 byte `OWASP{soulstone_paint_52af}`. Hai dòng đầu của khối này khớp từng ký tự với ảnh đề bài, còn dòng thứ ba trong ảnh bị cắt ở `7061696e745f3`; dữ liệu gây nhiễun trong RAM chứa đủ phần đuôi `353261667d`.
+giải mã ra 27 byte `OWASP{soulstone_paint_52af}`. Hai dòng đầu của khối này khớp từng ký tự với ảnh đề bài, còn dòng thứ ba trong ảnh bị cắt ở `7061696e745f3`; bản trong RAM chứa đủ phần đuôi `353261667d`.
 
 ## Kết quả
 
@@ -96,7 +96,7 @@ giải mã ra 27 byte `OWASP{soulstone_paint_52af}`. Hai dòng đầu của kh�
 OWASP{soulstone_paint_52af}
 ```
 
-Cờ đọc trực tiếp từ ảnh bộ nhớ (dữ liệu gây nhiễun UTF-16 duy nhất tại `0x6cdc760c`) và dữ liệu gây nhiễung solved của nền tảng xác nhận giá trị này đã được chấp nhận.
+Cờ đọc trực tiếp từ ảnh bộ nhớ (bản UTF-16 duy nhất tại `0x6cdc760c`) và bảng solved của nền tảng xác nhận giá trị này đã được chấp nhận.
 
 ## Tái hiện
 

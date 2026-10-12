@@ -13,7 +13,7 @@ language: "vi"
 
 ## Đề bài
 
-Binary được tặng kèm (Easy, 100 điểm, 22 lời giải). Chương trình in dữ liệu gây nhiễung hiệu `SOUL STONE VAULT`, nhắc `Enter the secret phrase:`, đọc một chuỗi bằng `scanf("%63s")`, so chuỗi đó với một mật khẩu dựng sẵn trên stack; nếu khớp thì gọi `soul_stone()` in cờ qua `printf("Flag: %s\n")`. Chuỗi `strings` duy nhất chứa `OWASP` trong file là `OWASP{thH`, nên cờ không đọc được trực tiếp.
+Binary được tặng kèm (Easy, 100 điểm, 22 lời giải). Chương trình in bảng hiệu `SOUL STONE VAULT`, nhắc `Enter the secret phrase:`, đọc một chuỗi bằng `scanf("%63s")`, so chuỗi đó với một mật khẩu dựng sẵn trên stack; nếu khớp thì gọi `soul_stone()` in cờ qua `printf("Flag: %s\n")`. Chuỗi `strings` duy nhất chứa `OWASP` trong file là `OWASP{thH`, nên cờ không đọc được trực tiếp.
 
 ## Phân tích
 

@@ -31,9 +31,9 @@ D = 0000000000000000000000001e00100104137f0075032936701d1c4212097f14551f02083d15
 identical prefix: 12 bytes
 ```
 
-12 byte đầu của `D` bằng 0, tức `T1` và `T2` có 12 byte đầu giống hệt nhau. Nếu hai message dùng chung một keystream — `C1 = P1 ^ K`, `C2 = P2 ^ K` — thì `C1 ^ C2 = P1 ^ P2`, và byte bằng 0 nghĩa là hai dữ liệu gây nhiễun rõ trùng nhau ở vị trí đó. Kiểm tra xem keystream có phải khoá lặp ngắn hay không: quét period 1..56 với ràng buộc mọi byte giải mã đều in được, `soulforge_repeating.py` không in ra dòng nào, tức không tồn tại period nào từ 1 tới 56 thoả; phép đo tự do hơn ở `soulforge_period.py` cũng không nổi bật period nào (tỉ lệ cao nhất 0.370 tại period 30 của `T1`). Mô hình làm việc được chấp nhận là one-time pad bị dùng lại hai lần, `D = P1 ^ P2`.
+12 byte đầu của `D` bằng 0, tức `T1` và `T2` có 12 byte đầu giống hệt nhau. Nếu hai message dùng chung một keystream — `C1 = P1 ^ K`, `C2 = P2 ^ K` — thì `C1 ^ C2 = P1 ^ P2`, và byte bằng 0 nghĩa là hai bản rõ trùng nhau ở vị trí đó. Kiểm tra xem keystream có phải khoá lặp ngắn hay không: quét period 1..56 với ràng buộc mọi byte giải mã đều in được, `soulforge_repeating.py` không in ra dòng nào, tức không tồn tại period nào từ 1 tới 56 thoả; phép đo tự do hơn ở `soulforge_period.py` cũng không nổi bật period nào (tỉ lệ cao nhất 0.370 tại period 30 của `T1`). Mô hình làm việc được chấp nhận là one-time pad bị dùng lại hai lần, `D = P1 ^ P2`.
 
-`D` cũng cho biết vị trí các byte mà hai dữ liệu gây nhiễun rõ khác nhau: các chỉ số có `D[i] = 0` là `[0..11, 13, 19, 38]`.
+`D` cũng cho biết vị trí các byte mà hai bản rõ khác nhau: các chỉ số có `D[i] = 0` là `[0..11, 13, 19, 38]`.
 
 Crib dragging: vì cờ bắt đầu bằng `OWASP{`, trượt chuỗi 6 ký tự này lên `D` và giữ lại các alignment mà phía đối diện cũng toàn byte in được cho 21 vị trí:
 
@@ -62,7 +62,7 @@ all-printable alignments: 21
   off=34 other=b'M_|FP9'
 ```
 
-Bộ lọc "in được" không đủ để chọn: các offset 0..6 là nghiệm suy biến (đúng vùng `D` bằng 0, kéo theo dữ liệu gây nhiễun rõ hai bên giống nhau), các offset 27 và 50 bị chính script loại vì không phải ASCII. Trong các ứng viên còn lại, chỉ offset 20 sinh ra đoạn đọc được như tiếng Anh — `:The f`. Đó là cơ sở để cố định vị trí cờ, và cũng là điểm duy nhất trong suy luận phải dùng tới phán đoán ngôn ngữ chứ không chỉ số học.
+Bộ lọc "in được" không đủ để chọn: các offset 0..6 là nghiệm suy biến (đúng vùng `D` bằng 0, kéo theo bản rõ hai bên giống nhau), các offset 27 và 50 bị chính script loại vì không phải ASCII. Trong các ứng viên còn lại, chỉ offset 20 sinh ra đoạn đọc được như tiếng Anh — `:The f`. Đó là cơ sở để cố định vị trí cờ, và cũng là điểm duy nhất trong suy luận phải dùng tới phán đoán ngôn ngữ chứ không chỉ số học.
 
 Với `P2[20:]` mở rộng thành `:The forge remembers every sacrifice.`, `P1 = D ^ P2` trên vùng chồng nhau cho 37 ký tự liên tiếp của cờ. Ngay từ bước này đã có một giới hạn cố định của dữ liệu: `T1` dài 57 byte và cờ bắt đầu ở chỉ số 20, nên miền suy ra được kết thúc tại ký tự thứ 37; cờ đã ghi nhận dài 41 ký tự, vì vậy 4 ký tự cuối không nằm trong bất kỳ vùng nào mà artifact mô tả tới. Chi tiết được trình bày ở phần Lời giải và Kết quả.
 

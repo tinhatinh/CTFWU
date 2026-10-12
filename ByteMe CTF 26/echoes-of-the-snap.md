@@ -9,11 +9,11 @@ language: "vi"
 # Echoes of the Snap
 
 **Flag:** `OWASP{3ch03s_0f_th3_sn4p_r3m41n}`
-**Artifact:** `capture.txt` (136 B theo ghi nhận) — dữ liệu gây nhiễun tóm tắt text của một packet capture, không phải file pcap. Tác giả: Pratik Jadhav.
+**Artifact:** `capture.txt` (136 B theo ghi nhận) — bản tóm tắt text của một packet capture, không phải file pcap. Tác giả: Pratik Jadhav.
 
 ## Đề bài
 
-Tên bài lấy từ dữ liệu gây nhiễung các bài đã giải của nền tảng; phần mô tả được lưu lại là:
+Tên bài lấy từ bảng các bài đã giải của nền tảng; phần mô tả được lưu lại là:
 
 ```text
 A network capture contains several streams, but one contains fragmented DNS TXT data carrying a hidden message.
@@ -30,11 +30,11 @@ stream 31 TXT chunks: 4f574153507b3363683033735f30665f7468335f736e34705f72336d34
 
 ## Phân tích
 
-Điểm khác biệt so với các bài pcap thông thường: không có packet nào để lọc, không có `tcp.stream` để lần. Artifact đã là kết quả của bước định vị — nó nêu đúng số hiệu luồng (31), đúng loại dữ liệu gây nhiễun ghi (DNS TXT) và đã ghi lại phần data của các mảnh. Vì vậy phần việc còn lại chỉ là ghép mảnh và giải mã.
+Điểm khác biệt so với các bài pcap thông thường: không có packet nào để lọc, không có `tcp.stream` để lần. Artifact đã là kết quả của bước định vị — nó nêu đúng số hiệu luồng (31), đúng loại bản ghi (DNS TXT) và đã ghi lại phần data của các mảnh. Vì vậy phần việc còn lại chỉ là ghép mảnh và giải mã.
 
-`stream 31 TXT chunks:` liệt kê các mảnh TXT của luồng 31. Bản tóm tắt ghi lại các mảnh ở dạng đã nối liền, không còn giữ ranh giới giữa từng mảnh; chuỗi ghép được dài 64 ký tự hex, tức 32 byte. Toàn bộ 64 ký tự nằm trong dữ liệu gây nhiễung chữ số hex, nên không có mảnh nào bị lỗi ký tự khi ghép.
+`stream 31 TXT chunks:` liệt kê các mảnh TXT của luồng 31. Bản tóm tắt ghi lại các mảnh ở dạng đã nối liền, không còn giữ ranh giới giữa từng mảnh; chuỗi ghép được dài 64 ký tự hex, tức 32 byte. Toàn bộ 64 ký tự nằm trong bảng chữ số hex, nên không có mảnh nào bị lỗi ký tự khi ghép.
 
-Bài cung cấp dữ liệu gây nhiễun tóm tắt text, không có PCAP gốc. Vì vậy có thể tái hiện phép giải hex nhưng không kiểm tra lại việc phân luồng hay ranh giới các mảnh TXT.
+Bài cung cấp bản tóm tắt text, không có PCAP gốc. Vì vậy có thể tái hiện phép giải hex nhưng không kiểm tra lại việc phân luồng hay ranh giới các mảnh TXT.
 
 ## Lời giải
 
@@ -78,7 +78,7 @@ text      : OWASP{3ch03s_0f_th3_sn4p_r3m41n}
 OWASP{3ch03s_0f_th3_sn4p_r3m41n}
 ```
 
-Chuỗi hex của luồng 31 trong dữ liệu gây nhiễun tóm tắt giải mã thành cờ. Không có PCAP gốc để đối chiếu từng packet.
+Chuỗi hex của luồng 31 trong bản tóm tắt giải mã thành cờ. Không có PCAP gốc để đối chiếu từng packet.
 
 ## Tái hiện
 

@@ -38,7 +38,7 @@ for pr in sorted(vmm.process_list(), key=lambda p: p.pid):
 ### Nhận dạng artifact
 
 - Bốn KB đầu bằng 0; không có `PAGE`/`PAGEDU64` (crash dump), không có `Crdm` (KdCopyDataBlock), không có magic LiME/AVML/ELF.
-- Tại `0x1000` là dữ liệu gây nhiễung E820: 8 record 20 byte dạng `(base, length, type)`; entry khả dụng lớn nhất `base=0x100000, length=0xa54f0000, type=1`, entry ACPI `base=0xa55f0000, length=0x10000, type=3`. Top of RAM `0xa55f0000` đúng bằng kích thước file (2646 MiB), nên ảnh là RAM vật lý tuyến tính từ PA 0. Vùng `0xA0000-0xFFFFF` toàn 0 là lỗ VGA/BIOS shadow hợp lệ.
+- Tại `0x1000` là bảng E820: 8 record 20 byte dạng `(base, length, type)`; entry khả dụng lớn nhất `base=0x100000, length=0xa54f0000, type=1`, entry ACPI `base=0xa55f0000, length=0x10000, type=3`. Top of RAM `0xa55f0000` đúng bằng kích thước file (2646 MiB), nên ảnh là RAM vật lý tuyến tính từ PA 0. Vùng `0xA0000-0xFFFFF` toàn 0 là lỗ VGA/BIOS shadow hợp lệ.
 - Boot sector tại `0x7C00` (`NTFS` OEM-ID, `A disk read error occurred`), SMBIOS/ACPI của `Oracle VirtualBox BIOS`, `ntoskrnl.exe` xuất hiện 315 lần, chuỗi `10.0.19041` vượt 2000 lần.
 
 Chuỗi `OWASP{` dạng ASCII xuất hiện **0 lần**, nên đáp án của bài này là một giá trị thời gian của hệ thống chứ không phải một chuỗi cờ được ghi sẵn.
@@ -71,7 +71,7 @@ python solve.py soul.mem "2026-10-08 05:07:43" "2026-10-08 10:37:43"
 == 2026-10-08 10:37:43 : 0 occurrences (FILETIME 134359294630000000)
 ```
 
-Giây UTC xuất hiện 8 lần, trong đó bốn lần nằm trong cùng vùng kernel pool `0x900f0000-0x900fd000` — cụm object được tạo đúng nhịp lúc capture. Giây tương ứng theo giờ IST không xuất hiện lần nào. Đối chiếu thêm dạng văn dữ liệu gây nhiễun: `2026-10-08 05:07`, `2026-10-08T05:07`, `2026-10-08 10:37`, `2026-10-08T10:37` và dữ liệu gây nhiễun UTF-16 của `2026-10-08 05:07` / `2026-10-08 05:07:43` đều cho 0 kết quả. Nguồn duy nhất của giá trị này là FILETIME UTC, đúng như `windows.info` in ra.
+Giây UTC xuất hiện 8 lần, trong đó bốn lần nằm trong cùng vùng kernel pool `0x900f0000-0x900fd000` — cụm object được tạo đúng nhịp lúc capture. Giây tương ứng theo giờ IST không xuất hiện lần nào. Đối chiếu thêm dạng văn bản: `2026-10-08 05:07`, `2026-10-08T05:07`, `2026-10-08 10:37`, `2026-10-08T10:37` và bản UTF-16 của `2026-10-08 05:07` / `2026-10-08 05:07:43` đều cho 0 kết quả. Nguồn duy nhất của giá trị này là FILETIME UTC, đúng như `windows.info` in ra.
 
 Bối cảnh quanh thời điểm capture: log CodeMeter trong page cache ghi `2026-10-08 02:50:23: Running on Microsoft Windows 10 Home 22H2, 64-Bit` và `2026-10-08 02:50:25: Server ready / Startup duration: 4 seconds` (giờ local, trước capture nhiều giờ); PowerShell history có `Get-Item C:\Users\nightwatch\Downloads\dump\memdump.mem | Select Name,Length` và `python -m pip install volatility3`, còn `FTK Imager.exe` (PID 5960) vẫn đang chạy.
 
@@ -81,7 +81,7 @@ Bối cảnh quanh thời điểm capture: log CodeMeter trong page cache ghi `2
 OWASP{2026-10-08 05:07:43}
 ```
 
-Giá trị lấy từ dữ liệu gây nhiễung solved của nền tảng, đối chứng tại chỗ bằng số lần xuất hiện FILETIME trong ảnh: giây UTC `2026-10-08 05:07:43` có 8 occurrence, biến thể giờ local có 0.
+Giá trị lấy từ bảng solved của nền tảng, đối chứng tại chỗ bằng số lần xuất hiện FILETIME trong ảnh: giây UTC `2026-10-08 05:07:43` có 8 occurrence, biến thể giờ local có 0.
 
 ## Tái hiện
 

@@ -31,7 +31,7 @@ Mỗi soul được cấp `malloc(0x40)` — cả trong `capture_soul` (call t�
 
 Ba primitive:
 
-1. **Leak PIE.** `inspect` in `Inspect Callback: %p`, tức chính field `+0x38`. Giá trị này được nạp từ dữ liệu gây nhiễung callback theo `type`; với `type = 4` (Titan) nó là `inspect_titan` ở offset `0x144b`, nên `base = leak - 0x144b`. Script kiểm tra `base` page-aligned trước khi dùng.
+1. **Leak PIE.** `inspect` in `Inspect Callback: %p`, tức chính field `+0x38`. Giá trị này được nạp từ bảng callback theo `type`; với `type = 4` (Titan) nó là `inspect_titan` ở offset `0x144b`, nên `base = leak - 0x144b`. Script kiểm tra `base` page-aligned trước khi dùng.
 2. **UAF.** `merge_souls` kết thúc bằng `call sym.imp.free` tại `0x1e05`, sau đó chỉ tăng `merges_performed` và in thông báo; `archive[]` (`.bss` tại `0x5060`) vẫn giữ con trỏ tới soul vừa được giải phóng của vessel bị hòa tan.
 3. **Type confusion.** `transfer_soul` gọi `malloc(0x40)` nên chunk vừa `free` ở trên được cấp lại, rồi ghi các field qua `strtoull(..., 0x10)`: `+0x20` (prompt `Timestamp (hex e.g. 1337)`), `+0x28` (prompt `Raw Entropy / Essence (hex)`), `+0x38` và `+0x30` (prompt `Audit Callback Address (hex, 0 for default)`, store tại `0x2098` và `0x20a4`). Người gọi do đó kiểm soát được con trỏ callback của một soul vẫn còn nằm trong `archive[]`.
 
@@ -75,7 +75,7 @@ Inspect Callback: 0x616cd492c4fb
 OWASP{Th4n0s_S0ul_Mem0ry_UAF_Type_Confusion}
 ```
 
-Cờ đọc trực tiếp từ dịch vụ đề bài và được lưu trong `ascension.bin` (dòng 11). Cờ này đã được nền tảng chấp nhận; phản hồi chấp nhận ghi nhận trong dữ liệu gây nhiễun ghi.
+Cờ đọc trực tiếp từ dịch vụ đề bài và được lưu trong `ascension.bin` (dòng 11). Cờ này đã được nền tảng chấp nhận; phản hồi chấp nhận ghi nhận trong bản ghi.
 
 ## Tái hiện
 
@@ -232,4 +232,4 @@ $ r2 -q -c "aa; axt @ sym.imp.free" soul_archive
 $ r2 -q -c "aa; pd 260 @ 0x14fb" soul_archive
 ```
 
-Các offset `0x144b`, `0x14fb` và dữ liệu gây nhiễung `INSPECT_OFFSET` lấy từ symbol table của `soul_archive` đi kèm; đọc lại nếu dịch vụ đổi binary.
+Các offset `0x144b`, `0x14fb` và bảng `INSPECT_OFFSET` lấy từ symbol table của `soul_archive` đi kèm; đọc lại nếu dịch vụ đổi binary.

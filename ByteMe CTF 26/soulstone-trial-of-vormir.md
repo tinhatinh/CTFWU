@@ -13,7 +13,7 @@ language: "vi"
 
 ## Đề bài
 
-Binary stripped (Hard, 300 điểm, 13 lời giải). Chương trình in dữ liệu gây nhiễung `THE ALTAR OF VORMIR`, nhắc người chơi nộp một lễ vật theo định dạng ghi rõ trong chuỗi của binary, rồi in cờ bằng `[+] Flag: %s\n` khi các điều kiện kiểm tra đều thoả. `strings` trả 0 lần xuất hiện của `OWASP` trong 18568 byte, nên không đọc được trực tiếp bất kỳ phần nào của cờ.
+Binary stripped (Hard, 300 điểm, 13 lời giải). Chương trình in bảng `THE ALTAR OF VORMIR`, nhắc người chơi nộp một lễ vật theo định dạng ghi rõ trong chuỗi của binary, rồi in cờ bằng `[+] Flag: %s\n` khi các điều kiện kiểm tra đều thoả. `strings` trả 0 lần xuất hiện của `OWASP` trong 18568 byte, nên không đọc được trực tiếp bất kỳ phần nào của cờ.
 
 ## Phân tích
 
@@ -31,7 +31,7 @@ Bản đồ dữ liệu trong `.rodata`, đọc bằng `r2 -q -c "iz" soulstone`
 
 Định dạng đầu vào lấy nguyên văn từ binary là `SOUL{<SACRIFICE>:<RESONANCE>}`; ngoài ra còn chuỗi `%s:%s:%s` tại `0x3685`, dùng ở bước dựng preimage. `main@0x11a0` kiểm tra `strncmp(input, "SOUL{", 5)` (`0x12cb`) và byte `}` ở cuối, rồi tách phần trước/sau dấu `:` bằng `strchr` (`0x1345`).
 
-**Kiểm tra tên** (`0x17b0`, gọi tại `0x1360`): `strlen` phải bằng 6, sau đó là vòng XOR với hai dữ liệu gây nhiễung liên tiếp trong `.rodata`:
+**Kiểm tra tên** (`0x17b0`, gọi tại `0x1360`): `strlen` phải bằng 6, sau đó là vòng XOR với hai bảng liên tiếp trong `.rodata`:
 
 ```text
 0x000017c7      cmp rdx, 6
@@ -85,7 +85,7 @@ Bản đồ dữ liệu trong `.rodata`, đọc bằng `r2 -q -c "iz" soulstone`
 
 Tức là `h = 0x5A17F00D`, mỗi ký tự `c` của tên: `h = ((h*31 + c) ^ 0x9E3779B9)`; sau đó `t = h ^ V` và lặp 4 lần `t = fmix(t) + V`; kết quả phải bằng `0xE7F841B8` (`cmp eax, 0xe7f841b8` tại `0x13de`).
 
-`fmix` ở đây là `fmix32` của murmur3 nhưng dịch đầu tiên là `shr edx, 0xf` (>>15) thay vì >>16. Hai bước sau vẫn là >>13 và >>16 với cùng hằng số `0x85ebca6b`, `0xc2b2ae35`. Đây chính là điểm làm một dữ liệu gây nhiễun murmur3 chép nguyên văn tìm ra 0 nghiệm trên toàn không gian 2^24.
+`fmix` ở đây là `fmix32` của murmur3 nhưng dịch đầu tiên là `shr edx, 0xf` (>>15) thay vì >>16. Hai bước sau vẫn là >>13 và >>16 với cùng hằng số `0x85ebca6b`, `0xc2b2ae35`. Đây chính là điểm làm một bản murmur3 chép nguyên văn tìm ra 0 nghiệm trên toàn không gian 2^24.
 
 **Lịch sinh khóa và lớp xác thực** (`0x1f90` = SHA-256, `0x2010` = HMAC-SHA-256, `0x2220` = khởi tạo trạng thái ChaCha20, `0x2260` = XOR keystream):
 

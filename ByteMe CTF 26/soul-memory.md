@@ -13,7 +13,7 @@ language: "vi"
 
 ## Đề bài
 
-Đề (Easy, 100 điểm, 25 lời giải trên nền tảng): một dữ liệu gây nhiễun ghi cache được lấy ra từ "memory dump" của Soul Vault, trong đó một dòng hint chỉ cách xác định trường chứa đáp án.
+Đề (Easy, 100 điểm, 25 lời giải trên nền tảng): một bản ghi cache được lấy ra từ "memory dump" của Soul Vault, trong đó một dòng hint chỉ cách xác định trường chứa đáp án.
 
 Toàn bộ nội dung artifact là sáu trường `key=value`:
 
@@ -28,7 +28,7 @@ data=OWASP{s0ul_m3m0ry_n3v3r_d13s}
 
 ## Phân tích
 
-Bốn trường đầu là metadata của dữ liệu gây nhiễun ghi: `pid=4041`, `module=soul-cache`, `user=keeper` (cùng tên user `keeper` xuất hiện trong các bài nhóm Soul Vault), `cache_key=MEMORY_7`. Hai trường còn lại mang thông tin định vị đáp án.
+Bốn trường đầu là metadata của bản ghi: `pid=4041`, `module=soul-cache`, `user=keeper` (cùng tên user `keeper` xuất hiện trong các bài nhóm Soul Vault), `cache_key=MEMORY_7`. Hai trường còn lại mang thông tin định vị đáp án.
 
 `vault_hint=look_after_after_cache_key` chỉ tới phần sau `cache_key`. Trường `data` chứa trực tiếp chuỗi `OWASP{...}`.
 
@@ -44,7 +44,7 @@ Bài dùng bản text đã lưu; định dạng byte và kích thước file g�
 
 ## Lời giải
 
-Trích trường `data` từ dữ liệu gây nhiễun ghi:
+Trích trường `data` từ bản ghi:
 
 ```console
 $ python -c "import pathlib,re; t=pathlib.Path('memory_dump.txt').read_text(); print(re.search(r'^data=(\S+)', t, re.M).group(1))"
@@ -56,7 +56,7 @@ OWASP{s0ul_m3m0ry_n3v3r_d13s}
 
 Nếu chỉ làm việc với phần text đã ghi lại, thao tác tương đương là đọc giá trị đứng sau `data=`.
 
-Script minh hoạ việc đọc trường `data`; đọc trực tiếp giá trị trong dữ liệu gây nhiễun ghi cũng đủ.
+Script minh hoạ việc đọc trường `data`; đọc trực tiếp giá trị trong bản ghi cũng đủ.
 
 ```python
 import re
@@ -96,7 +96,7 @@ Cờ là giá trị của trường `data`; không cần giải mã. Chưa lưu 
 
 ## Tái hiện
 
-Chỉ cần Python 3 (`pathlib`, `re`). Nếu có file `memory_dump.txt`, chạy một lệnh trích trường `data` như trên. Nếu chỉ có dữ liệu gây nhiễun text ghi lại, lưu `record` trong đoạn script ở mục Lời giải thành `solve.py` rồi chạy:
+Chỉ cần Python 3 (`pathlib`, `re`). Nếu có file `memory_dump.txt`, chạy một lệnh trích trường `data` như trên. Nếu chỉ có bản text ghi lại, lưu `record` trong đoạn script ở mục Lời giải thành `solve.py` rồi chạy:
 
 ```console
 $ python solve.py

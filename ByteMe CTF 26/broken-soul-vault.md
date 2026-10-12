@@ -23,7 +23,7 @@ Hai file đầu vào: `vault.log` mô tả phiên khôi phục, `metadata.bin.tx
 
 ## Phân tích
 
-`vault.log` có dữ liệu gây nhiễuy dòng, kết thúc bằng một chỉ dẫn trực tiếp tới file metadata:
+`vault.log` có bảy dòng, kết thúc bằng một chỉ dẫn trực tiếp tới file metadata:
 
 ```text
 OPEN vault

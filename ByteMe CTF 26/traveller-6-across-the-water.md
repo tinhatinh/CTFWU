@@ -45,7 +45,7 @@ Hai lần nộp đầu giữ lại pháo đài quan sát Tikona và đều bị 
 
 ## Lời giải
 
-Chạy lại so khớp đường chân trời từ DEM với ràng buộc đỉnh mục tiêu nằm ở bờ bên kia mặt nước. Hai hồ được đưa ra đánh giá là Mulshi và Pawna (các mảng `lake_MULSHI.npy`, `lake_PAWNA.npy` và `lake_mask.npy` lưu trong hồ sơ). Cặp thỏa ràng buộc là hồ Pawna và pháo đài trên đỉnh ở bờ đối diện, Tung (dữ liệu gây nhiễun ghi `cands.json`, mỗi dòng `[tên, loại OSM, lat, lon, cao độ m, giá trị ghi nhận]`):
+Chạy lại so khớp đường chân trời từ DEM với ràng buộc đỉnh mục tiêu nằm ở bờ bên kia mặt nước. Hai hồ được đưa ra đánh giá là Mulshi và Pawna (các mảng `lake_MULSHI.npy`, `lake_PAWNA.npy` và `lake_mask.npy` lưu trong hồ sơ). Cặp thỏa ràng buộc là hồ Pawna và pháo đài trên đỉnh ở bờ đối diện, Tung (bản ghi `cands.json`, mỗi dòng `[tên, loại OSM, lat, lon, cao độ m, giá trị ghi nhận]`):
 
 ```text
 ["Tung", "other", 18.6598, 73.4616, 972, 0.55]

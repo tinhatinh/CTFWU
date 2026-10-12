@@ -52,7 +52,7 @@ The answer is the alternate name of the same fort Tikona, taken directly from th
 Tikona also known as Vitandgad,  is the dominant hill fort in Maval in western India.
 ```
 
-The page `https://en.wikipedia.org/wiki/Tikona` (the copy stored in the working record) gives exactly that sentence. The spelling `Vitandgad` (one word) was cross-checked against two other independent sources present in the record — "Tikona Fort | Vitandgad Monsoon Special Trek" (maharashtragadkille.com) and "Tikona Fort, also known by the pseudonym Vitandgad" (escape2explore.com) — all of which use the same form. Applying the format convention learned at Traveller-3, the one-word lowercase name becomes the flag:
+The page `https://en.wikipedia.org/wiki/Tikona` (the copy stored in the working record) gives exactly that sentence. The spelling `Vitandgad` (one word) was cross-checked against two other independent sources present in the record — "Tikona Fort &#124; Vitandgad Monsoon Special Trek" (maharashtragadkille.com) and "Tikona Fort, also known by the pseudonym Vitandgad" (escape2explore.com) — all of which use the same form. Applying the format convention learned at Traveller-3, the one-word lowercase name becomes the flag:
 
 ```text
 OWASP{vitandgad}

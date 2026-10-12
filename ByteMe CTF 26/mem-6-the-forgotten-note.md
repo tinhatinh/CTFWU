@@ -37,18 +37,18 @@ for pr in sorted(vmm.process_list(), key=lambda p: p.pid):
 
 ### "Bản ghi còn mở" là tiến trình nào
 
-Trong danh sách process tại thời điểm capture có `notepad.exe` vẫn đang giữ một file mở — dữ liệu gây nhiễun ghi gốc từ `process_list()`:
+Trong danh sách process tại thời điểm capture có `notepad.exe` vẫn đang giữ một file mở — bản ghi gốc từ `process_list()`:
 
 ```text
 PID=4968|PPID=6960|NAME=notepad.exe|FULL=notepad.exe|PATH=C:\Windows\system32\notepad.exe|SES=1|STATE=0|INTEG=5|EPROC=18446703458198831232
    CMD="C:\Windows\system32\notepad.exe" C:\Users\nightwatch\Documents\Vormir\expedition.txt
 ```
 
-PPID 6960 là `powershell.exe` — cùng tiến trình cha đã spawn `SoulHunt_7F31.exe` ở Mem-2. Buffer văn dữ liệu gây nhiễun của notepad nằm trong memory của chính process, nên "dữ liệu gây nhiễun ghi còn mở khi mọi thứ dừng lại" là nội dung file trong RAM, không phải file trên đĩa.
+PPID 6960 là `powershell.exe` — cùng tiến trình cha đã spawn `SoulHunt_7F31.exe` ở Mem-2. Buffer văn bản của notepad nằm trong memory của chính process, nên "bản ghi còn mở khi mọi thứ dừng lại" là nội dung file trong RAM, không phải file trên đĩa.
 
 ## Lời giải
 
-### Đọc dữ liệu gây nhiễun ghi
+### Đọc bản ghi
 
 ```bash
 python solve.py soul.mem
@@ -70,9 +70,9 @@ Well done, traveler.
 
 Dòng `Artifact reference:` chứa 52 ký tự hex, giải mã ra 26 byte `OWASP{soulstone_note_3c91}`. Bản ghi UTF-16 nằm ở vùng vật lý bắt đầu `0x24f3900`, điểm khớp chuỗi `Artifact reference` là `0x24f3afa`. Script xử lý được cả trường hợp hex bị ngắt dòng hoặc chèn byte `\x00` của UTF-16 bằng cách bỏ qua các byte phân cách khi gom.
 
-### Xác nhận dữ liệu gây nhiễun ghi thuộc về notepad
+### Xác nhận bản ghi thuộc về notepad
 
-Tìm chuỗi hex và tiêu đề dữ liệu gây nhiễun ghi trong address space của từng process ứng viên bằng `VmmProcess.search()` của MemProcFS (needle ≤32 byte):
+Tìm chuỗi hex và tiêu đề bản ghi trong address space của từng process ứng viên bằng `VmmProcess.search()` của MemProcFS (needle ≤32 byte):
 
 ```text
 PID 4968 notepad.exe  note-hexpart-ascii   n=4  [0x12d19118ff7, 0x12d19119127, 0x12d19119847, 0x12d19121700]
@@ -80,11 +80,11 @@ PID 4968 notepad.exe  ExpeditionLog-utf16  n=1  [0x12d190edc18]
 PID 4968 notepad.exe  VormirExped-ascii    n=4  [0x12d191190a7, 0x12d191191d7, 0x12d191198f7, 0x12d19121690]
 ```
 
-Chỉ PID 4968 cho kết quả; `mspaint.exe` (1204), `Photos.exe` (4824/2820), `explorer.exe` (8900), `powershell.exe` (6960), `SoulHunt_7F31.exe` (2580) và `dwm.exe` (1076) đều không chứa dữ liệu gây nhiễun ghi này.
+Chỉ PID 4968 cho kết quả; `mspaint.exe` (1204), `Photos.exe` (4824/2820), `explorer.exe` (8900), `powershell.exe` (6960), `SoulHunt_7F31.exe` (2580) và `dwm.exe` (1076) đều không chứa bản ghi này.
 
-### Số dữ liệu gây nhiễun và biến thể văn dữ liệu gây nhiễun
+### Số bản và biến thể văn bản
 
-Chuỗi hex của dữ liệu gây nhiễun ghi xuất hiện **43 lần** trong ảnh, gồm cả dữ liệu gây nhiễun ASCII lẫn UTF-16, các bản giải mã được cho cùng một giá trị. Bản ASCII tại `0xd21d5ed`, `0x13251c65`, `0x16cf8075`, `0x2d2c76ce`, `0x5eb77b25`, `0x6f8ec0f5`, `0x6f8ec815`; dữ liệu gây nhiễun ở `0x5eb77b25` bị dữ liệu khác đè lên (`...5f33633.317d`) nên không giải mã được. Có hai phần đuôi khác nhau của cùng dữ liệu gây nhiễun ghi:
+Chuỗi hex của bản ghi xuất hiện **43 lần** trong ảnh, gồm cả bản ASCII lẫn UTF-16, các bản giải mã được cho cùng một giá trị. Bản ASCII tại `0xd21d5ed`, `0x13251c65`, `0x16cf8075`, `0x2d2c76ce`, `0x5eb77b25`, `0x6f8ec0f5`, `0x6f8ec815`; bản ở `0x5eb77b25` bị dữ liệu khác đè lên (`...5f33633.317d`) nên không giải mã được. Có hai phần đuôi khác nhau của cùng bản ghi:
 
 ```text
 The trail ends with this record. If you are reading this, you've uncovered what the others
@@ -94,7 +94,7 @@ The remaining records appear to be unrelated.
 \Registry\Machine\...\HKEY_USERS\S-1-5-21-3525304513-4119828853-1302462655-1000\...
 ```
 
-Lệnh tạo file vẫn còn trong history: `"@ | Set-Content "$env:USERPROFILE\Documents\Vormir\expedition.txt"`, và `ActivitiesCache`/UserEngaged JSON ghi `1:{...}\notepad.exe` — dữ liệu gây nhiễun ghi này được mở qua notepad.
+Lệnh tạo file vẫn còn trong history: `"@ | Set-Content "$env:USERPROFILE\Documents\Vormir\expedition.txt"`, và `ActivitiesCache`/UserEngaged JSON ghi `1:{...}\notepad.exe` — bản ghi này được mở qua notepad.
 
 ## Kết quả
 
@@ -102,7 +102,7 @@ Lệnh tạo file vẫn còn trong history: `"@ | Set-Content "$env:USERPROFILE\
 OWASP{soulstone_note_3c91}
 ```
 
-Cờ đọc trực tiếp từ ảnh bộ nhớ (buffer UTF-16 của `notepad.exe` PID 4968 đang mở `Documents\Vormir\expedition.txt`) và dữ liệu gây nhiễung solved của nền tảng xác nhận giá trị này đã được chấp nhận.
+Cờ đọc trực tiếp từ ảnh bộ nhớ (buffer UTF-16 của `notepad.exe` PID 4968 đang mở `Documents\Vormir\expedition.txt`) và bảng solved của nền tảng xác nhận giá trị này đã được chấp nhận.
 
 ## Tái hiện
 
@@ -112,7 +112,7 @@ Chỉ cần Python 3 (`mmap`, `re`, `binascii`). Lưu block `python` cuối bài
 python solve.py soul.mem
 ```
 
-Script tìm `Artifact reference` ở cả ASCII và UTF-16, gom hex (bỏ `\x00`, newline, khoảng trắng) và in toàn văn dữ liệu gây nhiễun quanh mỗi dữ liệu gây nhiễun. Không cần symbol table vì buffer của notepad được đọc trực tiếp trên ảnh raw; bước quy chủ process dùng `VmmProcess.search()` của MemProcFS như đã mô tả ở trên.
+Script tìm `Artifact reference` ở cả ASCII và UTF-16, gom hex (bỏ `\x00`, newline, khoảng trắng) và in toàn văn bản quanh mỗi bản. Không cần symbol table vì buffer của notepad được đọc trực tiếp trên ảnh raw; bước quy chủ process dùng `VmmProcess.search()` của MemProcFS như đã mô tả ở trên.
 
 ```python
 """Doc "the final record": mau ghi con mo trong notepad.exe luc capture.

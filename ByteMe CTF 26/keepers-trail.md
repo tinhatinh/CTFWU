@@ -13,7 +13,7 @@ language: "vi"
 
 ## Đề bài
 
-Toàn bộ mô tả có trong thư mục run là tệp `Question.md` (356 B, dòng kết thúc kiểu CRLF). Nguyên văn phần văn dữ liệu gây nhiễun:
+Toàn bộ mô tả có trong thư mục run là tệp `Question.md` (356 B, dòng kết thúc kiểu CRLF). Nguyên văn phần văn bản:
 
 ```text
 An old keeper has been waiting a long time for someone worthy. He's left something behind — a letter. Everything else is inside it.
@@ -50,7 +50,7 @@ hidden.txt         642 B  0x + 640 hex chars
 flag.txt            19 B  OWASP{YouAreTheOne}
 ```
 
-Cỡ các dữ liệu gây nhiễun dump LSB khớp đúng phép tính bit-plane của ảnh gốc:
+Cỡ các bản dump LSB khớp đúng phép tính bit-plane của ảnh gốc:
 
 ```python
 n = 1245 * 2245
@@ -67,7 +67,7 @@ Bốn tệp `lsb-0..3.bin` dài đúng 349,379 B = một mặt phẳng bit của
 
 `flag.txt` 19 B chứa `OWASP{YouAreTheOne}` và không có byte xuống dòng cuối (19 ký tự = 19 byte). `pdf-password.txt` cũng không có byte cuối dòng: 12 ký tự = 12 byte, giá trị `FewerReturns`.
 
-Chuỗi `YouAreTheOne` chỉ xuất hiện trong `flag.txt`. Tìm chuỗi này trong `Letter.png`, `keeper.pdf`, `keeper-page.png`, cả sáu tệp LSB, `key-qr.png` và `layer1.txt` đều cho 0 kết quả — cờ không nằm dưới dạng văn dữ liệu gây nhiễun rõ trong bất kỳ artifact nào khác của thư mục.
+Chuỗi `YouAreTheOne` chỉ xuất hiện trong `flag.txt`. Tìm chuỗi này trong `Letter.png`, `keeper.pdf`, `keeper-page.png`, cả sáu tệp LSB, `key-qr.png` và `layer1.txt` đều cho 0 kết quả — cờ không nằm dưới dạng văn bản rõ trong bất kỳ artifact nào khác của thư mục.
 
 ## Lời giải
 
@@ -99,7 +99,7 @@ encrypted: True | decrypt -> 2
 pages: 1
 ```
 
-`decrypt()` trả về giá trị thành công và trích được văn dữ liệu gây nhiễun. Nội dung trích mới dài 757 ký tự, `pdf-text.txt` lưu 759 ký tự (782 byte thô do dòng kết thúc CRLF): cùng một bức thư, lệch 2 ký tự ở phần whitespace cuối, không đồng nhất từng byte sau khi chuẩn hoá.
+`decrypt()` trả về giá trị thành công và trích được văn bản. Nội dung trích mới dài 757 ký tự, `pdf-text.txt` lưu 759 ký tự (782 byte thô do dòng kết thúc CRLF): cùng một bức thư, lệch 2 ký tự ở phần whitespace cuối, không đồng nhất từng byte sau khi chuẩn hoá.
 
 ### Bức thư của Keeper
 
@@ -135,7 +135,7 @@ f383b1ae60ebb2cdbaf98143f37
 
 So sánh với các fragment trong thư:
 
-- Fragment đầu của thư, bỏ tiền tố `0x`, dài 33 ký tự hex; 32 ký tự đầu của nó (`107e61259ce9189f0674f5b9e040e69a` = 16 byte) chính là phần mở đầu của `hidden.txt`. Ký tự thứ 33 trong thư là `8`, còn `hidden.txt` tiếp bằng `a`. Nói cách khác dòng đầu ở cuối thư là dữ liệu gây nhiễun cắt của khối mật ngữ, bị lấy thừa một nibble.
+- Fragment đầu của thư, bỏ tiền tố `0x`, dài 33 ký tự hex; 32 ký tự đầu của nó (`107e61259ce9189f0674f5b9e040e69a` = 16 byte) chính là phần mở đầu của `hidden.txt`. Ký tự thứ 33 trong thư là `8`, còn `hidden.txt` tiếp bằng `a`. Nói cách khác dòng đầu ở cuối thư là bản cắt của khối mật ngữ, bị lấy thừa một nibble.
 - Hai fragment còn lại (`8083053327714a65be2f59558614f045e666`, `f383b1ae60ebb2cdbaf98143f37`) không xuất hiện trong `hidden.txt`, kể cả 16 byte đầu của chúng.
 - Số `3061` không xuất hiện trong `hidden.txt`.
 

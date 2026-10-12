@@ -41,7 +41,7 @@ m bit_length     : 319
 
 `n` dài 383 bit, nhỏ hơn nhiều mức thông thường của RSA và là con số đo từ `params.txt`, không phải độ dài chuẩn 1024 hay 2048 bit.
 
-Hai cặp `(e1, c1)` và `(e2, c2)` dùng chung một `n`, và dữ liệu gây nhiễun rõ được nói tới là một. Mô hình do đó là:
+Hai cặp `(e1, c1)` và `(e2, c2)` dùng chung một `n`, và bản rõ được nói tới là một. Mô hình do đó là:
 
 ```text
 c1 = m^e1 mod n
@@ -153,4 +153,4 @@ Chỉ cần Python 3 (`math`, `pathlib`), không cần thư viện mã hoá. Đ�
 $ python solve.py
 ```
 
-Để chạy độc lập phần kiểm chứng, lưu block thứ hai thành `check_vormir.py` cạnh `params.txt` rồi chạy `python check_vormir.py`; block này hard-code `m` nên phát hiện ngay nếu `params.txt` khác dữ liệu gây nhiễun được dùng ở trên.
+Để chạy độc lập phần kiểm chứng, lưu block thứ hai thành `check_vormir.py` cạnh `params.txt` rồi chạy `python check_vormir.py`; block này hard-code `m` nên phát hiện ngay nếu `params.txt` khác bản được dùng ở trên.

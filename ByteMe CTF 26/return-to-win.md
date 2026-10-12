@@ -17,7 +17,7 @@ Binary được tặng kèm (Easy, 100 điểm); chương trình in `Hi, what's 
 
 ## Phân tích
 
-`readelf -h main.out` trả `Type: EXEC (Executable file)` và `r2 -q -c "i~type,pic" main.out` báo `pic false`, nên địa chỉ hàm là hằng số, không cần bước leak. Lệnh checksec trong dữ liệu gây nhiễun ghi không in ra output, vì vậy ngoài kết luận non-PIE không khẳng định thêm trạng thái guard nào khác từ checksec; riêng `main.out` không tham chiếu `__stack_chk_fail` (`readelf -sW main.out | grep -c __stack_chk_fail` trả `0`), tức `hello()` kết thúc bằng `ret` mà không có bước kiểm canary.
+`readelf -h main.out` trả `Type: EXEC (Executable file)` và `r2 -q -c "i~type,pic" main.out` báo `pic false`, nên địa chỉ hàm là hằng số, không cần bước leak. Lệnh checksec trong bản ghi không in ra output, vì vậy ngoài kết luận non-PIE không khẳng định thêm trạng thái guard nào khác từ checksec; riêng `main.out` không tham chiếu `__stack_chk_fail` (`readelf -sW main.out | grep -c __stack_chk_fail` trả `0`), tức `hello()` kết thúc bằng `ret` mà không có bước kiểm canary.
 
 Symbol table:
 

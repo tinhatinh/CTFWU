@@ -31,7 +31,7 @@ Flag format: OWASP{...}
 
 ### Bọc ngoài file nén
 
-`unzip -l` cho hai thành viên, `archive.png` 2,108,924 B và `challenge.txt` 116 B. Định dạng PNG xác nhận bằng `file`: 1000×1180, 8-bit RGB, không có dữ liệu gây nhiễung màu, không có alpha.
+`unzip -l` cho hai thành viên, `archive.png` 2,108,924 B và `challenge.txt` 116 B. Định dạng PNG xác nhận bằng `file`: 1000×1180, 8-bit RGB, không có bảng màu, không có alpha.
 
 Layout chunk cho thấy không có dữ liệu giấu kiểu append:
 
@@ -109,7 +109,7 @@ Cờ được trích từ chính artifact (LSB plane `b1,rgb,lsb,xy`), giải m�
 
 ## Tái hiện
 
-Cần: `unzip`, `file`, Python 3 (`base64`), `zsteg` (đã kiểm chứng ở dữ liệu gây nhiễun hỗ trợ `-a`).
+Cần: `unzip`, `file`, Python 3 (`base64`), `zsteg` (đã kiểm chứng ở bản hỗ trợ `-a`).
 
 ```console
 $ unzip "Soul_in_the_Shadows_Player - 247 TANISHK MALGE.zip"

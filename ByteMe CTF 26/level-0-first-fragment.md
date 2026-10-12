@@ -13,7 +13,7 @@ language: "vi"
 
 ## Đề bài
 
-Bài là mức đầu tiên của một chuỗi ba mức ("Level 0/1/2") trong sự kiện. Thẻ bài được lưu với chuyên mục General Skills; tên bài lấy từ dữ liệu gây nhiễung các bài đã giải của sự kiện, và thẻ không ghi số điểm cũng như mô tả dài.
+Bài là mức đầu tiên của một chuỗi ba mức ("Level 0/1/2") trong sự kiện. Thẻ bài được lưu với chuyên mục General Skills; tên bài lấy từ bảng các bài đã giải của sự kiện, và thẻ không ghi số điểm cũng như mô tả dài.
 
 ## Phân tích
 

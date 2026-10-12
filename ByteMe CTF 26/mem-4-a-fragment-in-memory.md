@@ -43,11 +43,11 @@ Ba bài đầu của chuỗi dùng chung một khuôn: artifact là chuỗi hex 
 a:soulstone_memory_84c2    x6
 ```
 
-Tổng số dữ liệu gây nhiễun của giá trị này: 6 dữ liệu gây nhiễun ASCII + 14 dữ liệu gây nhiễun UTF-16 = **20 occurrence**. "Nơi ít người nghĩ tới" và "might be image" cùng chỉ về hai loại bộ chứa: clipboard (nội dung tạm, không sống trong file nào) và các dữ liệu gây nhiễun ghi UI/activation của Paint.
+Tổng số bản của giá trị này: 6 bản ASCII + 14 bản UTF-16 = **20 occurrence**. "Nơi ít người nghĩ tới" và "might be image" cùng chỉ về hai loại bộ chứa: clipboard (nội dung tạm, không sống trong file nào) và các bản ghi UI/activation của Paint.
 
 ## Lời giải
 
-### Định vị các dữ liệu gây nhiễun sao và phân loại bộ chứa
+### Định vị các bản sao và phân loại bộ chứa
 
 ```bash
 python solve.py soul.mem soulstone_memory
@@ -71,19 +71,19 @@ python solve.py soul.mem soulstone_memory
 -- utf16 occurrences: 14
 ```
 
-Bộ chứa quyết định là **clipboard**. Sáu dữ liệu gây nhiễun ASCII nằm trong khối `CF_HTML` có header chuẩn `Version:1.0 / StartHTML:000000101 / EndHTML:000000209 / StartFragment:000000137 / EndFragment:000000171`, phần fragment là `<code>soulstone_memory_84c2</code>`, tại `0x289980cf`, `0x289983cf`, `0x2d444056`, `0x4cf4b9cf`, `0x5fb480cf`, `0x5fb4828f`. Đây là định dạng Windows ghi khi sao chép từ trình duyệt; header này cho thấy dữ liệu được lưu dưới định dạng clipboard HTML; không đủ để kết luận mọi bản sao đều chỉ tồn tại trong RAM.
+Bộ chứa quyết định là **clipboard**. Sáu bản ASCII nằm trong khối `CF_HTML` có header chuẩn `Version:1.0 / StartHTML:000000101 / EndHTML:000000209 / StartFragment:000000137 / EndFragment:000000171`, phần fragment là `<code>soulstone_memory_84c2</code>`, tại `0x289980cf`, `0x289983cf`, `0x2d444056`, `0x4cf4b9cf`, `0x5fb480cf`, `0x5fb4828f`. Đây là định dạng Windows ghi khi sao chép từ trình duyệt; header này cho thấy dữ liệu được lưu dưới định dạng clipboard HTML; không đủ để kết luận mọi bản sao đều chỉ tồn tại trong RAM.
 
-Các dữ liệu gây nhiễun UTF-16 nằm cạnh `PaintStudio.View.exe` (Paint 3D), khoá giá trị `FrameworkViewType` (cạnh GUID `{E2F669FC-1840-4ADE-9CC8-7E8A039B97FE}`), chuỗi `Windows.Launch`, văn dữ liệu gây nhiễun cửa sổ `Chrome_WidgetWin_1` của `msedge.exe` và dữ liệu gây nhiễun ghi shell `WINDOWS10\nightwatch`. Cùng một giá trị, nhiều bộ chứa UI khác nhau — khớp với gợi ý "might be image" nhưng các chuỗi nằm cạnh nhau chưa đủ xác định thứ tự hiển thị và sao chép.
+Các bản UTF-16 nằm cạnh `PaintStudio.View.exe` (Paint 3D), khoá giá trị `FrameworkViewType` (cạnh GUID `{E2F669FC-1840-4ADE-9CC8-7E8A039B97FE}`), chuỗi `Windows.Launch`, văn bản cửa sổ `Chrome_WidgetWin_1` của `msedge.exe` và bản ghi shell `WINDOWS10\nightwatch`. Cùng một giá trị, nhiều bộ chứa UI khác nhau — khớp với gợi ý "might be image" nhưng các chuỗi nằm cạnh nhau chưa đủ xác định thứ tự hiển thị và sao chép.
 
-### Vì sao dữ liệu gây nhiễun gây nhiễu clipboard không phải đáp án
+### Vì sao bản gây nhiễu clipboard không phải đáp án
 
-Cũng trong vệt clipboard có một cờ khác, xuất hiện 4 dữ liệu gây nhiễun UTF-16 tại `0x1374e20c`, `0x6c32544c`, `0x9d2ddc88`, `0x9d2ddd98`:
+Cũng trong vệt clipboard có một cờ khác, xuất hiện 4 bản UTF-16 tại `0x1374e20c`, `0x6c32544c`, `0x9d2ddc88`, `0x9d2ddd98`:
 
 ```text
 Set-Clipboard -Value "4f574153507b7630726d31725f636c69705f393161377d"
 ```
 
-`4f574153507b7630726d31725f636c69705f393161377d` giải ra `OWASP{v0rm1r_clip_91a7}`. Điểm phân biệt là vị trí: cả bốn dữ liệu gây nhiễun đều nằm trong **command history** của PowerShell (dòng lệnh `Set-Clipboard ...`, cạnh các lệnh `Start-Process notepad.exe "$env:USERPROFILE\Documents\Vormir\expedition.txt"`), không có dữ liệu gây nhiễun nào nằm trong khối `CF_HTML`. Token `clip` trong tên đánh lừa theo hướng "clipboard còn lại trong RAM", nhưng đây là lệnh gán clipboard của một artifact khác, không phải nội dung clipboard còn sót.
+`4f574153507b7630726d31725f636c69705f393161377d` giải ra `OWASP{v0rm1r_clip_91a7}`. Điểm phân biệt là vị trí: cả bốn bản đều nằm trong **command history** của PowerShell (dòng lệnh `Set-Clipboard ...`, cạnh các lệnh `Start-Process notepad.exe "$env:USERPROFILE\Documents\Vormir\expedition.txt"`), không có bản nào nằm trong khối `CF_HTML`. Token `clip` trong tên đánh lừa theo hướng "clipboard còn lại trong RAM", nhưng đây là lệnh gán clipboard của một artifact khác, không phải nội dung clipboard còn sót.
 
 ## Kết quả
 
@@ -91,7 +91,7 @@ Set-Clipboard -Value "4f574153507b7630726d31725f636c69705f393161377d"
 OWASP{soulstone_memory_84c2}
 ```
 
-Cờ đọc trực tiếp từ ảnh bộ nhớ (khối `CF_HTML` của clipboard và các dữ liệu gây nhiễun ghi UI của Paint) và dữ liệu gây nhiễung solved của nền tảng xác nhận giá trị này đã được chấp nhận.
+Cờ đọc trực tiếp từ ảnh bộ nhớ (khối `CF_HTML` của clipboard và các bản ghi UI của Paint) và bảng solved của nền tảng xác nhận giá trị này đã được chấp nhận.
 
 ## Tái hiện
 
@@ -101,7 +101,7 @@ Chỉ cần Python 3 (`mmap`, `re`). Lưu block `python` cuối bài thành `sol
 python solve.py soul.mem soulstone_memory
 ```
 
-Script tìm token ở cả ASCII và UTF-16, in ngữ cảnh 640 byte quanh mỗi dữ liệu gây nhiễun và gắn nhãn bộ chứa (`CF_HTML`, `UI-record`, `raw`) dựa trên header `Version:1.0/StartFragment:` hoặc sự hiện diện của `View.exe`/`FrameworkViewType`. Muốn đọc dữ liệu gây nhiễun gây nhiễu, dùng `python solve.py soul.mem v0rm1r_clip`.
+Script tìm token ở cả ASCII và UTF-16, in ngữ cảnh 640 byte quanh mỗi bản và gắn nhãn bộ chứa (`CF_HTML`, `UI-record`, `raw`) dựa trên header `Version:1.0/StartFragment:` hoặc sự hiện diện của `View.exe`/`FrameworkViewType`. Muốn đọc bản gây nhiễu, dùng `python solve.py soul.mem v0rm1r_clip`.
 
 ```python
 """Tim mot token trong raw memory dump (ASCII + UTF-16) va phan loai bo chua no.

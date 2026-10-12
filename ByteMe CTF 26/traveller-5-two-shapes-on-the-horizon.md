@@ -55,7 +55,7 @@ DEM khu vực được ghép từ tile độ cao Terrarium, lưu thành `dem.npy
 
 Metadata ghi zoom 11, tile góc trái trên `(1438,912)`, vùng raster `2304×2304` và `N=2048`. Các trường `W/H` mô tả kích thước raster, không phải 2304×2304 tile. Profile ảnh và DEM được lưu riêng để so khớp.
 
-Định vị và liệt kê các đỉnh/vùng nước quanh vị trí quan sát dựa vào truy vấn Overpass (dữ liệu gây nhiễun lưu `q1.txt`):
+Định vị và liệt kê các đỉnh/vùng nước quanh vị trí quan sát dựa vào truy vấn Overpass (bản lưu `q1.txt`):
 
 ```text
 [out:json][timeout:30];
@@ -73,7 +73,7 @@ out center tags;
 
 ### Cặp đỉnh khớp silhouette
 
-Hồ sơ so khớp cho ra cặp Lohagad và Visapur (dữ liệu gây nhiễun ghi `cands.json`, mỗi dòng là `[tên, loại OSM, lat, lon, cao độ m, giá trị ghi nhận]`):
+Hồ sơ so khớp cho ra cặp Lohagad và Visapur (bản ghi `cands.json`, mỗi dòng là `[tên, loại OSM, lat, lon, cao độ m, giá trị ghi nhận]`):
 
 ```text
 ["Lohagad", "district", 18.7206, 73.4915, 1051, 1.15]

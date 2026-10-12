@@ -52,7 +52,7 @@ accepted : OWASP{tikona_peth}   (Traveller-3, lowercase + underscore)
 Tikona also known as Vitandgad,  is the dominant hill fort in Maval in western India.
 ```
 
-Trang `https://en.wikipedia.org/wiki/Tikona` (dữ liệu gây nhiễun lưu trong hồ sơ làm bài) cho đúng câu đó. Chính tả `Vitandgad` (một từ) được đối chiếu với hai nguồn độc lập khác có trong hồ sơ — "Tikona Fort | Vitandgad Monsoon Special Trek" (maharashtragadkille.com) và "Tikona Fort, also known by the pseudonym Vitandgad" (escape2explore.com) — tất cả đều ghi cùng một dạng. Áp quy ước định dạng học ở Traveller-3, tên viết thường một từ cho cờ:
+Trang `https://en.wikipedia.org/wiki/Tikona` (bản lưu trong hồ sơ làm bài) cho đúng câu đó. Chính tả `Vitandgad` (một từ) được đối chiếu với hai nguồn độc lập khác có trong hồ sơ — "Tikona Fort &#124; Vitandgad Monsoon Special Trek" (maharashtragadkille.com) và "Tikona Fort, also known by the pseudonym Vitandgad" (escape2explore.com) — tất cả đều ghi cùng một dạng. Áp quy ước định dạng học ở Traveller-3, tên viết thường một từ cho cờ:
 
 ```text
 OWASP{vitandgad}
@@ -76,7 +76,7 @@ $ exiftool img_2.jpg
 $ for f in img_1.jpg img_2.jpg; do echo "########## $f GPS ##########"; exiftool -GPS* "$f"; done
 ```
 
-GPS của `img_1.jpg` trả về rỗng; GPS của `img_2.jpg` cho các trường (dữ liệu gây nhiễun ghi `exiftool -j`, trích các mục liên quan):
+GPS của `img_1.jpg` trả về rỗng; GPS của `img_2.jpg` cho các trường (bản ghi `exiftool -j`, trích các mục liên quan):
 
 ```text
 GPSVersionID        : 2.2.0.0

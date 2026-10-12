@@ -61,7 +61,7 @@ python solve.py soul.mem
    11 q=Download+Free+FTK+Imager
 ```
 
-Chuỗi hex 54 ký tự trong tham số `artifact=` giải mã thành 27 byte `OWASP{soulstone_web_8b2d}`. Bản UTF-16 đầy đủ của URL xuất hiện **49 lần**, các dữ liệu gây nhiễun ASCII xuất hiện khoảng **29 lần** và thường bị cắt; toàn bộ trùng nhau ở phần `artifact=`.
+Chuỗi hex 54 ký tự trong tham số `artifact=` giải mã thành 27 byte `OWASP{soulstone_web_8b2d}`. Bản UTF-16 đầy đủ của URL xuất hiện **49 lần**, các bản ASCII xuất hiện khoảng **29 lần** và thường bị cắt; toàn bộ trùng nhau ở phần `artifact=`.
 
 Cùng URL còn nằm trong log telemetry của Edge:
 
@@ -82,7 +82,7 @@ Các truy vấn Bing còn trong RAM mô tả đúng "tìm trên web ngay trướ
 OWASP{soulstone_web_8b2d}
 ```
 
-Cờ đọc trực tiếp từ ảnh bộ nhớ (tham số `artifact=` của URL trong cache/telemetry Edge) và dữ liệu gây nhiễung solved của nền tảng xác nhận giá trị này đã được chấp nhận.
+Cờ đọc trực tiếp từ ảnh bộ nhớ (tham số `artifact=` của URL trong cache/telemetry Edge) và bảng solved của nền tảng xác nhận giá trị này đã được chấp nhận.
 
 ## Tái hiện
 

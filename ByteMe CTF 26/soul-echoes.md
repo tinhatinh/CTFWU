@@ -35,7 +35,7 @@ Binary menu theo chủ đề Stonekeeper (Medium, 200 điểm, 24 lời giải).
 0x00001100   12    400 main
 ```
 
-Bảng import không có `strcmp`, `memcmp`, `strlen` hay bất kỳ hàm biến đổi dữ liệu nào. Đường vào các chương chỉ là `fgets` → `strtol` → nhảy theo dữ liệu gây nhiễung switch:
+Bảng import không có `strcmp`, `memcmp`, `strlen` hay bất kỳ hàm biến đổi dữ liệu nào. Đường vào các chương chỉ là `fgets` → `strtol` → nhảy theo bảng switch:
 
 ```text
 0x000011f2      call sym.imp.fgets
@@ -56,7 +56,7 @@ Bảng import không có `strcmp`, `memcmp`, `strlen` hay bất kỳ hàm biến
 0x0000122d      call sym.chapter_three
 ```
 
-Không tồn tại phép so sánh nào với input, nên không có mật khẩu và cũng không có mã hóa: menu chỉ chọn một nhánh in ra. `main@0x1100` có 12 basic block nhưng toàn bộ là `puts` của banner và dữ liệu gây nhiễung switch nói trên.
+Không tồn tại phép so sánh nào với input, nên không có mật khẩu và cũng không có mã hóa: menu chỉ chọn một nhánh in ra. `main@0x1100` có 12 basic block nhưng toàn bộ là `puts` của banner và bảng switch nói trên.
 
 `chapter_three@0x1440` kết thúc bằng một lệnh in trực tiếp địa chỉ `.rodata`:
 

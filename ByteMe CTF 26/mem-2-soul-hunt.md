@@ -45,7 +45,7 @@ PID 5688  FileCoAuth.exe      C:\Users\nightwatch\AppData\Local\Microsoft\OneDri
 PID 2580  SoulHunt_7F31.exe   C:\Users\nightwatch\Desktop\SoulHunt_7F31.exe
 ```
 
-Hai entry OneDrive là tiến trình ký của chính ứng dụng. Entry còn lại có command line bất thường — dữ liệu gây nhiễun ghi gốc từ `process_list()`:
+Hai entry OneDrive là tiến trình ký của chính ứng dụng. Entry còn lại có command line bất thường — bản ghi gốc từ `process_list()`:
 
 ```text
 PID=2580|PPID=6960|NAME=SoulHunt_7F31.|FULL=SoulHunt_7F31.exe|PATH=C:\Users\nightwatch\Desktop\SoulHunt_7F31.exe|SES=1|STATE=0|INTEG=5|EPROC=18446703458219466880
@@ -85,7 +85,7 @@ powershell.exe (pid 6960) imagebase=0x7ff7a1b50000
   resident pages of A: 18, byte-identical with B: 14
 ```
 
-Header trùng khít, cùng `TimeDateStamp` và `SizeOfImage`; 14/18 page đang resident giống nhau từng byte (phần khác nằm ở vùng `.data` bị ghi đè lúc chạy). Ảnh của PID 6960 chứa rõ `powershell.pdb` và section `.text$lp01powershell.exe!20_pri7`. Kết luận: `SoulHunt_7F31.exe` là dữ liệu gây nhiễun sao đã đổi tên của `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`, được giữ sống bằng `Start-Sleep -Seconds 7200`.
+Header trùng khít, cùng `TimeDateStamp` và `SizeOfImage`; 14/18 page đang resident giống nhau từng byte (phần khác nằm ở vùng `.data` bị ghi đè lúc chạy). Ảnh của PID 6960 chứa rõ `powershell.pdb` và section `.text$lp01powershell.exe!20_pri7`. Kết luận: `SoulHunt_7F31.exe` là bản sao đã đổi tên của `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`, được giữ sống bằng `Start-Sleep -Seconds 7200`.
 
 ### Dấu vết tạo file
 
@@ -99,7 +99,7 @@ Copy-Item "$env:WINDIR\System32\WindowsPowerShell\v1.0\powershell.exe" "$env:USE
 Start-Process "$env:USERPROFILE\Desktop\SoulHunt_7F31.exe" -ArgumentList '-NoLogo','-NoProfile','-NoExit','-Command','Start-Sleep -Seconds 7200'
 ```
 
-Cùng khuôn mẫu này còn tạo `NightWatchSvc.exe` và `SoulStoneSvc.exe`; hai file đó có dòng log `LogEvents,ProcessStart` nhưng không còn EPROCESS tại thời điểm capture. `V0RMIR_7f31.exe` (dữ liệu gây nhiễun sao `notepad.exe` theo đoạn HTML hướng dẫn trong clipboard) chỉ tồn tại dưới dạng văn dữ liệu gây nhiễun, không có EPROCESS.
+Cùng khuôn mẫu này còn tạo `NightWatchSvc.exe` và `SoulStoneSvc.exe`; hai file đó có dòng log `LogEvents,ProcessStart` nhưng không còn EPROCESS tại thời điểm capture. `V0RMIR_7f31.exe` (bản sao `notepad.exe` theo đoạn HTML hướng dẫn trong clipboard) chỉ tồn tại dưới dạng văn bản, không có EPROCESS.
 
 ## Kết quả
 
@@ -107,7 +107,7 @@ Cùng khuôn mẫu này còn tạo `NightWatchSvc.exe` và `SoulStoneSvc.exe`; h
 OWASP{SoulHunt_7F31}
 ```
 
-Cờ đọc trực tiếp từ ảnh bộ nhớ (tên tiến trình của EPROCESS PID 2580) và dữ liệu gây nhiễung solved của nền tảng xác nhận giá trị này đã được chấp nhận.
+Cờ đọc trực tiếp từ ảnh bộ nhớ (tên tiến trình của EPROCESS PID 2580) và bảng solved của nền tảng xác nhận giá trị này đã được chấp nhận.
 
 ## Tái hiện
 
