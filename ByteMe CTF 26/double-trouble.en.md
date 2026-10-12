@@ -1,0 +1,143 @@
+---
+title: "Double Trouble"
+category: "Crypto"
+tags: ["rsa", "common-factor", "gcd", "xor", "base64"]
+solve_date: "2026-10-09"
+language: "en"
+---
+
+# Double Trouble
+
+**Flag:** `OWASP{soul_stone_claimed}`
+**Artifact:** `Double_Trouble_Player/challenge.txt` (1415 B). Author: Pratik Jadhav.
+
+## Challenge
+
+The statement file, verbatim:
+
+```text
+Double Trouble
+
+Two RSA-encrypted messages.
+Two public keys.
+Something went wrong.
+Recover the flag.
+
+Flag format: OWASP{...}
+
+Key 1
+n = 136394792664689136913047391786040839740641386136022296304399110418485381503408169046707249024055394463586320557273841901918210055285411590824620030604721899182113399196579679549306688641874463824740574413986109068414564662264661020625838439841039106399727289704483636718847201487622292550104585856701295374891
+e = 65537
+c = 134521281352758867350860818072977054652032102352229331447359007454595526189975373707133894647100321942270688915687980661116229674415028745509980338603682574721070576667608311055845501962609627254248729781736402231609286647246251554629628805835781949440899099216178468644031485302898582706742479047802421741564
+
+Key 2
+n = 109162921934093677436550013450280064293146809578043433854244544304434546571701897496083365116999248407394321911193333063366587422913006782978804907125839669272809934391580050159330595691512463665766850598107430198317345871096947736292837349167016220694510047532297441297629544059152930958663329239353463822627
+e = 65537
+c = 88443378202998818429278067858180529578463966526527968584321889337820756695910751619402694445973503272501187049270036294650245837667567867732034443569802470026432537706283921921528421511601610913691054596391086701333546057548969305537889062760869357507986259108883228314947639110443369508914396718979065513140
+```
+
+Easy, 100 points. No remote service ships with the challenge; the whole solve is arithmetic on this file.
+
+## Analysis
+
+Both moduli are 1024 bits and both use `e = 65537`. The first test is `math.gcd(n1, n2)`:
+
+```text
+bits n1,n2 = 1024 1024
+gcd(n1,n2) = 10971492882248595489790469047311448855123210538576307880766903991815190635492202015663568997449999980997671332001553343189818494219016208453002488063093017
+gcd>1 ? True
+n1//g = 12431744169051967068704708147160071085692161929813808142804417293452784390153750390676175488081003026430080579624183881978192268025221702342490289212631523
+n2//g = 9949687167068631023698333807877096263496194034777336357864086936201723740476171061374367082093714677041530531741152222461193948864658758820411003082002331
+```
+
+The greatest common divisor is above 1, so the two keys were generated sharing one prime factor. With `p = gcd(n1, n2)`, `q1 = n1 // p`, `q2 = n2 // p`, divisibility is re-checked by `p*q1 == n1` and `p*q2 == n2`, both `True`. Per key, `phi = (p-1)*(q-1)` gives `d = pow(e, -1, phi)` and ordinary decryption. Using Euler's `phi` rather than `lcm(p-1, q-1)` is still correct because `e` is coprime to `phi`.
+
+The two decrypted plaintexts differ in shape:
+
+```text
+[Key 1] bytes=b'CBYMHAI6NC44Iw0yMy4jKg0iKyAkIjclOg=='
+[Key 2] bytes=b'GAMORA'
+```
+
+The Key 1 result is a 36-character base64 string; `base64.b64decode` returns 25 bytes. The Key 2 result is 6 printable ASCII uppercase characters. 25 bytes is exactly the length of the flag being sought, and 6 is the period of a repeating XOR key. In other words, the second message is the keystream of the first one.
+
+XORing the 25 decoded bytes with `GAMORA` at period 6 yields a fully printable string. There is also a check independent of the direction of that reasoning: taking the first 6 bytes of the blob and XORing them with the crib `OWASP{` reproduces exactly `GAMORA`, so the crib and the keystream agree with each other rather than only with the final answer.
+
+```text
+keystream if starts OWASP{: b'GAMORA'
+```
+
+The first RSA plaintext is `CBYMHAI6NC44Iw0yMy4jKg0iKyAkIjclOg==`. Decode this value directly rather than transcribing intermediate data.
+
+## Solution
+
+Complete script, standard library only (`base64`, `math`), with a re-encryption self-check:
+
+```python
+import base64
+from math import gcd
+
+n1 = 136394792664689136913047391786040839740641386136022296304399110418485381503408169046707249024055394463586320557273841901918210055285411590824620030604721899182113399196579679549306688641874463824740574413986109068414564662264661020625838439841039106399727289704483636718847201487622292550104585856701295374891
+e  = 65537
+c1 = 134521281352758867350860818072977054652032102352229331447359007454595526189975373707133894647100321942270688915687980661116229674415028745509980338603682574721070576667608311055845501962609627254248729781736402231609286647246251554629628805835781949440899099216178468644031485302898582706742479047802421741564
+n2 = 109162921934093677436550013450280064293146809578043433854244544304434546571701897496083365116999248407394321911193333063366587422913006782978804907125839669272809934391580050159330595691512463665766850598107430198317345871096947736292837349167016220694510047532297441297629544059152930958663329239353463822627
+c2 = 88443378202998818429278067858180529578463966526527968584321889337820756695910751619402694445973503272501187049270036294650245837667567867732034443569802470026432537706283921921528421511601610913691054596391086701333546057548969305537889062760869357507986259108883228314947639110443369508914396718979065513140
+
+p = gcd(n1, n2)
+q1, q2 = n1 // p, n2 // p
+assert p * q1 == n1 and p * q2 == n2
+print("n1 bits, n2 bits :", n1.bit_length(), n2.bit_length())
+print("shared p         :", p)
+
+def decrypt(n, q, c):
+    d = pow(e, -1, (p - 1) * (q - 1))
+    return pow(c, d, n)
+
+m1i, m2i = decrypt(n1, q1, c1), decrypt(n2, q2, c2)
+assert pow(m1i, e, n1) == c1 and pow(m2i, e, n2) == c2
+print("[OK] re-encryption matches both ciphertexts")
+
+m1 = m1i.to_bytes((m1i.bit_length() + 7) // 8, "big")
+m2 = m2i.to_bytes((m2i.bit_length() + 7) // 8, "big")
+print("m1 =", m1)
+print("m2 =", m2)
+
+blob = base64.b64decode(m1.decode().rstrip(".") + "=")
+print("b64 len", len(blob), "key len", len(m2))
+print("blob hex :", blob.hex())
+print("crib check:", bytes(blob[i] ^ ord("OWASP{"[i]) for i in range(6)))
+flag = bytes(blob[i] ^ m2[i % len(m2)] for i in range(len(blob)))
+print("FLAG:", flag.decode("ascii"))
+```
+
+```text
+n1 bits, n2 bits : 1024 1024
+shared p         : 10971492882248595489790469047311448855123210538576307880766903991815190635492202015663568997449999980997671332001553343189818494219016208453002488063093017
+[OK] re-encryption matches both ciphertexts
+m1 = b'CBYMHAI6NC44Iw0yMy4jKg0iKyAkIjclOg=='
+m2 = b'GAMORA'
+b64 len 25 key len 6
+blob hex : 08160c1c023a342e38230d32332e232a0d222b20242237253a
+crib check: b'GAMORA'
+FLAG: OWASP{soul_stone_claimed}
+```
+
+The chain consists of a GCD, two RSA decryptions, Base64 decoding and XOR with `GAMORA`. Re-encryption matches both ciphertexts.
+
+## Result
+
+```text
+OWASP{soul_stone_claimed}
+```
+
+Decrypted locally from the artifact `challenge.txt` and self-verified by re-encryption against both ciphertexts. This challenge ships no remote service. No submission response recorded.
+
+## Reproduce
+
+Python 3, standard library only (`base64`, `math`). Save the block in the Solution section as `solve_dt.py` and run:
+
+```console
+$ python solve_dt.py
+```
+
+The script embeds the challenge values `n`, `e` and `c`, so it requires no input file.

@@ -648,7 +648,16 @@ def ctftime_team():
     if not os.path.isfile(p):
         return None
     with open(p, encoding="utf-8") as source:
-        return json.load(source)
+        data = json.load(source)
+    manual = os.path.join(ROOT, "tools", "team_results_manual.json")
+    if os.path.isfile(manual):
+        with open(manual, encoding="utf-8") as source:
+            for result in json.load(source):
+                year = str(result["year"])
+                rows = data["years"].setdefault(year, [])
+                if not any(row["event_url"] == result["event_url"] for row in rows):
+                    rows.insert(0, result)
+    return data
 
 
 def achievements(lang):

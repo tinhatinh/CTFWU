@@ -15,14 +15,12 @@ tinhatinh, Lizamort1 - their solutions live in their own repos, this one is only
 | [Pointer Overflow CTF 2026](Pointer%20Overflow%20CTF%202026/writeup.md) | Sep 2026 | 8 | Crypto · EXP · Forensics · Misc · OSINT · RE · Steg · Web |
 | [CSS CTF 2026: Return of Nexus](CSS%20CTF%202026/README.md) | Oct 2026 | 17 | Web · Pwn · Crypto · Forensics · OSINT · Misc · Reverse Engineering · Web3 |
 | [CDCTF 2026](CDCTF%202026/README.md) | Oct 2026 | 41 | Crypto · Forensics · Log Analysis · Misc · NTA · OSINT · Password Cracking · Pwn · Reverse · Scanning · Web |
-
 | [Cryovault 2026 Quals](Cryovault%202026%20Quals/README.md) | Oct 2026 | 26 | AI · Boot2Root · Crypto · Forensics · Hardware · Mobile · Pwn · Reverse · Web |
-
 | [FooBar CTF 2026](FooBar%20CTF%202026/README.md) | Oct 2026 | 11 | Crypto · Pwn · Reverse · Web |
 | [kBxAc CTF 2026](kBxAc%20CTF%202026/README.md) | Oct 2026 | 14 | Crypto · Forensics · Misc · Pwn · Reverse · Web |
+| [ByteMe CTF 26](ByteMe%20CTF%2026/README.md) | Oct 2026 | 39 | Crypto · Forensics · Misc · Mobile · OSINT · Pwn · Reverse · Steg · Web |
 
-**Total: 164 writeups**
-
+**Total: 203 writeups**
 
 ## Structure
 
@@ -40,7 +38,6 @@ Templates: `_template/writeup.md` and `_template/writeup.en.md`. Create the pair
 No per-challenge statement, notes, flag or exploit sidecars are required. Both editions
 carry the same known solve date and primary category; only prose is translated. Preserve
 code, commands and recorded output. Older events keep their existing paths and layout:
-
 
 ```
 <challenge-name>/
@@ -64,7 +61,54 @@ code, commands and recorded output. Older events keep their existing paths and l
 
 ## Quick Navigation
 
-164 writeups across 8 competitions. Each challenge links to its Vietnamese and English editions.
+203 writeups across 9 competitions. Each challenge links to its Vietnamese and English editions.
+
+<details>
+<summary>ByteMe CTF 26 — 39 writeups</summary>
+
+| Challenge | Category | VN | EN |
+|---|---|---|---|
+| Broken Soul Vault | Forensics | [VN](ByteMe%20CTF%2026/broken-soul-vault.md) | [EN](ByteMe%20CTF%2026/broken-soul-vault.en.md) |
+| Chaos in the Plot | Misc | [VN](ByteMe%20CTF%2026/chaos-in-the-plot.md) | [EN](ByteMe%20CTF%2026/chaos-in-the-plot.en.md) |
+| Don't fill me | Misc | [VN](ByteMe%20CTF%2026/dont-fill-me.md) | [EN](ByteMe%20CTF%2026/dont-fill-me.en.md) |
+| Double Trouble | Crypto | [VN](ByteMe%20CTF%2026/double-trouble.md) | [EN](ByteMe%20CTF%2026/double-trouble.en.md) |
+| Echoes of the Snap | Forensics | [VN](ByteMe%20CTF%2026/echoes-of-the-snap.md) | [EN](ByteMe%20CTF%2026/echoes-of-the-snap.en.md) |
+| House of Water | Pwn | [VN](ByteMe%20CTF%2026/house-of-water.md) | [EN](ByteMe%20CTF%2026/house-of-water.en.md) |
+| Infinity Echo | Crypto | [VN](ByteMe%20CTF%2026/infinity-echo.md) | [EN](ByteMe%20CTF%2026/infinity-echo.en.md) |
+| Invisible Signal | Steg | [VN](ByteMe%20CTF%2026/invisible-signal.md) | [EN](ByteMe%20CTF%2026/invisible-signal.en.md) |
+| The Keeper's Trail | OSINT | [VN](ByteMe%20CTF%2026/keepers-trail.md) | [EN](ByteMe%20CTF%2026/keepers-trail.en.md) |
+| Level 0 — First Fragment | Misc | [VN](ByteMe%20CTF%2026/level-0-first-fragment.md) | [EN](ByteMe%20CTF%2026/level-0-first-fragment.en.md) |
+| Mem-1 : When It Happened | Forensics | [VN](ByteMe%20CTF%2026/mem-1-when-it-happened.md) | [EN](ByteMe%20CTF%2026/mem-1-when-it-happened.en.md) |
+| Mem-2 : Soul Hunt | Forensics | [VN](ByteMe%20CTF%2026/mem-2-soul-hunt.md) | [EN](ByteMe%20CTF%2026/mem-2-soul-hunt.en.md) |
+| Mem-3 : The Painted Soul | Forensics | [VN](ByteMe%20CTF%2026/mem-3-the-painted-soul.md) | [EN](ByteMe%20CTF%2026/mem-3-the-painted-soul.en.md) |
+| Mem-4 : A Fragment in Memory | Forensics | [VN](ByteMe%20CTF%2026/mem-4-a-fragment-in-memory.md) | [EN](ByteMe%20CTF%2026/mem-4-a-fragment-in-memory.en.md) |
+| Mem-5 : The Last Trace | Forensics | [VN](ByteMe%20CTF%2026/mem-5-the-last-trace.md) | [EN](ByteMe%20CTF%2026/mem-5-the-last-trace.en.md) |
+| Mem-6 : The Forgotten Note | Forensics | [VN](ByteMe%20CTF%2026/mem-6-the-forgotten-note.md) | [EN](ByteMe%20CTF%2026/mem-6-the-forgotten-note.en.md) |
+| Red Skull's Trail | OSINT | [VN](ByteMe%20CTF%2026/red-skulls-trail.md) | [EN](ByteMe%20CTF%2026/red-skulls-trail.en.md) |
+| Return to Win | Pwn | [VN](ByteMe%20CTF%2026/return-to-win.md) | [EN](ByteMe%20CTF%2026/return-to-win.en.md) |
+| Sacrifice | Forensics | [VN](ByteMe%20CTF%2026/sacrifice.md) | [EN](ByteMe%20CTF%2026/sacrifice.en.md) |
+| Soul Ascension | Mobile | [VN](ByteMe%20CTF%2026/soul-ascension.md) | [EN](ByteMe%20CTF%2026/soul-ascension.en.md) |
+| Soul Echoes (The Stonekeeper's Chronicles) | Reverse | [VN](ByteMe%20CTF%2026/soul-echoes.md) | [EN](ByteMe%20CTF%2026/soul-echoes.en.md) |
+| Soul Forge | Crypto | [VN](ByteMe%20CTF%2026/soul-forge.md) | [EN](ByteMe%20CTF%2026/soul-forge.en.md) |
+| Soul Fragment Race | Web | [VN](ByteMe%20CTF%2026/soul-fragment-race.md) | [EN](ByteMe%20CTF%2026/soul-fragment-race.en.md) |
+| Soul in the Shadows | Steg | [VN](ByteMe%20CTF%2026/soul-in-the-shadows.md) | [EN](ByteMe%20CTF%2026/soul-in-the-shadows.en.md) |
+| Soul // Memory of Thanos | Pwn | [VN](ByteMe%20CTF%2026/soul-memory-of-thanos.md) | [EN](ByteMe%20CTF%2026/soul-memory-of-thanos.en.md) |
+| Soul Memory | Forensics | [VN](ByteMe%20CTF%2026/soul-memory.md) | [EN](ByteMe%20CTF%2026/soul-memory.en.md) |
+| Soul Vault: The Collector | Pwn | [VN](ByteMe%20CTF%2026/soul-vault-the-collector.md) | [EN](ByteMe%20CTF%2026/soul-vault-the-collector.en.md) |
+| Soul's Weakness | Pwn | [VN](ByteMe%20CTF%2026/souls-weakness.md) | [EN](ByteMe%20CTF%2026/souls-weakness.en.md) |
+| Soul's Whisper | Reverse | [VN](ByteMe%20CTF%2026/souls-whisper.md) | [EN](ByteMe%20CTF%2026/souls-whisper.en.md) |
+| SoulStone (The Trial of Vormir) | Reverse | [VN](ByteMe%20CTF%2026/soulstone-trial-of-vormir.md) | [EN](ByteMe%20CTF%2026/soulstone-trial-of-vormir.en.md) |
+| SoulVault | Reverse | [VN](ByteMe%20CTF%2026/soulvault-go.md) | [EN](ByteMe%20CTF%2026/soulvault-go.en.md) |
+| SoulVault | Mobile | [VN](ByteMe%20CTF%2026/soulvault-mobile.md) | [EN](ByteMe%20CTF%2026/soulvault-mobile.en.md) |
+| Traveller-1 : The First Stop | OSINT | [VN](ByteMe%20CTF%2026/traveller-1-the-first-stop.md) | [EN](ByteMe%20CTF%2026/traveller-1-the-first-stop.en.md) |
+| Traveller-2 : Seven Stops | OSINT | [VN](ByteMe%20CTF%2026/traveller-2-seven-stops.md) | [EN](ByteMe%20CTF%2026/traveller-2-seven-stops.en.md) |
+| Traveller-3 : The Road Ends Here | OSINT | [VN](ByteMe%20CTF%2026/traveller-3-the-road-ends-here.md) | [EN](ByteMe%20CTF%2026/traveller-3-the-road-ends-here.en.md) |
+| Traveller-4 : Two Names, One Fort | OSINT | [VN](ByteMe%20CTF%2026/traveller-4-two-names-one-fort.md) | [EN](ByteMe%20CTF%2026/traveller-4-two-names-one-fort.en.md) |
+| Traveller-5 : Two Shapes on the Horizon | OSINT | [VN](ByteMe%20CTF%2026/traveller-5-two-shapes-on-the-horizon.md) | [EN](ByteMe%20CTF%2026/traveller-5-two-shapes-on-the-horizon.en.md) |
+| Traveller-6 : Across the Water | OSINT | [VN](ByteMe%20CTF%2026/traveller-6-across-the-water.md) | [EN](ByteMe%20CTF%2026/traveller-6-across-the-water.en.md) |
+| Vormir Common Modulus | Crypto | [VN](ByteMe%20CTF%2026/vormir-common-modulus.md) | [EN](ByteMe%20CTF%2026/vormir-common-modulus.en.md) |
+
+</details>
 
 <details>
 <summary>FooBar CTF 2026 — 11 writeups</summary>
