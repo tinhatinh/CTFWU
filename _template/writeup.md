@@ -1,49 +1,39 @@
-# <Challenge Name> - <Category>
+---
+title: "<Challenge Name>"
+category: "<Primary category>"
+tags: []
+solve_date: "YYYY-MM-DD"
+language: vi
+---
 
-**Đầu vào:** `<artifact hoặc service>`
+# <Challenge Name>
 
 ## Đề bài
 
-<Nêu mục tiêu và dữ liệu được cung cấp trong 2–3 câu. Chỉ thêm điểm/độ khó khi có trên thẻ đề.>
+<Mục tiêu và artifact hoặc service được cung cấp. Đưa ảnh đề vào đây nếu cần. Chỉ ghi điểm/độ khó khi có dữ liệu thật.>
 
 ## Phân tích
 
-<Nêu trường dữ liệu, đoạn code hoặc hành vi dẫn đến lời giải. Bỏ mục này nếu bài chỉ cần đọc thông tin trực tiếp.>
-
-```text
-<Trích đoạn artifact hoặc output đã lưu, nếu cần.>
-```
+<Quan sát cụ thể dẫn đến lời giải. Bỏ mục này nếu đáp án có thể đọc trực tiếp.>
 
 ## Lời giải
 
-### <Tên thao tác hoặc cơ chế chính>
+<Thao tác cần thiết, lý do hoạt động và kết quả quan sát được. Chỉ đưa lệnh và bằng chứng liên quan.>
 
-<Giải thích từ dữ kiện đến thao tác và kết quả. Chia mục có tên cụ thể nếu bài dài; không ép số bước.>
-
-```bash
-<Lệnh chạy từ thư mục challenge.>
+```python
+<Code đầy đủ để tái hiện nếu cần; không bắt người đọc tìm một exploit.py không được cung cấp.>
 ```
-
-```text
-<Output thật liên quan đến kết quả, nếu đã lưu.>
-```
-
-<Chỉ thêm script khi giúp tái hiện. Chữ rõ trên ảnh thì đọc trực tiếp, không thêm OCR.>
 
 ## Kết quả
 
 ```text
-<Flag hoặc đáp án đúng kiểu đề yêu cầu. Chưa thu được thì ghi bằng văn xuôi, không tạo cờ mẫu.>
+<Flag hoặc đáp án thực tế; không tạo cờ mẫu.>
 ```
 
-<Chỉ ghi submission thành công khi có phản hồi đã lưu. Nhận marker, giải mã artifact hoặc test local chưa chứng minh đã nộp thành công. Không kể chuyện người dùng/agent trao đổi.>
+<Chỉ ghi submission thành công khi có phản hồi đã lưu. Không kể lại phiên chat, hoạt động của agent hoặc người dùng xác nhận.>
 
 ## Tái hiện
 
-<Dependency và điều kiện instance cần thiết. Dùng placeholder cho token/cookie.>
+<Input, dependency và lệnh chạy. Nếu cần lưu code để chạy, chỉ rõ fenced block nào cần lưu và tên file. Không dẫn tới script không tồn tại.>
 
-```bash
-python exploit.py files/<artifact>
-```
-
-<Chỉ giữ nhánh thất bại có ích cho cách giải. Nhật ký chi tiết nằm trong notes.md. Xóa mọi placeholder và lời dặn template trước khi bàn giao.>
+<Xóa mục không cần, placeholder và lời dặn template. Bản EN phải đồng nhất về cơ chế, code, output, flag, category và solve_date.>

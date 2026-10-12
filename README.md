@@ -16,13 +16,14 @@ python tools/build_site.py              # writes _site_src/ and _site_src_en/
 ```
 
 `_site_src/` (Vietnamese) and `_site_src_en/` (English) are generated and git-ignored - never edit
-them. The generator reads each `<Event>/<slug>/writeup.md` and `writeup.en.md`, including the optional
-`<Event>/Wave N/<slug>/` layout, takes the publish
-date from `tools/solve_times.json` (the moment the flag was written during the contest; an entry
-with no clock time means the file was copied in bulk, so only the day is evidenced), reads the
-category from the event's `README.md` table, generates the `competitions` and `about` tabs, copies
-referenced images to `assets/writeups/<event>/<case>/`, and wraps every body in `{% raw %}` because
-writeups quote Liquid syntax (`{{7*7}}`, `{% ... %}`) that Jekyll would otherwise try to execute.
+them. The generator supports the older `<Event>/<case>/writeup.md` and `writeup.en.md`
+folders (including `Wave N`) and, from Cryovault 2026 Quals onward, paired
+`<Event>/<slug>.md` (VN) and `<Event>/<slug>.en.md` (EN). Each new file contains its statement,
+solution, code, results and scalar metadata. New editions declare matching `category` and
+`solve_date`; legacy editions use the event README and `tools/solve_times.json`.
+Solve dates are fixed independently of editorial commits. Public builds require declared
+solve dates and both editions for the new format. The generator assembles the site, copies
+referenced images, and protects Liquid payloads (`{{7*7}}`, `{% ... %}`) from execution.
 GitHub Actions runs it before building, so the site cannot drift from the archive.
 
 The interface lives in `site/_layouts/`, `site/_includes/`, `site/assets/css/campus.css`,
@@ -136,12 +137,28 @@ score labels.
 | [CSS CTF 2026: Return of Nexus](CSS%20CTF%202026/README.md) | Oct 2026 | 17 | Web · Pwn · Crypto · Forensics · OSINT · Misc · Reverse Engineering · Web3 |
 | [CDCTF 2026](CDCTF%202026/README.md) | Oct 2026 | 41 | Crypto · Forensics · Log Analysis · Misc · NTA · OSINT · Password Cracking · Pwn · Reverse · Scanning · Web |
 
-**Total: 113 writeups**
+| [Cryovault 2026 Quals](Cryovault%202026%20Quals/README.md) | Oct 2026 | 26 | AI · Boot2Root · Crypto · Forensics · Hardware · Mobile · Pwn · Reverse · Web |
+
+**Total: 139 writeups**
 
 
 ## Structure
 
-Preferred challenge layout; omit unavailable files and use the script name documented in the writeup:
+From **Cryovault 2026 Quals** onward, each challenge has just two Markdown editions:
+
+```text
+<Event>/
+  <challenge>.md       # VN
+  <challenge>.en.md    # EN
+  images/             # shared images only when needed
+```
+
+Templates: `_template/writeup.md` and `_template/writeup.en.md`. Create the pair with
+`python _template/new_case.py "Cryovault 2026 Quals" <challenge> --category <Category> --solve-date <ISO-date>`.
+No per-challenge statement, notes, flag or exploit sidecars are required. Both editions
+carry the same known solve date and primary category; only prose is translated. Preserve
+code, commands and recorded output. Older events keep their existing paths and layout:
+
 
 ```
 <challenge-name>/
@@ -164,6 +181,41 @@ Preferred challenge layout; omit unavailable files and use the script name docum
 - Flag prefixes vary between challenges (even within the same event). Always verify before scanning.
 
 ## Quick Navigation
+
+<details>
+<summary>Cryovault 2026 Quals — 26 writeups</summary>
+
+| Challenge | Category | VN | EN |
+|---|---|---|---|
+| Draftpad | Web | [VN](Cryovault%202026%20Quals/draftpad.md) | [EN](Cryovault%202026%20Quals/draftpad.en.md) |
+| EchoChamber | Boot2Root | [VN](Cryovault%202026%20Quals/echochamber.md) | [EN](Cryovault%202026%20Quals/echochamber.en.md) |
+| Field Console | Mobile | [VN](Cryovault%202026%20Quals/field-console.md) | [EN](Cryovault%202026%20Quals/field-console.en.md) |
+| frost-ledger | Forensics | [VN](Cryovault%202026%20Quals/frost-ledger.md) | [EN](Cryovault%202026%20Quals/frost-ledger.en.md) |
+| GHOST - 13 | Hardware | [VN](Cryovault%202026%20Quals/ghost-13.md) | [EN](Cryovault%202026%20Quals/ghost-13.en.md) |
+| Ghost in the Spooler | Forensics | [VN](Cryovault%202026%20Quals/ghost-in-the-spooler.md) | [EN](Cryovault%202026%20Quals/ghost-in-the-spooler.en.md) |
+| Greyline Junction | Web | [VN](Cryovault%202026%20Quals/greyline-junction.md) | [EN](Cryovault%202026%20Quals/greyline-junction.en.md) |
+| half-truths | Crypto | [VN](Cryovault%202026%20Quals/half-truths.md) | [EN](Cryovault%202026%20Quals/half-truths.en.md) |
+| Journal Necromancy | Forensics | [VN](Cryovault%202026%20Quals/journal-necromancy.md) | [EN](Cryovault%202026%20Quals/journal-necromancy.en.md) |
+| Kelpie | Reverse | [VN](Cryovault%202026%20Quals/kelpie.md) | [EN](Cryovault%202026%20Quals/kelpie.en.md) |
+| Last Packet | Forensics | [VN](Cryovault%202026%20Quals/last-packet.md) | [EN](Cryovault%202026%20Quals/last-packet.en.md) |
+| Lossless, Not Harmless | Forensics | [VN](Cryovault%202026%20Quals/lossless-not-harmless.md) | [EN](Cryovault%202026%20Quals/lossless-not-harmless.en.md) |
+| Mirage | Pwn | [VN](Cryovault%202026%20Quals/mirage.md) | [EN](Cryovault%202026%20Quals/mirage.en.md) |
+| Oatmeal | Mobile | [VN](Cryovault%202026%20Quals/oatmeal.md) | [EN](Cryovault%202026%20Quals/oatmeal.en.md) |
+| Phantom Mesh | Forensics | [VN](Cryovault%202026%20Quals/phantom-mesh.md) | [EN](Cryovault%202026%20Quals/phantom-mesh.en.md) |
+| Rimefold | Pwn | [VN](Cryovault%202026%20Quals/rimefold.md) | [EN](Cryovault%202026%20Quals/rimefold.en.md) |
+| Safe Alone | AI | [VN](Cryovault%202026%20Quals/safe-alone.md) | [EN](Cryovault%202026%20Quals/safe-alone.en.md) |
+| Signed, But Which Original? | Forensics | [VN](Cryovault%202026%20Quals/signed-but-which-original.md) | [EN](Cryovault%202026%20Quals/signed-but-which-original.en.md) |
+| Slab | Pwn | [VN](Cryovault%202026%20Quals/slab.md) | [EN](Cryovault%202026%20Quals/slab.en.md) |
+| Tearing | Pwn | [VN](Cryovault%202026%20Quals/tearing.md) | [EN](Cryovault%202026%20Quals/tearing.en.md) |
+| The Alphabet That Wasn't There | Forensics | [VN](Cryovault%202026%20Quals/the-alphabet-that-wasn-t-there.md) | [EN](Cryovault%202026%20Quals/the-alphabet-that-wasn-t-there.en.md) |
+| The Deletion Echo | AI | [VN](Cryovault%202026%20Quals/the-deletion-echo.md) | [EN](Cryovault%202026%20Quals/the-deletion-echo.en.md) |
+| The Image That Forgot | Forensics | [VN](Cryovault%202026%20Quals/the-image-that-forgot.md) | [EN](Cryovault%202026%20Quals/the-image-that-forgot.en.md) |
+| The Last Committed Message | Forensics | [VN](Cryovault%202026%20Quals/the-last-committed-message.md) | [EN](Cryovault%202026%20Quals/the-last-committed-message.en.md) |
+| The Meridian | Web | [VN](Cryovault%202026%20Quals/the-meridian.md) | [EN](Cryovault%202026%20Quals/the-meridian.en.md) |
+| Write Hole | Forensics | [VN](Cryovault%202026%20Quals/write-hole.md) | [EN](Cryovault%202026%20Quals/write-hole.en.md) |
+
+</details>
+
 
 
 <details>

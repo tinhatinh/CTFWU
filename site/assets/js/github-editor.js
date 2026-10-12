@@ -5,8 +5,13 @@
   const prefix = '/repos/' + repo;
   window.createGithubEditor = () => {
     const directory = document.querySelector('[data-source-directory]').dataset.sourceDirectory;
+    const declared = JSON.parse(document.querySelector('[data-source-directory]').dataset.sourceFiles || '{}');
     const parts = directory.split('/');
-    if (![2,3].includes(parts.length) || (parts.length===3 && !/^Wave [1-9]\d*$/.test(parts[1])) || parts.some(part=>!part || part==='.' || part==='..' || /[\\\u0000-\u001f]/.test(part))) throw new Error('Invalid source directory');
+    if (![1,2,3].includes(parts.length) || (parts.length===3 && !/^Wave [1-9]\d*$/.test(parts[1])) || parts.some(part=>!part || part==='.' || part==='..' || /[\\\u0000-\u001f]/.test(part))) throw new Error('Invalid source directory');
+    for (const [language,path] of Object.entries(declared)) {
+      const filename = typeof path === 'string' ? path.slice(directory.length + 1) : '';
+      if (!['vi','en'].includes(language) || !path.startsWith(directory+'/') || !filename.endsWith('.md') || /[\/\\\u0000-\u001f]/.test(filename) || filename.startsWith('.')) throw new Error('Invalid source file');
+    }
     let credential, owner, expires = 0;
     const normalize = value=>value.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
     const auth = () => {
@@ -34,7 +39,8 @@
     };
     const head = async ()=> (await github(prefix+'/git/ref/heads/main')).object.sha;
     const source = async (lang, ref) => {
-      const path=directory+'/'+(lang==='vi'?'writeup.md':'writeup.en.md');
+      const path=Object.keys(declared).length ? declared[lang] : directory+'/'+(lang==='vi'?'writeup.md':'writeup.en.md');
+      if (!path) { const error=new Error('Edition unavailable');error.status=404;throw error; }
       const encoded=path.split('/').map(encodeURIComponent).join('/');
       const data=await github(prefix+'/contents/'+encoded+'?ref='+encodeURIComponent(ref));
       if (data.type!=='file') throw new Error('Source is not a file');

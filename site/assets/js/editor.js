@@ -66,6 +66,12 @@
     try {
       const data = await request('/api/writeup?'+new URLSearchParams({key}));
       variants=data.variants;
+      if (Object.keys(variants).length === 1) {
+        const edition = variants.vi ? 'VN' : 'EN';
+        form.querySelector('.editor-note').textContent = vi
+          ? 'Bài này có một bản nguồn (' + edition + '). Lưu sẽ cập nhật trực tiếp file đó.'
+          : 'This article has one source edition (' + edition + '). Saving updates that file directly.';
+      }
       for (const lang of ['vi','en']) {
         if (!variants[lang]) {contents[lang].value='';continue;}
         variants[lang].original=variants[lang].content.replace(/\r\n/g,'\n');

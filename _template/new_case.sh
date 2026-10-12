@@ -1,13 +1,22 @@
 #!/usr/bin/env bash
-# Tao thu muc writeup cho mot bai CTF theo dung cau truc repo CTFWU.
-# Cach dung: bash new_case.sh "<Ten Event>" <ten-bai> [duong-dan-file-de] [--wip]
-#   bash new_case.sh "SunshineCTF 2026" very-hidden "./encoded.bmp"
-#   bash new_case.sh "H7CTF 2026 Quals" broken-telephone "" --wip
-# --wip: bai chua ra co, dat duoi <Event>/_wip/.
+# New events from Cryovault: <challenge>.md (VN) and <challenge>.en.md (EN).
+# bash new_case.sh "Cryovault 2026 Quals" frost-ledger --category Forensics --solve-date YYYY-MM-DD
+# Existing legacy events retain folders; --legacy forces the old scaffold.
+# bash new_case.sh "H7CTF 2026 Quals" broken-telephone "" --wip --legacy
 set -euo pipefail
 
 TPL="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"   # .../CTFWU/_template
 ROOT="$(dirname "$TPL")"                              # .../CTFWU
+
+# New competitions: two Markdown editions. Legacy creation is explicit.
+shopt -s nullglob
+legacy_sources=("$ROOT/${1:-}"/*/writeup.md "$ROOT/${1:-}"/Wave\ */*/writeup.md)
+if [[ " ${*} " != *" --legacy "* && ${#legacy_sources[@]} -eq 0 ]]; then
+  exec python "$TPL/new_case.py" "$@"
+fi
+args=()
+for arg in "$@"; do [[ "$arg" == "--legacy" ]] || args+=("$arg"); done
+set -- "${args[@]}"
 
 EVENT="${1:?tham so 1 la ten cuoc thi, vi du \"SunshineCTF 2026\"}"
 SLUG="${2:?ten bai la bat buoc (viet thuong, noi dau gach noi)}"
@@ -28,8 +37,8 @@ fi
 
 mkdir -p "$CASE/analysis" "$CASE/files"
 cp "$TPL/de.md"      "$CASE/de.md"
-cp "$TPL/writeup.md" "$CASE/writeup.md"
-cp "$TPL/writeup.en.md" "$CASE/writeup.en.md"
+cp "$TPL/legacy/writeup.md" "$CASE/writeup.md"
+cp "$TPL/legacy/writeup.en.md" "$CASE/writeup.en.md"
 cp "$TPL/notes.md"   "$CASE/notes.md"
 cp "$TPL/solve.py"   "$CASE/exploit.py"
 

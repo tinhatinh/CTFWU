@@ -3,11 +3,12 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const assert = require('node:assert/strict');
 const code = fs.readFileSync('site/assets/js/github-editor.js','utf8');
-function fixture({nonOwner=false,race=false,directory='Example CTF/sample'}={}) {
+function fixture({nonOwner=false,race=false,directory='Example CTF/sample',sourceFiles={}}={}) {
   const calls=[];
   const files={vi:{content:'# VN\nNội dung.\n',sha:'old-vn'},en:{content:'# EN\nOriginal.\n',sha:'old-en'}};
   let committed, tree;
-  const context={window:{},document:{querySelector:()=>({dataset:{sourceDirectory:directory}})},
+  const editionForPath=path=>Object.entries(sourceFiles).find(([,source])=>path.endsWith('/'+encodeURIComponent(source.split('/').pop())))?.[0] || (path.endsWith('writeup.en.md')?'en':'vi');
+  const context={window:{},document:{querySelector:()=>({dataset:{sourceDirectory:directory,sourceFiles:JSON.stringify(sourceFiles)}})},
     TextDecoder,TextEncoder,Uint8Array,URLSearchParams,Date,atob,
     fetch:async(url,options)=>{
       const path=new URL(url).pathname;
@@ -18,14 +19,14 @@ function fixture({nonOwner=false,race=false,directory='Example CTF/sample'}={}) 
       else if(path==='/repos/tinhatinh/CTFWU')data={full_name:'tinhatinh/CTFWU',owner:{id:1}};
       else if(path.endsWith('/git/ref/heads/main'))data={object:{sha:'a'.repeat(40)}};
       else if(path.includes('/contents/')){
-        const lang=path.endsWith('writeup.en.md')?'en':'vi';
+        const lang=editionForPath(path);
         data={type:'file',sha:files[lang].sha,encoding:'base64',content:Buffer.from(files[lang].content).toString('base64')};
       }else if(path.endsWith('/git/commits/'+'a'.repeat(40)))data={tree:{sha:'base-tree'}};
       else if(path.endsWith('/git/trees')){tree=body;data={sha:'new-tree'};}
       else if(path.endsWith('/git/commits')){committed=body;data={sha:'b'.repeat(40)};}
       else if(path.endsWith('/git/refs/heads/main')){
         if(race){status=422;data={message:'Not fast forward'};}
-        else{for(const entry of tree.tree){const lang=entry.path.endsWith('writeup.en.md')?'en':'vi';files[lang]={content:entry.content,sha:'new-'+lang};}data={object:{sha:body.sha}};}
+        else{for(const entry of tree.tree){const lang=editionForPath(entry.path);files[lang]={content:entry.content,sha:'new-'+lang};}data={object:{sha:body.sha}};}
       }else throw new Error('Unexpected API path '+path);
       return {ok:status===200,status,json:async()=>data};
     }};
@@ -62,5 +63,14 @@ async function save(instance,edits){return instance.request('/api/writeup',{meth
   assert(wave.calls.some(call=>call.path.includes('/contents/Example%20CTF/Wave%202/sample/writeup.md')));
   assert.throws(()=>fixture({directory:'Example CTF/Wave 2/../sample'}),/Invalid source directory/);
   assert.throws(()=>fixture({directory:'Example CTF/arbitrary/sample'}),/Invalid source directory/);
+  const flat=fixture({directory:'Cryovault 2026 Quals',sourceFiles:{vi:'Cryovault 2026 Quals/frost-ledger.md',en:'Cryovault 2026 Quals/frost-ledger.en.md'}});
+  await login(flat);
+  const flatSource=await flat.request('/api/writeup');
+  assert.deepEqual(Object.keys(flatSource.variants),['vi','en']);
+  await save(flat,[{lang:'en',version:'old-en',content:'# Revised one-file article\n'}]);
+  assert.equal(flat.tree.tree.length,1);
+  assert.equal(flat.tree.tree[0].path,'Cryovault 2026 Quals/frost-ledger.en.md');
+  assert.equal(flat.files.en.content,'# Revised one-file article\n');
+  assert.throws(()=>fixture({directory:'Cryovault 2026 Quals',sourceFiles:{en:'Cryovault 2026 Quals/../private.md'}}),/Invalid source file/);
   console.log('GitHub editor checks passed: owner, UTF-8, conflict, bilingual commit, logout, concurrent push');
 })().catch(error=>{console.error(error);process.exitCode=1;});

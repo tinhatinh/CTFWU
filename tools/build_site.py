@@ -2,6 +2,8 @@
 """Dựng `_site_src/` (tieng Viet) va `_site_src_en/` (tieng Anh) cho Jekyll.
 
 Kho writeup theo thu muc van la nguon duy nhat:
+    <Event>/<challenge>.md          ban VN tu Cryovault 2026 Quals
+    <Event>/<challenge>.en.md       ban EN, metadata ngay solve giong ban VN
     <Event>/<slug>/writeup.md        ban tieng Viet
     <Event>/<slug>/writeup.en.md     ban tieng Anh (thieu thi dung VI kem nhan fallback)
     <Event>/Wave N/<slug>/          cau truc tuy chon cho cuoc thi chia wave
@@ -98,9 +100,9 @@ Mọi bài trên trang này là writeup do chính mình viết, tức phần c�
 **{team}** ([CTFTime team 449538](https://ctftime.org/team/449538)). Lời giải của các thành viên
 khác không nằm ở đây.
 
-Mỗi đề là một thư mục trong repo [`tinhatinh/CTFWU`](https://github.com/tinhatinh/CTFWU).
-`de.md` lưu đề và metadata, các bản `writeup` trình bày lời giải. Nhật ký, script tái hiện và
-artifact đi kèm được giữ trong `notes.md`, các file script và `files/` khi có dữ liệu.
+Các giải cũ lưu mỗi đề trong một thư mục của repo [`tinhatinh/CTFWU`](https://github.com/tinhatinh/CTFWU).
+Từ Cryovault 2026 Quals, mỗi bài có hai file Markdown VN/EN chứa đề bài, lời giải,
+code tái hiện và kết quả. Ảnh và artifact được giữ kèm khi cần.
 
 Mỗi bài ghi lại dữ liệu đầu vào, thao tác và kết quả đã thu thập; nguồn tham khảo kỹ thuật
 được dẫn khi cần. Một số cuộc thi dùng artifact hoặc flag riêng theo đội, nên kết quả
@@ -124,10 +126,9 @@ Every post here is a writeup I wrote myself, which is my share of what team
 **{team}** ([CTFTime team 449538](https://ctftime.org/team/449538)) solved. Teammates publish
 their own solutions elsewhere.
 
-Each challenge is a folder in the [`tinhatinh/CTFWU`](https://github.com/tinhatinh/CTFWU) repo.
-`de.md` records the statement and metadata; the writeup editions explain the solution.
-Available investigation logs, reproduction scripts and artifacts are kept in `notes.md`,
-script files and `files/`.
+Earlier events store each challenge in a folder in the [`tinhatinh/CTFWU`](https://github.com/tinhatinh/CTFWU) repo.
+From Cryovault 2026 Quals onward, each challenge has VN and EN Markdown files containing
+the statement, solution, reproduction code and result. Images and artifacts are kept when needed.
 
 Each post records its inputs, operations and observed results, with technical references where needed.
 Some events issue team-specific artifacts or flags, so results must be checked against the data
@@ -222,6 +223,10 @@ def case_directories(event_root):
     """Enumerate direct cases and one Wave N level, excluding unfinished folders."""
     for name in sorted(os.listdir(event_root)):
         folder = os.path.join(event_root, name)
+        if os.path.isfile(folder) and name.lower().endswith('.md') and not name.lower().endswith('.en.md') and name.lower() != 'readme.md' and not name.startswith(('.', '_')):
+            if os.path.commonpath([os.path.realpath(event_root), os.path.realpath(folder)]) == os.path.realpath(event_root):
+                yield name
+            continue
         if not os.path.isdir(folder) or name.startswith(('.', '_')):
             continue
         if re.fullmatch(r'Wave [1-9]\d*', name):
@@ -237,7 +242,68 @@ def case_directories(event_root):
 def challenge_key(event, case):
     # Wave 1 retains the previously published permalink and editor key.
     identity = case[len('Wave 1/'):] if case.startswith('Wave 1/') else case
+    if identity.lower().endswith('.md'):
+        identity = identity[:-3]
     return slugify(event) + '-' + slugify(identity)
+
+
+def single_file_metadata(path):
+    """Read the single-line YAML subset used by the one-file template.
+
+    Scalars and JSON-style arrays only; reject unsupported YAML rather than
+    silently assigning incorrect categories, languages or solve dates.
+    """
+    with open(path, encoding='utf-8-sig') as source:
+        text = source.read()
+    if not text.startswith('---\n'):
+        raise ValueError('Single-file writeup requires metadata: ' + path)
+    parts = text.split('---\n', 2)
+    if len(parts) != 3:
+        raise ValueError('Unclosed writeup metadata: ' + path)
+    metadata = {}
+    for line in parts[1].splitlines():
+        if not line.strip() or line.lstrip().startswith('#'):
+            continue
+        match = re.fullmatch(r'([a-z_]+):\s*(.+)', line)
+        if not match or match[1] in metadata:
+            raise ValueError('Invalid or duplicate writeup metadata: ' + line)
+        value = match[2].strip()
+        if value.startswith(('"', '[')):
+            value = json.loads(value)
+        elif value.startswith("'"):
+            if not value.endswith("'"):
+                raise ValueError('Unclosed metadata string')
+            value = value[1:-1].replace("''", "'")
+        metadata[match[1]] = value
+    for field in ('title', 'category', 'solve_date', 'language'):
+        if not isinstance(metadata.get(field), str) or not metadata[field].strip():
+            raise ValueError('Missing writeup metadata: ' + field)
+    if metadata['language'] not in ('vi', 'en'):
+        raise ValueError('Writeup language must be vi or en')
+    tags = metadata.get('tags', [])
+    if not isinstance(tags, list) or not all(isinstance(tag, str) for tag in tags):
+        raise ValueError('Writeup tags must be a JSON-style string array')
+    return metadata, parts[2]
+
+
+def source_files(event, case, root=None):
+    root = root or ROOT
+    if case.lower().endswith('.md'):
+        path = os.path.join(root, event, case)
+        metadata, _ = single_file_metadata(path)
+        files = {metadata['language']: path}
+        english = path[:-3] + '.en.md'
+        if os.path.isfile(english):
+            translated, _ = single_file_metadata(english)
+            if metadata['language'] != 'vi' or translated['language'] != 'en':
+                raise ValueError('Flat editions must declare vi in .md and en in .en.md')
+            if metadata['solve_date'] != translated['solve_date'] or metadata['category'] != translated['category']:
+                raise ValueError('VN/EN solve_date and category must match: ' + path)
+            files['en'] = english
+        return files
+    return {lang: os.path.join(root, event, case, name) for lang, name in
+            [('vi', 'writeup.md'), ('en', 'writeup.en.md')]
+            if os.path.isfile(os.path.join(root, event, case, name))}
 
 
 def challenge_categories(label):
@@ -252,6 +318,7 @@ def challenge_categories(label):
         "scanning": "Scanning", "nta": "NTA", "steg": "Steg",
         "warm-up": "Warm-up", "web3": "Web3", "ai": "AI", "cloud": "Cloud",
         "hardware": "Hardware", "mobile": "Mobile", "exp": "EXP",
+        "boot2root": "Boot2Root", "iot": "Hardware", "ml": "AI",
         "game hacking": "Game Hacking",
     }
     # Longest labels first also handles legacy strings without '+' delimiters.
@@ -345,8 +412,16 @@ def collect(lang, require_solve_dates=False):
         catmap = readme_categories(event)
         posts = []
         for case in case_directories(os.path.join(ROOT, event)):
-            w = os.path.join(ROOT, event, case, fname)
+            flat = case.lower().endswith('.md')
+            metadata = {}
+            w = os.path.join(ROOT, event, case) if flat else os.path.join(ROOT, event, case, fname)
             fallback = False
+            if flat:
+                editions = source_files(event, case)
+                if require_solve_dates and set(editions) != {'vi', 'en'}:
+                    raise ValueError('Flat writeup requires both VN and EN editions: ' + case)
+                w = editions.get(lang) or next(iter(editions.values()))
+                fallback = lang not in editions
             if not os.path.isfile(w):
                 # cay en: bai chua dich thi tam dung ban tieng Viet, co danh ngu
                 if lang != "en":
@@ -355,11 +430,15 @@ def collect(lang, require_solve_dates=False):
                 if not os.path.isfile(w):
                     continue
                 fallback = True
-            with open(w, encoding="utf-8") as source:
-                text = source.read()
+            if flat:
+                metadata, text = single_file_metadata(w)
+            else:
+                with open(w, encoding="utf-8") as source:
+                    text = source.read()
             title = next((ln[2:].strip() for ln in text.split("\n")
                           if ln.startswith("# ")), "%s - %s" % (event, case))
-            category_label = catmap.get(case)
+            title = metadata.get('title', title)
+            category_label = metadata.get('category') or catmap.get(case)
             if not category_label:
                 heading_parts = re.split(r"\s[-–—]\s", title, maxsplit=1)
                 category_label = heading_parts[1] if len(heading_parts) > 1 else ""
@@ -377,6 +456,10 @@ def collect(lang, require_solve_dates=False):
             if legacy_key in times:
                 seen.add(legacy_key)
             recorded = times.get(key) or times.get(legacy_key)
+            if flat:
+                raw_date = metadata['solve_date']
+                date = dt.datetime.fromisoformat(raw_date)
+                recorded = (date if date.tzinfo else date.replace(tzinfo=CONTEST_TZ), 'T' in raw_date)
             if not recorded and require_solve_dates:
                 raise ValueError("Missing declared solve date in tools/solve_times.json: " + key)
             solved, exact = recorded or (flag_time(event, case), True)
@@ -389,6 +472,9 @@ def collect(lang, require_solve_dates=False):
                 "date": solved, "exact": exact, "mod": mod,
                 "key": identity,
                 "cat": categories[0], "cats": categories, "fallback": fallback,
+                "metadata": metadata,
+                "source_files": {language: os.path.relpath(path, ROOT).replace(os.sep, '/')
+                                 for language, path in source_files(event, case).items()},
             })
         if posts:
             events.append({"name": event, "slug": slugify(event), "posts": posts, "idx": i})
@@ -410,7 +496,7 @@ def write_post(stage, ev, p, lang, base):
         body = body[1:]
     body = "\n".join(body).strip() + "\n"
 
-    case_root = os.path.realpath(os.path.join(ROOT, ev["name"], p["case"]))
+    case_root = os.path.realpath(os.path.dirname(p['path']))
     copied = {}
 
     def copy_image(target):
@@ -503,19 +589,25 @@ def write_post(stage, ev, p, lang, base):
           "categories: " + json.dumps(p.get("cats", [p["cat"]]), ensure_ascii=False),
           "primary_category: " + json.dumps(p["cat"]),
           "tags: " + json.dumps([ev["slug"].replace("-ctf-", "-").replace("-2026", ""),
-                                 p["cat"].lower()], ensure_ascii=False),
+                                 p["cat"].lower()] + p.get('metadata', {}).get('tags', []), ensure_ascii=False),
           "permalink: /posts/%s/" % p["key"],
           "challenge_key: " + json.dumps(p["key"]),
           "challenge_name: " + json.dumps(re.split(r"\s[-–—]\s", p["title"], maxsplit=1)[0], ensure_ascii=False),
           "event_name: " + json.dumps(ev["name"]),
           "event_slug: " + json.dumps(ev["slug"]),
-          "source_directory: " + json.dumps(ev["name"] + "/" + p["case"], ensure_ascii=False),
+          "source_directory: " + json.dumps(os.path.relpath(case_root, ROOT).replace(os.sep, '/'), ensure_ascii=False),
+          "source_files: " + json.dumps(p.get('source_files', {}), ensure_ascii=False),
+          "content_language: " + json.dumps(p.get('metadata', {}).get('language', lang)),
           "difficulty: " + json.dumps(next(iter(re.findall(r"\b(?:Insane|Expert|Hard|Medium|Intermediate|Easy|Beginner)\b", p["title"], re.I)), "")),
-          "source_url: " + json.dumps("https://github.com/tinhatinh/CTFWU/tree/main/" + quote(ev["name"]) + "/" + quote(p["case"])),
+          "source_url: " + json.dumps("https://github.com/tinhatinh/CTFWU/" +
+                                     ("blob/main/" + quote(os.path.relpath(p['path'], ROOT).replace(os.sep, '/'))
+                                      if p["case"].lower().endswith('.md') else
+                                      "tree/main/" + quote(ev["name"]) + "/" + quote(p["case"]))),
           "edit_url: " + json.dumps("https://github.com/tinhatinh/CTFWU/edit/main/" + quote(os.path.relpath(p["path"], ROOT).replace(os.sep, "/"))),
           "statement_images: " + json.dumps(statement_images, ensure_ascii=False),
           "artifact_images: " + json.dumps(artifact_images, ensure_ascii=False),
-          "search_text: " + json.dumps(re.sub(r"\s+", " ", re.sub(r"```[\s\S]*?```", "", p["text"]))[:12000], ensure_ascii=False)]
+          "search_text: " + json.dumps(' '.join(p.get('metadata', {}).get('tags', [])) + ' ' +
+                                      re.sub(r"\s+", " ", re.sub(r"```[\s\S]*?```", "", p["text"]))[:12000], ensure_ascii=False)]
     desc = describe(p["text"])
     if desc:
         fm.append('description: "%s"' % desc.replace('"', "'"))

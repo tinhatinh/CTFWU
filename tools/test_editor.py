@@ -212,6 +212,71 @@ class CTFTimeTests(unittest.TestCase):
             self.assertTrue((stage / record["cover"].lstrip("/")).is_file())
 
 
+class FlatEditionTests(unittest.TestCase):
+    def test_flat_import_and_owner_editor_keep_separate_vn_en_sources(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            event = root / 'Cryovault 2026 Quals'; event.mkdir()
+            source = event / 'frost-ledger.md'
+            content = ('---\ntitle: "frost-ledger"\ncategory: Forensics\n'
+                       'tags: ["filesystem", "recovery"]\nsolve_date: "2026-10-12"\nlanguage: vi\n---\n'
+                       '# frost-ledger\n\n## Solution\n\n![Evidence](images/proof.png)\n\n```python\nprint("flag{real}")\n```\n')
+            source.write_text(content, encoding='utf-8')
+            english = event / 'frost-ledger.en.md'
+            english_content = content.replace('language: vi', 'language: en') + '\nEnglish edition.\n'
+            english.write_text(english_content, encoding='utf-8')
+            images = event / 'images'; images.mkdir(); (images / 'proof.png').write_bytes(b'original image')
+            with patch.object(build_site, 'ROOT', str(root)), patch.object(build_site, 'solve_times', return_value={}):
+                for language in ['vi', 'en']:
+                    events = build_site.collect(language, require_solve_dates=True)
+                    post = events[0]['posts'][0]
+                    self.assertEqual(post['key'], 'cryovault-2026-quals-frost-ledger')
+                    self.assertEqual(post['date'].date(), dt.date(2026, 10, 12))
+                    self.assertEqual(post['source_files'], {'vi': 'Cryovault 2026 Quals/frost-ledger.md',
+                                                          'en': 'Cryovault 2026 Quals/frost-ledger.en.md'})
+                    self.assertFalse(post['fallback'])
+                    stage = root / ('stage-' + language); stage.mkdir()
+                    output = build_site.write_post(str(stage), events[0], post, language, '/CTFWU')
+                    rendered = Path(output).read_text(encoding='utf-8')
+                    self.assertIn('content_language: "' + language + '"', rendered)
+                    filename = 'frost-ledger.en.md' if language == 'en' else 'frost-ledger.md'
+                    self.assertIn('blob/main/Cryovault%202026%20Quals/' + filename, rendered)
+                    self.assertEqual('English edition.' in rendered, language == 'en')
+                    self.assertIn('filesystem recovery', rendered)
+                    self.assertEqual((stage/'assets/writeups/cryovault-2026-quals/frost-ledger.md/images/proof.png').read_bytes(), b'original image')
+            store = EditorStore(root, lambda: None)
+            key = 'cryovault-2026-quals-frost-ledger'
+            original = store.read(key, 'en')
+            self.assertEqual(original['content'].replace('\r\n', '\n'), english_content)
+            store.save_many(key, [{'lang': 'en', 'content': english_content + '\nUpdated.\n', 'version': original['version']}])
+            self.assertIn('Updated.', english.read_text(encoding='utf-8'))
+            self.assertEqual(source.read_text(encoding='utf-8'), content)
+            self.assertFalse((event/'writeup.en.md').exists())
+
+    def test_flat_metadata_rejects_missing_date_invalid_language_and_duplicate_fields(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'sample.md'
+            base = '---\ntitle: Sample\ncategory: Web\nsolve_date: "2026-10-12"\nlanguage: en\n---\n# Sample\n'
+            for text in [base.replace('solve_date: "2026-10-12"\n', ''),
+                         base.replace('language: en', 'language: both'),
+                         base.replace('title: Sample', 'title: Sample\ntitle: Another')]:
+                path.write_text(text, encoding='utf-8')
+                with self.assertRaises(ValueError): build_site.single_file_metadata(str(path))
+
+    def test_flat_publication_requires_both_editions_with_matching_dates(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            event = root / 'Example CTF'; event.mkdir()
+            content = '---\ntitle: Sample\ncategory: Web\nsolve_date: "2026-10-12"\nlanguage: vi\n---\n# Sample\n'
+            (event/'sample.md').write_text(content, encoding='utf-8')
+            with patch.object(build_site, 'ROOT', str(root)), patch.object(build_site, 'solve_times', return_value={}):
+                with self.assertRaisesRegex(ValueError, 'both VN and EN'):
+                    build_site.collect('vi', require_solve_dates=True)
+                (event/'sample.en.md').write_text(content.replace('language: vi', 'language: en').replace('2026-10-12', '2026-10-13'), encoding='utf-8')
+                with self.assertRaisesRegex(ValueError, 'solve_date and category must match'):
+                    build_site.collect('en', require_solve_dates=True)
+
+
 class SolveDateTests(unittest.TestCase):
     def test_edits_and_copied_flags_do_not_change_either_language_solve_date(self):
         with tempfile.TemporaryDirectory() as directory:
