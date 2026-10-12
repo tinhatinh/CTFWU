@@ -592,7 +592,8 @@ def write_post(stage, ev, p, lang, base):
                                  p["cat"].lower()] + p.get('metadata', {}).get('tags', []), ensure_ascii=False),
           "permalink: /posts/%s/" % p["key"],
           "challenge_key: " + json.dumps(p["key"]),
-          "challenge_name: " + json.dumps(re.split(r"\s[-–—]\s", p["title"], maxsplit=1)[0], ensure_ascii=False),
+          "challenge_name: " + json.dumps(p.get('metadata', {}).get('title') or
+                                         re.split(r"\s[-–—]\s", p["title"], maxsplit=1)[0], ensure_ascii=False),
           "event_name: " + json.dumps(ev["name"]),
           "event_slug: " + json.dumps(ev["slug"]),
           "source_directory: " + json.dumps(os.path.relpath(case_root, ROOT).replace(os.sep, '/'), ensure_ascii=False),
