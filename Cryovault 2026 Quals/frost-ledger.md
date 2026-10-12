@@ -10,6 +10,7 @@ language: "vi"
 
 **Flag:** `isfcr{stale_cow_67c1_root_fc8fe97f_backwards_heap}`  
 **Artifact:** `frost-ledger.tar.gz` (SHA-256: `45bac57e1d504dbcbb323342ce4b7795f1ef1db024c1d52ea7edb539bce5a0ba`)
+
 | Extracted artifact | SHA-256 |
 |---|---|
 | `registry.fvr` | `192685cab0fcb5a2617a472f563677879549dc071fa20e38429562613d0a1f9d` |

@@ -10,6 +10,7 @@ language: "vi"
 
 **Flag:** `isfcr{bl1nd_f0rmat_str1ng_h4s_n0_b1n4ry}`
 **Dịch vụ:** remote service `nc 0.cloud.chals.io 23023` (no binary provided)
+
 | Item | Value |
 |---|---|
 | Category | Pwn - blind format string |

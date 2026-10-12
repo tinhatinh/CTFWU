@@ -11,6 +11,7 @@ language: "vi"
 **Flag:** `isfcr{ch0ic3s_th3_d3c0d3r_n3v3r_s33s}`  
 **Artifact:** `mosaic_0417.png` (17,492 bytes; 256 × 300 pixels, indexed-color PNG)  
 **Archive:** `lossless-not-harmless.zip`
+
 | Artifact | SHA-256 |
 |---|---|
 | `mosaic_0417.png` | `6362e0e2d4e6eaa84ebce95850ef5100a3eeaa25f58c4faabc2e59240501736a` |

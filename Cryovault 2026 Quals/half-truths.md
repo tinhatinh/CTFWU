@@ -10,6 +10,7 @@ language: "vi"
 
 **Flag:** `isfcr{l1st_d3c0d1ng_p4st_th3_r4d1us}`  
 **Artifact:** `output.json` (9,749 bytes) and the generator `chall.py` (2,838 bytes, saved locally as `chall (1).py`)
+
 | Artifact | SHA-256 |
 |---|---|
 | `output.json` | `7da3464233e2682af604ad970e2b6ac772be68550a7e64a52209eeb933aa1879` |

@@ -10,6 +10,7 @@ language: "vi"
 
 **Flag:** `isfcr{greyline_a471_stale_1818abfe_card}`
 **Artifact:** `FIELD_GUIDE.md` (2,483 bytes), remote service `https://isfcrpesu-greyline-junction.chals.io`
+
 | Artifact | SHA-256 |
 |---|---|
 | `FIELD_GUIDE.md` | `fd0498ab166d4fa88a755831a3cb21258f80d049cae7123d41d4b62ccd62d3c5` |

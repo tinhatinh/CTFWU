@@ -10,6 +10,7 @@ language: "vi"
 
 **Flag:** `isfcr{ghost13_dc8f84a256fa64108b6c75a151a1474d}`  
 **Artifact:** `plc_firmware.bin` (25,024), `plc_program.bin` (1,600), `plc_traffic.pcap` (5,473), `alarm_buzzer.wav` (93,964), `maintenance_update.ota` (726), `uart_log.txt` (778), `field_service_excerpt.txt` (3,817)
+
 | Artifact | SHA-256 |
 |---|---|
 | `plc_firmware.bin` | `532395ef38016b0ef29981c7deb6dd3af07abc50af9268ce26a4d04083ae58f7` |

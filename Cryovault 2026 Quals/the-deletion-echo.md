@@ -10,6 +10,7 @@ language: "vi"
 
 **Flag:** `isfcr{763c8479fac095a9e471ad3d}`  
 **Artifact:** `data.json`, `unlock.py` (distributed in `the_deletion_echo.zip`)
+
 | Artifact | SHA-256 |
 |---|---|
 | `the_deletion_echo.zip` | `c487973cd06cad6bf487d7fd483d4ebe03c7690a36e9f37ce32b13313fa3b535` |

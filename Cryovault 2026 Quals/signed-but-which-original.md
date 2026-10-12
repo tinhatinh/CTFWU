@@ -10,6 +10,7 @@ language: "vi"
 
 **Flag:** `isfcr{29336738f5f44f4d2d1e3ac2}`  
 **Artifact:** `case.json`, `entries.bin` (extracted from `handout (23).zip`)
+
 | Artifact | SHA-256 |
 |---|---|
 | `case.json` | `75c062301993c6f58ede6c941ed06346d1fa4e6e9aa5843e256c341085871cf8` |

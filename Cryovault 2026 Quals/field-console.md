@@ -10,6 +10,7 @@ language: "vi"
 
 **Flag:** `isfcr{f13ld_c0ns0l3_t0k3n_b1nd1ng_byp4ss}`  
 **Artifact:** `field-console.apk` (21,167 bytes), service `nc 0.cloud.chals.io 25228`
+
 | Artifact | SHA-256 |
 |---|---|
 | `field-console.apk` | `63ad1006a07fe55b7d6e161504f9f879c6083f8848b5465448916319af39fd5e` |

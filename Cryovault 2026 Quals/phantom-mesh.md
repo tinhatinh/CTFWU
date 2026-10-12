@@ -10,6 +10,7 @@ language: "vi"
 
 **Flag:** `isfcr{ph4nt0m_m3sh_h4rm0n1cs_un14sk_th3_tc_l1nk_k3y}`  
 **Artifact:** `mesh.pcap`, `traces/iq.npz`, `traces/nonces.csv`, `docs/LMP-protocol.md`, `docs/sdr-capture.md` (supplied in `phantom-mesh.zip`)
+
 | Artifact | SHA-256 |
 |---|---|
 | `mesh.pcap` | `fc21e8e8e7c33013e6232bd1152e133ab4cb67b6d248bbac4e8b32ce91145a53` |

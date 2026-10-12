@@ -10,6 +10,7 @@ language: "vi"
 
 **Flag:** `isfcr{d7ef3d5dd98bd325c3b50114}`  
 **Artifact:** `damaged.pdf` (64,872 bytes), `reference.pdf` (4,011 bytes), distributed in `handout (29).zip`
+
 | Artifact | SHA-256 |
 |---|---|
 | `damaged.pdf` | `52614107d762aad3ea07faf571c5d071cdd4e27b8b3f12581916074b583f4192` |

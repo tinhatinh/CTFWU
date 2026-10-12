@@ -10,6 +10,7 @@ language: "vi"
 
 **Flag:** `isfcr{e24d16be9d731cba}`  
 **Artifact:** `FP02CF4.SHD` (520 bytes), `FP02CF4.SPL` (1,872 bytes), `scan.png` (2550 × 3300 pixels)
+
 | Artifact | SHA-256 |
 |---|---|
 | `FP02CF4.SHD` | `9c5ad49f547e714a90c223be955c14669c3a7725ccf5bb1b1015e743f832ada0` |

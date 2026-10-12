@@ -10,6 +10,7 @@ language: "vi"
 
 **Flag:** `isfcr{a03a410f1b87dbc115dd1ef6}`  
 **Artifact:** `handout (25).zip`, containing `case.db` and `case.db-wal`
+
 | Artifact | Size (bytes) | SHA-256 |
 |---|---:|---|
 | `handout (25).zip` | 153,640 | `b469c8398e94bd72df27727f9dd0e01ae132a7693ff9d59139b089885bda954d` |

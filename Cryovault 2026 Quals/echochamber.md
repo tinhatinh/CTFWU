@@ -11,6 +11,7 @@ language: "vi"
 **Flag (user):** `isfcr{th3_sh3ll_1s_r34d1ng_m3_r34d_1t_b4ck}`
 **Flag (root):** `isfcr{t0_w1n_th3_g4me_pl4y_a_d1ff3r3nt_g4me}`
 **Artifact:** none supplied. Target ECHOCHAMBER, deployed via <https://tryhackme.com/jr/cryovault20263>; both flags live on the host.
+
 | Path | Owner:group | Mode | Size | Role |
 |---|---|---|---|---|
 | `/var/lib/warden/real/user.txt` | `sentinel:sentinel` | `0640` | 44 B | real user flag |

@@ -10,6 +10,7 @@ language: "vi"
 
 **Flag:** `isfcr{l33t_c0d3_tw0_sum_f0und}`  
 **Artifact:** `challenge2.pcap` (13,348 bytes)
+
 | Artifact | SHA-256 |
 |---|---|
 | `challenge2.pcap` | `b6f1c693be40d65df509f5830dbbacd02a2cc7f4e2418444d8a3c9fb3afb8eae` |

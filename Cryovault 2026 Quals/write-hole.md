@@ -10,6 +10,7 @@ language: "vi"
 
 **Flag:** `isfcr{p4r1ty_n3v3r_l13s_wr1t3_h0l3_r3m3mb3rs}`  
 **Artifact:** `bay0.img`, `bay1.img`, `bay2.img` (17,825,792 bytes each)
+
 | Artifact | SHA-256 |
 |---|---|
 | `bay0.img` | `38226d020b3cfc46f587dae721df0ed61d9886e36043abaa0d3071c3635258a6` |

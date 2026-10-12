@@ -10,6 +10,7 @@ language: "vi"
 
 **Flag:** `isfcr{d33p_m3rg3_p0llut3s_th3_pr0v3n4nc3_v4ult_1n_th3_m3r1d14n}`  
 **Dịch vụ:** `https://<instance>.chals.io/` (per-team static host, e.g. `isfcrpesu-the-meridian.chals.io`)
+
 | Artifact | Bytes | SHA-256 |
 |---|---:|---|
 | `index.html` | 1,977 | `f45bd1ea76344e4cc144f6f0ef2fe000eeac218c431de2a97dc6f8e6a3fb5489` |

@@ -10,6 +10,7 @@ language: "vi"
 
 **Flag:** `isfcr{57cfd556fca281af64d920ef}`  
 **Artifact:** `events.jsonl`, `images.tar`, `vault.json` (from `handout (24).zip`)
+
 | Artifact | Size (bytes) | SHA-256 |
 |---|---:|---|
 | `events.jsonl` | 4,471 | `9589cd02c81aefcbe93f5e6201802ba446bdf0645d711b38286cbdf3637f38a8` |

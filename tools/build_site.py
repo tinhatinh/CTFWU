@@ -283,7 +283,7 @@ def single_file_metadata(path):
     tags = metadata.get('tags', [])
     if not isinstance(tags, list) or not all(isinstance(tag, str) for tag in tags):
         raise ValueError('Writeup tags must be a JSON-style string array')
-    return metadata, parts[2]
+    return metadata, parts[2].lstrip('\n')
 
 
 def source_files(event, case, root=None):

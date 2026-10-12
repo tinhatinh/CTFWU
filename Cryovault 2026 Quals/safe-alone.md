@@ -10,6 +10,7 @@ language: "vi"
 
 **Flag:** `isfcr{c076e5acfc0aac186add6491}`  
 **Artifact:** `safe_alone.zip` (containing `data.json` and `unlock.py`)
+
 | Artifact | SHA-256 |
 |---|---|
 | `safe_alone.zip` | `5d0f2d776c804b584198a45585c5522e71a08820684f8d77bc5ab91b3956e5c0` |

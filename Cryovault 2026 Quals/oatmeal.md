@@ -10,6 +10,7 @@ language: "vi"
 
 **Flag:** `isfcr{5958fbb07efd243b}`
 **Artifact:** `silvergate.apk` (12,921 bytes), `base.odex` (6,355 bytes)
+
 | Artifact | SHA-256 |
 |---|---|
 | `silvergate.apk` | `704eaa66777b99a627f571a1be10446b61f40d855cbf3b48e69bb0ef4b568572` |
