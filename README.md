@@ -6,127 +6,6 @@ tinhatinh, Lizamort1 - their solutions live in their own repos, this one is only
 
 **Rendered site:** <https://tinhatinh.github.io/CTFWU/> (custom Jekyll interface, deployed by GitHub Actions).
 
-## Site
-
-The archive layout below is the source of truth. The site is assembled into a staging tree so the
-1.3 GB of challenge artifacts in this repo never reach `_site`:
-
-```bash
-python tools/build_site.py              # writes _site_src/ and _site_src_en/
-```
-
-`_site_src/` (Vietnamese) and `_site_src_en/` (English) are generated and git-ignored - never edit
-them. The generator supports the older `<Event>/<case>/writeup.md` and `writeup.en.md`
-folders (including `Wave N`) and, from Cryovault 2026 Quals onward, paired
-`<Event>/<slug>.md` (VN) and `<Event>/<slug>.en.md` (EN). Each new file contains its statement,
-solution, code, results and scalar metadata. New editions declare matching `category` and
-`solve_date`; legacy editions use the event README and `tools/solve_times.json`.
-Solve dates are fixed independently of editorial commits. Public builds require declared
-solve dates and both editions for the new format. The generator assembles the site, copies
-referenced images, and protects Liquid payloads (`{{7*7}}`, `{% ... %}`) from execution.
-GitHub Actions runs it before building, so the site cannot drift from the archive.
-
-The interface lives in `site/_layouts/`, `site/_includes/`, `site/assets/css/campus.css`,
-and `site/assets/js/site.js`. Shared interface translations are in `site/_data/interface.json`.
-The homepage shows the six most recent writeups by solve date. Counts, event metadata,
-source links, and search text come from the archive via `tools/build_site.py`.
-The archive supports accent-insensitive search, category/event filters, sorting, and shareable
-query strings. The reader includes syntax highlighting, code copying, and a generated TOC.
-All writeups and navigation remain available without JavaScript.
-
-To preview and check the same two-language tree used in deployment:
-
-```bash
-bundle install
-python tools/build_site.py
-bundle exec jekyll build -s _site_src -d _build/preview/CTFWU
-bundle exec jekyll build -s _site_src_en -d _build/preview/CTFWU/en
-bundle exec htmlproofer _build/preview --disable-external
-python tools/serve_site.py --skip-build
-# Open http://localhost:4173/CTFWU/
-```
-
-Rebuild Vietnamese before English: the English output is nested inside the Vietnamese tree.
-
-The team's CTFTime results come from `tools/ctftime_team.json`. GitHub Actions refreshes the
-snapshot on builds and every 12 hours (07:00 / 19:00 UTC+7, subject to GitHub scheduling delays).
-Scheduled and manual runs commit a changed snapshot, then build and deploy both language trees.
-The generator itself works offline. To refresh locally:
-
-```bash
-python tools/fetch_ctftime.py     # re-scrape https://ctftime.org/team/449538, then commit the JSON
-```
-
-If the JSON is missing the section is skipped with a warning; if CTFTime changes its markup the
-fetcher refuses to write an empty file, so the site keeps the last real numbers.
-
-## Editing writeups in the browser
-
-```bash
-python tools/serve_site.py              # build, then serve on 127.0.0.1:4173
-python tools/serve_site.py --skip-build # reuse an existing preview
-python tools/test_editor.py            # data integrity and request security checks
-```
-
-Open a writeup and choose **Sửa writeup / Edit writeup**. Authenticate with a GitHub personal
-access token belonging to the owner of `tinhatinh/CTFWU`. The server verifies the authenticated
-GitHub user ID against the repository owner ID; collaborator access and Git commit names do
-not grant editing rights. A fine-grained token with public repository metadata access is enough;
-the editor does not need permission to push. The GitHub token is not persisted. The owner session
-uses an HttpOnly, SameSite cookie, expires after eight hours, and can be signed out.
-
-Choose **Tiếng Việt (VN)**, **English (EN)**, or **Cả VN và EN / Both VN and EN**. The editor saves
-the corresponding original files, creates backups in `_build/editor-backups/`, then rebuilds.
-Choosing both submits both drafts together; all versions are checked before any file is replaced,
-and a write failure rolls back replacements. Content is not translated automatically. Unsaved
-changes in an unselected edition are retained in the editor after saving the selected edition.
-An external file change causes a conflict instead of silently overwriting it. If a build fails, the source remains
-saved and its backup is preserved; diagnostics are in `_build/editor-build.log`.
-
-The server binds only to loopback and checks origin/session for saves. Do not expose it via
-a tunnel or change it into a public server. It needs Ruby/Bundler, or Docker with the cached
-`ruby:3.4-slim` image and gems in `ctfwu-bundle`. To prepare the Docker fallback in PowerShell:
-
-```powershell
-docker run --rm -v "${PWD}:/work" -v ctfwu-bundle:/usr/local/bundle -w /work ruby:3.4-slim sh -c "apt-get update && apt-get install -y build-essential git libcurl4 && bundle install"
-python tools/serve_site.py
-```
-
-Public GitHub Pages also displays the editor. Sign in with the repository owner's fine-grained
-token, granting **Contents: Read and write** for CTFWU. The public editor calls GitHub directly,
-checks the authenticated user against the repository owner before saving, and creates one Git
-tree/commit for the selected editions. It checks blob versions and updates `main` without force,
-so a concurrent push is rejected. GitHub enforces repository write permissions. A push triggers
-GitHub Actions; the editor shows the commit link while deployment is pending. Git history retains
-the previous files. Pull the repository to receive public edits in your local checkout.
-
-Public tokens stay only in tab memory, for up to eight hours. Reloading/closing the tab or signing
-out ends the session. The local HttpOnly-cookie session still lasts up to eight hours across page
-navigation. Local saves do not commit or push automatically. A Content Security Policy blocks
-inline scripts from writeup content; keep the permitted theme-script hash synchronized if it changes.
-
-## Certificates and credentials
-
-The Achievements page at `/competitions/` includes certificates alongside competition writeups
-and team results. Entries live in `site/_data/certificates.json`; bilingual type labels live in
-`site/_data/certificate_types.json`. Add original images/PDFs to `site/assets/certificates/` and
-append a catalog entry. No layout change is needed. Participation, professional certifications,
-courses and awards are supported. Search/type filters appear as the collection grows.
-
-Current language credentials, verified on the [official score lookup](https://admin.chinesetest.cn/queryScore.do?sid=c2tActR9Wb%274d5abc0a153f80ff334719fbb938a461a6b706eba73aa8f4%2724d7sWsQ5nVUQSwD):
-
-| Test | Date | Result |
-|------|------|--------|
-| HSK Level 4 | 28 June 2026 | 262/300 — Listening 90, Reading 94, Writing 78 (pass mark 180) |
-| HSKK Intermediate | 28 June 2026 | Speaking 60/100 (pass mark 60) |
-
-Catalog entries require a unique `id`, `title`, `type`, `recipient` and `issuer`. Add evidence with
-an `image`, `document` or HTTPS `verification_url`. Optional fields include ISO `date`, `date_kind`
-(`issued`/`event`/`exam`), bilingual `summary`, `score_details` and `validity_note`, `event_period`
-(`vi`/`en` labels), `certificate_id`, `signatory` and `verified_on`. Omit dates without evidence;
-set `verified_on` only after checking the issuer. The build validates IDs, assets, dates and bilingual
-score labels.
-
 ## Competitions
 
 | Event | Date | Writeups | Categories |
@@ -185,6 +64,8 @@ code, commands and recorded output. Older events keep their existing paths and l
 
 ## Quick Navigation
 
+164 writeups across 8 competitions. Each challenge links to its Vietnamese and English editions.
+
 <details>
 <summary>FooBar CTF 2026 — 11 writeups</summary>
 
@@ -226,197 +107,190 @@ code, commands and recorded output. Older events keep their existing paths and l
 
 </details>
 
-
 <details>
 <summary>Cryovault 2026 Quals — 26 writeups</summary>
 
 | Challenge | Category | VN | EN |
 |---|---|---|---|
-| Draftpad | Web | [VN](Cryovault%202026%20Quals/draftpad.md) | [EN](Cryovault%202026%20Quals/draftpad.en.md) |
-| EchoChamber | Boot2Root | [VN](Cryovault%202026%20Quals/echochamber.md) | [EN](Cryovault%202026%20Quals/echochamber.en.md) |
+| The Meridian | Web | [VN](Cryovault%202026%20Quals/the-meridian.md) | [EN](Cryovault%202026%20Quals/the-meridian.en.md) |
 | Field Console | Mobile | [VN](Cryovault%202026%20Quals/field-console.md) | [EN](Cryovault%202026%20Quals/field-console.en.md) |
-| frost-ledger | Forensics | [VN](Cryovault%202026%20Quals/frost-ledger.md) | [EN](Cryovault%202026%20Quals/frost-ledger.en.md) |
-| GHOST - 13 | Hardware | [VN](Cryovault%202026%20Quals/ghost-13.md) | [EN](Cryovault%202026%20Quals/ghost-13.en.md) |
-| Ghost in the Spooler | Forensics | [VN](Cryovault%202026%20Quals/ghost-in-the-spooler.md) | [EN](Cryovault%202026%20Quals/ghost-in-the-spooler.en.md) |
-| Greyline Junction | Web | [VN](Cryovault%202026%20Quals/greyline-junction.md) | [EN](Cryovault%202026%20Quals/greyline-junction.en.md) |
-| half-truths | Crypto | [VN](Cryovault%202026%20Quals/half-truths.md) | [EN](Cryovault%202026%20Quals/half-truths.en.md) |
-| Journal Necromancy | Forensics | [VN](Cryovault%202026%20Quals/journal-necromancy.md) | [EN](Cryovault%202026%20Quals/journal-necromancy.en.md) |
-| Kelpie | Reverse | [VN](Cryovault%202026%20Quals/kelpie.md) | [EN](Cryovault%202026%20Quals/kelpie.en.md) |
-| Last Packet | Forensics | [VN](Cryovault%202026%20Quals/last-packet.md) | [EN](Cryovault%202026%20Quals/last-packet.en.md) |
-| Lossless, Not Harmless | Forensics | [VN](Cryovault%202026%20Quals/lossless-not-harmless.md) | [EN](Cryovault%202026%20Quals/lossless-not-harmless.en.md) |
-| Mirage | Pwn | [VN](Cryovault%202026%20Quals/mirage.md) | [EN](Cryovault%202026%20Quals/mirage.en.md) |
 | Oatmeal | Mobile | [VN](Cryovault%202026%20Quals/oatmeal.md) | [EN](Cryovault%202026%20Quals/oatmeal.en.md) |
-| Phantom Mesh | Forensics | [VN](Cryovault%202026%20Quals/phantom-mesh.md) | [EN](Cryovault%202026%20Quals/phantom-mesh.en.md) |
-| Rimefold | Pwn | [VN](Cryovault%202026%20Quals/rimefold.md) | [EN](Cryovault%202026%20Quals/rimefold.en.md) |
+| Mirage | Pwn | [VN](Cryovault%202026%20Quals/mirage.md) | [EN](Cryovault%202026%20Quals/mirage.en.md) |
+| Greyline Junction | Web | [VN](Cryovault%202026%20Quals/greyline-junction.md) | [EN](Cryovault%202026%20Quals/greyline-junction.en.md) |
+| GHOST - 13 | Hardware | [VN](Cryovault%202026%20Quals/ghost-13.md) | [EN](Cryovault%202026%20Quals/ghost-13.en.md) |
+| Draftpad | Web | [VN](Cryovault%202026%20Quals/draftpad.md) | [EN](Cryovault%202026%20Quals/draftpad.en.md) |
+| half-truths | Crypto | [VN](Cryovault%202026%20Quals/half-truths.md) | [EN](Cryovault%202026%20Quals/half-truths.en.md) |
+| Kelpie | Reverse | [VN](Cryovault%202026%20Quals/kelpie.md) | [EN](Cryovault%202026%20Quals/kelpie.en.md) |
+| The Alphabet That Wasn't There | Forensics | [VN](Cryovault%202026%20Quals/the-alphabet-that-wasn-t-there.md) | [EN](Cryovault%202026%20Quals/the-alphabet-that-wasn-t-there.en.md) |
+| EchoChamber | Boot2Root | [VN](Cryovault%202026%20Quals/echochamber.md) | [EN](Cryovault%202026%20Quals/echochamber.en.md) |
+| Lossless, Not Harmless | Forensics | [VN](Cryovault%202026%20Quals/lossless-not-harmless.md) | [EN](Cryovault%202026%20Quals/lossless-not-harmless.en.md) |
 | Safe Alone | AI | [VN](Cryovault%202026%20Quals/safe-alone.md) | [EN](Cryovault%202026%20Quals/safe-alone.en.md) |
+| Phantom Mesh | Forensics | [VN](Cryovault%202026%20Quals/phantom-mesh.md) | [EN](Cryovault%202026%20Quals/phantom-mesh.en.md) |
+| Last Packet | Forensics | [VN](Cryovault%202026%20Quals/last-packet.md) | [EN](Cryovault%202026%20Quals/last-packet.en.md) |
+| The Deletion Echo | AI | [VN](Cryovault%202026%20Quals/the-deletion-echo.md) | [EN](Cryovault%202026%20Quals/the-deletion-echo.en.md) |
+| The Last Committed Message | Forensics | [VN](Cryovault%202026%20Quals/the-last-committed-message.md) | [EN](Cryovault%202026%20Quals/the-last-committed-message.en.md) |
+| Ghost in the Spooler | Forensics | [VN](Cryovault%202026%20Quals/ghost-in-the-spooler.md) | [EN](Cryovault%202026%20Quals/ghost-in-the-spooler.en.md) |
+| The Image That Forgot | Forensics | [VN](Cryovault%202026%20Quals/the-image-that-forgot.md) | [EN](Cryovault%202026%20Quals/the-image-that-forgot.en.md) |
 | Signed, But Which Original? | Forensics | [VN](Cryovault%202026%20Quals/signed-but-which-original.md) | [EN](Cryovault%202026%20Quals/signed-but-which-original.en.md) |
+| frost-ledger | Forensics | [VN](Cryovault%202026%20Quals/frost-ledger.md) | [EN](Cryovault%202026%20Quals/frost-ledger.en.md) |
+| Rimefold | Pwn | [VN](Cryovault%202026%20Quals/rimefold.md) | [EN](Cryovault%202026%20Quals/rimefold.en.md) |
 | Slab | Pwn | [VN](Cryovault%202026%20Quals/slab.md) | [EN](Cryovault%202026%20Quals/slab.en.md) |
 | Tearing | Pwn | [VN](Cryovault%202026%20Quals/tearing.md) | [EN](Cryovault%202026%20Quals/tearing.en.md) |
-| The Alphabet That Wasn't There | Forensics | [VN](Cryovault%202026%20Quals/the-alphabet-that-wasn-t-there.md) | [EN](Cryovault%202026%20Quals/the-alphabet-that-wasn-t-there.en.md) |
-| The Deletion Echo | AI | [VN](Cryovault%202026%20Quals/the-deletion-echo.md) | [EN](Cryovault%202026%20Quals/the-deletion-echo.en.md) |
-| The Image That Forgot | Forensics | [VN](Cryovault%202026%20Quals/the-image-that-forgot.md) | [EN](Cryovault%202026%20Quals/the-image-that-forgot.en.md) |
-| The Last Committed Message | Forensics | [VN](Cryovault%202026%20Quals/the-last-committed-message.md) | [EN](Cryovault%202026%20Quals/the-last-committed-message.en.md) |
-| The Meridian | Web | [VN](Cryovault%202026%20Quals/the-meridian.md) | [EN](Cryovault%202026%20Quals/the-meridian.en.md) |
 | Write Hole | Forensics | [VN](Cryovault%202026%20Quals/write-hole.md) | [EN](Cryovault%202026%20Quals/write-hole.en.md) |
-
-</details>
-
-
-
-<details>
-<summary><b>H7CTF 2026 Quals - 29 challenges</b></summary>
-
-| Challenge | Category | Difficulty | Flag |
-|-----------|----------|------------|------|
-| [arcel-bomb](H7CTF%202026%20Quals/arcel-bomb/writeup.md) | Pwn | Medium | `H7CTF{0b79ca94-…}` |
-| [countersign](H7CTF%202026%20Quals/countersign/writeup.md) | Rev | Insane | `H7CTF{011c87d4-…}` |
-| [deep-freeze](H7CTF%202026%20Quals/deep-freeze/writeup.md) | Forensics | Hard | `H7CTF{bf3a8e98…}` |
-| [deputy](H7CTF%202026%20Quals/deputy/writeup.md) | Cloud | Hard | 4 flags |
-| [dog-whistle](H7CTF%202026%20Quals/dog-whistle/writeup.md) | Hardware | Insane | `H7CTF{3c48f268-…}` |
-| [echo-chamber](H7CTF%202026%20Quals/echo-chamber/writeup.md) | AI | Medium | `H7CTF{174f034a-…}` |
-| [genesis](H7CTF%202026%20Quals/genesis/writeup.md) | Web3 | Medium | `H7CTF{346df380-…}` |
-| [ghost-on-the-bus](H7CTF%202026%20Quals/ghost-on-the-bus/writeup.md) | Hardware | Medium | `H7CTF{10d9b516-…}` |
-| [hear-no-evil](H7CTF%202026%20Quals/hear-no-evil/writeup.md) | Hardware | Medium | 2 flags |
-| [justified](H7CTF%202026%20Quals/justified/writeup.md) | Web | Medium | `WEBVERSE{d5f607…}` |
-| [kick-the-can](H7CTF%202026%20Quals/kick-the-can/writeup.md) | Hardware | Medium | `H7CTF{6360cbb3-…}` |
-| [kintsugi-vault](H7CTF%202026%20Quals/kintsugi-vault/writeup.md) | Rev | Hard | `H7CTF{9df8f215-…}` |
-| [loose-ends](H7CTF%202026%20Quals/loose-ends/writeup.md) | Pwn | Hard | `H7CTF{4d0e9693-…}` |
-| [loose-lips](H7CTF%202026%20Quals/loose-lips/writeup.md) | Crypto | Hard | 2 flags |
-| [manifest-destiny](H7CTF%202026%20Quals/manifest-destiny/writeup.md) | Pwn | Medium | `H7CTF{a2b24085-…}` |
-| [merged](H7CTF%202026%20Quals/merged/writeup.md) | Web | Medium | `WEBVERSE{8ba2f5…}` |
-| [meridian-pay](H7CTF%202026%20Quals/meridian-pay/writeup.md) | Mobile | Hard | 3 flags |
-| [mic-drop](H7CTF%202026%20Quals/mic-drop/writeup.md) | Hardware | Medium | `H7CTF{7f0cb1b6-…}` |
-| [open-sesame](H7CTF%202026%20Quals/open-sesame/writeup.md) | Hardware | Hard | `H7CTF{f6091c17-…}` |
-| [owners-draw](H7CTF%202026%20Quals/owners-draw/writeup.md) | Crypto | Medium | `H7CTF{786dff67-…}` |
-| [papers-please](H7CTF%202026%20Quals/papers-please/writeup.md) | Pwn | Easy | `H7CTF{b66621cc-…}` |
-| [patient-exfil](H7CTF%202026%20Quals/patient-exfil/writeup.md) | Forensics | Medium | `H7CTF{6787b86c…}` |
-| [radio-silence](H7CTF%202026%20Quals/radio-silence/writeup.md) | Hardware | Medium | `H7CTF{6780856d-…}` |
-| [shared-blood](H7CTF%202026%20Quals/shared-blood/writeup.md) | Crypto | Medium | `H7CTF{a727587f-…}` |
-| [splice](H7CTF%202026%20Quals/splice/writeup.md) | Web | Hard | `WEBVERSE{fcb61c…}` |
-| [take-two](H7CTF%202026%20Quals/take-two/writeup.md) | Crypto | Hard | `H7CTF{63b0dde3-…}` |
-| [tapeout](H7CTF%202026%20Quals/tapeout/writeup.md) | Misc | Hard | `H7CTF{afd4beac-…}` |
-| [trace-amounts](H7CTF%202026%20Quals/trace-amounts/writeup.md) | Hardware | Medium | `H7CTF{48333086-…}` |
-| [trompe-loeil](H7CTF%202026%20Quals/trompe-loeil/writeup.md) | Web3 | Hard | `H7CTF{0bba5486-…}` |
+| Journal Necromancy | Forensics | [VN](Cryovault%202026%20Quals/journal-necromancy.md) | [EN](Cryovault%202026%20Quals/journal-necromancy.en.md) |
 
 </details>
 
 <details>
-<summary><b>SunshineCTF 2026 - 18 challenges</b></summary>
+<summary>H7CTF 2026 Quals — 29 writeups</summary>
 
-| Challenge | Category | Difficulty | Flag |
-|-----------|----------|------------|------|
-| [cache-money](SunshineCTF%202026/cache-money/writeup.md) | Pwn | Hard | `sun{s4fe_l1nk…}` |
-| [code-breaker](SunshineCTF%202026/code-breaker/writeup.md) | Crypto/Pwn | Hard | `sun{cr4ck_tHe…}` |
-| [cookiecorp](SunshineCTF%202026/cookiecorp/writeup.md) | Web | Medium | `sun{c00kie_ja…}` |
-| [groundhog_day](SunshineCTF%202026/groundhog_day/writeup.md) | Web | Hard | `sun{s1x_m0r3_…}` |
-| [homemaker](SunshineCTF%202026/homemaker/writeup.md) | Pwn | Hard | `sun{the_futur…}` |
-| [madlibs](SunshineCTF%202026/madlibs/writeup.md) | Pwn | Medium | `sun{f1ll_iN_t…}` |
-| [my-eyes-burn](SunshineCTF%202026/my-eyes-burn/writeup.md) | Misc | Medium | `sun{praisethesun}` |
-| [nas-coal](SunshineCTF%202026/nas-coal/writeup.md) | Forensics | Medium | `sun{yup_issa_gem}` |
-| [planetary-probe](SunshineCTF%202026/planetary-probe/writeup.md) | Web | Hard | `sun{bl1nd_psq…}` |
-| [print-print-revolution](SunshineCTF%202026/print-print-revolution/writeup.md) | Pwn | Hard | `sun{cust0m_fm…}` |
-| [robocall](SunshineCTF%202026/robocall/writeup.md) | Pwn | Hard | `sun{you_must_…}` |
-| [safe-house](SunshineCTF%202026/safe-house/writeup.md) | Pwn | Hard | `sun{n3gat1ve_…}` |
-| [sitecheck](SunshineCTF%202026/sitecheck/writeup.md) | Web | Hard | `sun{fr4gm3nt3…}` |
-| [suntrail](SunshineCTF%202026/suntrail/writeup.md) | Misc | Medium | `sun{qwerty_sucks}` |
-| [total_recall](SunshineCTF%202026/total_recall/writeup.md) | Pwn | Medium | `sun{r3caLl_ev…}` |
-| [vecnet](SunshineCTF%202026/vecnet/writeup.md) | Web | Hard | `sun{k33p_your…}` |
-| [welcome-call](SunshineCTF%202026/welcome-call/writeup.md) | Forensics | Medium | `sun{thankyouforplaying}` |
-| [you-cut-me-off](SunshineCTF%202026/you-cut-me-off/writeup.md) | Forensics | Medium | `sun{totallyoriginalchallengeidea}` |
-
-</details>
-
-<details>
-<summary><b>CSS CTF 2026 - 17 challenges</b></summary>
-
-| Challenge | Category | Difficulty | Flag |
-|-----------|----------|------------|------|
-| [a-star-trail](CSS%20CTF%202026/a-star-trail/writeup.md) | Misc | Beginner* | `CSSCTF{P1JT-21.0}` |
-| [a-star-trail-2](CSS%20CTF%202026/a-star-trail-2/writeup.md) | Misc | Intermediate | `CSSCTF{STARmaPdElAUNaYTriaNGulATioNDIjKStrAVoRonoiGrAPHSdetERmiNaNTcolineaRALGOrITHmSLeEandsCHAcHTERTANgEnTSmErGECirCuMcIrcLEcOnVEXhuLLgeOMeTRy}` |
-| [astrolobe_overwrite](CSS%20CTF%202026/astrolobe_overwrite/writeup.md) | Pwn | n/a | `CSSCTF{b0ckch41n_sk1ll5}` |
-| [chrono-i](CSS%20CTF%202026/chrono-i/writeup.md) | Crypto | Beginner | `CSSCTF{every_second_hides_a_secret}` |
-| [chrono-ii](CSS%20CTF%202026/chrono-ii/writeup.md) | Crypto | Intermediate | `CSSCTF{th3_cl0ck_r3m3mb3rs_3very_s3c0nd}` |
-| [cloudy-spaceships](CSS%20CTF%202026/cloudy-spaceships/writeup.md) | Web | n/a | `CSSCTF{your_forecast_says_love_is_on_its_way}` |
-| [colour-shift](CSS%20CTF%202026/colour-shift/writeup.md) | Forensics | Beginner | `CSSCTF{SHINE ON}` |
-| [dockside-ticket](CSS%20CTF%202026/dockside-ticket/writeup.md) | Pwn | Beginner | `CSSCTF{us3_4ft3r_fr33_d0cks1d3}` |
-| [flappy-board](CSS%20CTF%202026/flappy-board/writeup.md) | Misc | Intermediate | `CSSCTF{birdddd}` |
-| [gateway](CSS%20CTF%202026/gateway/writeup.md) | Web3 | n/a | `CSSCTF{CSS{B451C_BL0CKCH41N_5K1LL5}}` |
-| [Kuiper Belt Relay Core](CSS%20CTF%202026/Kuiper%20Belt%20Relay%20Core/writeup.md) | Pwn | Beginner | `CSSCTF{s1gn4l_r3c0v3r3d_fr0m_th3_v01d}` |
-| [lamp-drill](CSS%20CTF%202026/lamp-drill/writeup.md) | Warm-up | n/a | `CSSCTF{css}` |
-| [lottery](CSS%20CTF%202026/lottery/writeup.md) | Web3 | n/a | `CSSCTF{CSS{U5E_4_R4ND0M_FUNCT10N}}` |
-| [maintenance-log](CSS%20CTF%202026/maintenance-log/writeup.md) | Pwn | n/a | `CSSCTF{Duh_m4t3_1_4m_sl33py}` |
-| [prince-walk](CSS%20CTF%202026/prince-walk/writeup.md) | Reverse | n/a | `CSSCTF{P12INC3_0R_P1NC3?}` |
-| [server-juice](CSS%20CTF%202026/server-juice/writeup.md) | OSINT | Beginner | `CSSCTF{premiumreserve}` |
-| [severed-symmetry](CSS%20CTF%202026/severed-symmetry/writeup.md) | Crypto | Expert | `CSSCTF{P35T0_5CH3M3_4TT4CK2026}` |
-
-*(n/a = difficulty not printed on challenge card; * = estimated from sibling challenge)*
+| Challenge | Category | VN | EN |
+|---|---|---|---|
+| Echo Chamber - AI (Medium) | AI | [VN](H7CTF%202026%20Quals/echo-chamber/writeup.md) | [EN](H7CTF%202026%20Quals/echo-chamber/writeup.en.md) |
+| Countersign - Rev (Insane) | Reverse | [VN](H7CTF%202026%20Quals/countersign/writeup.md) | [EN](H7CTF%202026%20Quals/countersign/writeup.en.md) |
+| Kintsugi Vault - Rev (Hard) | Reverse | [VN](H7CTF%202026%20Quals/kintsugi-vault/writeup.md) | [EN](H7CTF%202026%20Quals/kintsugi-vault/writeup.en.md) |
+| Dog Whistle - Hardware (Insane) | Hardware | [VN](H7CTF%202026%20Quals/dog-whistle/writeup.md) | [EN](H7CTF%202026%20Quals/dog-whistle/writeup.en.md) |
+| Trompe-l'œil - Web3 (Hard) | Web3 | [VN](H7CTF%202026%20Quals/trompe-loeil/writeup.md) | [EN](H7CTF%202026%20Quals/trompe-loeil/writeup.en.md) |
+| Meridian Pay - Mobile (Hard) | Mobile | [VN](H7CTF%202026%20Quals/meridian-pay/writeup.md) | [EN](H7CTF%202026%20Quals/meridian-pay/writeup.en.md) |
+| Genesis - Web3 (Medium) | Web3 | [VN](H7CTF%202026%20Quals/genesis/writeup.md) | [EN](H7CTF%202026%20Quals/genesis/writeup.en.md) |
+| Deputy - Cloud (Hard) | Cloud | [VN](H7CTF%202026%20Quals/deputy/writeup.md) | [EN](H7CTF%202026%20Quals/deputy/writeup.en.md) |
+| Tapeout - Misc (Hard) | Misc | [VN](H7CTF%202026%20Quals/tapeout/writeup.md) | [EN](H7CTF%202026%20Quals/tapeout/writeup.en.md) |
+| Owner's Draw - Crypto (Medium) | Crypto | [VN](H7CTF%202026%20Quals/owners-draw/writeup.md) | [EN](H7CTF%202026%20Quals/owners-draw/writeup.en.md) |
+| Manifest Destiny - Pwn (Medium) | Pwn | [VN](H7CTF%202026%20Quals/manifest-destiny/writeup.md) | [EN](H7CTF%202026%20Quals/manifest-destiny/writeup.en.md) |
+| Shared Blood - Crypto (Medium) | Crypto | [VN](H7CTF%202026%20Quals/shared-blood/writeup.md) | [EN](H7CTF%202026%20Quals/shared-blood/writeup.en.md) |
+| Loose Lips - Crypto (Hard) | Crypto | [VN](H7CTF%202026%20Quals/loose-lips/writeup.md) | [EN](H7CTF%202026%20Quals/loose-lips/writeup.en.md) |
+| Take Two - Crypto (Hard) | Crypto | [VN](H7CTF%202026%20Quals/take-two/writeup.md) | [EN](H7CTF%202026%20Quals/take-two/writeup.en.md) |
+| Ghost on the Bus - Hardware (Medium) | Hardware | [VN](H7CTF%202026%20Quals/ghost-on-the-bus/writeup.md) | [EN](H7CTF%202026%20Quals/ghost-on-the-bus/writeup.en.md) |
+| Justified - Web (Medium) | Web | [VN](H7CTF%202026%20Quals/justified/writeup.md) | [EN](H7CTF%202026%20Quals/justified/writeup.en.md) |
+| Merged - Web (Medium) | Web | [VN](H7CTF%202026%20Quals/merged/writeup.md) | [EN](H7CTF%202026%20Quals/merged/writeup.en.md) |
+| Radio Silence - Hardware (Medium) | Hardware | [VN](H7CTF%202026%20Quals/radio-silence/writeup.md) | [EN](H7CTF%202026%20Quals/radio-silence/writeup.en.md) |
+| Parcel Bomb - Pwn (Medium) | Pwn | [VN](H7CTF%202026%20Quals/arcel-bomb/writeup.md) | [EN](H7CTF%202026%20Quals/arcel-bomb/writeup.en.md) |
+| Loose Ends - Pwn (Hard) | Pwn | [VN](H7CTF%202026%20Quals/loose-ends/writeup.md) | [EN](H7CTF%202026%20Quals/loose-ends/writeup.en.md) |
+| Open Sesame - Hardware (Hard) | Hardware | [VN](H7CTF%202026%20Quals/open-sesame/writeup.md) | [EN](H7CTF%202026%20Quals/open-sesame/writeup.en.md) |
+| Hear No Evil - Hardware (Medium) | Hardware | [VN](H7CTF%202026%20Quals/hear-no-evil/writeup.md) | [EN](H7CTF%202026%20Quals/hear-no-evil/writeup.en.md) |
+| Kick the CAN - Hardware (Medium) | Hardware | [VN](H7CTF%202026%20Quals/kick-the-can/writeup.md) | [EN](H7CTF%202026%20Quals/kick-the-can/writeup.en.md) |
+| Splice - Web (Hard) | Web | [VN](H7CTF%202026%20Quals/splice/writeup.md) | [EN](H7CTF%202026%20Quals/splice/writeup.en.md) |
+| Trace Amounts - Hardware (Medium) | Hardware | [VN](H7CTF%202026%20Quals/trace-amounts/writeup.md) | [EN](H7CTF%202026%20Quals/trace-amounts/writeup.en.md) |
+| Papers Please - Pwn (Easy) | Pwn | [VN](H7CTF%202026%20Quals/papers-please/writeup.md) | [EN](H7CTF%202026%20Quals/papers-please/writeup.en.md) |
+| Mic Drop - Hardware (Medium) | Hardware | [VN](H7CTF%202026%20Quals/mic-drop/writeup.md) | [EN](H7CTF%202026%20Quals/mic-drop/writeup.en.md) |
+| Deep Freeze - Forensics (Hard) | Forensics | [VN](H7CTF%202026%20Quals/deep-freeze/writeup.md) | [EN](H7CTF%202026%20Quals/deep-freeze/writeup.en.md) |
+| Patient Exfil - Forensics (Medium) | Forensics | [VN](H7CTF%202026%20Quals/patient-exfil/writeup.md) | [EN](H7CTF%202026%20Quals/patient-exfil/writeup.en.md) |
 
 </details>
 
 <details>
-<summary><b>Pointer Overflow CTF 2026 - 8 challenges</b></summary>
+<summary>SunshineCTF 2026 — 18 writeups</summary>
 
-| Challenge | Category | Difficulty | Flag |
-|-----------|----------|------------|------|
-| [everything-left-open](Pointer%20Overflow%20CTF%202026/everything-left-open/writeup.md) | Forensics | 100 pts | `POCTF{109.612.I777LWHDFNCWRJ2S.JB6P5ZRASWPVYKKKHXKAPSQFWT}` |
-| [excavation](Pointer%20Overflow%20CTF%202026/excavation/writeup.md) | RE | Beginner | `POCTF{2VE5EKXUA5IV2R57}` (token only) |
-| [invisible-text](Pointer%20Overflow%20CTF%202026/invisible-text/writeup.md) | Steg | Hard | `POCTF{hidden_whitespace_in_py_file}` |
-| [letters-never-sent](Pointer%20Overflow%20CTF%202026/letters-never-sent/writeup.md) | Crypto | Beginner | `POCTF{2.612.ORSMSQU6A7IQJGUC.PQ4FI...}` |
-| [read-me-my-fortune](Pointer%20Overflow%20CTF%202026/read-me-my-fortune/writeup.md) | EXP | Medium | `POCTF{template_format_rce_via_globals}` |
-| [shape-of-query](Pointer%20Overflow%20CTF%202026/shape-of-query/writeup.md) | Web | Hard | `POCTF{mass_assignment_private_notes_leak}` |
-| [the-apparatus-invocation](Pointer%20Overflow%20CTF%202026/the-apparatus-invocation/writeup.md) | Misc | Beginner | `POCTF{lights_out_7x7_gf2_system}` |
-| [where-the-light-fails-to-fall](Pointer%20Overflow%20CTF%202026/where-the-light-fails-to-fall/writeup.md) | OSINT | Hard | `POCTF{99.612.encrypted_token_sig}` |
+| Challenge | Category | VN | EN |
+|---|---|---|---|
+| CookieCorp - Web (Medium) | Web | [VN](SunshineCTF%202026/cookiecorp/writeup.md) | [EN](SunshineCTF%202026/cookiecorp/writeup.en.md) |
+| You Cut Me Off - Forensics (Medium) | Forensics | [VN](SunshineCTF%202026/you-cut-me-off/writeup.md) | [EN](SunshineCTF%202026/you-cut-me-off/writeup.en.md) |
+| RoboCall - Pwn (Hard) | Pwn | [VN](SunshineCTF%202026/robocall/writeup.md) | [EN](SunshineCTF%202026/robocall/writeup.en.md) |
+| Cache Money - Pwn (Hard) | Pwn | [VN](SunshineCTF%202026/cache-money/writeup.md) | [EN](SunshineCTF%202026/cache-money/writeup.en.md) |
+| VecNet - Web (Hard) | Web | [VN](SunshineCTF%202026/vecnet/writeup.md) | [EN](SunshineCTF%202026/vecnet/writeup.en.md) |
+| Planetary Probe - Web (Hard) | Web | [VN](SunshineCTF%202026/planetary-probe/writeup.md) | [EN](SunshineCTF%202026/planetary-probe/writeup.en.md) |
+| Groundhog Day - Web (Hard) | Web | [VN](SunshineCTF%202026/groundhog_day/writeup.md) | [EN](SunshineCTF%202026/groundhog_day/writeup.en.md) |
+| Print Print Revolution - Pwn (Hard) | Pwn | [VN](SunshineCTF%202026/print-print-revolution/writeup.md) | [EN](SunshineCTF%202026/print-print-revolution/writeup.en.md) |
+| Homemaker - Pwn (Hard) | Pwn | [VN](SunshineCTF%202026/homemaker/writeup.md) | [EN](SunshineCTF%202026/homemaker/writeup.en.md) |
+| SiteCheck - Web (Hard) | Web | [VN](SunshineCTF%202026/sitecheck/writeup.md) | [EN](SunshineCTF%202026/sitecheck/writeup.en.md) |
+| Safe House - Pwn (Hard) | Pwn | [VN](SunshineCTF%202026/safe-house/writeup.md) | [EN](SunshineCTF%202026/safe-house/writeup.en.md) |
+| Total Recall - Pwn (Medium) | Pwn | [VN](SunshineCTF%202026/total_recall/writeup.md) | [EN](SunshineCTF%202026/total_recall/writeup.en.md) |
+| Code Breaker - Crypto/Pwn (Hard) | Crypto | [VN](SunshineCTF%202026/code-breaker/writeup.md) | [EN](SunshineCTF%202026/code-breaker/writeup.en.md) |
+| Mad Libs - Pwn (Medium) | Pwn | [VN](SunshineCTF%202026/madlibs/writeup.md) | [EN](SunshineCTF%202026/madlibs/writeup.en.md) |
+| Welcome Call - Forensics (Medium) | Forensics | [VN](SunshineCTF%202026/welcome-call/writeup.md) | [EN](SunshineCTF%202026/welcome-call/writeup.en.md) |
+| NAS Coal - Forensics (Medium) | Forensics | [VN](SunshineCTF%202026/nas-coal/writeup.md) | [EN](SunshineCTF%202026/nas-coal/writeup.en.md) |
+| Suntrail - Misc (Medium) | Misc | [VN](SunshineCTF%202026/suntrail/writeup.md) | [EN](SunshineCTF%202026/suntrail/writeup.en.md) |
+| My Eyes Burn - Misc (Medium) | Misc | [VN](SunshineCTF%202026/my-eyes-burn/writeup.md) | [EN](SunshineCTF%202026/my-eyes-burn/writeup.en.md) |
 
 </details>
 
+<details>
+<summary>CSS CTF 2026 — 17 writeups</summary>
 
+| Challenge | Category | VN | EN |
+|---|---|---|---|
+| Kuiper Belt Relay Core - Pwn (Beginner) | Pwn | [VN](CSS%20CTF%202026/Kuiper%20Belt%20Relay%20Core/writeup.md) | [EN](CSS%20CTF%202026/Kuiper%20Belt%20Relay%20Core/writeup.en.md) |
+| Gateway - Web3 (199 points) | Web3 | [VN](CSS%20CTF%202026/gateway/writeup.md) | [EN](CSS%20CTF%202026/gateway/writeup.en.md) |
+| Astrolobe Overwrite - Pwn/Reverse (Expert, 746pts) | Pwn | [VN](CSS%20CTF%202026/astrolobe_overwrite/writeup.md) | [EN](CSS%20CTF%202026/astrolobe_overwrite/writeup.en.md) |
+| Cloudy with a Chance of Spaceships - Web (67 pts) | Web | [VN](CSS%20CTF%202026/cloudy-spaceships/writeup.md) | [EN](CSS%20CTF%202026/cloudy-spaceships/writeup.en.md) |
+| lottery - Web3 (299 pts) | Web3 | [VN](CSS%20CTF%202026/lottery/writeup.md) | [EN](CSS%20CTF%202026/lottery/writeup.en.md) |
+| Chrono II - Crypto (Intermediate) | Crypto | [VN](CSS%20CTF%202026/chrono-ii/writeup.md) | [EN](CSS%20CTF%202026/chrono-ii/writeup.en.md) |
+| Maintenance Log - Pwn (150 điểm) | Pwn | [VN](CSS%20CTF%202026/maintenance-log/writeup.md) | [EN](CSS%20CTF%202026/maintenance-log/writeup.en.md) |
+| Flappy Board - Misc (Intermediate) | Misc | [VN](CSS%20CTF%202026/flappy-board/writeup.md) | [EN](CSS%20CTF%202026/flappy-board/writeup.en.md) |
+| Prince Walk - Reverse (50 pts) | Reverse | [VN](CSS%20CTF%202026/prince-walk/writeup.md) | [EN](CSS%20CTF%202026/prince-walk/writeup.en.md) |
+| Severed Symmetry - Crypto (Expert) | Crypto | [VN](CSS%20CTF%202026/severed-symmetry/writeup.md) | [EN](CSS%20CTF%202026/severed-symmetry/writeup.en.md) |
+| Dockside Ticket Office - Pwn (Beginner) | Pwn | [VN](CSS%20CTF%202026/dockside-ticket/writeup.md) | [EN](CSS%20CTF%202026/dockside-ticket/writeup.en.md) |
+| Server Juice - OSINT (Beginner) | OSINT | [VN](CSS%20CTF%202026/server-juice/writeup.md) | [EN](CSS%20CTF%202026/server-juice/writeup.en.md) |
+| A Star Trail 2 - Misc/Graph (Intermediate) | Misc | [VN](CSS%20CTF%202026/a-star-trail-2/writeup.md) | [EN](CSS%20CTF%202026/a-star-trail-2/writeup.en.md) |
+| A Star Trail - Misc/OSINT (Beginner) | Misc | [VN](CSS%20CTF%202026/a-star-trail/writeup.md) | [EN](CSS%20CTF%202026/a-star-trail/writeup.en.md) |
+| Lamp Drill - Warm-up (49 điểm) | Warm-up | [VN](CSS%20CTF%202026/lamp-drill/writeup.md) | [EN](CSS%20CTF%202026/lamp-drill/writeup.en.md) |
+| Colour Shift - Forensics (Beginner) | Forensics | [VN](CSS%20CTF%202026/colour-shift/writeup.md) | [EN](CSS%20CTF%202026/colour-shift/writeup.en.md) |
+| Chrono I - Crypto (Beginner) | Crypto | [VN](CSS%20CTF%202026/chrono-i/writeup.md) | [EN](CSS%20CTF%202026/chrono-i/writeup.en.md) |
+
+</details>
 
 <details>
-<summary><b>CDCTF 2026 - 41 challenges</b></summary>
+<summary>Pointer Overflow CTF 2026 — 8 writeups</summary>
 
-| Challenge | Category |
-|-----------|----------|
-| [a-rat-by-any-other-name](CDCTF%202026/a-rat-by-any-other-name/writeup.md) | Password Cracking |
-| [best-of-friends](CDCTF%202026/best-of-friends/writeup.md) | Crypto |
-| [blakes-bride](CDCTF%202026/blakes-bride/writeup.md) | Forensics |
-| [bring-coines](CDCTF%202026/bring-coines/writeup.md) | Reverse |
-| [calcurator-1](CDCTF%202026/calcurator-1/writeup.md) | Forensics · Reverse |
-| [calcurator-2](CDCTF%202026/calcurator-2/writeup.md) | Forensics · Reverse |
-| [calcurator-3](CDCTF%202026/calcurator-3/writeup.md) | Forensics · Reverse |
-| [calcurator-4](CDCTF%202026/calcurator-4/writeup.md) | Forensics · Reverse · OSINT |
-| [catty-malware-1](CDCTF%202026/catty-malware-1/writeup.md) | Forensics |
-| [catty-malware-2](CDCTF%202026/catty-malware-2/writeup.md) | Forensics |
-| [catty-malware-3](CDCTF%202026/catty-malware-3/writeup.md) | Forensics |
-| [clear-as-glass](CDCTF%202026/clear-as-glass/writeup.md) | Forensics · Reverse |
-| [cookies](CDCTF%202026/cookies/writeup.md) | Web |
-| [corporate-rat](CDCTF%202026/corporate-rat/writeup.md) | Log Analysis |
-| [cosmic-call](CDCTF%202026/cosmic-call/writeup.md) | Scanning · NTA · Crypto |
-| [crypto-cat-1](CDCTF%202026/crypto-cat-1/writeup.md) | Crypto |
-| [crypto-cat-2](CDCTF%202026/crypto-cat-2/writeup.md) | Crypto |
-| [crypto-cat-3](CDCTF%202026/crypto-cat-3/writeup.md) | Crypto |
-| [diggity-network](CDCTF%202026/diggity-network/writeup.md) | Forensics |
-| [doomscroll-hell](CDCTF%202026/doomscroll-hell/writeup.md) | Forensics |
-| [eat-your-fruits-and-vegetables](CDCTF%202026/eat-your-fruits-and-vegetables/writeup.md) | Crypto |
-| [epic-rat-encoding](CDCTF%202026/epic-rat-encoding/writeup.md) | Reverse |
-| [flag-knows-what-it-is](CDCTF%202026/flag-knows-what-it-is/writeup.md) | Crypto |
-| [forensics-training-mat](CDCTF%202026/forensics-training-mat/writeup.md) | Forensics |
-| [gerry-the-larry-1](CDCTF%202026/gerry-the-larry-1/writeup.md) | Log Analysis |
-| [gitlash](CDCTF%202026/gitlash/writeup.md) | Pwn · Forensics |
-| [low-on-fun](CDCTF%202026/low-on-fun/writeup.md) | Reverse |
-| [night-catz-crazy-cat-club](CDCTF%202026/night-catz-crazy-cat-club/writeup.md) | Reverse · Crypto |
-| [script-of-theseus](CDCTF%202026/script-of-theseus/writeup.md) | Forensics |
-| [soupos-0-welcome-to-the-kitchen](CDCTF%202026/soupos-0-welcome-to-the-kitchen/writeup.md) | Reverse · Pwn |
-| [soupos-1-mise-en-place](CDCTF%202026/soupos-1-mise-en-place/writeup.md) | Reverse · Pwn |
-| [soupos-2-salt-to-taste](CDCTF%202026/soupos-2-salt-to-taste/writeup.md) | Reverse · Pwn |
-| [soupos-3-bad-recipe](CDCTF%202026/soupos-3-bad-recipe/writeup.md) | Reverse · Pwn |
-| [tacocat](CDCTF%202026/tacocat/writeup.md) | Misc |
-| [troubled-translation](CDCTF%202026/troubled-translation/writeup.md) | OSINT |
-| [vat-1-going-ham](CDCTF%202026/vat-1-going-ham/writeup.md) | OSINT · Crypto |
-| [vat-3-pretty-good-passphrase](CDCTF%202026/vat-3-pretty-good-passphrase/writeup.md) | OSINT · Crypto |
-| [vat-4-what-the-helly](CDCTF%202026/vat-4-what-the-helly/writeup.md) | OSINT · Crypto · Password Cracking |
-| [vat-5-you-get-all-that](CDCTF%202026/vat-5-you-get-all-that/writeup.md) | OSINT · Crypto |
-| [wish](CDCTF%202026/wish/writeup.md) | Pwn |
-| [yummy-rat-toast](CDCTF%202026/yummy-rat-toast/writeup.md) | Password Cracking |
+| Challenge | Category | VN | EN |
+|---|---|---|---|
+| Shape of Query - WEB (300 pts) | Web | [VN](Pointer%20Overflow%20CTF%202026/shape-of-query/writeup.md) | [EN](Pointer%20Overflow%20CTF%202026/shape-of-query/writeup.en.md) |
+| Invisible Text - STEG (200 pts) | Steg | [VN](Pointer%20Overflow%20CTF%202026/invisible-text/writeup.md) | [EN](Pointer%20Overflow%20CTF%202026/invisible-text/writeup.en.md) |
+| Excavation - Reverse Engineering (100 pts) | Reverse | [VN](Pointer%20Overflow%20CTF%202026/excavation/writeup.md) | [EN](Pointer%20Overflow%20CTF%202026/excavation/writeup.en.md) |
+| Where the Light Fails to Fall - OSINT | OSINT | [VN](Pointer%20Overflow%20CTF%202026/where-the-light-fails-to-fall/writeup.md) | [EN](Pointer%20Overflow%20CTF%202026/where-the-light-fails-to-fall/writeup.en.md) |
+| The Apparatus, Invocation - Misc | Misc | [VN](Pointer%20Overflow%20CTF%202026/the-apparatus-invocation/writeup.md) | [EN](Pointer%20Overflow%20CTF%202026/the-apparatus-invocation/writeup.en.md) |
+| Everything Left Open - Forensics | Forensics | [VN](Pointer%20Overflow%20CTF%202026/everything-left-open/writeup.md) | [EN](Pointer%20Overflow%20CTF%202026/everything-left-open/writeup.en.md) |
+| Read Me My Fortune - Exploitation | EXP | [VN](Pointer%20Overflow%20CTF%202026/read-me-my-fortune/writeup.md) | [EN](Pointer%20Overflow%20CTF%202026/read-me-my-fortune/writeup.en.md) |
+| Letters Never Sent - Crypto | Crypto | [VN](Pointer%20Overflow%20CTF%202026/letters-never-sent/writeup.md) | [EN](Pointer%20Overflow%20CTF%202026/letters-never-sent/writeup.en.md) |
+
+</details>
+
+<details>
+<summary>CDCTF 2026 — 41 writeups</summary>
+
+| Challenge | Category | VN | EN |
+|---|---|---|---|
+| soupOS 3: Bad Recipe - Rev Eng pwn (498 điểm) | Reverse | [VN](CDCTF%202026/soupos-3-bad-recipe/writeup.md) | [EN](CDCTF%202026/soupos-3-bad-recipe/writeup.en.md) |
+| soupOS 2: Salt to Taste - Rev Eng pwn (489 điểm) | Reverse | [VN](CDCTF%202026/soupos-2-salt-to-taste/writeup.md) | [EN](CDCTF%202026/soupos-2-salt-to-taste/writeup.en.md) |
+| soupOS 1: Mise en Place - Rev Eng pwn (479 điểm) | Reverse | [VN](CDCTF%202026/soupos-1-mise-en-place/writeup.md) | [EN](CDCTF%202026/soupos-1-mise-en-place/writeup.en.md) |
+| soupOS 0: Welcome to the Kitchen - Rev Eng pwn (431 điểm) | Reverse | [VN](CDCTF%202026/soupos-0-welcome-to-the-kitchen/writeup.md) | [EN](CDCTF%202026/soupos-0-welcome-to-the-kitchen/writeup.en.md) |
+| cookies - Web (500 points) | Web | [VN](CDCTF%202026/cookies/writeup.md) | [EN](CDCTF%202026/cookies/writeup.en.md) |
+| bring-coines - Reverse Engineering (500 points) | Reverse | [VN](CDCTF%202026/bring-coines/writeup.md) | [EN](CDCTF%202026/bring-coines/writeup.en.md) |
+| Yummy Rat Toast - Password Cracking (500 points) | Password Cracking | [VN](CDCTF%202026/yummy-rat-toast/writeup.md) | [EN](CDCTF%202026/yummy-rat-toast/writeup.en.md) |
+| Wish - pwn (800 điểm) | Pwn | [VN](CDCTF%202026/wish/writeup.md) | [EN](CDCTF%202026/wish/writeup.en.md) |
+| Verbal Authentication Transmissions 5/5: You get all that? - OSINT + Crypto (500 pts) | OSINT | [VN](CDCTF%202026/vat-5-you-get-all-that/writeup.md) | [EN](CDCTF%202026/vat-5-you-get-all-that/writeup.en.md) |
+| Verbal Authentication Transmissions 4/5: What the helly - OSINT + Crypto + Password Cracking (500 pts) | OSINT | [VN](CDCTF%202026/vat-4-what-the-helly/writeup.md) | [EN](CDCTF%202026/vat-4-what-the-helly/writeup.en.md) |
+| Verbal Authentication Transmissions 3/5: Pretty Good Passphrase - OSINT + Crypto (500 pts) | OSINT | [VN](CDCTF%202026/vat-3-pretty-good-passphrase/writeup.md) | [EN](CDCTF%202026/vat-3-pretty-good-passphrase/writeup.en.md) |
+| Verbal Authentication Transmissions 1/5: Going HAM - OSINT + Crypto (500 pts) | OSINT | [VN](CDCTF%202026/vat-1-going-ham/writeup.md) | [EN](CDCTF%202026/vat-1-going-ham/writeup.en.md) |
+| Troubled Translation - OSINT (479 điểm) | OSINT | [VN](CDCTF%202026/troubled-translation/writeup.md) | [EN](CDCTF%202026/troubled-translation/writeup.en.md) |
+| The flag knows what it is at all times - Crypto (500 points) | Crypto | [VN](CDCTF%202026/flag-knows-what-it-is/writeup.md) | [EN](CDCTF%202026/flag-knows-what-it-is/writeup.en.md) |
+| The Epic Adventures of Crypto Cat Caticus Catanius (1/5) - Crypto (Easy) | Crypto | [VN](CDCTF%202026/crypto-cat-1/writeup.md) | [EN](CDCTF%202026/crypto-cat-1/writeup.en.md) |
+| Tacocat - Misc | Misc | [VN](CDCTF%202026/tacocat/writeup.md) | [EN](CDCTF%202026/tacocat/writeup.en.md) |
+| Script of Theseus - Forensics (493 điểm) | Forensics | [VN](CDCTF%202026/script-of-theseus/writeup.md) | [EN](CDCTF%202026/script-of-theseus/writeup.en.md) |
+| Night Catz Crazy Cat Club - RevE Crypto (500 điểm) | Reverse | [VN](CDCTF%202026/night-catz-crazy-cat-club/writeup.md) | [EN](CDCTF%202026/night-catz-crazy-cat-club/writeup.en.md) |
+| Low on function names - Reverse Engineering (500 điểm) | Reverse | [VN](CDCTF%202026/low-on-fun/writeup.md) | [EN](CDCTF%202026/low-on-fun/writeup.en.md) |
+| GitLash - pwn/Forensics (496 điểm) | Pwn | [VN](CDCTF%202026/gitlash/writeup.md) | [EN](CDCTF%202026/gitlash/writeup.en.md) |
+| Gerry the Larry (1/2) - Log Analysis (500 điểm) | Log Analysis | [VN](CDCTF%202026/gerry-the-larry-1/writeup.md) | [EN](CDCTF%202026/gerry-the-larry-1/writeup.en.md) |
+| Forensics Training Mat - Forensics (Training, 250 điểm) | Forensics | [VN](CDCTF%202026/forensics-training-mat/writeup.md) | [EN](CDCTF%202026/forensics-training-mat/writeup.en.md) |
+| Epic Rat Encoding - Reverse (498 points) | Reverse | [VN](CDCTF%202026/epic-rat-encoding/writeup.md) | [EN](CDCTF%202026/epic-rat-encoding/writeup.en.md) |
+| Eat your fruits and vegetables! - Crypto (500 points) | Crypto | [VN](CDCTF%202026/eat-your-fruits-and-vegetables/writeup.md) | [EN](CDCTF%202026/eat-your-fruits-and-vegetables/writeup.en.md) |
+| Doomscroll Hell - Forensics | Forensics | [VN](CDCTF%202026/doomscroll-hell/writeup.md) | [EN](CDCTF%202026/doomscroll-hell/writeup.en.md) |
+| Diggity Network - Forensics (500 điểm) | Forensics | [VN](CDCTF%202026/diggity-network/writeup.md) | [EN](CDCTF%202026/diggity-network/writeup.en.md) |
+| Cosmic Call - Scanning / NTA / Crypto (797 điểm) | Scanning | [VN](CDCTF%202026/cosmic-call/writeup.md) | [EN](CDCTF%202026/cosmic-call/writeup.en.md) |
+| Corporate RAT - Log Analysis (500 điểm) | Log Analysis | [VN](CDCTF%202026/corporate-rat/writeup.md) | [EN](CDCTF%202026/corporate-rat/writeup.en.md) |
+| Catty Malware (3/3) - Forensics (499) | Forensics | [VN](CDCTF%202026/catty-malware-3/writeup.md) | [EN](CDCTF%202026/catty-malware-3/writeup.en.md) |
+| Catty Malware (2/3) - Forensics (499) | Forensics | [VN](CDCTF%202026/catty-malware-2/writeup.md) | [EN](CDCTF%202026/catty-malware-2/writeup.en.md) |
+| Catty Malware (1/3) - Forensics (500) | Forensics | [VN](CDCTF%202026/catty-malware-1/writeup.md) | [EN](CDCTF%202026/catty-malware-1/writeup.en.md) |
+| CalcuRATor (4/4) - Forensics + Rev Eng + OSINT (500 points) | Forensics | [VN](CDCTF%202026/calcurator-4/writeup.md) | [EN](CDCTF%202026/calcurator-4/writeup.en.md) |
+| CalcuRATor (3/4) - Forensics + Rev Eng (500 points) | Forensics | [VN](CDCTF%202026/calcurator-3/writeup.md) | [EN](CDCTF%202026/calcurator-3/writeup.en.md) |
+| CalcuRATor (2/4) - Forensics + Rev Eng (500 points) | Forensics | [VN](CDCTF%202026/calcurator-2/writeup.md) | [EN](CDCTF%202026/calcurator-2/writeup.en.md) |
+| CalcuRATor (1/4) - Forensics + Rev Eng (491 points) | Forensics | [VN](CDCTF%202026/calcurator-1/writeup.md) | [EN](CDCTF%202026/calcurator-1/writeup.en.md) |
+| Blake's Bride - Forensics (500 điểm) | Forensics | [VN](CDCTF%202026/blakes-bride/writeup.md) | [EN](CDCTF%202026/blakes-bride/writeup.en.md) |
+| Best of Friends - Crypto (500 points) | Crypto | [VN](CDCTF%202026/best-of-friends/writeup.md) | [EN](CDCTF%202026/best-of-friends/writeup.en.md) |
+| A rat by any other name - Password Cracking (500 pts) | Password Cracking | [VN](CDCTF%202026/a-rat-by-any-other-name/writeup.md) | [EN](CDCTF%202026/a-rat-by-any-other-name/writeup.en.md) |
+| Crypto Cat Caticus Catanius (3/5) - Crypto (498 điểm) | Crypto | [VN](CDCTF%202026/crypto-cat-3/writeup.md) | [EN](CDCTF%202026/crypto-cat-3/writeup.en.md) |
+| Crypto Cat Caticus Catanius (2/5) - Crypto (496 điểm) | Crypto | [VN](CDCTF%202026/crypto-cat-2/writeup.md) | [EN](CDCTF%202026/crypto-cat-2/writeup.en.md) |
+| Clear as Glass - Forensics/Rev Eng (500 điểm) | Forensics | [VN](CDCTF%202026/clear-as-glass/writeup.md) | [EN](CDCTF%202026/clear-as-glass/writeup.en.md) |
 
 </details>
 
