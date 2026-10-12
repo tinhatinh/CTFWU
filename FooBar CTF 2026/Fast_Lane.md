@@ -29,9 +29,9 @@ Trong hệ mật mã RSA tiêu chuẩn, tốc độ giải mã phụ thuộc tr�
 Theo **Định lý Wiener (Wiener's Attack)**:
 - Nếu $q < p < 2q$ và số mũ bí mật $d$ thỏa mãn:
   $$d < \frac{1}{3} N^{1/4}$$
-- Phân số $\frac{k}{d}$ sẽ là một trong các convergent (convergent) trong khai triển liên phân số (continued fraction) của $\frac{e}{N}$.
+- Phân số $\frac{k}{d}$ sẽ là một trong các convergent trong khai triển liên phân số (continued fraction) của $\frac{e}{N}$.
 
-Khai triển liên phân số của $\frac{e}{N}$ sinh ra một dãy hữu hạn các cặp giản phân $(k_i, d_i)$. Với mỗi cặp:
+Khai triển liên phân số của $\frac{e}{N}$ sinh ra một dãy hữu hạn các convergent $(k_i, d_i)$. Với mỗi cặp:
 1. Tính $\phi(N) = \frac{e \cdot d_i - 1}{k_i}$.
 2. Dựng phương trình bậc hai với nghiệm là $p$ và $q$:
    $$x^2 - (N - \phi(N) + 1)x + N = 0$$

@@ -310,6 +310,44 @@
   }
   const article = document.querySelector("#article-content");
   if (article) {
+    // Load local math assets only when prose contains math; never scan code or flags.
+    const mathNodes = document.createTreeWalker(article, NodeFilter.SHOW_TEXT, {
+      acceptNode: node => node.parentElement.closest("pre,code,script,style,textarea")
+        ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT
+    });
+    let mathNode, hasMath = false;
+    while ((mathNode = mathNodes.nextNode())) {
+      if (/\$\$|\\\(|\\\[|\$[^$\n]+\$/.test(mathNode.nodeValue)) { hasMath = true; break; }
+    }
+    if (hasMath) {
+      const mathBase = new URL("../vendor/katex/", document.currentScript.src);
+      const stylesheet = document.createElement("link");
+      stylesheet.rel = "stylesheet";
+      stylesheet.href = new URL("katex.min.css", mathBase).href;
+      document.head.append(stylesheet);
+      const loadMathScript = name => new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = new URL(name, mathBase).href;
+        script.onload = resolve; script.onerror = reject;
+        document.head.append(script);
+      });
+      loadMathScript("katex.min.js")
+        .then(() => loadMathScript("contrib/auto-render.min.js"))
+        .then(() => {
+          window.renderMathInElement(article, {
+            delimiters: [
+              {left: "$$", right: "$$", display: true},
+              {left: "$", right: "$", display: false},
+              {left: "\\(", right: "\\)", display: false},
+              {left: "\\[", right: "\\]", display: true}
+            ],
+            ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code", "option"],
+            trust: false, throwOnError: false, strict: "ignore", maxExpand: 1000
+          });
+          window.dispatchEvent(new Event("resize"));
+        })
+        .catch(() => { /* Keep readable source notation if loading fails. */ });
+    }
     const headings = [...article.querySelectorAll("h2, h3")];
     const toc = document.querySelector("#toc-links");
     headings.forEach((heading, index) => {

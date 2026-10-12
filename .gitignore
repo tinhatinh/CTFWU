@@ -59,5 +59,8 @@ _build
 .jekyll-metadata
 .bundle
 vendor
+!site/assets/vendor/
+site/assets/vendor/*
+!site/assets/vendor/katex/
 Gemfile.lock
 node_modules

@@ -1231,6 +1231,8 @@ select {
 .prose td {
   color: var(--muted);
 }
+.prose .katex { font-size:1.05em; }
+.prose .katex-display { overflow-x:auto; overflow-y:hidden; padding:6px 0; }
 .prose th,
 .prose td[style*="text-align: right"] {
   white-space: nowrap;
