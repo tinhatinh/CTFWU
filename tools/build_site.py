@@ -87,7 +87,7 @@ def member_table(lang):
 
 ABOUT = {
     "vi": """Mình là **Phan Thành Danh** ([@tinhatinh](https://github.com/tinhatinh)), sinh viên Công
-nghệ thông tin tại Học viện Bưu chính Viễn thông (PTIT), đang học thêm về kiểm thử bảo mật.
+nghệ thông tin tại Học viện Bưu chính Viễn thông (PTIT), đang học pentesting.
 
 - Ngoại ngữ: tiếng Trung HSK 4 (262/300) kèm HSKK Trung cấp, tiếng Anh đang hướng tới TOEIC 850.
 - Công cụ dùng hằng ngày: Python, C/C++, Java, Linux/Bash, Docker, Git.
@@ -113,7 +113,7 @@ cần được đối chiếu với dữ liệu và định dạng của từng 
 {members}
 """,
     "en": """I'm **Phan Thành Danh** ([@tinhatinh](https://github.com/tinhatinh)), an IT student at the
-Posts and Telecommunications Institute of Technology (PTIT), currently studying security testing.
+Posts and Telecommunications Institute of Technology (PTIT), currently learning pentesting.
 
 - Languages: Chinese HSK 4 (262/300) with HSKK Intermediate, working towards TOEIC 850 in English.
 - Daily tools: Python, C/C++, Java, Linux/Bash, Docker, Git.
