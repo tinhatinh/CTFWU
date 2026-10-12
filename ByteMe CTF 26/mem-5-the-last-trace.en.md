@@ -61,7 +61,7 @@ python solve.py soul.mem
    11 q=Download+Free+FTK+Imager
 ```
 
-The 54-character hex string in the `artifact=` parameter decodes to 27 bytes, `OWASP{soulstone_web_8b2d}`. The full URL appears **49 times** as UTF-16 and roughly **29 times** as ASCII, the ASCII copies usually truncated; every copy agrees on the `artifact=` value.
+The 50-character hex string in the `artifact=` parameter decodes to 25 bytes, `OWASP{soulstone_web_8b2d}`. The full URL appears **49 times** as UTF-16 and roughly **29 times** as ASCII, the ASCII copies usually truncated; every copy agrees on the `artifact=` value.
 
 The same URL also appears in Edge telemetry logs:
 

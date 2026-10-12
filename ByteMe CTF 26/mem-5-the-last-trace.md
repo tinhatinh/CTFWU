@@ -61,7 +61,7 @@ python solve.py soul.mem
    11 q=Download+Free+FTK+Imager
 ```
 
-Chuỗi hex 54 ký tự trong tham số `artifact=` giải mã thành 27 byte `OWASP{soulstone_web_8b2d}`. Bản UTF-16 đầy đủ của URL xuất hiện **49 lần**, các bản ASCII xuất hiện khoảng **29 lần** và thường bị cắt; toàn bộ trùng nhau ở phần `artifact=`.
+Chuỗi hex 50 ký tự trong tham số `artifact=` giải mã thành 25 byte `OWASP{soulstone_web_8b2d}`. Bản UTF-16 đầy đủ của URL xuất hiện **49 lần**, các bản ASCII xuất hiện khoảng **29 lần** và thường bị cắt; toàn bộ trùng nhau ở phần `artifact=`.
 
 Cùng URL còn nằm trong log telemetry của Edge:
 
