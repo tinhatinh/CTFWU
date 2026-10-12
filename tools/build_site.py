@@ -86,7 +86,7 @@ def member_table(lang):
     return "\n".join(rows) + "\n"
 
 ABOUT = {
-    "vi": """Mình là **Phan Thành Danh** ([@tinhatinh](https://github.com/tinhatinh)), sinh viên Công
+    "vi": """Mình là **Phan Thành Danh** ([@tinhatinh](https://github.com/tinhatinh)), sinh viên
 ngành An toàn thông tin tại Học viện Công nghệ Bưu chính Viễn thông (PTIT), đang học pentesting.
 
 - Ngoại ngữ: tiếng Trung HSK 4 (262/300) kèm HSKK Trung cấp, tiếng Anh đang hướng tới TOEIC 850.
