@@ -139,7 +139,10 @@ score labels.
 
 | [Cryovault 2026 Quals](Cryovault%202026%20Quals/README.md) | Oct 2026 | 26 | AI · Boot2Root · Crypto · Forensics · Hardware · Mobile · Pwn · Reverse · Web |
 
-**Total: 139 writeups**
+| [FooBar CTF 2026](FooBar%20CTF%202026/README.md) | Oct 2026 | 11 | Crypto · Pwn · Reverse · Web |
+| [kBxAc CTF 2026](kBxAc%20CTF%202026/README.md) | Oct 2026 | 14 | Crypto · Forensics · Misc · Pwn · Reverse · Web |
+
+**Total: 164 writeups**
 
 
 ## Structure
@@ -181,6 +184,48 @@ code, commands and recorded output. Older events keep their existing paths and l
 - Flag prefixes vary between challenges (even within the same event). Always verify before scanning.
 
 ## Quick Navigation
+
+<details>
+<summary>FooBar CTF 2026 — 11 writeups</summary>
+
+| Challenge | Category | VN | EN |
+|---|---|---|---|
+| The Debugger | Web | [VN](FooBar%20CTF%202026/The%20Debugger.md) | [EN](FooBar%20CTF%202026/The%20Debugger.en.md) |
+| The Missing Application | Web | [VN](FooBar%20CTF%202026/the-missing-application.md) | [EN](FooBar%20CTF%202026/the-missing-application.en.md) |
+| The Discount That Wasn't There | Web | [VN](FooBar%20CTF%202026/the-discount-that-wasn-t-there.md) | [EN](FooBar%20CTF%202026/the-discount-that-wasn-t-there.en.md) |
+| ouroboros_vm | Reverse | [VN](FooBar%20CTF%202026/ouroboros_vm.md) | [EN](FooBar%20CTF%202026/ouroboros_vm.en.md) |
+| poly_vault | Reverse | [VN](FooBar%20CTF%202026/poly_vault.md) | [EN](FooBar%20CTF%202026/poly_vault.en.md) |
+| Knapsack Nemesis | Crypto | [VN](FooBar%20CTF%202026/Knapsack%20Nemesis.md) | [EN](FooBar%20CTF%202026/Knapsack%20Nemesis.en.md) |
+| Blackbox_Archive | Pwn | [VN](FooBar%20CTF%202026/Blackbox_Archive.md) | [EN](FooBar%20CTF%202026/Blackbox_Archive.en.md) |
+| smooth_orbit | Crypto | [VN](FooBar%20CTF%202026/smooth_orbit.md) | [EN](FooBar%20CTF%202026/smooth_orbit.en.md) |
+| nebula_obscura | Crypto | [VN](FooBar%20CTF%202026/nebula_obscura.md) | [EN](FooBar%20CTF%202026/nebula_obscura.en.md) |
+| Fast_Lane | Crypto | [VN](FooBar%20CTF%202026/Fast_Lane.md) | [EN](FooBar%20CTF%202026/Fast_Lane.en.md) |
+| linear_drift | Crypto | [VN](FooBar%20CTF%202026/linear_drift.md) | [EN](FooBar%20CTF%202026/linear_drift.en.md) |
+
+</details>
+
+<details>
+<summary>kBxAc CTF 2026 — 14 writeups</summary>
+
+| Challenge | Category | VN | EN |
+|---|---|---|---|
+| Solevault | Web | [VN](kBxAc%20CTF%202026/solevault.md) | [EN](kBxAc%20CTF%202026/solevault.en.md) |
+| Insanity Check | Misc | [VN](kBxAc%20CTF%202026/Insanity%20Check.md) | [EN](kBxAc%20CTF%202026/Insanity%20Check.en.md) |
+| The Last Protocol | Crypto | [VN](kBxAc%20CTF%202026/The%20Last%20Protocol.md) | [EN](kBxAc%20CTF%202026/The%20Last%20Protocol.en.md) |
+| The Graveyard | Misc | [VN](kBxAc%20CTF%202026/The%20Graveyard.md) | [EN](kBxAc%20CTF%202026/The%20Graveyard.en.md) |
+| Hidden Patronus | Forensics | [VN](kBxAc%20CTF%202026/Hidden%20Patronus.md) | [EN](kBxAc%20CTF%202026/Hidden%20Patronus.en.md) |
+| Invisible Scan | Misc | [VN](kBxAc%20CTF%202026/Invisible%20Scan.md) | [EN](kBxAc%20CTF%202026/Invisible%20Scan.en.md) |
+| Original Unlimited Codex 100% Free | Pwn | [VN](kBxAc%20CTF%202026/original-unlimited-codex.md) | [EN](kBxAc%20CTF%202026/original-unlimited-codex.en.md) |
+| Ghost in the Group | Crypto | [VN](kBxAc%20CTF%202026/Ghost%20in%20the%20Group.md) | [EN](kBxAc%20CTF%202026/Ghost%20in%20the%20Group.en.md) |
+| Crossword 2 | Crypto | [VN](kBxAc%20CTF%202026/Crossword%202.md) | [EN](kBxAc%20CTF%202026/Crossword%202.en.md) |
+| Lets Get to Library | Pwn | [VN](kBxAc%20CTF%202026/Lets%20Get%20to%20Library.md) | [EN](kBxAc%20CTF%202026/Lets%20Get%20to%20Library.en.md) |
+| C-Laude | Forensics | [VN](kBxAc%20CTF%202026/C-Laude.md) | [EN](kBxAc%20CTF%202026/C-Laude.en.md) |
+| Crossword 1 | Crypto | [VN](kBxAc%20CTF%202026/Crossword%201.md) | [EN](kBxAc%20CTF%202026/Crossword%201.en.md) |
+| Most Secure Bank Of Endia | Pwn | [VN](kBxAc%20CTF%202026/Most%20Secure%20Bank%20Of%20Endia.md) | [EN](kBxAc%20CTF%202026/Most%20Secure%20Bank%20Of%20Endia.en.md) |
+| simphell | Reverse | [VN](kBxAc%20CTF%202026/simphell.md) | [EN](kBxAc%20CTF%202026/simphell.en.md) |
+
+</details>
+
 
 <details>
 <summary>Cryovault 2026 Quals — 26 writeups</summary>
