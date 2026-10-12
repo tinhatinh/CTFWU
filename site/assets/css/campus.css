@@ -1231,6 +1231,10 @@ select {
 .prose td {
   color: var(--muted);
 }
+.prose th,
+.prose td[style*="text-align: right"] {
+  white-space: nowrap;
+}
 .prose tr:last-child td,
 .results-table tr:last-child td {
   border-bottom: 0;
