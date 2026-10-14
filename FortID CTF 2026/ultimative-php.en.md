@@ -216,7 +216,7 @@ FOUND 59036305 md5= 0e3791209 sha256= 0e9920675
 FortID{C0RP_M1GR4T10N_1S_WH3R3_D4T4_G03S_T0_D13_fd7740fcb6}
 ```
 
-The flag was read directly from the challenge service. No submission response recorded.
+
 
 ## Reproduce
 
