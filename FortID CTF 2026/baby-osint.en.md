@@ -71,7 +71,7 @@ Durable corroboration: `accepted_flag.txt` (62 B) and the `goodFlag` row with `"
 FortID{hodaj_za_liku_hodaj_za_hrvatsku:zegevege:wednesday:909}
 ```
 
-The flag was accepted by the platform (the `goodFlag ... ACCEPTED` line above). No FortID instance was involved; the acceptance response came from `/submit`.
+
 
 ## Reproduce
 
