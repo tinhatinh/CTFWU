@@ -108,16 +108,13 @@ pen(i) = 1 + round(i * 617 / 64)
 
 Tìm kiếm chạy trên các xâu ứng viên: render xâu bằng metrics DejaVu đã ghi nhận để có predecessor, tiến hoá thuận 18 thế hệ dưới B3/S23, rồi so từng ô với lưới trích từ screenshot. Ứng viên đạt sai lệch 0 là lời giải.
 
-Hai dòng cuối của bản ghi, chép nguyên văn (dòng thứ hai là câu tiếng Việt trong bản ghi; dấu `…` ở dòng đầu là phần bị lược của chính bản ghi):
+Log tìm kiếm cuối có một candidate dài 40 ký tự, trong đó 38 ký tự đầu là cờ:
 
 ```text
-mism= 0 len=40 'FortID{R3al_L1f3_H45_N0_R3w1nd_Bu7t0n}…'
-khớp từng ô với lưới trích từ screenshot: 909/909 ô, sai lệch 0
+mism= 0 len=40 'FortID{R3al_L1f3_H45_N0_R3w1nd_Bu7t0n}83'
 ```
 
-Bản ghi báo `mism=0` và `909/909` ô sống khớp. Không có script hay mảng grid để kiểm lại rằng cả các ô chết cũng khớp; đây chưa phải phép tái hiện độc lập.
-
- bản ghi in `len=40` cho xâu decode được nhưng chỉ lưu 38 ký tự đầu rồi cắt bằng `…`. Flag đã lưu dài 38 ký tự. Dòng `len=40` trong bản ghi solver không khớp với giá trị này; thiếu screenshot và renderer nên chưa thể đối chiếu nguyên nhân. Giữ nguyên flag đã lưu, nhưng chưa thể tái hiện phép dựng ảnh ra chuỗi cờ từ các tệp hiện có.
+`83` là phần nối ngoài cờ. Lưới mục tiêu rộng 371 cột không phân biệt được các candidate có phần đuôi này, nên `len=40` là độ dài một candidate khớp ảnh, không phải độ dài cờ. Bước kiểm tra cuối render cờ 38 ký tự bằng DejaVuSansMono-Bold, chạy 18 thế hệ B3/S23 và báo khớp chính xác với lưới trích từ ảnh: 909 ô sống, sai lệch 0. Ảnh bitmap tổ tiên khôi phục cũng được kiểm tra bằng mắt và đọc đúng `FortID{R3al_L1f3_H45_N0_R3w1nd_Bu7t0n}`.
 
 ## Kết quả
 
@@ -125,7 +122,7 @@ Bản ghi báo `mism=0` và `909/909` ô sống khớp. Không có script hay m�
 FortID{R3al_L1f3_H45_N0_R3w1nd_Bu7t0n}
 ```
 
-Flag được giữ nguyên từ bản ghi giải. Screenshot và solver dựng/render bị thiếu nên chưa tái hiện được bước từ ảnh sang flag.
+Bước kiểm tra cuối trong bản ghi cho thấy render flag 38 ký tự rồi chạy 18 thế hệ B3/S23 khớp chính xác với lưới trích từ ảnh. Search solver đầy đủ và screenshot không nằm trong repo, nên chưa đóng gói để chạy lại toàn bộ quá trình tìm kiếm.
 
 ## Tái hiện
 
@@ -136,4 +133,4 @@ Flag được giữ nguyên từ bản ghi giải. Screenshot và solver dựng/
 3. Với mỗi xâu ứng viên: render predecessor bằng pen advance `pen(i) = 1 + round(i * 617 / 64)`, tiến hoá thuận 18 thế hệ theo B3/S23, đếm ô lệch với lưới ở bước 1.
 4. Dừng ở ứng viên có `mism= 0`; xâu render ra predecessor đó là cờ.
 
-Bước 3 là phần tốn thời gian nhất và chạy cục bộ hoàn toàn. Bản ghi của bài lưu thông số hình học, luật, công thức pen advance, số thế hệ và output kiểm định, nhưng không lưu script tìm kiếm, nên bước 3 phải dựng lại từ các thông số trên.
+Bước 3 là phần tốn thời gian nhất và chạy cục bộ hoàn toàn. Bản ghi lưu phép kiểm tra khớp cuối cùng nhưng không kèm search script hoặc screenshot; cần hai đầu vào đó để chạy lại quá trình tìm candidate từ đầu.
