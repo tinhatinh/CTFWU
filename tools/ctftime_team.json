@@ -22,6 +22,14 @@
         "rating_points": "33.333"
       },
       {
+        "ctf_points": "3432.00",
+        "event": "Cryovault 2026 Quals",
+        "event_url": "https://ctftime.org/event/3441",
+        "place": "63",
+        "rating_pending": true,
+        "rating_points": "0.000"
+      },
+      {
         "ctf_points": "12767.00",
         "event": "kBxAc CTF 2026",
         "event_url": "https://ctftime.org/event/3456",
