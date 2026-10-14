@@ -19,8 +19,9 @@ tinhatinh, Lizamort1 - their solutions live in their own repos, this one is only
 | [FooBar CTF 2026](FooBar%20CTF%202026/README.md) | Oct 2026 | 11 | Crypto · Pwn · Reverse · Web |
 | [kBxAc CTF 2026](kBxAc%20CTF%202026/README.md) | Oct 2026 | 14 | Crypto · Forensics · Misc · Pwn · Reverse · Web |
 | [ByteMe CTF 26](ByteMe%20CTF%2026/README.md) | Oct 2026 | 39 | Crypto · Forensics · Misc · Mobile · OSINT · Pwn · Reverse · Steg · Web |
+| [FortID CTF 2026](FortID%20CTF%202026/README.md) | Oct 2026 | 22 | Crypto · Misc · OSINT · Pwn · Reverse · Web |
 
-**Total: 203 writeups**
+**Total: 225 writeups**
 
 ## Structure
 
@@ -335,6 +336,36 @@ code, commands and recorded output. Older events keep their existing paths and l
 | Crypto Cat Caticus Catanius (3/5) - Crypto (498 điểm) | Crypto | [VN](CDCTF%202026/crypto-cat-3/writeup.md) | [EN](CDCTF%202026/crypto-cat-3/writeup.en.md) |
 | Crypto Cat Caticus Catanius (2/5) - Crypto (496 điểm) | Crypto | [VN](CDCTF%202026/crypto-cat-2/writeup.md) | [EN](CDCTF%202026/crypto-cat-2/writeup.en.md) |
 | Clear as Glass - Forensics/Rev Eng (500 điểm) | Forensics | [VN](CDCTF%202026/clear-as-glass/writeup.md) | [EN](CDCTF%202026/clear-as-glass/writeup.en.md) |
+
+</details>
+
+<details>
+<summary>FortID CTF 2026 — 22 writeups</summary>
+
+| Challenge | Category | VN | EN |
+|---|---|---|---|
+| Baby Crypto | Crypto | [VN](FortID%20CTF%202026/baby-crypto.md) | [EN](FortID%20CTF%202026/baby-crypto.en.md) |
+| Baby Misc | Misc | [VN](FortID%20CTF%202026/baby-misc.md) | [EN](FortID%20CTF%202026/baby-misc.en.md) |
+| Baby OSINT | OSINT | [VN](FortID%20CTF%202026/baby-osint.md) | [EN](FortID%20CTF%202026/baby-osint.en.md) |
+| Baby Pwn | Pwn | [VN](FortID%20CTF%202026/baby-pwn.md) | [EN](FortID%20CTF%202026/baby-pwn.en.md) |
+| Bounty Hunter | Crypto | [VN](FortID%20CTF%202026/bounty-hunter.md) | [EN](FortID%20CTF%202026/bounty-hunter.en.md) |
+| Cubism | Reverse | [VN](FortID%20CTF%202026/cubism.md) | [EN](FortID%20CTF%202026/cubism.en.md) |
+| DESBox | Crypto | [VN](FortID%20CTF%202026/desbox.md) | [EN](FortID%20CTF%202026/desbox.en.md) |
+| Do You Know Lika? | Web | [VN](FortID%20CTF%202026/do-you-know-lika.md) | [EN](FortID%20CTF%202026/do-you-know-lika.en.md) |
+| Doctor Bye Bye | Web | [VN](FortID%20CTF%202026/doctor-bye-bye.md) | [EN](FortID%20CTF%202026/doctor-bye-bye.en.md) |
+| EU Gift | Misc | [VN](FortID%20CTF%202026/eu-gift.md) | [EN](FortID%20CTF%202026/eu-gift.en.md) |
+| Editorial Board | Pwn | [VN](FortID%20CTF%202026/editorial-board.md) | [EN](FortID%20CTF%202026/editorial-board.en.md) |
+| End of Life | Pwn | [VN](FortID%20CTF%202026/end-of-life.md) | [EN](FortID%20CTF%202026/end-of-life.en.md) |
+| Flag from the Future | Misc | [VN](FortID%20CTF%202026/flag-from-the-future.md) | [EN](FortID%20CTF%202026/flag-from-the-future.en.md) |
+| Fortune Teller | Pwn | [VN](FortID%20CTF%202026/fortune-teller.md) | [EN](FortID%20CTF%202026/fortune-teller.en.md) |
+| GDB SaaS | Pwn | [VN](FortID%20CTF%202026/gdb-saas.md) | [EN](FortID%20CTF%202026/gdb-saas.en.md) |
+| Hic Sunt Dracones | Crypto | [VN](FortID%20CTF%202026/hic-sunt-dracones.md) | [EN](FortID%20CTF%202026/hic-sunt-dracones.en.md) |
+| Human RNG | Crypto | [VN](FortID%20CTF%202026/human-rng.md) | [EN](FortID%20CTF%202026/human-rng.en.md) |
+| OSINT Exam II | OSINT | [VN](FortID%20CTF%202026/osint-exam-ii.md) | [EN](FortID%20CTF%202026/osint-exam-ii.en.md) |
+| Sticker Booth | Pwn | [VN](FortID%20CTF%202026/sticker-booth.md) | [EN](FortID%20CTF%202026/sticker-booth.en.md) |
+| String Peek and Poke | Pwn | [VN](FortID%20CTF%202026/string-peek-and-poke.md) | [EN](FortID%20CTF%202026/string-peek-and-poke.en.md) |
+| Tangled | Misc | [VN](FortID%20CTF%202026/tangled.md) | [EN](FortID%20CTF%202026/tangled.en.md) |
+| Ultimative PHP | Web | [VN](FortID%20CTF%202026/ultimative-php.md) | [EN](FortID%20CTF%202026/ultimative-php.en.md) |
 
 </details>
 
