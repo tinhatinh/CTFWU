@@ -611,7 +611,9 @@ def write_post(stage, ev, p, lang, base):
                                       re.sub(r"\s+", " ", re.sub(r"```[\s\S]*?```", "", p["text"]))[:12000], ensure_ascii=False)]
     desc = describe(p["text"])
     if desc:
-        fm.append('description: "%s"' % desc.replace('"', "'"))
+        # JSON double-quoted strings are valid YAML and escape backslashes in
+        # DOS paths such as `Z:\>`, preventing unknown YAML escapes.
+        fm.append("description: " + json.dumps(desc, ensure_ascii=False))
     if statement_images:
         fm += ["image:", "  path: " + statement_images[0]["path"]]
     fm += ["---", ""]
