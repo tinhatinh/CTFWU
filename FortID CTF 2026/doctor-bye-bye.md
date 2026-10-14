@@ -9,7 +9,7 @@ language: "vi"
 # Doctor Bye Bye
 
 **Flag:** `FortID{D0C_1M_0UTT4_H3R3_7d0970825c}`
-**Dịch vụ:** `https://doctor-bye-bye-d3c36eaf747f.inst8.ctf.fortid.com`, endpoint `GET /api/on-call?sort=…`. **Artifact:** `handout.zip` (5.7 KB), chứa `src/app.py` (5313 B), `src/templates/index.html` (2150 B), `src/static/style.css` (2655 B), thư mục `deploy/` và `flag.txt` (17 B).
+**Dịch vụ:** `https://doctor-bye-bye-d3c36eaf747f.inst8.ctf.fortid.com`, endpoint `GET /api/on-call?sort=…`. **Artifact:** `handout.zip` (5.7 KB), chứa `src/app.py` (5313 B), `src/templates/index.html` (2150 B), `src/static/style.css` (2655 B), directory `deploy/` và `flag.txt` (17 B).
 
 ## Đề bài
 
@@ -28,7 +28,7 @@ connection.execute(
 )
 ```
 
-Cờ được lưu vào cột `farewell_note` của đúng dòng `listed = 0` đó. `flag.txt` (17 B) trong handout chứa `FortID{redacted}` — placeholder của README/Dockerfile, không phải cờ.
+Flag được lưu vào cột `farewell_note` của đúng dòng `listed = 0` đó. `flag.txt` (17 B) trong handout chứa `FortID{redacted}` — placeholder của README/Dockerfile, không phải flag.
 
 ## Phân tích
 
@@ -45,9 +45,9 @@ def select_on_call(order_expression):
     """
 ```
 
-`sort` được nội suy thô vào `ORDER BY`. Route `src/app.py:119-131` chỉ kiểm tra rỗng và độ dài (`> 600` ký tự bị từ chối), không có whitelist từ khoá. Hai chi tiết làm hẹp mặt tấn công:
+`sort` được nội suy thô vào `ORDER BY`. Route `src/app.py:119-131` chỉ kiểm tra rỗng và length (`> 600` ký tự bị từ chối), không có whitelist từ key. Hai chi tiết làm hẹp mặt tấn công:
 
-- `WHERE listed = 1` loại dòng 404 khỏi tập kết quả, nên cờ không bao giờ xuất hiện trực tiếp trong JSON trả về.
+- `WHERE listed = 1` loại dòng 404 khỏi tập kết quả, nên flag không bao giờ xuất hiện trực tiếp trong JSON trả về.
 - `except (sqlite3.Error, LookupError)` trả về thông báo chung `The on-call board could not be updated.` (`src/app.py:127-130`), không kèm chi tiết SQLite. Không có kênh error-based.
 
 Kênh được lời giải sử dụng là **dòng nào thắng `LIMIT 1`**: `{"doctor":{"name":…,"specialty":…,"room":…}}`. Đó là một oracle 1 bit mỗi request.
@@ -58,7 +58,7 @@ Oracle dựng như sau:
 ORDER BY CASE WHEN name = 'Dr. Zoe Last' AND (<predicate>) THEN 0 ELSE 1 END
 ```
 
-`ORDER BY` sắp tăng dần, nên hàng có khoá `0` lên trước. Khi `<predicate>` đúng, dòng `Dr. Zoe Last` nhận `0` còn các hàng khác nhận `1` → response là `Dr. Zoe Last`. Khi `<predicate>` sai, mọi hàng đều nhận `1`. Bản ghi nhận `Dr. Ada Pulse`, nhưng SQL không bảo đảm thứ tự giữa các khoá bằng nhau; code đã chỉnh thêm `name ASC` để ổn định nhánh sai. Hai nhánh phân biệt rõ chỉ bằng trường `name`.
+`ORDER BY` sắp tăng dần, nên hàng có key `0` lên trước. Khi `<predicate>` đúng, dòng `Dr. Zoe Last` nhận `0` còn các hàng khác nhận `1` → response là `Dr. Zoe Last`. Khi `<predicate>` sai, mọi hàng đều nhận `1`. Bản ghi nhận `Dr. Ada Pulse`, nhưng SQL không bảo đảm thứ tự giữa các key bằng nhau; code đã chỉnh thêm `name ASC` để ổn định nhánh sai. Hai nhánh phân biệt rõ chỉ bằng trường `name`.
 
 `<predicate>` đọc dòng ẩn qua scalar subquery, không cần JOIN:
 
@@ -176,9 +176,9 @@ print("verify length: %s" % ask("LENGTH(%s)=%d" % (SRC, len(flag))))
 print("verify content: %s" % ask("%s='%s'" % (SRC, flag.replace("'", "''"))))
 ```
 
-Script mặc định coi phần đầu là `FortID{` và dừng ở `length - 1` để tự nối `}`; hai vị từ `verify` ở cuối kiểm lại độ dài và toàn bộ chuỗi, mỗi cái đúng một request.
+Script mặc định coi phần đầu là `FortID{` và dừng ở `length - 1` để tự nối `}`; hai vị từ `verify` ở cuối kiểm lại length và toàn bộ chuỗi, mỗi cái đúng một request.
 
-Chạy trên instance local trước để xác nhận pipeline; cờ ở đây do tự đặt qua biến `FLAG`, không phải cờ thật:
+Chạy trên instance local trước để xác nhận pipeline; flag ở đây do tự đặt qua biến `FLAG`, không phải flag thật:
 
 ```console
 $ python3 extract.py "http://127.0.0.1:8090"
@@ -217,7 +217,7 @@ verify content: True
 
 `remote.log` dài 1315 B, 32 dòng không rỗng; dòng cuối cùng của vòng khai thác là `35/ 36 FortID{D0C_1M_0UTT4_H3R3_7d0970825c [req=195]`, tức vòng khôi phục kết thúc ở 195 request; hai request verify sau đó chưa được tính vào số này cho một chuỗi 36 ký tự.
 
-Dòng `verify content: True` chính là xác nhận độc lập bằng một request duy nhất: vị từ `farewell_note = 'FortID{D0C_1M_0UTT4_H3R3_7d0970825c}'` đẩy `Dr. Zoe Last` lên đầu, đúng nhánh "vị từ đúng" của oracle, nên chuỗi dựng được khớp với nội dung thật của cột chứ không chỉ khớp độ dài.
+Dòng `verify content: True` chính là xác nhận độc lập bằng một request duy nhất: vị từ `farewell_note = 'FortID{D0C_1M_0UTT4_H3R3_7d0970825c}'` đẩy `Dr. Zoe Last` lên đầu, đúng nhánh "vị từ đúng" của oracle, nên chuỗi dựng được khớp với nội dung thật của cột chứ không chỉ khớp length.
 
 ## Kết quả
 
@@ -225,11 +225,11 @@ Dòng `verify content: True` chính là xác nhận độc lập bằng một re
 FortID{D0C_1M_0UTT4_H3R3_7d0970825c}
 ```
 
-Cờ đọc trực tiếp từ dịch vụ đề bài. Chưa lưu phản hồi submission.
+Flag đọc trực tiếp từ dịch vụ đề bài. Chưa lưu phản hồi submission.
 
 ## Tái hiện
 
-Cần Python 3 (`urllib`, `json`), `curl` để kiểm tay, và `unzip`. Việc đọc cờ cần instance đang sống; cơ chế oracle dựng lại được hoàn toàn local.
+Cần Python 3 (`urllib`, `json`), `curl` để kiểm tay, và `unzip`. Việc đọc flag cần instance đang sống; cơ chế oracle dựng lại được hoàn toàn local.
 
 ```console
 $ unzip handout.zip
@@ -243,7 +243,7 @@ $ docker build -t doctor-bye-bye -f deploy/Dockerfile .
 $ docker run --rm -p 8090:8080 --tmpfs /tmp:rw,noexec,nosuid,nodev,size=8m -e 'FLAG=FortID{LOCAL_ONLY_NOT_REAL}' doctor-bye-bye
 ```
 
-Nếu không có Docker, chạy thẳng `src/app.py`; app đọc `DATABASE_PATH`, `FLAG_FILE` và `PORT` từ môi trường (`src/app.py:11-12` và `148`), và `load_flag()` xoá file cờ ngay sau khi đọc nên mỗi lần khởi động cần file còn tồn tại:
+Nếu không có Docker, chạy thẳng `src/app.py`; app đọc `DATABASE_PATH`, `FLAG_FILE` và `PORT` từ môi trường (`src/app.py:11-12` và `148`), và `load_flag()` xoá file flag ngay sau khi đọc nên mỗi lần khởi động cần file còn tồn tại:
 
 ```console
 $ printf 'FortID{LOCAL_ONLY_NOT_REAL}' > flagfile
@@ -311,4 +311,4 @@ $ python3 extract.py "http://127.0.0.1:8090"
 $ python3 extract.py "https://doctor-bye-bye-d3c36eaf747f.inst8.ctf.fortid.com"
 ```
 
-Probe `nominal length` kiểm một cờ dài 27 ký tự, tức đúng độ dài của `FortID{LOCAL_ONLY_NOT_REAL}` mà các lệnh dựng local ở trên tạo ra; đổi tham số đó nếu bạn chạy instance local với cờ độ dài khác. Thay hostname nếu instance đổi tên. Cờ thật nằm trong cột `farewell_note` của dòng `id=404`, do `deploy/entrypoint.sh` ghi từ biến `FLAG` khi container khởi động, nên giá trị chỉ tồn tại trong database của instance đó.
+Probe `nominal length` kiểm một flag dài 27 ký tự, tức đúng length của `FortID{LOCAL_ONLY_NOT_REAL}` mà các lệnh dựng local ở trên tạo ra; đổi tham số đó nếu bạn chạy instance local với flag length khác. Thay hostname nếu instance đổi tên. flag thật nằm trong cột `farewell_note` của dòng `id=404`, do `deploy/entrypoint.sh` ghi từ biến `FLAG` khi container khởi động, nên giá trị chỉ tồn tại trong database của instance đó.

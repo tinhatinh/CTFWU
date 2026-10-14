@@ -175,7 +175,7 @@ def dragon_render(starting_point, private_key):
 
 ### Chỗ hỏng
 
-`goto()` chỉ gán `x`, `y`; nó không đụng tới `heading`. Vì `dragon.ob` được tạo đúng một lần cho cả 78 điểm, trạng thái heading còn nguyên giữa các lời gọi, nên vector tịnh tiến của chuỗi dragon (độ lớn `M`, hướng phụ thuộc heading) quay dần sau mỗi điểm. Dữ liệu trong `output.txt` cho thấy chu kỳ 4:
+`goto()` chỉ gán `x`, `y`; nó không đụng tới `heading`. Vì `dragon.ob` được tạo đúng một lần cho cả 78 điểm, state heading còn nguyên giữa các lời gọi, nên vector tịnh tiến của chuỗi dragon (độ lớn `M`, hướng phụ thuộc heading) quay dần sau mỗi điểm. data trong `output.txt` cho thấy chu kỳ 4:
 
 ```text
 len(xs) 78 len(ys) 78
@@ -274,7 +274,7 @@ FprrIE{/f`D.n`Klu8h]H5s]1u_.n`tf3`W2lm_Rh4n]18_Ku67]B4_E01d]F1r]Csynt1_p1hhr?~
 y-diff support: [(52, 35585610297891858588915664867994857253760), (0, 35585610297891858588915664867994857253975), (0, 35585610297891858588915664867994857253974), (0, 35585610297891858588915664867994857253973), (0, 35585610297891858588915664867994857253972)]
 ```
 
-Script in 20 ứng viên đầu; block trên giữ lại hai ứng viên đầu và dòng kết luận. 155 giá trị `M` trong cửa sổ 257 ứng viên cho ra xâu 78 ký tự in được, nhưng chỉ một giá trị được trục Y ủng hộ: 52 cặp tung độ cách nhau đúng `±M`, mọi ứng viên khác cho 0.
+Script in 20 ứng viên đầu; block trên giữ lại hai ứng viên đầu và dòng kết luận. 155 giá trị `M` trong window 257 ứng viên cho ra string 78 ký tự in được, nhưng chỉ một giá trị được trục Y ủng hộ: 52 cặp tung độ cách nhau đúng `±M`, mọi ứng viên khác cho 0.
 
 Lý do nằm ở cùng một lỗi heading. Hai điểm mang cùng một ký tự có cùng cặp `(x_m, y_m)`; nếu hai điểm đó rơi vào hai lớp `i % 4` khác nhau thì hiệu tung độ của chúng là `±2M`. `findM.py` quét đúng các cặp đó:
 
@@ -346,7 +346,7 @@ Cặp cùng ký tự `'n'` ở chỉ số 12 và 42 cho `dy = 711712205957837171
 
 ## Lời giải
 
-Với `M` đã biết, `decode.py` khôi phục toàn bộ xâu:
+Với `M` đã biết, `decode.py` khôi phục toàn bộ string:
 
 ```python
 data = open("dracones_extract/output.txt").read().strip()
@@ -373,7 +373,7 @@ len 78
 
 `assert 1 <= j <= 19` không vấp ở cả 78 điểm, tức mọi `x_m` thu được đều rơi đúng dạng `ord(c)*20 + j` mà `koblitz_encoder` sinh ra.
 
-Kiểm chứng độc lập: sau khi khử offset, 78 điểm phải nằm trên cùng một đường cong `y^2 = x^3 + a x + b (mod p)` với `p`, `a`, `b` chưa biết. `verify_curve.py` đặt `U = y^2 - x^3`, suy ra `U ≡ a x + b (mod p)`, rồi triệt tiêu `a`, `b` bằng gcd trên các bộ ba điểm:
+Kiểm chứng độc lập: sau khi khử offset, 78 điểm phải nằm trên cùng một curve `y^2 = x^3 + a x + b (mod p)` với `p`, `a`, `b` chưa biết. `verify_curve.py` đặt `U = y^2 - x^3`, suy ra `U ≡ a x + b (mod p)`, rồi triệt tiêu `a`, `b` bằng gcd trên các bộ ba điểm:
 
 ```python
 from math import gcd
@@ -471,7 +471,7 @@ discriminant nonzero: True
 a,b in range: True True
 ```
 
-Toàn bộ 78 điểm đã khử offset đều nằm trên đường cong 256 bit thu được, `p ≡ 3 (mod 4)` khớp điều kiện trong `chall.py`, và `a`, `b` rơi vào khoảng `randrange(1 << 255, p)` — tức mô hình khôi phục (`x_m = ord(c)*20 + j`, offset theo `i % 4`) nhất quán với chính mã đề, không chỉ với xâu cờ đọc được.
+Toàn bộ 78 điểm đã khử offset đều nằm trên curve 256 bit thu được, `p ≡ 3 (mod 4)` khớp điều kiện trong `chall.py`, và `a`, `b` rơi vào khoảng `randrange(1 << 255, p)` — tức mô hình khôi phục (`x_m = ord(c)*20 + j`, offset theo `i % 4`) nhất quán với chính mã đề, không chỉ với string flag đọc được.
 
 Bước cuối là tái tạo `output.txt` từ đầu đến cuối bằng thư viện gốc tại commit đã pin. `repro.py` viết lại `turn_sequence_generator` cho đủ nhanh và kiểm bản viết lại đó tương đương với hàm gốc trên iterations 1..9, rồi dò `private_key`:
 
@@ -540,13 +540,13 @@ VERIFIED
 FortID{1f_D0n_Knu7h_H4s_1t_0n_th3_W4ll_Th3n_17_Mu57_B3_G00d_F0r_Crypt0_r1ght?}
 ```
 
-Cờ (78 ký tự) khôi phục từ artifact do đề cho và được xác nhận bằng cách tái tạo đúng nguyên văn `output.txt` với thư viện tại commit đã pin; phép kiểm đường chéo độc lập cho thấy cả 78 điểm khử offset đều nằm trên đường cong `p`, `a`, `b` suy ra từ chính dữ liệu. Bài này không có dịch vụ remote. Chưa lưu phản hồi submission.
+Flag (78 ký tự) khôi phục từ artifact do đề cho và được xác nhận bằng cách tái tạo đúng nguyên văn `output.txt` với thư viện tại commit đã pin; phép kiểm đường chéo độc lập cho thấy cả 78 điểm khử offset đều nằm trên curve `p`, `a`, `b` suy ra từ chính data. Bài này không có dịch vụ remote. Chưa lưu phản hồi submission.
 
 ## Tái hiện
 
-Bài offline. Cần `handout.zip` và bản clone `https://github.com/awnonbhowmik/Dragon-Crypto` tại commit `046ad8d` (thư mục `repro/` dùng `dragon.py` và `koblitz.py` đã được `patch.py` sửa — cách gọn nhất là build image từ `Dockerfile` rồi copy hai file đó ra, hoặc chạy đúng các phép `str.replace` của `patch.py` lên bản clone).
+Bài offline. Cần `handout.zip` và bản clone `https://github.com/awnonbhowmik/Dragon-Crypto` tại commit `046ad8d` (directory `repro/` dùng `dragon.py` và `koblitz.py` đã được `patch.py` sửa — cách gọn nhất là build image từ `Dockerfile` rồi copy hai file đó ra, hoặc chạy đúng các phép `str.replace` của `patch.py` lên bản clone).
 
-Cấu trúc thư mục mà các script giả định:
+Cấu trúc directory mà các script giả định:
 
 ```text
 hic/

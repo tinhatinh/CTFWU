@@ -8,12 +8,13 @@ language: "vi"
 
 # Fortune Teller
 
-**Cờ trong bản ghi:** `FortID{Fortun3_Fav0r5_Th3_b0ld_bu7_al50_Th05e_Th4t_C4n_Expl0i7_F0rma7_Str1ng_VulnZZ_860d534b91}`  
+**Flag trong bản ghi:** `FortID{Fortun3_Fav0r5_Th3_b0ld_bu7_al50_Th05e_Th4t_C4n_Expl0i7_F0rma7_Str1ng_VulnZZ_860d534b91}`
+
 **Dịch vụ:** `ncat --ssl fortune-teller-afeef2cf7bdb.inst15.ctf.fortid.com 1337` (TLS trên cổng 1337). Handout: `fortune_teller_public.zip` 4.6 KB. Tác giả: ipaljak.
 
 ## Đề bài
 
-Dịch vụ là một `Fortune Teller`: nhận input từ người chơi rồi in ra một lời tiên tri, trong đó có một dòng blessing dựng từ một chuỗi có sẵn của chương trình. Mục tiêu là lấy cờ từ instance đang chạy.
+Dịch vụ là một `Fortune Teller`: nhận input từ người chơi rồi in ra một lời tiên tri, trong đó có một dòng blessing dựng từ một chuỗi có sẵn của chương trình. Mục tiêu là lấy flag từ instance đang chạy.
 
 ## Phân tích
 
@@ -48,7 +49,7 @@ Ba dòng được lưu trong record, theo đúng thứ tự của cùng một l�
 FortID{Fortun3_Fav0r5_Th3_b0ld_bu7_al50_Th05e_Th4t_C4n_Expl0i7_F0rma7_Str1ng_VulnZZ_860d534b91}
 ```
 
-Chuỗi trên là log của driver điều khiển phiên, không phải output nguyên văn của dịch vụ: hai dòng `[1]` là dòng do driver in ra để ghi lại giá trị suy ra được và dòng blessing mà dịch vụ trả về, còn dòng cuối là dòng cờ xuất hiện trong cùng phiên sau phép ghi đè. Record không giữ lại từng byte đã gửi ở bước 3, nên nội dung chuỗi thay thế không được trích ở đây; những gì bằng chứng cho phép nói là: đích ghi là chuỗi blessing ở slot 36, và cờ trả về trong cùng phiên sau phép ghi đó.
+Chuỗi trên là log của driver điều khiển phiên, không phải output nguyên văn của dịch vụ: hai dòng `[1]` là dòng do driver in ra để ghi lại giá trị suy ra được và dòng blessing mà dịch vụ trả về, còn dòng cuối là dòng flag xuất hiện trong cùng phiên sau phép ghi đè. Record không giữ lại từng byte đã gửi ở bước 3, nên nội dung chuỗi thay thế không được trích ở đây; những gì bằng chứng cho phép nói là: đích ghi là chuỗi blessing ở slot 36, và flag trả về trong cùng phiên sau phép ghi đó.
 
 ## Kết quả
 
@@ -56,7 +57,7 @@ Chuỗi trên là log của driver điều khiển phiên, không phải output 
 FortID{Fortun3_Fav0r5_Th3_b0ld_bu7_al50_Th05e_Th4t_C4n_Expl0i7_F0rma7_Str1ng_VulnZZ_860d534b91}
 ```
 
-Bản ghi driver có chứa chuỗi cờ. Payload ghi và phần phản hồi dịch vụ xung quanh không được lưu, nên chưa thể tái hiện đầy đủ bước kích hoạt.
+Bản ghi driver có chứa chuỗi flag. Payload ghi và phần phản hồi dịch vụ xung quanh không được lưu, nên chưa thể tái hiện đầy đủ bước kích hoạt.
 
 ## Tái hiện
 
@@ -74,4 +75,4 @@ ncat --ssl fortune-teller-afeef2cf7bdb.inst15.ctf.fortid.com 1337
 | `base + 0x404c` | địa chỉ chuỗi blessing (`bless`) | chưa được kiểm chứng qua nhiều bản |
 | `slot_idx=36` | slot chứa chuỗi blessing writable | slot được dịch vụ báo lại qua leak |
 
-Hai offset `0x1664` và `0x404c` lấy từ một lần chạy đã lưu, chưa được kiểm tra trên instance khác. Script điều khiển phiên và payload ghi bị thiếu. Bản ghi cho thấy một lần leak pointer và một output có cờ, nhưng chưa đủ dữ liệu để tái hiện phép ghi đè hoặc xác nhận chuỗi blessing là trigger. Bài viết không nêu mitigation của binary vì các bằng chứng đã lưu không có dữ liệu kiểm tra mitigation.
+Hai offset `0x1664` và `0x404c` lấy từ một lần chạy đã lưu, chưa được kiểm tra trên instance khác. Script điều khiển phiên và payload ghi bị thiếu. Bản ghi cho thấy một lần leak pointer và một output có flag, nhưng chưa đủ data để tái hiện phép ghi đè hoặc xác nhận chuỗi blessing là trigger. Bài viết không nêu mitigation của binary vì các bằng chứng đã lưu không có data kiểm tra mitigation.

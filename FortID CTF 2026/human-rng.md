@@ -13,7 +13,7 @@ language: "vi"
 
 ## Đề bài
 
-Bài chỉ phát artifact, không có service. `handout.zip` (2.5 KB) đi kèm một video trên Google Drive ghi lại cách mảng mô-đun QR được tạo; video là nguồn duy nhất cho phần dữ liệu người.
+Bài chỉ phát artifact, không có service. `handout.zip` (2.5 KB) đi kèm video trên Google Drive ghi lại cách người tham gia tạo ma trận module QR; đây là nguồn duy nhất cho dữ liệu đầu vào của solver.
 
 Điểm cốt lõi của đề: pattern mô-đun của mã QR không do một thư viện QR sinh ra mà do người thật đánh ra. Dãy bit dẫn xuất từ pattern đó vì vậy không phải mẫu của một PRNG, và có thể bị đảo ngược bằng thống kê hành vi. Bài này không công bố mô hình sinh; mọi ràng buộc bên dưới lấy từ phép đo trên artifact.
 
@@ -47,11 +47,11 @@ flip expectation for independent fair bits: 0.5
 
 Keystream khôi phục được đo có `P(1) = 0.4848` và `flip = 0.7238`; hai giá trị hành vi người đo được để so sánh là `0.4747` và `0.7017`. Khoảng cách lần lượt là 0.0101 và 0.0221, tức cặp số liệu khôi phục nằm sát mô hình người.
 
-Phần số học của `flip` mới là chỗ bài mở ra: nếu các bit độc lập và cân bằng thì xác suất lật giá trị giữa hai vị trí kề nhau là `2pq = 0.5`. Giá trị 0.7238 (và 0.7017 của mẫu người) lệch rất xa 0.5, nghĩa là dãy bit lật giá trị quá thường xuyên — đúng thiên kiến phổ biến khi người được yêu cầu "đánh ngẫu nhiên". Chuỗi nguồn là sản phẩm của người, nên phần còn lại của bài là bài toán ước lượng thống kê trên một không gian ứng viên hữu hạn, không phải bài toán giải mã dưới khoá bí mật.
+Phần số học của `flip` mới là chỗ bài mở ra: nếu các bit độc lập và cân bằng thì xác suất lật giá trị giữa hai vị trí kề nhau là `2pq = 0.5`. Giá trị 0.7238 (và 0.7017 của mẫu người) lệch rất xa 0.5, nghĩa là dãy bit lật giá trị quá thường xuyên — đúng thiên kiến phổ biến khi người được yêu cầu "đánh ngẫu nhiên". Chuỗi nguồn là sản phẩm của người, nên phần còn lại của bài là bài toán ước lượng thống kê trên một không gian ứng viên hữu hạn, không phải bài toán giải mã dưới key bí mật.
 
 ### Quét không gian ứng viên
 
-Phần bit không bị các điểm neo khoá lại (các vị trí giữa token) được vét cạn: 45.8M ứng viên. Mỗi ứng viên được chấm bằng hai thống kê trên, chuẩn hoá thành z-score theo phân bố của mẫu hành vi người.
+Phần bit không bị các anchor key lại (các vị trí giữa token) được vét cạn: 45.8M ứng viên. Mỗi ứng viên được chấm bằng hai thống kê trên, chuẩn hoá thành z-score theo phân bố của mẫu hành vi người.
 
 Kết quả của phép quét là một ứng viên cực tách rõ: `z = +14.77`, trong khi ứng viên kế tiếp dừng ở `+13.01` (khoảng cách 1.76). Đây là căn cứ để chọn, không phải căn cứ để kết luận.
 
@@ -65,9 +65,9 @@ Kết quả của phép quét là một ứng viên cực tách rõ: `z = +14.77
 
 Ba trường đã lưu mang ý nghĩa:
 
-- `anchors : 522/522` — toàn bộ 522 điểm neo của ma trận dựng lại khớp với ràng buộc lấy từ artifact.
+- `anchors : 522/522` — toàn bộ 522 anchor của ma trận dựng lại khớp với ràng buộc lấy từ artifact.
 - `reconstruct ct : True` — ciphertext tái dựng đạt ràng buộc tự kiểm của nó.
-- `OpenCV QR read` — một bộ giải mã QR đọc ma trận vừa dựng và trả về đúng xâu cờ. Đây là bước quan trọng nhất về mặt bằng chứng: nó không dùng z-score, nhưng đầu vào QR vẫn được dựng từ ứng viên đã chọn bằng mô hình hành vi.
+- `OpenCV QR read` — QR decoder đọc ma trận vừa dựng và trả đúng flag. Đây là bước xác nhận độc lập với z-score, dù input QR vẫn đến từ candidate được chọn bằng mô hình hành vi.
 
 Dạng gọi API của bước `5)`:
 
@@ -85,7 +85,7 @@ print(text)
 FortID{humans_are_not_good_random_number_generators}
 ```
 
-Cờ được chép từ output QR đã lưu. Thiếu ma trận, ciphertext và solver quét nên chưa thể tái hiện phép suy luận thống kê từ thư mục này; không có phản hồi submission được lưu.
+Flag được chép từ output QR đã lưu. Thiếu ma trận, ciphertext và solver quét nên chưa thể tái hiện phép suy luận thống kê từ directory này; không có phản hồi submission được lưu.
 
 ## Tái hiện
 
@@ -94,7 +94,7 @@ Cần `handout.zip`, video đề dẫn, Python 3 với `numpy` và `opencv-pytho
 1. Lấy dãy bit nguồn từ artifact/video.
 2. Tính hai thống kê và khoảng cách tới mẫu người — block `python` trong mục Phân tích chạy độc lập trên các hằng số đã ghi nhận và in ra đúng ba dòng output kèm theo.
 3. Vét cạn các vị trí giữa token (45.8M ứng viên), chuẩn hoá điểm thành z-score theo phân bố hành vi người, chọn ứng viên cực trị (`+14.77`).
-4. Dựng lại ma trận và ciphertext từ ứng viên đã chọn; kiểm 522 điểm neo và ràng buộc tái dựng.
-5. Đọc ma trận bằng block `python` của bước `5)`; xâu in ra là cờ.
+4. Dựng lại ma trận và ciphertext từ ứng viên đã chọn; kiểm 522 anchor và ràng buộc tái dựng.
+5. Đọc ma trận bằng block `python` của bước `5)`; string in ra là flag.
 
 Các bước 1, 3, 4 thao tác trực tiếp trên `handout.zip` và video; bản ghi của bài chỉ lưu các con số đo được (0.4848 / 0.7238, 0.4747 / 0.7017, 45.8M ứng viên, +14.77 / +13.01, 522/522) và dòng verify, không lưu script của phép quét, nên phần tái hiện đầy đủ các bước này phải dựng lại từ chính artifact. Phép quét 45.8M ứng viên là phần tốn thời gian nhất; nó chạy cục bộ và không chạm vào dịch vụ nào.

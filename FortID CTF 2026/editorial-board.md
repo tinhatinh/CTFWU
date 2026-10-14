@@ -9,7 +9,7 @@ language: "vi"
 # Editorial Board
 
 **Flag:** `FortID{Sh3llc0d1n6_L1k3_Sh4k3sp34r3_G3ts_7h3_Fl4G!_31475ec574}`  
-**Dịch vụ:** `ncat --ssl editorial-board-ad8e57922c7a.inst2.ctf.fortid.com 1337` (instance giải cờ; instance `a20043e92cc9` dùng ở lượt trước đó). Artifact: `handout.zip` 5.7 KB chứa `editorial_board` 13936 B (ELF 32-bit, base `0x08048000`) và `validate.py` 5623 B.
+**Dịch vụ:** `ncat --ssl editorial-board-ad8e57922c7a.inst2.ctf.fortid.com 1337` (instance giải flag; instance `a20043e92cc9` dùng ở lượt trước đó). Artifact: `handout.zip` 5.7 KB chứa `editorial_board` 13936 B (ELF 32-bit, base `0x08048000`) và `validate.py` 5623 B.
 
 ## Đề bài
 
@@ -22,7 +22,7 @@ Dịch vụ nhận một đoạn văn bản và chỉ chạy phần xử lý n�
 
 `validate.py` trong handout chính là bàn kiểm chống-slop: nó dựng ràng buộc về số ký tự / số từ / số câu rồi chuyển tiếp phần kiểm tra chính tả sang LanguageTool. Văn bản nộp vào vì vậy phải là tiếng Anh thật.
 
-Phía sau bàn kiểm là pipeline typesetter. Khi văn bản đã được duyệt, một hàm kết thúc bằng cặp chỉ thị `leave; ret`: `leave` nạp lại con trỏ stack từ frame pointer, `ret` lấy địa chỉ trở về nằm ngay tại con trỏ stack đó, nên EIP nhận giá trị do input kiểm soát. Địa chỉ đích là một trang `mmap` RWX tại `0x656c6000`, được memset `0xff` trước khi sao chép payload. Vì trang này vừa ghi vừa thực thi được, ghi đè return address thành `0x656c6261` (base + `0x261`) chuyển quyền điều khiển vào chính byte của văn bản.
+Phía sau bàn kiểm là pipeline typesetter. Khi văn bản được duyệt, một function kết thúc bằng cặp instruction `leave; ret`: `leave` khôi phục stack pointer từ frame pointer, còn `ret` lấy địa chỉ return tại đó. EIP vì thế nhận giá trị do input kiểm soát. Địa chỉ đích là trang `mmap` RWX tại `0x656c6000`, được memset `0xff` trước khi chép payload. Ghi đè return address thành `0x656c6261` (base + `0x261`) chuyển control flow vào byte của văn bản.
 
 Ràng buộc khó nhất là charset payload chỉ cho phép `[A-Za-z .,;:'-?!]` — toàn ký tự in được của văn bản tiếng Anh. Không có byte `\x00`, không có dấu ngoặc nhọn, không có nhóm ký tự điều khiển. Shellcode x86 thông thường không vừa tập ký tự này, kể cả cặp `int 0x80` (`0xcd 0x80`) cần cho `execve("/bin/sh")` trên 32-bit.
 
@@ -48,7 +48,7 @@ Payload chỉ được thực thi trên instance trực tiếp; phía local dừ
    [+40.9s] uid=1000(ctf)
    ```
 
-5. Trong shell đã có RCE, `cat` tệp cờ trên instance để đọc cờ trực tiếp.
+5. Trong shell đã có RCE, `cat` file flag trên instance để đọc flag trực tiếp.
 
 ## Kết quả
 
@@ -56,7 +56,7 @@ Payload chỉ được thực thi trên instance trực tiếp; phía local dừ
 FortID{Sh3llc0d1n6_L1k3_Sh4k3sp34r3_G3ts_7h3_Fl4G!_31475ec574}
 ```
 
-Cờ đọc trực tiếp từ dịch vụ đề bài. Chưa lưu phản hồi submission.
+Flag đọc trực tiếp từ dịch vụ đề bài. Chưa lưu phản hồi submission.
 
 ## Tái hiện
 
@@ -77,4 +77,4 @@ Kết nối tới instance:
 ncat --ssl editorial-board-ad8e57922c7a.inst2.ctf.fortid.com 1337
 ```
 
-Sau khi `execve("/bin/sh")` cho shell, đọc cờ bằng `cat` trên tệp cờ của instance.
+Sau khi `execve("/bin/sh")` cho shell, đọc flag bằng `cat` trên file flag của instance.

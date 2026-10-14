@@ -13,7 +13,7 @@ language: "vi"
 
 ## Đề bài
 
-Dịch vụ là một `Sticker Booth recipe runner`: nhận dữ liệu theo định dạng recipe được mô tả trong `recipe_docs.md` (kèm một `sample.recipe` hợp lệ trong handout) rồi in ra các sticker mà recipe đó mô tả. Mục tiêu là đọc `flag.txt` trên instance.
+Dịch vụ là một `Sticker Booth recipe runner`: nhận data theo định dạng recipe được mô tả trong `recipe_docs.md` (kèm một `sample.recipe` hợp lệ trong handout) rồi in ra các sticker mà recipe đó mô tả. Mục tiêu là đọc `flag.txt` trên instance.
 
 ```text
 Sticker Booth recipe runner
@@ -29,15 +29,15 @@ Chuỗi khai thác dùng hai primitive:
    [+] booth_ticket = 0xe57de37aa7603634
    ```
 
-2. **Header sticker được tin cậy.** Header của một sticker được dùng làm tham số cho thao tác in mà không đối chiếu với độ dài và nội dung thật của entry. Một header dựng lại (forged) khiến runner gọi `open()` rồi `read()` rồi `write()` theo path do input chọn: nội dung file được đẩy vào slot `b:` của sticker đang hiển thị. Primitive này là đọc file tuỳ ý theo quyền của process `chall`, không phải thực thi mã.
+2. **Header sticker được tin cậy.** Header của một sticker được dùng làm tham số cho thao tác in mà không đối chiếu với length và nội dung thật của entry. Một header dựng lại (forged) khiến runner gọi `open()` rồi `read()` rồi `write()` theo path do input chọn: nội dung file được đẩy vào slot `b:` của sticker đang hiển thị. Primitive này là đọc file tuỳ ý theo quyền của process `chall`, không phải thực thi mã.
 
 ## Lời giải
 
 Trình tự gửi lên instance, đi từ leak tới đọc flag.
 
-1. Đặt booth vào trạng thái UAF theo đúng vòng đời recipe (tạo entry rồi xoá entry), sau đó yêu cầu in recipe để phần đọc vượt ranh giới lấy ra `booth_ticket`. Đây là dữ liệu chạy của process trên instance, phải đọc qua bước leak chứ không dựng lại được từ handout.
+1. Đặt booth vào state UAF theo đúng vòng đời recipe (tạo entry rồi xoá entry), sau đó yêu cầu in recipe để phần đọc vượt ranh giới lấy ra `booth_ticket`. Đây là data chạy của process trên instance, phải đọc qua bước leak chứ không dựng lại được từ handout.
 2. Dựng header sticker với path trỏ tới `flag.txt`, giữ các trường khác khớp với những gì runner kiểm tra.
-3. Gửi recipe chứa header đã dựng. Runner in dòng trạng thái cho file rồi đẩy nội dung vào slot `b:`:
+3. Gửi recipe chứa header đã dựng. Runner in dòng state cho file rồi đẩy nội dung vào slot `b:`:
 
    ```text
    --- flag.txt (133 bytes) ---
@@ -47,7 +47,7 @@ Trình tự gửi lên instance, đi từ leak tới đọc flag.
    b: FortID{I_h0p3_Y0u_W1ll_Pu7_Th15_5t1ck3r_0n_Y0ur_L4p70p_4f42043742}
    ```
 
-   `flag.txt` được runner báo 133 byte, lớn hơn 66 byte của chuỗi cờ; chỉ dòng slot `b:` mang chuỗi cờ được lưu lại ở đây, toàn bộ thân file không được ghi lại.
+   `flag.txt` được runner báo 133 byte, lớn hơn 66 byte của chuỗi flag; chỉ dòng slot `b:` mang chuỗi flag được lưu lại ở đây, toàn bộ thân file không được ghi lại.
 4. Vì bước 3 dùng path tương đối, cần xác nhận vị trí làm việc của process trước khi kết luận. Cùng primitive đọc file được dùng với `/proc/self/cmdline`:
 
    ```text
@@ -64,7 +64,7 @@ Hai block trong bước 3 là các dòng được trích từ cùng một phản
 FortID{I_h0p3_Y0u_W1ll_Pu7_Th15_5t1ck3r_0n_Y0ur_L4p70p_4f42043742}
 ```
 
-Cờ đọc trực tiếp từ dịch vụ đề bài. Chưa lưu phản hồi submission.
+Flag đọc trực tiếp từ dịch vụ đề bài. Chưa lưu phản hồi submission.
 
 ## Tái hiện
 

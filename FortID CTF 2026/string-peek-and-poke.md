@@ -9,15 +9,15 @@ language: "vi"
 # String Peek and Poke
 
 **Flag:** `FortID{wh3n_7h3_0nly_t00l_15_4_h4mm3r_3v3ry_5tr1ng_15_4_n41l_c8a5687cdf}`  
-**Dịch vụ:** `ncat --ssl string-peek-and-poke-2815b549b14a.inst17.ctf.fortid.com 1337` (instance lấy cờ; `d6ffdf3c7593` là instance đã kết nối ở lượt trước). Artifact: `handout.zip` 1.8 MB gồm `chall` 19512 B (ELF64 PIE, full RELRO, canary, NX), `chall.cpp` 804 B, `libc-2.39.so` 2129424 B, `libstdc++.so.6.0.33` 2592224 B.
+**Dịch vụ:** `ncat --ssl string-peek-and-poke-2815b549b14a.inst17.ctf.fortid.com 1337` (instance lấy flag; `d6ffdf3c7593` là instance đã kết nối ở lượt trước). Artifact: `handout.zip` 1.8 MB gồm `chall` 19512 B (ELF64 PIE, full RELRO, canary, NX), `chall.cpp` 804 B, `libc-2.39.so` 2129424 B, `libstdc++.so.6.0.33` 2592224 B.
 
 ## Đề bài
 
-`chall.cpp` lưu ghi chú trong một mảng global `std::string notes[CAP=8]` và cung cấp hai thao tác `put` / `get` nhận chỉ mục kiểu `int` mà không kiểm tra biên. Dịch vụ chạy trên instance có TLS ở cổng 1337.
+`chall.cpp` lưu ghi chú trong một array global `std::string notes[CAP=8]` và cung cấp hai thao tác `put` / `get` nhận chỉ mục kiểu `int` mà không kiểm tra biên. Dịch vụ chạy trên instance có TLS ở cổng 1337.
 
 ## Phân tích
 
-Chỉ mục không bị kiểm tra biến mảng 8 phần tử thành một cặp primitive đọc/ghi ngoài biên hai chiều, tính từ địa chỉ của `notes`. Mỗi `std::string` của libstdc++ chiếm 32 byte (con trỏ dữ liệu, size, và union chứa capacity hoặc buffer SSO), và hiệu giữa các vùng dưới đây đúng bằng 9 chỉ mục:
+Chỉ mục không bị kiểm tra biến array 8 phần tử thành một cặp primitive đọc/ghi ngoài biên hai chiều, tính từ địa chỉ của `notes`. Mỗi `std::string` của libstdc++ chiếm 32 byte (con trỏ data, size, và union chứa capacity hoặc buffer SSO), và hiệu giữa các vùng dưới đây đúng bằng 9 chỉ mục:
 
 | Object | Địa chỉ (theo base image) | Chỉ mục `put`/`get` tương ứng |
 |---|---|---|
@@ -43,7 +43,7 @@ Toàn bộ chuỗi được chạy trên instance trực tiếp; `chall` chưa t
    remote#0 lso=0x7f8aee782000
    ```
 
-2. Dựng descriptor `std::string` giả trong facet `ctype<char>` để có cửa sổ đọc/ghi theo offset, rồi ghi chuỗi ROP xuống vùng đích. Dòng log xác nhận vị trí chuỗi và phần tử đầu tiên:
+2. Dựng descriptor `std::string` giả trong facet `ctype<char>` để có window đọc/ghi theo offset, rồi ghi chuỗi ROP xuống vùng đích. Dòng log xác nhận vị trí chuỗi và phần tử đầu tiên:
 
    ```text
    chain at 0x7ffc1562a318: libc+0x10c08e
@@ -56,7 +56,7 @@ Toàn bộ chuỗi được chạy trên instance trực tiếp; `chall` chưa t
    uid=10001(ctf)
    ```
 
-4. Trong shell, `ls /home/ctf` xác định vị trí tệp cờ rồi `cat flag.txt`. Output của `cat flag.txt` xuất hiện hai lần và cả hai lần đều là cùng một chuỗi cờ.
+4. Trong shell, `ls /home/ctf` xác định vị trí file flag rồi `cat flag.txt`. Output của `cat flag.txt` xuất hiện hai lần và cả hai lần đều là cùng một chuỗi flag.
 
 Địa chỉ stack trong bước 2 (`0x7ffc1562a318`) thuộc range randomise theo từng lần chạy, nên nó là giá trị của phép thử tương ứng chứ không phải hằng số tái sử dụng được; offset `libc+0x10c08e` thì cố định với bản libc đi kèm.
 
@@ -66,7 +66,7 @@ Toàn bộ chuỗi được chạy trên instance trực tiếp; `chall` chưa t
 FortID{wh3n_7h3_0nly_t00l_15_4_h4mm3r_3v3ry_5tr1ng_15_4_n41l_c8a5687cdf}
 ```
 
-Cờ đọc trực tiếp từ dịch vụ đề bài. Chưa lưu phản hồi submission.
+Flag đọc trực tiếp từ dịch vụ đề bài. Chưa lưu phản hồi submission.
 
 ## Tái hiện
 

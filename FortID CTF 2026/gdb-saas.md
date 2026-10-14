@@ -13,7 +13,7 @@ language: "vi"
 
 ## Đề bài
 
-Dịch vụ tự giới thiệu "Get your mains disassembled for free…": nhận một ELF ở dạng base64 cùng tên một hàm, chạy GDB để disassemble hàm đó rồi trả kết quả về cho client. Bài toán là lấy cờ mà dịch vụ không cho shell.
+Dịch vụ tự giới thiệu "Get your mains disassembled for free…": nhận ELF dạng base64 cùng tên function, dùng GDB disassemble function đó rồi trả kết quả cho client. Mục tiêu là lấy flag mà không có shell.
 
 ## Phân tích
 
@@ -21,11 +21,11 @@ Lời giải dựa trên ba mảnh ghép.
 
 Bộ lọc. `server.py` chặn ký tự qua `BAD_CHARS`, nhưng bộ lọc này chỉ được áp lên argument tên hàm, và trong danh sách bị chặn không có `/` lẫn `s`. Chuỗi `/s main` vì vậy đi qua nguyên vẹn và được nối thẳng vào lệnh GDB: dịch vụ chạy `disassemble /s main` thay vì `disassemble main`. Đây là injection tham số vào command line của GDB, không phải khai thác bộ nhớ.
 
-Bảng dòng DWARF. ELF nộp lên do `mkdwarf.py` dựng tại local: một binary có `main` bình thường, kèm DWARF-4 line table mà source file #1 mang tên `flag.txt`. Bản thân file ELF không chứa cờ; tên file chỉ là một chuỗi trong line table, đường dẫn ở dạng basename, không có comp_dir tuyệt đối.
+Bảng dòng DWARF. ELF nộp lên do `mkdwarf.py` dựng tại local: một binary có `main` bình thường, kèm DWARF-4 line table mà source file #1 mang tên `flag.txt`. Bản thân file ELF không chứa flag; tên file chỉ là một chuỗi trong line table, path ở dạng basename, không có comp_dir tuyệt đối.
 
-Cách GDB in nguồn. Với `/s`, GDB duyệt từng entry của line table và in kèm "source line" tương ứng. Vì basename không có thư mục đi kèm, GDB giải nó theo thư mục làm việc hiện tại của chính quá trình dịch vụ — nơi `server.py` đã chép file cờ thật vào. Kết quả là nội dung file cờ của dịch vụ được in ra như thể là dòng đầu tiên của `flag.txt`.
+Cách GDB in nguồn. Với `/s`, GDB duyệt từng entry của line table và in kèm "source line" tương ứng. Vì basename không có directory đi kèm, GDB giải nó theo directory làm việc hiện tại của chính quá trình dịch vụ — nơi `server.py` đã chép file flag thật vào. Kết quả là nội dung file flag của dịch vụ được in ra như thể là dòng đầu tiên của `flag.txt`.
 
-Toàn bộ dữ liệu đi ra theo output chuẩn của GDB trong phiên đã được phép, nên không cần thực thi lệnh nào trong process dịch vụ.
+Toàn bộ data đi ra theo output chuẩn của GDB trong phiên đã được phép, nên không cần thực thi lệnh nào trong process dịch vụ.
 
 ## Lời giải
 
@@ -45,11 +45,11 @@ Toàn bộ dữ liệu đi ra theo output chuẩn của GDB trong phiên đã đ
 FortID{N0_5h3ll_n33d3D_jU57_m41N_ce0eaeff26}
 ```
 
-Cờ đọc trực tiếp từ dịch vụ đề bài. Chưa lưu phản hồi submission.
+Flag đọc trực tiếp từ dịch vụ đề bài. Chưa lưu phản hồi submission.
 
 ## Tái hiện
 
-Cần Python 3 để base64 và mở socket TLS, một bộ GDB để kiểm cơ chế tại local (bài này dùng gdb 14.2 cục bộ; dịch vụ chạy `GNU gdb (Ubuntu 17.1…)`), và một instance đang chạy vì file cờ nằm trong CWD của dịch vụ. Chi tiết quyết định của ELF nộp lên chỉ là một entry trong bảng dòng:
+Cần Python 3 để base64 và mở socket TLS, một bộ GDB để kiểm cơ chế tại local (bài này dùng gdb 14.2 cục bộ; dịch vụ chạy `GNU gdb (Ubuntu 17.1…)`), và một instance đang chạy vì file flag nằm trong CWD của dịch vụ. Chi tiết quyết định của ELF nộp lên chỉ là một entry trong bảng dòng:
 
 ```text
 file_names[1] = "flag.txt"     # basename only, no absolute comp_dir

@@ -13,7 +13,7 @@ language: "vi"
 
 ## Đề bài
 
-Một shell giả kiểu DOS (`Z:\>MOUNT C C:\DESBOX`) với các lệnh `DIR`, `TYPE README.TXT`, `KEYB`, `DOOM`, `EXIT`. Bảng thư mục liệt kê:
+Một shell giả kiểu DOS (`Z:\>MOUNT C C:\DESBOX`) với các lệnh `DIR`, `TYPE README.TXT`, `KEYB`, `DOOM`, `EXIT`. Bảng directory liệt kê:
 
 ```text
 KEYB     COM        3,584  06-24-26  12:00p
@@ -34,11 +34,11 @@ and xors the result with a resident secret table.
 Commands: DIR, TYPE README.TXT, KEYB, DOOM, EXIT
 ```
 
-`KEYB` nhận hai khoá 24 byte dạng hex, in ra `C:\FLAG.BIN encrypted under Key A:` rồi hỏi `Debug ciphertext>` và giải mã giá trị nộp vào bằng Key B. `TYPE FLAG.BIN` trả `Access denied.`
+`KEYB` nhận hai key 24 byte dạng hex, in ra `C:\FLAG.BIN encrypted under Key A:` rồi hỏi `Debug ciphertext>` và giải mã giá trị nộp vào bằng Key B. `TYPE FLAG.BIN` trả `Access denied.`
 
 ## Phân tích
 
-Đường sinh khoá và hai hàm liên quan trong `DESBox.py`:
+Key generation và hai function liên quan trong `DESBox.py`:
 
 ```python
 RNG = secrets.SystemRandom()
@@ -59,7 +59,7 @@ def load_key(user_key):
     return DES3.adjust_key_parity(key)
 ```
 
-`permute` xáo vị trí byte bằng một hoán vị mới rút từ `SystemRandom` ở *mỗi lần gọi*, và không có đầu ra nào của `permute` được in ra, nên hoán vị vừa không biết vừa không tái sử dụng. Một cách làm hoán vị không ảnh hưởng đến khoá là nộp một khoá mà mọi byte đều giống nhau: với `a = c * 24` thì `permute(a) == a` với mọi hoán vị, do đó `load_key(c * 24) == DES3.adjust_key_parity(MASK ^ (c * 24))` — một giá trị tất định, không phụ thuộc hoán vị và cũng không phụ thuộc lần gọi.
+`permute` xáo vị trí byte bằng một permutation mới rút từ `SystemRandom` ở *mỗi lần gọi*, và không có output nào của `permute` được in ra, nên permutation vừa không biết vừa không tái sử dụng. Một cách làm permutation không ảnh hưởng đến key là nộp một key mà mọi byte đều giống nhau: với `a = c * 24` thì `permute(a) == a` với mọi permutation, do đó `load_key(c * 24) == DES3.adjust_key_parity(MASK ^ (c * 24))` — một giá trị tất định, không phụ thuộc permutation và cũng không phụ thuộc lần gọi.
 
 Bốn ràng buộc của `read_keys` chỉ so A và B *trong cùng một lần chạy KEYB*:
 
@@ -87,12 +87,12 @@ if is_effective_complement(key_a, key_b):
 
 với `effective_bytes(k) = [b & 0xFE for b in k]` và `is_effective_complement(a, b)` so `effective_bytes(a)` với `effective_bytes(bytes(x ^ 0xff for x in b))`. Cặp `00*24` / `02*24` vượt cả bốn: khác nhau, khác theo mask `0xFE`, khác multiset, và `[0]*24` không bằng phần bù `0xFF` của `[2]*24`.
 
-`MASK` nằm trong `secret.py` và được import một lần khi process khởi động, nên người chơi không biết giá trị của nó, nhưng nó cố định trong suốt phiên. Hai lần chạy `KEYB` trên cùng một kết nối vì thế dùng chung `MASK`, mà không có kiểm tra nào so khoá của lần này với khoá của lần trước.
+`MASK` nằm trong `secret.py` và được import một lần khi process khởi động, nên người chơi không biết giá trị của nó, nhưng nó cố định trong suốt phiên. Hai lần chạy `KEYB` trên cùng một kết nối vì thế dùng chung `MASK`, mà không có kiểm tra nào so key của lần này với key của lần trước.
 
 Ghép lại thành hai nhịp trên cùng một kết nối:
 
-- Nhịp 1: `A = 00*24`, `B = 02*24`. Key A trở thành `adjust_key_parity(MASK)`, nên dòng in ra chính là `C = 3DES_MASK(FLAG.BIN)` — bản mã cần tìm, dưới đúng khoá mà người chơi không được phép biết.
-- Nhịp 2: `A = 02*24`, `B = 00*24`. Vẫn `MASK`, nên lần này Key B mới là `adjust_key_parity(MASK)`, tức oracle `Debug ciphertext` giải mã theo đúng khoá của nhịp 1. Nộp `C` vào đó sẽ nhận lại plaintext của `FLAG.BIN`.
+- Nhịp 1: `A = 00*24`, `B = 02*24`. Key A trở thành `adjust_key_parity(MASK)`, nên dòng in ra chính là `C = 3DES_MASK(FLAG.BIN)` — ciphertext cần tìm, dưới đúng key mà người chơi không được phép biết.
+- Nhịp 2: `A = 02*24`, `B = 00*24`. Vẫn `MASK`, nên lần này Key B mới là `adjust_key_parity(MASK)`, tức oracle `Debug ciphertext` giải mã theo đúng key của nhịp 1. Nộp `C` vào đó sẽ nhận lại plaintext của `FLAG.BIN`.
 
 `FLAG` dài 48 byte (`assert len(FLAG) % BLOCK_SIZE == 0` và cột `FLAG BIN 48` trong `DIR`), mã hoá ECB nên toàn bộ 6 block được xử lý độc lập trong một lần gọi `decrypt`.
 
@@ -157,7 +157,7 @@ recovered: b'FLAG{test_flag_payload_padding_here_48bytes}!!!!'
 attack logic verified
 ```
 
-Hai dòng đầu xác nhận điều kiện quyết định: `load_key(00*24)` trả cùng một khoá ở hai lần gọi khác nhau (tức hai nhịp dùng chung một khoá), và `checks` mô phỏng lại đúng bốn guard của `read_keys` cho cả hai thứ tự A/B.
+Hai dòng đầu xác nhận điều kiện quyết định: `load_key(00*24)` trả cùng một key ở hai lần gọi khác nhau (tức hai nhịp dùng chung một key), và `checks` mô phỏng lại đúng bốn guard của `read_keys` cho cả hai thứ tự A/B.
 
 Kịch bản remote (`exploit.py`) đi một kết nối TLS duy nhất và hai lần `KEYB`:
 
@@ -245,7 +245,7 @@ with socket.create_connection((HOST, PORT), timeout=25) as raw:
     send(s, "EXIT")
 ```
 
-Chạy trên instance đang sống, nhịp 1 in ra bản mã 96 ký tự hex của `FLAG.BIN` dưới khoá `MASK` (bản ghi chỉ giữ phần đầu `a1d6b23a` và phần cuối `da687dbc`; giá trị đầy đủ thay đổi theo instance vì `MASK` per-process, và script đọc nó trực tiếp từ output nên không cần chép tay). Nhịp 2 nộp chính xác xâu đó vào oracle:
+Chạy trên instance đang sống, nhịp 1 in ra ciphertext 96 ký tự hex của `FLAG.BIN` dưới key `MASK` (bản ghi chỉ giữ phần đầu `a1d6b23a` và phần cuối `da687dbc`; giá trị đầy đủ thay đổi theo instance vì `MASK` per-process, và script đọc nó trực tiếp từ output nên không cần chép tay). Nhịp 2 nộp chính xác string đó vào oracle:
 
 ```text
 run2 debug: Debug output:
@@ -262,11 +262,11 @@ Dịch hex 96 ký tự (48 byte) ra ASCII là bước cục bộ duy nhất tron
 FortID{C0mPl1m3n75_0n_3XP101t1n6_C0Mp13M3n75!!1}
 ```
 
-Cờ đọc trực tiếp từ dịch vụ đề bài. Chưa lưu phản hồi submission.
+Flag đọc trực tiếp từ dịch vụ đề bài. Chưa lưu phản hồi submission.
 
 ## Tái hiện
 
-Cần instance đang sống: `MASK` là secret per-process, nên cặp khoá `00*24`/`02*24` cho ra một khoá khác nhau ở mỗi instance và mỗi lần khởi động lại service. Lời giải không chạy offline với `secret.py` đã redact.
+Cần instance đang sống: `MASK` là secret per-process, nên cặp key `00*24`/`02*24` cho ra một key khác nhau ở mỗi instance và mỗi lần khởi động lại service. Lời giải không chạy offline với `secret.py` đã redact.
 
 ```console
 $ pip install pycryptodome
@@ -274,7 +274,7 @@ $ python local_test.py
 $ python exploit.py
 ```
 
-Lưu block `local_test.py` thành `local_test.py` và block `exploit.py` thành `exploit.py` cùng thư mục. `exploit.py` tự đọc bản mã từ nhịp 1, vì vậy không phải sửa gì khi `MASK` khác.
+Lưu block `local_test.py` thành `local_test.py` và block `exploit.py` thành `exploit.py` cùng directory. `exploit.py` tự đọc ciphertext từ nhịp 1, vì vậy không phải sửa gì khi `MASK` khác.
 
 Có thể làm thủ công nếu muốn tự tay gõ lệnh, chỉ cần giữ đúng một kết nối:
 
@@ -298,4 +298,4 @@ Debug output:
 466f727449447b...
 ```
 
-Bản `Debug output:` của nhịp 2 là hex của plaintext; `echo <hex> | xxd -r -p` cho ra cờ.
+Bản `Debug output:` của nhịp 2 là hex của plaintext; `echo <hex> | xxd -r -p` cho ra flag.

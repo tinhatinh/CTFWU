@@ -13,7 +13,7 @@ language: "vi"
 
 ## Đề bài
 
-Đề là một "kỳ thi OSINT" sáu câu, phục vụ qua TLS: client nộp từng đáp án cho `exam_client.py`, và sau câu thứ sáu đúng thì dịch vụ in ra certificate (cờ). Mỗi câu tương ứng một media trong `data/` (q1→`q1.png`, q2→`q2.jpg`, q3→`q3.jpeg`, q5→`q5.jpg`, q6→`q6.mp4`/`q6_1.jpeg`/`q6_2.jpeg`). Sáu đáp án đã ghi nhận:
+Đề là một "kỳ thi OSINT" sáu câu, phục vụ qua TLS: client nộp từng đáp án cho `exam_client.py`, và sau câu thứ sáu đúng thì dịch vụ in ra certificate (flag). Mỗi câu tương ứng một media trong `data/` (q1→`q1.png`, q2→`q2.jpg`, q3→`q3.jpeg`, q5→`q5.jpg`, q6→`q6.mp4`/`q6_1.jpeg`/`q6_2.jpeg`). Sáu đáp án đã ghi nhận:
 
 ```text
 q1 Edinburgh 14480 00:53:14
@@ -48,7 +48,7 @@ After answer 6 : \r\nCongratulations!\r\nYou passed the exam, here is your certi
 FortID{Y0u_H4v3_N0w_B3com3_4_C3rt1fi3d_0p3n_50urc3_1n73l1genc3_Gr4ndM45t3r_4_L1f3_af5a43ec69}
 ```
 
-Cờ vừa được đọc nguyên văn từ dịch vụ remote (dòng certificate ở trên, lưu vào `osint_exam_ii/flag.txt` 162 B), vừa được nền tảng chấp nhận khi nộp; phản hồi submission lưu nguyên văn:
+Flag vừa được đọc nguyên văn từ dịch vụ remote (dòng certificate ở trên, lưu vào `osint_exam_ii/flag.txt` 162 B), vừa được nền tảng chấp nhận khi nộp; phản hồi submission lưu nguyên văn:
 
 ```text
 {'kind': 'goodFlag', 'message': 'The flag is correct.'}
@@ -56,10 +56,10 @@ Cờ vừa được đọc nguyên văn từ dịch vụ remote (dòng certifica
 
 ## Tái hiện
 
-Cần một instance đang sống: cờ dưới đây là giá trị đã nhận trong lần chạy được lưu. Chưa có source server để kết luận cách sinh hậu tố hoặc phạm vi chấp nhận giữa các instance.
+Cần một instance đang sống: flag dưới đây là giá trị đã nhận trong lần chạy được lưu. Chưa có source server để kết luận cách sinh hậu tố hoặc phạm vi chấp nhận giữa các instance.
 
 ```console
 $ ncat --ssl osint-exam-ii-70beb5f9e24d.inst12.ctf.fortid.com 1337
 ```
 
-`exam_client.py` nối tới instance và lần lượt gửi sáu đáp án: (1) đọc số Bib từ `q1_bib.png` rồi tra `mens10k.com/results?event=1070`; (2)-(4) đọc trực tiếp tiêu đề slide, dòng địa chỉ và bảng xếp hạng từ các media `q2.jpg`/`q3.jpeg` và bảng foosball; (5) dùng EXIF `2026-06-12` để chốt phiên EUDIW Unfold #3.1 của Docaposte và vòng chung kết Midnight Flag CTF; (6) nộp `Brant Fell` (sau khi `Higger Tor` bị từ chối). Sau câu 6, certificate in ra chính là cờ của instance đó.
+`exam_client.py` nối tới instance và lần lượt gửi sáu đáp án: (1) đọc số Bib từ `q1_bib.png` rồi tra `mens10k.com/results?event=1070`; (2)-(4) đọc trực tiếp tiêu đề slide, dòng địa chỉ và bảng xếp hạng từ các media `q2.jpg`/`q3.jpeg` và bảng foosball; (5) dùng EXIF `2026-06-12` để chốt phiên EUDIW Unfold #3.1 của Docaposte và vòng chung kết Midnight Flag CTF; (6) nộp `Brant Fell` (sau khi `Higger Tor` bị từ chối). Sau câu 6, certificate in ra chính là flag của instance đó.

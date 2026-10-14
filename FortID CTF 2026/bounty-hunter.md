@@ -85,7 +85,7 @@ for i in range(n):
     coeffs = next_coeffs
 ```
 
-Ba ràng buộc làm nên tính đúng đắn của một polyfold: (1) đa thức vòng sau có bậc đúng bằng một nửa bậc vòng trước, (2) commitment ràng buộc đa thức đó, (3) phương trình fold nối `a`, `b` của vòng này với `a` của vòng sau. Kiểm (3) có đủ, và `a`, `b` ở vòng 0 được tính từ vector công khai nên không giả được. Kiểm (1) thì không: điều kiện ở `verifier.py:136` chỉ là `len(next_coeffs) != 0`. Không có chỗ nào so độ dài danh sách hệ số với bậc kỳ vọng `8192 / 2**(i+1) - 1`.
+Verifier phải kiểm ba điều kiện của mỗi polyfold: bậc đa thức mỗi vòng giảm một nửa, commitment ràng buộc đa thức đó, và phương trình fold nối `a`, `b` hiện tại với `a` vòng sau. `verifier.py:136` chỉ kiểm `len(next_coeffs) != 0`; nó không so số hệ số với bậc kỳ vọng `8192 / 2**(i+1) - 1`. Kiểm tra fold vẫn có, nhưng thiếu kiểm tra bậc.
 
 Kiểm (2) cũng không tạo thêm ràng buộc: `commit()` chỉ là SHA-256 trên danh sách hệ số do người nộp tự gửi (`verifier.py:74-80`), nên nó chỉ bắt người nộp phải trung thực với chính danh sách hệ số của mình, không ràng buộc danh sách đó với vector gốc.
 
@@ -97,7 +97,7 @@ Chuỗi fold vẫn phải khớp, nên cách dựng là đi ngược từ yêu c
 - Vòng `n-2`: thay vì chọn `b` ngẫu nhiên, giải ngược phương trình fold để vòng cuối cho ra đúng `claimed`. Với `bit == 0`: `b = 2*claimed - a`; với `bit == 1`: `b = a - 2*x*claimed`.
 - Vòng `n-1`: đặt `next_coeffs = [claimed]` (đa thức hằng), nên `eval_poly(coeffs, xs[-1]) == claimed` ở `verifier.py:147` luôn đúng.
 
-Một dấu hiệu ngay trong dữ liệu công khai: sample proof ở `/playground` (`sample_proof.json`, 3000 B) cũng có 13 vòng với độ dài `next_coeffs` là `[2]*12 + [1]`. Không có prover trung thực nào trên vector 8192 phần tử lại sinh ra các đa thức bậc 1 như vậy; sample chỉ được chấp nhận vì chính verifier không kiểm bậc.
+Sample proof công khai ở `/playground` (`sample_proof.json`, 3000 B) cũng có 13 vòng với `next_coeffs` dài `[2]*12 + [1]`. Với vector ban đầu 8192 phần tử, các đa thức bậc 1 này không thể đến từ prover tuân thủ protocol; verifier chấp nhận vì không kiểm bậc.
 
 ## Lời giải
 
@@ -181,7 +181,7 @@ forged verify: (True, 'accepted')
 
 Bản ghi giữ lại `sample verify` để đối chứng: cùng một harness, cùng một vector, một bằng chứng thật (cột `accepted` của report 604, giá trị thật bằng 1) và một bằng chứng giả (cột `payout_authorized`, giá trị thật bằng 0) đều cho kết luận `accepted`. Verifier không phân biệt được hai trường hợp.
 
-`forged.json` (6258 B) có 13 vòng với độ dài `next_coeffs` `[2]*12 + [1]`, vòng cuối là hằng `[1]`. Nộp lên dịch vụ:
+`forged.json` (6258 B) có 13 vòng với length `next_coeffs` `[2]*12 + [1]`, vòng cuối là hằng `[1]`. Nộp lên dịch vụ:
 
 ```text
 POST /api/proof/verify
@@ -205,11 +205,11 @@ Từ `accepted` trong khối này là kết luận của chính dịch vụ đ�
 FortID{BU6_B0UN7Y_H0un73r5_Sh0uld_B3_4B13_70_5p07_Un50Und_PR00fZz}
 ```
 
-Cờ đọc trực tiếp từ dịch vụ đề bài. Chưa lưu phản hồi submission.
+Flag đọc trực tiếp từ dịch vụ đề bài. Chưa lưu phản hồi submission.
 
 ## Tái hiện
 
-Cần instance đang sống: `report_id`, `snapshot_id`, `commitment` và toàn bộ vector đều là dữ liệu theo instance, và manifest của mỗi instance một khác. Không có artifact offline nào đủ để chạy lại.
+Cần instance đang hoạt động: `report_id`, `snapshot_id`, `commitment`, vector và manifest đều thay đổi theo instance. Không có artifact offline để tái hiện lời giải.
 
 ```console
 $ mkdir bh && cd bh
@@ -235,4 +235,4 @@ $ curl -sS -X POST --data-urlencode "proof@forged.json" \
     https://bounty-hunter-28fd9e43d86c.inst3.ctf.fortid.com/vault
 ```
 
-Response HTML của `/vault` chứa khối `<div class="result ok">` với cờ. Chỉ cần Python 3 stdlib; không có dependency ngoài.
+Response HTML của `/vault` chứa khối `<div class="result ok">` với flag. Chỉ cần Python 3 stdlib; không có dependency ngoài.

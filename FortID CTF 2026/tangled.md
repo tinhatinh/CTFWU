@@ -29,13 +29,13 @@ def decode_blueprint(text):
     return json.loads(zlib.decompress(base64.b64decode(body)))
 ```
 
-`handout_file_2.txt` khi giải mã cho một tập tile ghép thành một lưới QR 25×25 đã bị hỏng. `handout_file_1.txt` chứa các entity (nền nhà máy) có toạ độ tâm; XOR các tâm entity đó với ma trận tile của lưới QR sinh ra một đoạn văn bản được ghi lại kèm nhãn `QR`:
+Decode `handout_file_2.txt` thu được các tile tạo thành một grid QR 25×25 bị hỏng. `handout_file_1.txt` chứa các entity nền nhà máy và tọa độ tâm của chúng. XOR các tọa độ này với QR grid sẽ cho đoạn text được ghi kèm nhãn `QR`:
 
 ```text
 QR _5p49hett1_tr41n5_8ec0m3_
 ```
 
-Ba nguồn độc lập cung cấp ba mảnh của cờ, nối tiếp nhau thành xâu hoàn chỉnh:
+Ba nguồn độc lập cung cấp ba phần của flag:
 
 ```text
 factory-floor QR (prefix):   FortID{Wh3n_7h3_8e1ts_b3c0me
@@ -44,18 +44,18 @@ wire-glyph suffix:           th3_0n1y_r34s0n4b1e_50lut10n}
 ```
 
 - Chính sàn nhà máy trong `handout_file_1` mang một QR thứ hai, đọc ra phần đầu `FortID{Wh3n_7h3_8e1ts_b3c0me`.
-- Đoạn từ phép XOR ở trên là phần giữa `_5p49hett1_tr41n5_8ec0m3_` (nhãn `QR` chỉ là ký hiệu đánh nguồn, không nằm trong cờ).
+- Đoạn từ phép XOR ở trên là phần giữa `_5p49hett1_tr41n5_8ec0m3_` (nhãn `QR` chỉ là ký hiệu đánh nguồn, không nằm trong flag).
 - 29 thành phần dây mạch (circuit network) trong blueprint được vẽ lại thành glyph bằng `inspect_wires.py` / `render_ports.py`, dùng offset connector thật của Factorio 2.0.77 lấy qua `lupa`; chúng cho phần đuôi `th3_0n1y_r34s0n4b1e_50lut10n}`.
 
-Nối ba mảnh lại (prefix + middle + suffix) khớp chính xác với cờ.
+Nối ba mảnh lại (prefix + middle + suffix) khớp chính xác với flag.
 
 ## Lời giải
 
-Toàn bộ khôi phục chạy offline: giải mã blueprint, dựng lưới QR 25×25, XOR với tâm entity để lấy đoạn giữa, đọc QR trên sàn nhà máy để lấy đầu, và dựng glyph cho 29 dây mạch để lấy đuôi. Ràng buộc còn lại duy nhất là tính nhập nhằng của glyph: ký tự `b`/`6` và `s`/`5` không phân biệt được trên ảnh vẽ lại, nên chuỗi đuôi chỉ đọc được ở mức hình dạng, chưa chốt được cách viết.
+Toàn bộ lời giải chạy offline: decode blueprint, dựng QR grid 25×25, XOR với tọa độ entity để lấy phần giữa, đọc QR trên sàn nhà máy để lấy prefix, rồi dựng glyph từ 29 dây mạch để lấy suffix. Trên ảnh vẽ lại, glyph `b`/`6` và `s`/`5` không phân biệt được; submission được dùng để chốt cách đọc suffix.
 
 Phần nhập nhằng nằm gọn trong cluster `r34s0n4b1e`; cách đọc glyph sinh ra khoảng 20 biến thể khác nhau giữa `r3450n461e` và `r34s0n4b1e` (và các tổ hợp trung gian). Các biến thể này được liệt kê thành `candidates_ports.txt`, tức 130 ứng viên đầy đủ.
 
-`check_candidates.py` chỉ dùng nền tảng để phân biệt cách đọc glyph, không dùng để tìm cờ: nó xác thực qua `https://platform.ctf.fortid.com/api/v1/auth/login` với token của đội, rồi POST từng ứng viên vào `/api/v1/challs/<uuid>/submit` (uuid ở trên), tôn trọng backoff khi gặp `badRateLimit`. Phản hồi được lưu nguyên văn:
+`check_candidates.py` chỉ dùng nền tảng để phân biệt cách đọc glyph, không dùng để tìm flag: nó xác thực qua `https://platform.ctf.fortid.com/api/v1/auth/login` với token của đội, rồi POST từng ứng viên vào `/api/v1/challs/<uuid>/submit` (uuid ở trên), tôn trọng backoff khi gặp `badRateLimit`. Phản hồi được lưu nguyên văn:
 
 ```text
 Authenticated successfully.\r\nChecking 130 candidates from candidates_ports.txt.\r\nACCEPTED: FortID{Wh3n_7h3_8e1ts_b3c0me_5p49hett1_tr41n5_8ec0m3_th3_0n1y_r34s0n4b1e_50lut10n}
@@ -69,7 +69,7 @@ Bằng chứng bền: `work\tangled\flag_verified.txt` (84 B) và `submission_re
 FortID{Wh3n_7h3_8e1ts_b3c0me_5p49hett1_tr41n5_8ec0m3_th3_0n1y_r34s0n4b1e_50lut10n}
 ```
 
-Cờ được ghép offline từ ba mảnh (QR sàn nhà máy + đoạn XOR tile + glyph dây mạch), sau đó nền tảng chấp nhận để phân biệt cách đọc glyph. Dòng chấp nhận lưu nguyên văn: `Authenticated successfully.\r\nChecking 130 candidates from candidates_ports.txt.\r\nACCEPTED: FortID{Wh3n_7h3_8e1ts_b3c0me_5p49hett1_tr41n5_8ec0m3_th3_0n1y_r34s0n4b1e_50lut10n}` — flag đã được `/submit` chấp nhận.
+Flag được ghép offline từ ba mảnh (QR sàn nhà máy + đoạn XOR tile + glyph dây mạch), sau đó nền tảng chấp nhận để phân biệt cách đọc glyph. Dòng chấp nhận lưu nguyên văn: `Authenticated successfully.\r\nChecking 130 candidates from candidates_ports.txt.\r\nACCEPTED: FortID{Wh3n_7h3_8e1ts_b3c0me_5p49hett1_tr41n5_8ec0m3_th3_0n1y_r34s0n4b1e_50lut10n}` — flag đã được `/submit` chấp nhận.
 
 ## Tái hiện
 

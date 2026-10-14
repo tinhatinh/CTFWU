@@ -14,14 +14,14 @@ language: "vi"
 
 ## Đề bài
 
-Ứng dụng Flask "Free Flags for EU Citizens" chỉ cho phép công dân của các quốc gia đã phát hành EUDI wallet chính thức nhận cờ. Luồng đi như sau:
+Ứng dụng Flask "Free Flags for EU Citizens" chỉ cho phép công dân của các quốc gia đã phát hành EUDI wallet chính thức nhận flag. Luồng đi như sau:
 
 1. `POST /flag` tạo một verification session trên dịch vụ FortID EVS (`/verification-session/initiate`) và trả về QR `openid4vp://authorize?...request_uri=...`.
 2. Người chơi đóng vai wallet, gửi `direct_post.jwt` tới `response_uri` của session.
 3. EVS thẩm định presentation và lưu `presentedClaims`.
-4. `GET /flag/<verification_session_id>` hỏi lại EVS; nếu `VERIFICATION_SUCCEEDED` và quốc gia không bị chặn, app render ảnh cờ.
+4. `GET /flag/<verification_session_id>` hỏi lại EVS; nếu `VERIFICATION_SUCCEEDED` và quốc gia không bị chặn, app render ảnh flag.
 
-Đề cho mã nguồn app và cấu hình, không cho wallet. Cờ nằm trong ảnh mà server trả về, không phải trong handout.
+Đề cho mã nguồn app và cấu hình, không cho wallet. flag nằm trong ảnh mà server trả về, không phải trong handout.
 
 ## Phân tích
 
@@ -45,7 +45,7 @@ blocked_countries:
   - ZW
 ```
 
-YAML 1.1 coi `NO` là từ khoá boolean phủ định, nên phần tử đó không phải chuỗi `"NO"`:
+YAML 1.1 coi `NO` là từ boolean literal biểu diễn giá trị phủ định, nên phần tử đó không phải chuỗi `"NO"`:
 
 ```python
 import yaml
@@ -148,7 +148,7 @@ Handout có `private/flag.svg` (538 B) chứa:
 FortID{this_is_a_fake_flag}
 ```
 
-và ngay dưới dòng đó là nhãn `Local handout placeholder`. Đây là ảnh cờ của bản handout (`flag_image: private/flag.svg`), không phải cờ của instance; bản live trả ảnh JPEG khác. Hướng này bị loại vì chính dòng chú thích trong file và vì ảnh trả về từ instance không trùng nội dung đó.
+và ngay dưới dòng đó là nhãn `Local handout placeholder`. Đây là ảnh flag của bản handout (`flag_image: private/flag.svg`), không phải flag của instance; bản live trả ảnh JPEG khác. Hướng này bị loại vì chính dòng chú thích trong file và vì ảnh trả về từ instance không trùng nội dung đó.
 
 ## Lời giải
 
@@ -190,7 +190,7 @@ def jwe_encrypt(recipient_pub, plaintext: bytes, extra_protected: dict | None = 
     return f"{ph}..{U(iv)}.{U(blob[:-16])}.{U(blob[-16:])}"
 ```
 
-Driver end-to-end (`final.py`), trong đó `build()` tự dựng CA tự ký và biến chính nó thành root, `present()` nộp presentation, còn `main()` hỏi status rồi lấy cờ:
+Driver end-to-end (`final.py`), trong đó `build()` tự dựng CA tự ký và biến chính nó thành root, `present()` nộp presentation, còn `main()` hỏi status rồi lấy flag:
 
 ```python
 """End-to-end: rogue wallet completes a session, then the app reveals the flag."""
@@ -315,7 +315,7 @@ G + cred aud=client_id             200 '{"redirect_uri":null}' | {"verificationS
     *** SESSION [ID REDACTED] ***
 ```
 
-`presentedClaims.issuing_country = "NO"` được EVS xác nhận, nên `evaluate_country_claims` phía app trả `"allowed"`. Bước cuối là `GET /flag/<session>` trên instance: HTTP 200, trang HTML 169,663 byte, nhúng ảnh cờ dạng data URL — một JPEG 126,211 byte (750x500) lưu lại thành `flag_live.jpg`. `flag.html` của app render ảnh qua `build_flag_data_url`, hàm này suy media type bằng `mimetypes.guess_type(path.name)`, nên bản live (`flag_image` trỏ vào file `.jpg`) trả `data:image/jpeg;base64,...` chứ không phải `image/svg+xml` như bản handout; regex trong `final.py` ở trên là cho bản handout và đã phải đổi pattern khi trích ảnh từ instance.
+`presentedClaims.issuing_country = "NO"` được EVS xác nhận, nên `evaluate_country_claims` phía app trả `"allowed"`. Bước cuối là `GET /flag/<session>` trên instance: HTTP 200, trang HTML 169,663 byte, nhúng ảnh flag dạng data URL — một JPEG 126,211 byte (750x500) lưu lại thành `flag_live.jpg`. `flag.html` của app render ảnh qua `build_flag_data_url`, hàm này suy media type bằng `mimetypes.guess_type(path.name)`, nên bản live (`flag_image` trỏ vào file `.jpg`) trả `data:image/jpeg;base64,...` chứ không phải `image/svg+xml` như bản handout; regex trong `final.py` ở trên là cho bản handout và đã phải đổi pattern khi trích ảnh từ instance.
 
 Ảnh là một meme với dòng chữ render làm hai hàng; cắt riêng hai hàng (`top.png`, `bottom.png`) cho đọc trực tiếp:
 
@@ -332,7 +332,7 @@ Ký tự nối hai hàng không xuất hiện trong cả hai crop; giá trị cu
 FortID{Erl1ng_15_7h3_5olut1on_7o_Th3_Norw4y_Pr0bl3m}
 ```
 
-Cờ đọc trực tiếp từ dịch vụ đề bài. Chưa lưu phản hồi submission.
+Flag đọc trực tiếp từ dịch vụ đề bài. Chưa lưu phản hồi submission.
 
 ## Tái hiện
 
@@ -343,7 +343,7 @@ $ pip install requests cryptography PyYAML pycountry
 $ unzip handout.zip
 ```
 
-Cả ba script đều cần thiết: `eudi_lib.py` (primitive), `issuer.py` (`make_cert`, `init`, ma trận SAN/CN), `final.py` (driver). Lưu các block code trong mục Lời giải thành `eudi_lib.py`, `issuer.py`, `final.py` cùng thư mục — riêng `final.py` cần `make_cert` và `init` đúng như trong `issuer.py` gốc (7.1 KB, nhiều hàm dựng certificate hơn block đã trích). Chạy:
+Cả ba script đều cần thiết: `eudi_lib.py` (primitive), `issuer.py` (`make_cert`, `init`, ma trận SAN/CN), `final.py` (driver). Lưu các block code trong mục Lời giải thành `eudi_lib.py`, `issuer.py`, `final.py` cùng directory — riêng `final.py` cần `make_cert` và `init` đúng như trong `issuer.py` gốc (7.1 KB, nhiều hàm dựng certificate hơn block đã trích). Chạy:
 
 ```console
 $ python final.py NO
