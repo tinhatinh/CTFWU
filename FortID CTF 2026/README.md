@@ -1,6 +1,6 @@
 # FortID CTF 2026
 
-22 writeups, with Vietnamese and English editions. Solve date: 10 October 2026.
+23 writeups, with Vietnamese and English editions. Solve date: 10 October 2026.
 
 | Challenge | Category | VN | EN |
 |---|---|---|---|
@@ -22,6 +22,7 @@
 | Hic Sunt Dracones | Crypto | [VN](hic-sunt-dracones.md) | [EN](hic-sunt-dracones.en.md) |
 | Human RNG | Crypto | [VN](human-rng.md) | [EN](human-rng.en.md) |
 | OSINT Exam II | OSINT | [VN](osint-exam-ii.md) | [EN](osint-exam-ii.en.md) |
+| Spill the Tea | Misc | [VN](spill-the-tea.md) | [EN](spill-the-tea.en.md) |
 | Sticker Booth | Pwn | [VN](sticker-booth.md) | [EN](sticker-booth.en.md) |
 | String Peek and Poke | Pwn | [VN](string-peek-and-poke.md) | [EN](string-peek-and-poke.en.md) |
 | Tangled | Misc | [VN](tangled.md) | [EN](tangled.en.md) |

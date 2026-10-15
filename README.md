@@ -19,9 +19,9 @@ tinhatinh, Lizamort1 - their solutions live in their own repos, this one is only
 | [FooBar CTF 2026](FooBar%20CTF%202026/README.md) | Oct 2026 | 11 | Crypto · Pwn · Reverse · Web |
 | [kBxAc CTF 2026](kBxAc%20CTF%202026/README.md) | Oct 2026 | 14 | Crypto · Forensics · Misc · Pwn · Reverse · Web |
 | [ByteMe CTF 26](ByteMe%20CTF%2026/README.md) | Oct 2026 | 39 | Crypto · Forensics · Misc · Mobile · OSINT · Pwn · Reverse · Steg · Web |
-| [FortID CTF 2026](FortID%20CTF%202026/README.md) | Oct 2026 | 22 | Crypto · Misc · OSINT · Pwn · Reverse · Web |
+| [FortID CTF 2026](FortID%20CTF%202026/README.md) | Oct 2026 | 23 | Crypto · Misc · OSINT · Pwn · Reverse · Web |
 
-**Total: 225 writeups**
+**Total: 226 writeups**
 
 ## Structure
 
@@ -340,7 +340,7 @@ code, commands and recorded output. Older events keep their existing paths and l
 </details>
 
 <details>
-<summary>FortID CTF 2026 — 22 writeups</summary>
+<summary>FortID CTF 2026 — 23 writeups</summary>
 
 | Challenge | Category | VN | EN |
 |---|---|---|---|
@@ -362,6 +362,7 @@ code, commands and recorded output. Older events keep their existing paths and l
 | Hic Sunt Dracones | Crypto | [VN](FortID%20CTF%202026/hic-sunt-dracones.md) | [EN](FortID%20CTF%202026/hic-sunt-dracones.en.md) |
 | Human RNG | Crypto | [VN](FortID%20CTF%202026/human-rng.md) | [EN](FortID%20CTF%202026/human-rng.en.md) |
 | OSINT Exam II | OSINT | [VN](FortID%20CTF%202026/osint-exam-ii.md) | [EN](FortID%20CTF%202026/osint-exam-ii.en.md) |
+| Spill the Tea | Misc | [VN](FortID%20CTF%202026/spill-the-tea.md) | [EN](FortID%20CTF%202026/spill-the-tea.en.md) |
 | Sticker Booth | Pwn | [VN](FortID%20CTF%202026/sticker-booth.md) | [EN](FortID%20CTF%202026/sticker-booth.en.md) |
 | String Peek and Poke | Pwn | [VN](FortID%20CTF%202026/string-peek-and-poke.md) | [EN](FortID%20CTF%202026/string-peek-and-poke.en.md) |
 | Tangled | Misc | [VN](FortID%20CTF%202026/tangled.md) | [EN](FortID%20CTF%202026/tangled.en.md) |
