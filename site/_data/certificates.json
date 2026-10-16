@@ -19,24 +19,33 @@
   },
   {
     "id": "hsk-level-4-2026",
-    "title": "HSK Level 4",
+    "title": "HSK 4 + HSKK Intermediate",
     "type": "professional",
     "recipient": "Phan Thành Danh",
     "issuer": "Center for Language Education and Cooperation (CLEC)",
     "date": "2026-06-28",
     "date_kind": "exam",
-    "certificate_id": "H42606080605",
     "verification_url": "https://admin.chinesetest.cn/queryScore.do?sid=c2tActR9Wb%274d5abc0a153f80ff334719fbb938a461a6b706eba73aa8f4%2724d7sWsQ5nVUQSwD",
     "verified_on": "2026-10-05",
     "summary": {
-      "vi": "HSK 4 · 262/300",
-      "en": "HSK 4 · 262/300"
+      "vi": "HSK 4: 262/300 · HSKK Trung cấp: 60/100",
+      "en": "HSK 4: 262/300 · HSKK Intermediate: 60/100"
     },
     "score_details": [
       {
         "label": {
-          "vi": "Nghe",
-          "en": "Listening"
+          "vi": "HSK 4 · Mã số báo cáo",
+          "en": "HSK 4 · Report number"
+        },
+        "value": {
+          "vi": "H42606080605",
+          "en": "H42606080605"
+        }
+      },
+      {
+        "label": {
+          "vi": "HSK 4 · Nghe",
+          "en": "HSK 4 · Listening"
         },
         "value": {
           "vi": "90/100",
@@ -45,8 +54,8 @@
       },
       {
         "label": {
-          "vi": "Đọc",
-          "en": "Reading"
+          "vi": "HSK 4 · Đọc",
+          "en": "HSK 4 · Reading"
         },
         "value": {
           "vi": "94/100",
@@ -55,8 +64,8 @@
       },
       {
         "label": {
-          "vi": "Viết",
-          "en": "Writing"
+          "vi": "HSK 4 · Viết",
+          "en": "HSK 4 · Writing"
         },
         "value": {
           "vi": "78/100",
@@ -65,39 +74,18 @@
       },
       {
         "label": {
-          "vi": "Tổng điểm · đạt từ 180",
-          "en": "Total · passing score 180"
+          "vi": "HSK 4 · Tổng điểm (đạt từ 180)",
+          "en": "HSK 4 · Total (passing score 180)"
         },
         "value": {
           "vi": "262/300",
           "en": "262/300"
         }
-      }
-    ],
-    "validity_note": {
-      "vi": "Điểm thi có hiệu lực trong 2 năm (đến 28/06/2028).",
-      "en": "Test scores are valid for two years (through 28 June 2028)."
-    }
-  },
-  {
-    "id": "hskk-intermediate-2026",
-    "title": "HSKK Intermediate",
-    "type": "professional",
-    "recipient": "Phan Thành Danh",
-    "issuer": "Center for Language Education and Cooperation (CLEC)",
-    "date": "2026-06-28",
-    "date_kind": "exam",
-    "verification_url": "https://admin.chinesetest.cn/queryScore.do?sid=c2tActR9Wb%274d5abc0a153f80ff334719fbb938a461a6b706eba73aa8f4%2724d7sWsQ5nVUQSwD",
-    "verified_on": "2026-10-05",
-    "summary": {
-      "vi": "HSKK Trung cấp · 60/100",
-      "en": "HSKK Intermediate · 60/100"
-    },
-    "score_details": [
+      },
       {
         "label": {
-          "vi": "Trình độ",
-          "en": "Level"
+          "vi": "HSKK · Trình độ",
+          "en": "HSKK · Level"
         },
         "value": {
           "vi": "Trung cấp",
@@ -106,8 +94,8 @@
       },
       {
         "label": {
-          "vi": "Kỹ năng nói",
-          "en": "Speaking"
+          "vi": "HSKK · Kỹ năng nói",
+          "en": "HSKK · Speaking"
         },
         "value": {
           "vi": "60/100",
@@ -116,8 +104,8 @@
       },
       {
         "label": {
-          "vi": "Tổng điểm · đạt từ 60",
-          "en": "Total · passing score 60"
+          "vi": "HSKK · Tổng điểm (đạt từ 60)",
+          "en": "HSKK · Total (passing score 60)"
         },
         "value": {
           "vi": "60/100",
@@ -152,5 +140,19 @@
     "document": "/assets/certificates/poctf-2026-00868.pdf",
     "verification_url": "https://pointeroverflowctf.com/verify/POCTF-2026-00868",
     "verified_on": "2026-10-09"
+  },
+  {
+    "id": "kbxac-ctf-2026-participation",
+    "title": "kBxAc CTF 2026",
+    "type": "participation",
+    "recipient": "tinhatinh",
+    "issuer": "kBxAc",
+    "date": "2026-10-10",
+    "date_kind": "event",
+    "summary": {
+      "vi": "Tham gia · Hạng 27",
+      "en": "Participation · Rank 27"
+    },
+    "image": "/assets/certificates/kbxac-ctf-2026-participation.jpg"
   }
 ]
