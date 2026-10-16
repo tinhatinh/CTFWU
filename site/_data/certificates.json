@@ -28,8 +28,8 @@
     "verification_url": "https://admin.chinesetest.cn/queryScore.do?sid=c2tActR9Wb%274d5abc0a153f80ff334719fbb938a461a6b706eba73aa8f4%2724d7sWsQ5nVUQSwD",
     "verified_on": "2026-10-05",
     "summary": {
-      "vi": "HSK 4: 262/300 · HSKK Trung cấp: 60/100",
-      "en": "HSK 4: 262/300 · HSKK Intermediate: 60/100"
+      "vi": "HSK 4: 262/300 · HSKK Trung cấp",
+      "en": "HSK 4: 262/300 · HSKK Intermediate"
     },
     "score_details": [
       {
@@ -74,8 +74,8 @@
       },
       {
         "label": {
-          "vi": "HSK 4 · Tổng điểm (đạt từ 180)",
-          "en": "HSK 4 · Total (passing score 180)"
+          "vi": "HSK 4 · Tổng điểm",
+          "en": "HSK 4 · Total"
         },
         "value": {
           "vi": "262/300",
@@ -90,26 +90,6 @@
         "value": {
           "vi": "Trung cấp",
           "en": "Intermediate"
-        }
-      },
-      {
-        "label": {
-          "vi": "HSKK · Kỹ năng nói",
-          "en": "HSKK · Speaking"
-        },
-        "value": {
-          "vi": "60/100",
-          "en": "60/100"
-        }
-      },
-      {
-        "label": {
-          "vi": "HSKK · Tổng điểm (đạt từ 60)",
-          "en": "HSKK · Total (passing score 60)"
-        },
-        "value": {
-          "vi": "60/100",
-          "en": "60/100"
         }
       }
     ],
@@ -149,10 +129,51 @@
     "issuer": "kBxAc",
     "date": "2026-10-10",
     "date_kind": "event",
-    "summary": {
-      "vi": "Tham gia · Hạng 27",
-      "en": "Participation · Rank 27"
+    "event_period": {
+      "vi": "09/10/2026 18:30 – 10/10/2026 18:30 UTC",
+      "en": "9 October 2026, 18:30 – 10 October 2026, 18:30 UTC"
     },
-    "image": "/assets/certificates/kbxac-ctf-2026-participation.jpg"
+    "summary": {
+      "vi": "R3:TURИ · Hạng 27/290 · 12.767 điểm CTF",
+      "en": "R3:TURИ · Rank 27/290 · 12,767 CTF points"
+    },
+    "score_details": [
+      {
+        "label": {
+          "vi": "Đội",
+          "en": "Team"
+        },
+        "value": {
+          "vi": "R3:TURИ",
+          "en": "R3:TURИ"
+        }
+      },
+      {
+        "label": {
+          "vi": "Xếp hạng",
+          "en": "Rank"
+        },
+        "value": {
+          "vi": "27 / 290",
+          "en": "27 / 290"
+        }
+      },
+      {
+        "label": {
+          "vi": "Điểm CTF",
+          "en": "CTF points"
+        },
+        "value": {
+          "vi": "12.767",
+          "en": "12,767.000"
+        }
+      }
+    ],
+    "image": "/assets/certificates/kbxac-ctf-2026-participation.jpg",
+    "verification_url": "https://ctftime.org/event/3456",
+    "verification_label": {
+      "vi": "Đối chiếu kết quả trên CTFtime",
+      "en": "View CTFtime event and scoreboard"
+    }
   }
 ]

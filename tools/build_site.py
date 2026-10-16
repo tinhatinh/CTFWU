@@ -799,6 +799,8 @@ def validate_certificates(stage):
         for field in ("summary", "validity_note"):
             if record.get(field) and (not isinstance(record[field], dict) or not all(isinstance(record[field].get(lang), str) and record[field][lang] for lang in ("vi", "en"))):
                 raise ValueError(field + " requires VI and EN text")
+        if record.get("verification_label") and (not isinstance(record["verification_label"], dict) or not all(isinstance(record["verification_label"].get(lang), str) and record["verification_label"][lang] for lang in ("vi", "en"))):
+            raise ValueError("verification_label requires VI and EN text")
         for detail in record.get("score_details", []):
             if not isinstance(detail, dict) or any(not isinstance(detail.get(field), dict) or not all(isinstance(detail[field].get(lang), str) and detail[field][lang] for lang in ("vi", "en")) for field in ("label", "value")):
                 raise ValueError("Certificate score details require bilingual labels and values")
