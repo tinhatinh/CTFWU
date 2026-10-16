@@ -271,5 +271,3 @@ The script rebuilds the QR code from the recovered payload and checks it with bo
 ```text
 FortID{1_Sw3ar_70_Sp1ll_7h3_T3a_Th3_Wh0l3_Te3_4nd_N0thin6_Bu7_7h3_T34}
 ```
-
-Preserve `Te3`, `N0thin6`, and `T34` exactly as decoded; do not normalize their English spelling. No platform submission response was saved.
