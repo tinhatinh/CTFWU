@@ -1,5 +1,5 @@
 {
-  "fetched": "2026-10-17",
+  "fetched": "2026-10-18",
   "team": "R3:TURИ",
   "team_id": 449538,
   "url": "https://ctftime.org/team/449538",
@@ -34,8 +34,8 @@
         "event": "kBxAc CTF 2026",
         "event_url": "https://ctftime.org/event/3456",
         "place": "27",
-        "rating_pending": true,
-        "rating_points": "0.000"
+        "rating_pending": false,
+        "rating_points": "15.002"
       },
       {
         "ctf_points": "197.39",
