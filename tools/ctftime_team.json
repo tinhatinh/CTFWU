@@ -26,8 +26,8 @@
         "event": "Cryovault 2026 Quals",
         "event_url": "https://ctftime.org/event/3441",
         "place": "63",
-        "rating_pending": true,
-        "rating_points": "0.000"
+        "rating_pending": false,
+        "rating_points": "7.815"
       },
       {
         "ctf_points": "12767.00",
