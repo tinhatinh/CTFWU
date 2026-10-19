@@ -1,5 +1,5 @@
 {
-  "fetched": "2026-10-18",
+  "fetched": "2026-10-19",
   "team": "R3:TURИ",
   "team_id": 449538,
   "url": "https://ctftime.org/team/449538",
@@ -7,7 +7,7 @@
     "2026": [
       {
         "ctf_points": "6849.00",
-        "event": "KubSTU CTF 2026: Autumn",
+        "event": "KubSTU CTF",
         "event_url": "https://ctftime.org/event/3446",
         "place": "45",
         "rating_pending": false,
