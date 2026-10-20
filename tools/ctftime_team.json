@@ -6,6 +6,14 @@
   "years": {
     "2026": [
       {
+        "ctf_points": "3873.00",
+        "event": "Securinets CTF Quals 2026",
+        "event_url": "https://ctftime.org/event/3364",
+        "place": "39",
+        "rating_pending": false,
+        "rating_points": "37.213"
+      },
+      {
         "ctf_points": "6849.00",
         "event": "KubSTU CTF",
         "event_url": "https://ctftime.org/event/3446",
