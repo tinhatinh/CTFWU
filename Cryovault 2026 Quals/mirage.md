@@ -55,7 +55,6 @@ Flag được đọc trực tiếp từ process memory và kiểm tra lại qua 
 
 `isfcr{bl1nd_f0rmat_str1ng_h4s_n0_b1n4ry}`
 
-`isfcr{...}` wrapper matches the announced format. It was not submitted to the scoring service, so
 
 ## Tái hiện
 

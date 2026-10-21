@@ -1,13 +1,21 @@
 {
-  "fetched": "2026-10-16",
+  "fetched": "2026-10-21",
   "team": "R3:TURИ",
   "team_id": 449538,
   "url": "https://ctftime.org/team/449538",
   "years": {
     "2026": [
       {
+        "ctf_points": "3873.00",
+        "event": "Securinets CTF Quals 2026",
+        "event_url": "https://ctftime.org/event/3364",
+        "place": "39",
+        "rating_pending": false,
+        "rating_points": "37.213"
+      },
+      {
         "ctf_points": "6849.00",
-        "event": "KubSTU CTF 2026: Autumn",
+        "event": "KubSTU CTF",
         "event_url": "https://ctftime.org/event/3446",
         "place": "45",
         "rating_pending": false,
@@ -26,16 +34,16 @@
         "event": "Cryovault 2026 Quals",
         "event_url": "https://ctftime.org/event/3441",
         "place": "63",
-        "rating_pending": true,
-        "rating_points": "0.000"
+        "rating_pending": false,
+        "rating_points": "7.815"
       },
       {
         "ctf_points": "12767.00",
         "event": "kBxAc CTF 2026",
         "event_url": "https://ctftime.org/event/3456",
         "place": "27",
-        "rating_pending": true,
-        "rating_points": "0.000"
+        "rating_pending": false,
+        "rating_points": "15.002"
       },
       {
         "ctf_points": "197.39",
