@@ -191,5 +191,169 @@
     },
     "image": "/assets/certificates/byteme-ctf-26-participation.jpg",
     "document": "/assets/certificates/byteme-ctf-26-participation.pdf"
+  },
+  {
+    "id": "securinets-ctf-2026-participation",
+    "title": "Securinets CTF 2026",
+    "type": "participation",
+    "recipient": "tinhatinh",
+    "issuer": "Securinets",
+    "date": "2026-10-21",
+    "date_kind": "issued",
+    "event_period": {
+      "vi": "17–18/10/2026",
+      "en": "17–18 October 2026"
+    },
+    "certificate_id": "SCTF26-Q-M0272",
+    "summary": {
+      "vi": "International #32 · Toàn giải #39 · 3.873 điểm CTF",
+      "en": "International #32 · Overall #39 · 3,873 CTF points"
+    },
+    "score_details": [
+      {
+        "label": {
+          "vi": "Đội",
+          "en": "Team"
+        },
+        "value": {
+          "vi": "R3:TURИ",
+          "en": "R3:TURИ"
+        }
+      },
+      {
+        "label": {
+          "vi": "Nhánh",
+          "en": "Bracket"
+        },
+        "value": {
+          "vi": "International",
+          "en": "International"
+        }
+      },
+      {
+        "label": {
+          "vi": "Hạng nhánh",
+          "en": "Bracket rank"
+        },
+        "value": {
+          "vi": "32",
+          "en": "32"
+        }
+      },
+      {
+        "label": {
+          "vi": "Hạng toàn giải",
+          "en": "Overall rank"
+        },
+        "value": {
+          "vi": "39",
+          "en": "39"
+        }
+      },
+      {
+        "label": {
+          "vi": "Điểm CTF",
+          "en": "CTF points"
+        },
+        "value": {
+          "vi": "3.873",
+          "en": "3,873"
+        }
+      },
+      {
+        "label": {
+          "vi": "Challenges đã giải",
+          "en": "Challenges solved"
+        },
+        "value": {
+          "vi": "11",
+          "en": "11"
+        }
+      }
+    ],
+    "image": "/assets/certificates/securinets-ctf-2026-participation.png",
+    "document": "/assets/certificates/securinets-ctf-2026-participation.pdf",
+    "verification_url": "https://quals.securinets.tn/certificates",
+    "verification_label": {
+      "vi": "Tra cứu chứng nhận",
+      "en": "Certificate lookup"
+    }
+  },
+  {
+    "id": "securinets-ctf-2026-team-participation",
+    "title": "Securinets CTF 2026 — R3:TURИ",
+    "type": "participation",
+    "recipient": "R3:TURИ",
+    "issuer": "Securinets",
+    "date": "2026-10-21",
+    "date_kind": "issued",
+    "event_period": {
+      "vi": "17–18/10/2026",
+      "en": "17–18 October 2026"
+    },
+    "certificate_id": "SCTF26-Q-T0159",
+    "summary": {
+      "vi": "International #32 · Hạng toàn giải #39 · 3.873 điểm CTF",
+      "en": "International #32 · Overall #39 · 3,873 CTF points"
+    },
+    "score_details": [
+      {
+        "label": {
+          "vi": "Nhánh",
+          "en": "Bracket"
+        },
+        "value": {
+          "vi": "International",
+          "en": "International"
+        }
+      },
+      {
+        "label": {
+          "vi": "Hạng nhánh",
+          "en": "Bracket rank"
+        },
+        "value": {
+          "vi": "32",
+          "en": "32"
+        }
+      },
+      {
+        "label": {
+          "vi": "Hạng toàn giải",
+          "en": "Overall rank"
+        },
+        "value": {
+          "vi": "39",
+          "en": "39"
+        }
+      },
+      {
+        "label": {
+          "vi": "Điểm CTF",
+          "en": "CTF points"
+        },
+        "value": {
+          "vi": "3.873",
+          "en": "3,873"
+        }
+      },
+      {
+        "label": {
+          "vi": "Challenges đã giải",
+          "en": "Challenges solved"
+        },
+        "value": {
+          "vi": "11",
+          "en": "11"
+        }
+      }
+    ],
+    "image": "/assets/certificates/securinets-ctf-2026-team-participation.png",
+    "document": "/assets/certificates/securinets-ctf-2026-team-participation.pdf",
+    "verification_url": "https://quals.securinets.tn/certificates",
+    "verification_label": {
+      "vi": "Tra cứu chứng nhận",
+      "en": "Certificate lookup"
+    }
   }
 ]
