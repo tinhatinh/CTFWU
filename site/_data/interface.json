@@ -91,7 +91,6 @@
     "copy_certificate_id": "Sao chép mã chứng nhận",
     "verify_certificate": "Kiểm tra chứng nhận",
     "certificate_document": "Xem tài liệu",
-    "certificate_checked": "Đã đối chiếu tại đơn vị cấp ngày",
     "no_certificates": "Không có chứng nhận phù hợp."
   },
   "en": {
@@ -186,7 +185,6 @@
     "copy_certificate_id": "Copy certificate ID",
     "verify_certificate": "Verify certificate",
     "certificate_document": "View document",
-    "certificate_checked": "Checked with the issuer on",
     "no_certificates": "No matching certificates."
   }
 }

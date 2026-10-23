@@ -25,6 +25,7 @@
     "issuer": "Center for Language Education and Cooperation (CLEC)",
     "date": "2026-06-28",
     "date_kind": "exam",
+    "certificate_id": "H42606080605",
     "verification_url": "https://admin.chinesetest.cn/queryScore.do?sid=c2tActR9Wb%274d5abc0a153f80ff334719fbb938a461a6b706eba73aa8f4%2724d7sWsQ5nVUQSwD",
     "verified_on": "2026-10-05",
     "summary": {
@@ -32,16 +33,6 @@
       "en": "HSK 4: 262/300 · HSKK Intermediate"
     },
     "score_details": [
-      {
-        "label": {
-          "vi": "HSK 4 · Mã số báo cáo",
-          "en": "HSK 4 · Report number"
-        },
-        "value": {
-          "vi": "H42606080605",
-          "en": "H42606080605"
-        }
-      },
       {
         "label": {
           "vi": "HSK 4 · Nghe",
@@ -130,8 +121,8 @@
       "en": "9 October 2026, 18:30 – 10 October 2026, 18:30 UTC"
     },
     "summary": {
-      "vi": "R3:TURИ · Hạng 27/290 · 12.767 điểm CTF",
-      "en": "R3:TURИ · Rank 27/290 · 12,767 CTF points"
+      "vi": "R3:TURИ · Hạng #27",
+      "en": "R3:TURИ · Rank #27"
     },
     "score_details": [
       {
@@ -206,8 +197,8 @@
     },
     "certificate_id": "SCTF26-Q-M0272",
     "summary": {
-      "vi": "International #32 · Toàn giải #39 · 3.873 điểm CTF",
-      "en": "International #32 · Overall #39 · 3,873 CTF points"
+      "vi": "International #32 · Toàn giải #39",
+      "en": "International #32 · Overall #39"
     },
     "score_details": [
       {
@@ -293,8 +284,8 @@
     },
     "certificate_id": "SCTF26-Q-T0159",
     "summary": {
-      "vi": "International #32 · Hạng toàn giải #39 · 3.873 điểm CTF",
-      "en": "International #32 · Overall #39 · 3,873 CTF points"
+      "vi": "International #32 · Toàn giải #39",
+      "en": "International #32 · Overall #39"
     },
     "score_details": [
       {
@@ -354,6 +345,31 @@
     "verification_label": {
       "vi": "Tra cứu chứng nhận",
       "en": "Certificate lookup"
+    }
+  },
+  {
+    "id": "kubstu-ctf-2026-autumn-participation",
+    "title": "KubSTU CTF 2026: Autumn",
+    "type": "participation",
+    "recipient": "tinhatinh",
+    "issuer": "Kuban State Technological University · Team Capybaras",
+    "date": "2026-10-22",
+    "date_kind": "issued",
+    "event_period": {
+      "vi": "10–11/10/2026",
+      "en": "10–11 October 2026"
+    },
+    "certificate_id": "664f5940-fa81-4308-9303-ab877d5681ac",
+    "summary": {
+      "vi": "R3:TURИ · Nhánh sinh viên #26 · Toàn giải #45",
+      "en": "R3:TURИ · Student league #26 · Overall #45"
+    },
+    "image": "/assets/certificates/kubstu-ctf-2026-autumn-credential.png",
+    "document": "/assets/certificates/kubstu-ctf-2026-autumn-credential.pdf",
+    "verification_url": "https://credsverse.com/credentials/664f5940-fa81-4308-9303-ab877d5681ac?preview=1",
+    "verification_label": {
+      "vi": "Xem trên CredsVerse",
+      "en": "View on CredsVerse"
     }
   }
 ]
