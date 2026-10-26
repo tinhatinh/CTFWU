@@ -1,10 +1,18 @@
 {
-  "fetched": "2026-10-25",
+  "fetched": "2026-10-26",
   "team": "R3:TURИ",
   "team_id": 449538,
   "url": "https://ctftime.org/team/449538",
   "years": {
     "2026": [
+      {
+        "ctf_points": "330.00",
+        "event": "RSTCON 2026 CTF",
+        "event_url": "https://ctftime.org/event/3377",
+        "place": "18",
+        "rating_pending": false,
+        "rating_points": "3.504"
+      },
       {
         "ctf_points": "3873.00",
         "event": "Securinets CTF Quals 2026",
