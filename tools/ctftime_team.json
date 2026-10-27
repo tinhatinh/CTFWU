@@ -1,10 +1,18 @@
 {
-  "fetched": "2026-10-27",
+  "fetched": "2026-10-28",
   "team": "R3:TURИ",
   "team_id": 449538,
   "url": "https://ctftime.org/team/449538",
   "years": {
     "2026": [
+      {
+        "ctf_points": "1797.00",
+        "event": "Hack.lu CTF 2026",
+        "event_url": "https://ctftime.org/event/3207",
+        "place": "48",
+        "rating_pending": false,
+        "rating_points": "44.167"
+      },
       {
         "ctf_points": "330.00",
         "event": "RSTCON 2026 CTF",
