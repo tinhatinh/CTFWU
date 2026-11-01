@@ -26,8 +26,8 @@
         "event": "cruXipher 2026 - ATMoS '26, BITS Hyderabad",
         "event_url": "https://ctftime.org/event/3369",
         "place": "11",
-        "rating_pending": true,
-        "rating_points": "0.000"
+        "rating_pending": false,
+        "rating_points": "22.134"
       },
       {
         "ctf_points": "3873.00",
