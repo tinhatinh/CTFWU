@@ -20,8 +20,9 @@ tinhatinh, Lizamort1 - their solutions live in their own repos, this one is only
 | [kBxAc CTF 2026](kBxAc%20CTF%202026/README.md) | Oct 2026 | 14 | Crypto · Forensics · Misc · Pwn · Reverse · Web |
 | [ByteMe CTF 26](ByteMe%20CTF%2026/README.md) | Oct 2026 | 39 | Crypto · Forensics · Misc · Mobile · OSINT · Pwn · Reverse · Steg · Web |
 | [FortID CTF 2026](FortID%20CTF%202026/README.md) | Oct 2026 | 23 | Crypto · Misc · OSINT · Pwn · Reverse · Web |
+| [HI Cyber Con 2026 CTF](HI%20Cyber%20Con%202026%20CTF/README.md) | Oct–Nov 2026 | 18 | Web · Pwn · Crypto · Mobile · Hardware · Reverse · Misc · Web3 · Forensics · NTA · Steg |
 
-**Total: 226 writeups**
+**Total: 244 writeups**
 
 ## Structure
 
@@ -62,7 +63,7 @@ code, commands and recorded output. Older events keep their existing paths and l
 
 ## Quick Navigation
 
-203 writeups across 9 competitions. Each challenge links to its Vietnamese and English editions.
+244 writeups across 11 competitions. Each challenge links to its Vietnamese and English editions.
 
 <details>
 <summary>ByteMe CTF 26 — 39 writeups</summary>
@@ -367,6 +368,32 @@ code, commands and recorded output. Older events keep their existing paths and l
 | String Peek and Poke | Pwn | [VN](FortID%20CTF%202026/string-peek-and-poke.md) | [EN](FortID%20CTF%202026/string-peek-and-poke.en.md) |
 | Tangled | Misc | [VN](FortID%20CTF%202026/tangled.md) | [EN](FortID%20CTF%202026/tangled.en.md) |
 | Ultimative PHP | Web | [VN](FortID%20CTF%202026/ultimative-php.md) | [EN](FortID%20CTF%202026/ultimative-php.en.md) |
+
+</details>
+
+<details>
+<summary>HI Cyber Con 2026 CTF — 18 writeups</summary>
+
+| Challenge | Category | VN | EN |
+|---|---|---|---|
+| Apex Engine | Pwn | [VN](HI%20Cyber%20Con%202026%20CTF/apex-engine.md) | [EN](HI%20Cyber%20Con%202026%20CTF/apex-engine.en.md) |
+| ChronoGrind | Crypto | [VN](HI%20Cyber%20Con%202026%20CTF/chronogrind.md) | [EN](HI%20Cyber%20Con%202026%20CTF/chronogrind.en.md) |
+| Cipher | Mobile | [VN](HI%20Cyber%20Con%202026%20CTF/cipher.md) | [EN](HI%20Cyber%20Con%202026%20CTF/cipher.en.md) |
+| Cold Chain | Hardware | [VN](HI%20Cyber%20Con%202026%20CTF/cold-chain.md) | [EN](HI%20Cyber%20Con%202026%20CTF/cold-chain.en.md) |
+| Cold Circuit | Reverse | [VN](HI%20Cyber%20Con%202026%20CTF/cold-circuit.md) | [EN](HI%20Cyber%20Con%202026%20CTF/cold-circuit.en.md) |
+| File Viewer | Web | [VN](HI%20Cyber%20Con%202026%20CTF/file-viewer.md) | [EN](HI%20Cyber%20Con%202026%20CTF/file-viewer.en.md) |
+| Ground Station | Hardware | [VN](HI%20Cyber%20Con%202026%20CTF/ground-station.md) | [EN](HI%20Cyber%20Con%202026%20CTF/ground-station.en.md) |
+| Labyrinth | Misc | [VN](HI%20Cyber%20Con%202026%20CTF/labyrinth.md) | [EN](HI%20Cyber%20Con%202026%20CTF/labyrinth.en.md) |
+| Overgrowth | Web | [VN](HI%20Cyber%20Con%202026%20CTF/overgrowth.md) | [EN](HI%20Cyber%20Con%202026%20CTF/overgrowth.en.md) |
+| Quiet Upgrade | Web3 | [VN](HI%20Cyber%20Con%202026%20CTF/quiet-upgrade.md) | [EN](HI%20Cyber%20Con%202026%20CTF/quiet-upgrade.en.md) |
+| Rocinate | Crypto | [VN](HI%20Cyber%20Con%202026%20CTF/rocinate.md) | [EN](HI%20Cyber%20Con%202026%20CTF/rocinate.en.md) |
+| Standing Order | Web3 | [VN](HI%20Cyber%20Con%202026%20CTF/standing-order.md) | [EN](HI%20Cyber%20Con%202026%20CTF/standing-order.en.md) |
+| Stillwell Estates | Web | [VN](HI%20Cyber%20Con%202026%20CTF/stillwell-estates.md) | [EN](HI%20Cyber%20Con%202026%20CTF/stillwell-estates.en.md) |
+| The Coffee Shop | Web | [VN](HI%20Cyber%20Con%202026%20CTF/the-coffee-shop.md) | [EN](HI%20Cyber%20Con%202026%20CTF/the-coffee-shop.en.md) |
+| The Miner That Mined The Victim | Forensics | [VN](HI%20Cyber%20Con%202026%20CTF/the-miner-that-mined-the-victim.md) | [EN](HI%20Cyber%20Con%202026%20CTF/the-miner-that-mined-the-victim.en.md) |
+| The Quiet Divide | NTA | [VN](HI%20Cyber%20Con%202026%20CTF/the-quiet-divide.md) | [EN](HI%20Cyber%20Con%202026%20CTF/the-quiet-divide.en.md) |
+| Titan Relay | Pwn | [VN](HI%20Cyber%20Con%202026%20CTF/titan-relay.md) | [EN](HI%20Cyber%20Con%202026%20CTF/titan-relay.en.md) |
+| No Bit Sings Alone | Steg | [VN](HI%20Cyber%20Con%202026%20CTF/no-bit-sings-alone.md) | [EN](HI%20Cyber%20Con%202026%20CTF/no-bit-sings-alone.en.md) |
 
 </details>
 
