@@ -40,6 +40,3 @@ Theo danh sách nguồn, các đề của Hidden Investigations ngoại trừ: *
 - No Bit Sings Alone có hai ảnh spectrogram và [script giải độc lập](assets/no-bit-sings-alone/solve.py); toàn bộ code cũng được nhúng trong cả hai bản Markdown. Bài ghi rõ SHA-256 của WAV và kiểm tra authentication tag AES-GCM.
 - Một số tài liệu gốc chỉ giữ tóm tắt, công thức hoặc hash rút gọn. Từng bài nêu phần dữ liệu/script còn thiếu; không coi các địa chỉ instance cũ hoặc prefix `...` là input tái hiện đầy đủ. Bộ writeup không kèm toàn bộ artifact đề.
 
-## Các bài chưa có lời giải hoàn chỉnh
-
-Blind Index, Unremarkable, Paper Trail, Ouroboros, The Collector's Trail, Rocinate Revenge, Low Tide Ledger và Ghost in RAM chưa có writeup hoàn chỉnh trong bộ nguồn này. Tyco không được đưa vào danh sách vì không có bằng chứng submission được chấp nhận.
