@@ -371,5 +371,29 @@
       "vi": "Xem trên CredsVerse",
       "en": "View on CredsVerse"
     }
+  },
+  {
+    "id": "css-ctf-2026-participation",
+    "title": "CSS CTF 2026: Return of Nexus",
+    "type": "participation",
+    "recipient": "tinhatinh",
+    "issuer": "Cybersecurity Society Sydney",
+    "date": "2026-10-01",
+    "date_kind": "event",
+    "event_period": {
+      "vi": "30/09/2026 06:00 – 01/10/2026 22:00 UTC",
+      "en": "30 September 2026, 06:00 – 1 October 2026, 22:00 UTC"
+    },
+    "summary": {
+      "vi": "R3:TURИ",
+      "en": "R3:TURИ"
+    },
+    "image": "/assets/certificates/css-ctf-2026-participation.png",
+    "document": "/assets/certificates/css-ctf-2026-participation.pdf",
+    "verification_url": "https://ctftime.org/event/3434",
+    "verification_label": {
+      "vi": "Xem thông tin giải trên CTFtime",
+      "en": "View event on CTFtime"
+    }
   }
 ]
