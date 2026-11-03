@@ -6,6 +6,14 @@
   "years": {
     "2026": [
       {
+        "ctf_points": "4787.00",
+        "event": "HI Cyber Con 2026 CTF",
+        "event_url": "https://ctftime.org/event/3460",
+        "place": "4",
+        "rating_pending": true,
+        "rating_points": "0.000"
+      },
+      {
         "ctf_points": "1797.00",
         "event": "Hack.lu CTF 2026",
         "event_url": "https://ctftime.org/event/3207",
