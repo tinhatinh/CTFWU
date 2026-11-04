@@ -1,5 +1,5 @@
 {
-  "fetched": "2026-11-04",
+  "fetched": "2026-11-05",
   "team": "R3:TURИ",
   "team_id": 449538,
   "url": "https://ctftime.org/team/449538",
@@ -11,6 +11,14 @@
         "event_url": "https://ctftime.org/event/3460",
         "place": "4",
         "rating_pending": true,
+        "rating_points": "0.000"
+      },
+      {
+        "ctf_points": "2300.00",
+        "event": "Sudocrypt v16.0",
+        "event_url": "https://ctftime.org/event/3443",
+        "place": "22",
+        "rating_pending": false,
         "rating_points": "0.000"
       },
       {
