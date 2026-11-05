@@ -1,21 +1,22 @@
 <!doctype html>
-<html lang="{{ site.lang }}" data-theme="dark">
+<html lang="{{ site.lang }}" data-theme="terminal">
 {% assign lang = site.lang | slice: 0, 2 %}{% assign ui = site.data.interface[lang] %}
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-mLxdWhPGR5VzFP2Lu6BVYebhwd/H70JdCEcen9dS8o4='; connect-src 'self' https://api.github.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https: data:; object-src 'none'; base-uri 'self'; form-action 'self'">
-  <meta name="theme-color" content="#111411">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-4mgsJjkXGVRKXJbDk4Iq02ef7P3zkOVqLSpqQ4eIaZE='; connect-src 'self' https://api.github.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https: data:; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="theme-color" content="#050907">
   {% seo %}
   {% feed_meta %}
   <link rel="icon" type="image/svg+xml" href="{{ '/assets/favicon.svg' | relative_url }}">
   <link rel="stylesheet" href="{{ '/assets/css/campus.css' | relative_url }}?v={{ site.data.portfolio.assets.css }}">
   <link rel="stylesheet" href="{{ '/assets/css/themes.css' | relative_url }}?v={{ site.data.portfolio.assets.themes }}">
-  <script>try{var p=new URLSearchParams(location.search).get('theme');var t=(p==='terminal'||p==='paper'||p==='aurora')?p:(localStorage.getItem('ctf-theme')||'dark');document.documentElement.dataset.theme=t}catch(e){}</script>
+  <script>try{var p=new URLSearchParams(location.search).get('theme');var t=(p==='terminal'||p==='paper'||p==='aurora')?p:(localStorage.getItem('ctf-theme-v2')||'terminal');document.documentElement.dataset.theme=t}catch(e){}</script>
   <script defer src="{{ '/assets/js/site.js' | relative_url }}?v={{ site.data.portfolio.assets.js }}"></script>
   <noscript><style>.archive-controls,.results-bar label,#theme-toggle,.menu-toggle{display:none!important}@media(max-width:600px){.site-header{position:static}.header-inner{height:auto;flex-wrap:wrap;padding-block:16px}.main-nav{display:flex;position:static;order:3;flex-basis:100%;padding:0;gap:18px;flex-wrap:wrap;border:0}.main-nav>a{height:auto}}</style></noscript>
 </head>
 <body data-language="{{ lang }}">
+  <div class="theme-backdrop" aria-hidden="true"></div>
   <a class="skip-link" href="#main">{{ ui.skip }}</a>
   <header class="site-header">
     <div class="header-inner">

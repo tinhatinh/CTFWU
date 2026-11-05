@@ -32,7 +32,7 @@
     if (bar) bar.hidden = true;
   }
   if (themeMeta) {
-    themeMeta.content = themeColors[document.documentElement.dataset.theme] || themeColors.dark;
+    themeMeta.content = themeColors[document.documentElement.dataset.theme] || themeColors.terminal;
   }
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const runningMotion = new Set();
@@ -60,12 +60,15 @@
     document.querySelectorAll(".page-heading, .stats-strip, .section-heading, .feature-card, .certificate-card").forEach(element => observer.observe(element));
   }
   const themeButton = document.querySelector("#theme-toggle");
-  themeButton?.setAttribute("aria-pressed", String(document.documentElement.dataset.theme === "dark"));
+  themeButton?.setAttribute("aria-pressed", String(
+    document.documentElement.dataset.theme === "terminal" ||
+    document.documentElement.dataset.theme === "dark"
+  ));
   themeButton?.addEventListener("click", () => {
     const current = document.documentElement.dataset.theme;
-    const theme = current === "dark" ? "light" : "dark";
+    const theme = current === "light" ? "terminal" : "light";
     document.documentElement.dataset.theme = theme;
-    themeButton.setAttribute("aria-pressed", String(theme === "dark"));
+    themeButton.setAttribute("aria-pressed", String(theme === "terminal" || theme === "dark"));
     if (previewThemes.has(current)) {
       const url = new URL(location.href);
       url.searchParams.delete("theme");
@@ -78,9 +81,9 @@
       { transform: "rotate(-70deg) scale(.85)" },
       { transform: "rotate(0) scale(1)" }
     ], { duration: 320, easing: "ease-out" });
-    if (themeMeta) themeMeta.content = themeColors[theme] || themeColors.dark;
+    if (themeMeta) themeMeta.content = themeColors[theme] || themeColors.terminal;
     try {
-      localStorage.setItem("ctf-theme", theme);
+      localStorage.setItem("ctf-theme-v2", theme);
     } catch (_) {
       /* Storage is optional. */
     }
