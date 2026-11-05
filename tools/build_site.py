@@ -319,7 +319,7 @@ def challenge_categories(label):
         "warm-up": "Warm-up", "web3": "Web3", "ai": "AI", "cloud": "Cloud",
         "hardware": "Hardware", "mobile": "Mobile", "exp": "EXP",
         "boot2root": "Boot2Root", "iot": "Hardware", "ml": "AI",
-        "game hacking": "Game Hacking",
+        "game hacking": "Game Hacking", "vuln research": "Vuln Research", "ot": "OT",
     }
     # Longest labels first also handles legacy strings without '+' delimiters.
     pattern = r"(?<!\w)(?:" + "|".join(re.escape(a) for a in sorted(aliases, key=len, reverse=True)) + r")(?!\w)"

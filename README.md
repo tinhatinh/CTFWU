@@ -21,8 +21,9 @@ tinhatinh, Lizamort1 - their solutions live in their own repos, this one is only
 | [ByteMe CTF 26](ByteMe%20CTF%2026/README.md) | Oct 2026 | 39 | Crypto · Forensics · Misc · Mobile · OSINT · Pwn · Reverse · Steg · Web |
 | [FortID CTF 2026](FortID%20CTF%202026/README.md) | Oct 2026 | 23 | Crypto · Misc · OSINT · Pwn · Reverse · Web |
 | [HI Cyber Con 2026 CTF](HI%20Cyber%20Con%202026%20CTF/README.md) | Oct–Nov 2026 | 18 | Web · Pwn · Crypto · Mobile · Hardware · Reverse · Misc · Web3 · Forensics · NTA · Steg |
+| [Africa battleCTF 2026 Qualifier](Africa%20battleCTF%202026%20Qualifier/README.md) | Oct–Nov 2026 | 39 | Forensics · OSINT · OT · Pwn · Reverse · Vuln Research · Web |
 
-**Total: 244 writeups**
+**Total: 283 writeups**
 
 ## Structure
 
@@ -63,7 +64,7 @@ code, commands and recorded output. Older events keep their existing paths and l
 
 ## Quick Navigation
 
-244 writeups across 11 competitions. Each challenge links to its Vietnamese and English editions.
+283 writeups across 12 competitions. Each challenge links to its Vietnamese and English editions.
 
 <details>
 <summary>ByteMe CTF 26 — 39 writeups</summary>
@@ -394,6 +395,53 @@ code, commands and recorded output. Older events keep their existing paths and l
 | The Quiet Divide | NTA | [VN](HI%20Cyber%20Con%202026%20CTF/the-quiet-divide.md) | [EN](HI%20Cyber%20Con%202026%20CTF/the-quiet-divide.en.md) |
 | Titan Relay | Pwn | [VN](HI%20Cyber%20Con%202026%20CTF/titan-relay.md) | [EN](HI%20Cyber%20Con%202026%20CTF/titan-relay.en.md) |
 | No Bit Sings Alone | Steg | [VN](HI%20Cyber%20Con%202026%20CTF/no-bit-sings-alone.md) | [EN](HI%20Cyber%20Con%202026%20CTF/no-bit-sings-alone.en.md) |
+
+</details>
+
+<details>
+<summary>Africa battleCTF 2026 Qualifier — 39 writeups</summary>
+
+| Challenge | Category | VN | EN |
+|---|---|---|---|
+| 0byte | RE | [VN](Africa%20battleCTF%202026%20Qualifier/0BYTE.md) | [EN](Africa%20battleCTF%202026%20Qualifier/0BYTE.en.md) |
+| ClearHouse | Web | [VN](Africa%20battleCTF%202026%20Qualifier/CLEARHOUSE.md) | [EN](Africa%20battleCTF%202026%20Qualifier/CLEARHOUSE.en.md) |
+| Discord | OSINT | [VN](Africa%20battleCTF%202026%20Qualifier/DISCORD.md) | [EN](Africa%20battleCTF%202026%20Qualifier/DISCORD.en.md) |
+| EchoGate | Web | [VN](Africa%20battleCTF%202026%20Qualifier/ECHOGATE.md) | [EN](Africa%20battleCTF%202026%20Qualifier/ECHOGATE.en.md) |
+| Operation BLACKHOLE 1 | Forensics | [VN](Africa%20battleCTF%202026%20Qualifier/BLACKHOLE1.md) | [EN](Africa%20battleCTF%202026%20Qualifier/BLACKHOLE1.en.md) |
+| Operation BLACKHOLE 2 | Forensics | [VN](Africa%20battleCTF%202026%20Qualifier/BLACKHOLE2.md) | [EN](Africa%20battleCTF%202026%20Qualifier/BLACKHOLE2.en.md) |
+| Operation BLACKHOLE 3 | Forensics | [VN](Africa%20battleCTF%202026%20Qualifier/BLACKHOLE3.md) | [EN](Africa%20battleCTF%202026%20Qualifier/BLACKHOLE3.en.md) |
+| Operation BLACKHOLE 4 | Forensics | [VN](Africa%20battleCTF%202026%20Qualifier/BLACKHOLE4.md) | [EN](Africa%20battleCTF%202026%20Qualifier/BLACKHOLE4.en.md) |
+| Operation BLACKHOLE 5 | Forensics | [VN](Africa%20battleCTF%202026%20Qualifier/BLACKHOLE5.md) | [EN](Africa%20battleCTF%202026%20Qualifier/BLACKHOLE5.en.md) |
+| Operation BLACKHOLE 6 | Forensics | [VN](Africa%20battleCTF%202026%20Qualifier/BLACKHOLE6.md) | [EN](Africa%20battleCTF%202026%20Qualifier/BLACKHOLE6.en.md) |
+| Operation BLACKHOLE 7 | Forensics | [VN](Africa%20battleCTF%202026%20Qualifier/BLACKHOLE7.md) | [EN](Africa%20battleCTF%202026%20Qualifier/BLACKHOLE7.en.md) |
+| Operation BLACKHOLE 8 | Forensics | [VN](Africa%20battleCTF%202026%20Qualifier/BLACKHOLE8.md) | [EN](Africa%20battleCTF%202026%20Qualifier/BLACKHOLE8.en.md) |
+| OT#001 | OT | [VN](Africa%20battleCTF%202026%20Qualifier/OT001.md) | [EN](Africa%20battleCTF%202026%20Qualifier/OT001.en.md) |
+| OT#002 | OT | [VN](Africa%20battleCTF%202026%20Qualifier/OT002.md) | [EN](Africa%20battleCTF%202026%20Qualifier/OT002.en.md) |
+| OT#003 | OT | [VN](Africa%20battleCTF%202026%20Qualifier/OT003.md) | [EN](Africa%20battleCTF%202026%20Qualifier/OT003.en.md) |
+| OT#004 | OT | [VN](Africa%20battleCTF%202026%20Qualifier/OT004.md) | [EN](Africa%20battleCTF%202026%20Qualifier/OT004.en.md) |
+| OT#007 | OT | [VN](Africa%20battleCTF%202026%20Qualifier/OT007.md) | [EN](Africa%20battleCTF%202026%20Qualifier/OT007.en.md) |
+| PWN#001 | Pwn | [VN](Africa%20battleCTF%202026%20Qualifier/PWN001.md) | [EN](Africa%20battleCTF%202026%20Qualifier/PWN001.en.md) |
+| PWN#002 | Pwn | [VN](Africa%20battleCTF%202026%20Qualifier/PWN002.md) | [EN](Africa%20battleCTF%202026%20Qualifier/PWN002.en.md) |
+| PWN#003 | Pwn | [VN](Africa%20battleCTF%202026%20Qualifier/PWN003.md) | [EN](Africa%20battleCTF%202026%20Qualifier/PWN003.en.md) |
+| PWN#004 | Pwn | [VN](Africa%20battleCTF%202026%20Qualifier/PWN004.md) | [EN](Africa%20battleCTF%202026%20Qualifier/PWN004.en.md) |
+| PWN#005 | Pwn | [VN](Africa%20battleCTF%202026%20Qualifier/PWN005.md) | [EN](Africa%20battleCTF%202026%20Qualifier/PWN005.en.md) |
+| PWN#006 | Pwn | [VN](Africa%20battleCTF%202026%20Qualifier/PWN006.md) | [EN](Africa%20battleCTF%202026%20Qualifier/PWN006.en.md) |
+| PWN#007 | Pwn | [VN](Africa%20battleCTF%202026%20Qualifier/PWN007.md) | [EN](Africa%20battleCTF%202026%20Qualifier/PWN007.en.md) |
+| PWN#Alpha | Pwn | [VN](Africa%20battleCTF%202026%20Qualifier/PWNALPHA.md) | [EN](Africa%20battleCTF%202026%20Qualifier/PWNALPHA.en.md) |
+| PWN#Beta | Pwn | [VN](Africa%20battleCTF%202026%20Qualifier/PWNBETA.md) | [EN](Africa%20battleCTF%202026%20Qualifier/PWNBETA.en.md) |
+| PWN#Delta | Pwn | [VN](Africa%20battleCTF%202026%20Qualifier/PWNDELTA.md) | [EN](Africa%20battleCTF%202026%20Qualifier/PWNDELTA.en.md) |
+| PWN#Epsilon | Pwn | [VN](Africa%20battleCTF%202026%20Qualifier/PWNEPSILON.md) | [EN](Africa%20battleCTF%202026%20Qualifier/PWNEPSILON.en.md) |
+| PWN#Zeta | Pwn | [VN](Africa%20battleCTF%202026%20Qualifier/PWNZETA.md) | [EN](Africa%20battleCTF%202026%20Qualifier/PWNZETA.en.md) |
+| SwiftNotes | Web | [VN](Africa%20battleCTF%202026%20Qualifier/SWIFTNOTES.md) | [EN](Africa%20battleCTF%202026%20Qualifier/SWIFTNOTES.en.md) |
+| TicketVault | Web | [VN](Africa%20battleCTF%202026%20Qualifier/TICKETVAULT.md) | [EN](Africa%20battleCTF%202026%20Qualifier/TICKETVAULT.en.md) |
+| VULN#001 | Vuln Research | [VN](Africa%20battleCTF%202026%20Qualifier/VULN001.md) | [EN](Africa%20battleCTF%202026%20Qualifier/VULN001.en.md) |
+| VULN#002 | Vuln Research | [VN](Africa%20battleCTF%202026%20Qualifier/VULN002.md) | [EN](Africa%20battleCTF%202026%20Qualifier/VULN002.en.md) |
+| VULN#003 | Vuln Research | [VN](Africa%20battleCTF%202026%20Qualifier/VULN003.md) | [EN](Africa%20battleCTF%202026%20Qualifier/VULN003.en.md) |
+| VULN#004 | Vuln Research | [VN](Africa%20battleCTF%202026%20Qualifier/VULN004.md) | [EN](Africa%20battleCTF%202026%20Qualifier/VULN004.en.md) |
+| VULN#005 | Vuln Research | [VN](Africa%20battleCTF%202026%20Qualifier/VULN005.md) | [EN](Africa%20battleCTF%202026%20Qualifier/VULN005.en.md) |
+| VULN#006 | Vuln Research | [VN](Africa%20battleCTF%202026%20Qualifier/VULN006.md) | [EN](Africa%20battleCTF%202026%20Qualifier/VULN006.en.md) |
+| VULN#007 | Vuln Research | [VN](Africa%20battleCTF%202026%20Qualifier/VULN007.md) | [EN](Africa%20battleCTF%202026%20Qualifier/VULN007.en.md) |
+| WireVault | Web | [VN](Africa%20battleCTF%202026%20Qualifier/WIREVAULT.md) | [EN](Africa%20battleCTF%202026%20Qualifier/WIREVAULT.en.md) |
 
 </details>
 

@@ -1,5 +1,93 @@
 [
   {
+    "id": "hi-cyber-con-2026-participation",
+    "title": "HI Cyber Con 2026",
+    "type": "participation",
+    "recipient": "tinhatinh",
+    "issuer": "Hidden Investigations",
+    "date": "2026-11-01",
+    "date_kind": "event",
+    "event_period": {
+      "vi": "30/10–01/11/2026",
+      "en": "30 October–1 November 2026"
+    },
+    "certificate_id": "HICC26-GMNB-EE9A-0P5H-8W3Z",
+    "summary": {
+      "vi": "Đội 5 ch4n9 l1nh n9u l4m · Hạng 4/1.119 toàn cầu · 68/69 challenge",
+      "en": "Team 5 ch4n9 l1nh n9u l4m · Global #4 of 1,119 · 68/69 challenges"
+    },
+    "score_details": [
+      {
+        "label": {
+          "vi": "Đội",
+          "en": "Team"
+        },
+        "value": {
+          "vi": "5 ch4n9 l1nh n9u l4m",
+          "en": "5 ch4n9 l1nh n9u l4m"
+        }
+      },
+      {
+        "label": {
+          "vi": "Bảng",
+          "en": "Division"
+        },
+        "value": {
+          "vi": "Agentic AI",
+          "en": "Agentic AI"
+        }
+      },
+      {
+        "label": {
+          "vi": "Hạng toàn cầu",
+          "en": "Global rank"
+        },
+        "value": {
+          "vi": "4 / 1.119",
+          "en": "4 / 1,119"
+        }
+      },
+      {
+        "label": {
+          "vi": "Hạng bảng",
+          "en": "Division rank"
+        },
+        "value": {
+          "vi": "4 / 396",
+          "en": "4 / 396"
+        }
+      },
+      {
+        "label": {
+          "vi": "Challenges đã giải",
+          "en": "Challenges solved"
+        },
+        "value": {
+          "vi": "68 / 69",
+          "en": "68 / 69"
+        }
+      },
+      {
+        "label": {
+          "vi": "Điểm CTF",
+          "en": "CTF points"
+        },
+        "value": {
+          "vi": "4.787",
+          "en": "4,787"
+        }
+      }
+    ],
+    "image": "/assets/certificates/hi-cyber-con-2026-participation-tinhatinh.png",
+    "document": "/assets/certificates/hi-cyber-con-2026-participation-tinhatinh.pdf",
+    "verification_url": "https://cert.hiddeninvestigations.net/verify?i=HICC26-GMNB-EE9A-0P5H-8W3Z&n=tinhatinh",
+    "verification_label": {
+      "vi": "Xác minh chứng chỉ",
+      "en": "Verify certificate"
+    },
+    "verified_on": "2026-11-05"
+  },
+  {
     "id": "h7ctf-2026-participation",
     "title": "H7CTF 2026",
     "type": "participation",
