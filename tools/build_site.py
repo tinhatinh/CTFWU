@@ -752,8 +752,12 @@ def write_portfolio(stage, events, lang):
     path = os.path.join(stage, "_data", "portfolio.json")
     with open(path, "w", encoding="utf-8", newline="\n") as out:
         assets = {}
-        for key, relative in [("css", "assets/css/campus.css"), ("js", "assets/js/site.js"), ("editor", "assets/js/editor.js"), ("github_editor", "assets/js/github-editor.js")]:
-            with open(os.path.join(stage, relative), "rb") as asset:
+        for key, relative in [("css", "assets/css/campus.css"), ("themes", "assets/css/themes.css"), ("js", "assets/js/site.js"), ("editor", "assets/js/editor.js"), ("github_editor", "assets/js/github-editor.js")]:
+            path = os.path.join(stage, relative)
+            if not os.path.isfile(path):
+                assets[key] = ""
+                continue
+            with open(path, "rb") as asset:
                 assets[key] = hashlib.sha256(asset.read()).hexdigest()[:12]
         json.dump({"events": records, "results": ctftime_team(), "assets": assets}, out, ensure_ascii=False, indent=2)
 

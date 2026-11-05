@@ -1,0 +1,36 @@
+---
+layout: default
+title: "Theme lab"
+permalink: /themes/
+---
+{% assign lang = site.lang | slice: 0, 2 %}
+<div class="wrapper theme-showcase">
+  <header class="page-heading">
+    <p class="eyebrow">CTFWU / THEME LAB</p>
+    <h1>{% if lang == 'vi' %}Ba hướng giao diện{% else %}Three interface directions{% endif %}</h1>
+    <p>{% if lang == 'vi' %}Cùng một nội dung, ba cách trình bày: Terminal (cyberdeck), Paper (editorial) và Aurora (glass). Phần cốt lõi — điều hướng, writeup, tìm kiếm, thành tích, chứng chỉ, chuyển ngôn ngữ — giữ nguyên.{% else %}The same content, three ways to present it: Terminal (cyberdeck), Paper (editorial) and Aurora (glass). The core — navigation, writeups, search, results, certificates, language switch — stays the same.{% endif %}</p>
+  </header>
+
+  <div class="theme-lab">
+    <input type="radio" name="theme-pick" id="pick-terminal" checked>
+    <input type="radio" name="theme-pick" id="pick-paper">
+    <input type="radio" name="theme-pick" id="pick-aurora">
+    <div class="theme-tabs" role="group" aria-label="{% if lang == 'vi' %}Chọn giao diện xem thử{% else %}Choose a theme preview{% endif %}">
+      <label for="pick-terminal">01 / Terminal</label>
+      <label for="pick-paper">02 / Paper</label>
+      <label for="pick-aurora">03 / Aurora</label>
+    </div>
+    <div class="theme-stage">
+      <iframe data-theme="terminal" src="{{ '/' | relative_url }}?theme=terminal" title="Terminal theme preview"></iframe>
+      <iframe data-theme="paper" src="{{ '/' | relative_url }}?theme=paper" title="Paper theme preview"></iframe>
+      <iframe data-theme="aurora" src="{{ '/' | relative_url }}?theme=aurora" title="Aurora theme preview"></iframe>
+    </div>
+  </div>
+
+  <div class="theme-links">
+    <a class="text-link" href="{{ '/' | relative_url }}?theme=terminal" target="_blank" rel="noopener">Terminal — {% if lang == 'vi' %}mở toàn trang{% else %}open full page{% endif %} ↗</a>
+    <a class="text-link" href="{{ '/' | relative_url }}?theme=paper" target="_blank" rel="noopener">Paper — {% if lang == 'vi' %}mở toàn trang{% else %}open full page{% endif %} ↗</a>
+    <a class="text-link" href="{{ '/' | relative_url }}?theme=aurora" target="_blank" rel="noopener">Aurora — {% if lang == 'vi' %}mở toàn trang{% else %}open full page{% endif %} ↗</a>
+    <a class="text-link" href="{{ '/competitions/' | relative_url }}?theme=terminal" target="_blank" rel="noopener">{% if lang == 'vi' %}Xem trang Thành tích với Terminal{% else %}See Achievements in Terminal{% endif %} ↗</a>
+  </div>
+</div>

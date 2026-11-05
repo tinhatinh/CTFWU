@@ -4,13 +4,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-iL81GxcSVrXohAac1zDGbhNaebfF0wnDXyQPx56y6oM='; connect-src 'self' https://api.github.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https: data:; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-mLxdWhPGR5VzFP2Lu6BVYebhwd/H70JdCEcen9dS8o4='; connect-src 'self' https://api.github.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https: data:; object-src 'none'; base-uri 'self'; form-action 'self'">
   <meta name="theme-color" content="#111411">
   {% seo %}
   {% feed_meta %}
   <link rel="icon" type="image/svg+xml" href="{{ '/assets/favicon.svg' | relative_url }}">
   <link rel="stylesheet" href="{{ '/assets/css/campus.css' | relative_url }}?v={{ site.data.portfolio.assets.css }}">
-  <script>try{document.documentElement.dataset.theme=localStorage.getItem('ctf-theme')||'dark'}catch(e){}</script>
+  <link rel="stylesheet" href="{{ '/assets/css/themes.css' | relative_url }}?v={{ site.data.portfolio.assets.themes }}">
+  <script>try{var p=new URLSearchParams(location.search).get('theme');var t=(p==='terminal'||p==='paper'||p==='aurora')?p:(localStorage.getItem('ctf-theme')||'dark');document.documentElement.dataset.theme=t}catch(e){}</script>
   <script defer src="{{ '/assets/js/site.js' | relative_url }}?v={{ site.data.portfolio.assets.js }}"></script>
   <noscript><style>.archive-controls,.results-bar label,#theme-toggle,.menu-toggle{display:none!important}@media(max-width:600px){.site-header{position:static}.header-inner{height:auto;flex-wrap:wrap;padding-block:16px}.main-nav{display:flex;position:static;order:3;flex-basis:100%;padding:0;gap:18px;flex-wrap:wrap;border:0}.main-nav>a{height:auto}}</style></noscript>
 </head>
@@ -44,5 +45,12 @@
   <a class="back-to-top" id="back-to-top" href="#main" aria-label="{{ ui.top }}" title="{{ ui.top }}">
     <svg viewBox="0 0 48 48" aria-hidden="true"><circle class="top-track" cx="24" cy="24" r="20"/><circle class="top-progress" id="top-progress" cx="24" cy="24" r="20" pathLength="100"/><path class="top-arrow" d="M24 32V16m-7 7 7-7 7 7"/></svg>
   </a>
+  <div class="theme-preview-bar" id="theme-preview-bar" hidden>
+    <span>{{ ui.theme_preview }}</span>
+    <a href="?theme=terminal" data-theme-choice="terminal">Terminal</a>
+    <a href="?theme=paper" data-theme-choice="paper">Paper</a>
+    <a href="?theme=aurora" data-theme-choice="aurora">Aurora</a>
+    <a href="?theme=default" data-theme-choice="default">{{ ui.theme_default }}</a>
+  </div>
 </body>
 </html>

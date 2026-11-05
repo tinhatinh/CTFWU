@@ -2,6 +2,38 @@
 (() => {
   "use strict";
   const vi = document.body.dataset.language === "vi";
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  const themeColors = {
+    dark: "#111411",
+    light: "#f5f5ef",
+    terminal: "#050907",
+    paper: "#f2eadb",
+    aurora: "#050816"
+  };
+  const previewThemes = new Set(["terminal", "paper", "aurora"]);
+  const previewParam = new URLSearchParams(location.search).get("theme");
+  if (previewThemes.has(previewParam)) {
+    document.body.classList.add("is-theme-preview");
+    const bar = document.querySelector("#theme-preview-bar");
+    if (bar) {
+      bar.hidden = false;
+      bar.querySelectorAll("[data-theme-choice]").forEach(link => {
+        const url = new URL(location.href);
+        const choice = link.dataset.themeChoice;
+        if (choice === "default") url.searchParams.delete("theme");
+        else url.searchParams.set("theme", choice);
+        link.href = url.pathname + url.search + url.hash;
+        link.setAttribute("aria-current", choice === previewParam ? "true" : "false");
+      });
+    }
+  }
+  if (window.self !== window.top) {
+    const bar = document.querySelector("#theme-preview-bar");
+    if (bar) bar.hidden = true;
+  }
+  if (themeMeta) {
+    themeMeta.content = themeColors[document.documentElement.dataset.theme] || themeColors.dark;
+  }
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const runningMotion = new Set();
   const animate = (element, frames, options) => {
@@ -30,16 +62,23 @@
   const themeButton = document.querySelector("#theme-toggle");
   themeButton?.setAttribute("aria-pressed", String(document.documentElement.dataset.theme === "dark"));
   themeButton?.addEventListener("click", () => {
-    const theme =
-      document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    const current = document.documentElement.dataset.theme;
+    const theme = current === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = theme;
     themeButton.setAttribute("aria-pressed", String(theme === "dark"));
+    if (previewThemes.has(current)) {
+      const url = new URL(location.href);
+      url.searchParams.delete("theme");
+      history.replaceState(null, "", url.pathname + url.search + url.hash);
+      document.body.classList.remove("is-theme-preview");
+      const bar = document.querySelector("#theme-preview-bar");
+      if (bar) bar.hidden = true;
+    }
     animate(themeButton.querySelector("svg"), [
       { transform: "rotate(-70deg) scale(.85)" },
       { transform: "rotate(0) scale(1)" }
     ], { duration: 320, easing: "ease-out" });
-    document.querySelector('meta[name="theme-color"]').content =
-      theme === "dark" ? "#111411" : "#f5f5ef";
+    if (themeMeta) themeMeta.content = themeColors[theme] || themeColors.dark;
     try {
       localStorage.setItem("ctf-theme", theme);
     } catch (_) {
