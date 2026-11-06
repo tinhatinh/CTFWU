@@ -1,5 +1,82 @@
 [
   {
+    "id": "battlectf-2026-qualifier-participation",
+    "title": "Africa battleCTF 2026 — Qualifier",
+    "type": "participation",
+    "recipient": "ptittester",
+    "issuer": "BUG|PWN & Cyber.industries",
+    "date": "2026-11-06",
+    "date_kind": "issued",
+    "event_period": {
+      "vi": "04/10–04/11/2026 (UTC)",
+      "en": "4 October–4 November 2026 (UTC)"
+    },
+    "summary": {
+      "vi": "Hạng 7/552 · Top 1% · 2.394 điểm",
+      "en": "Rank 7/552 · Top 1% · 2,394 points"
+    },
+    "score_details": [
+      {
+        "label": {
+          "vi": "Hạng chung cuộc",
+          "en": "Final rank"
+        },
+        "value": {
+          "vi": "7 / 552",
+          "en": "7 / 552"
+        }
+      },
+      {
+        "label": {
+          "vi": "Phân vị",
+          "en": "Percentile"
+        },
+        "value": {
+          "vi": "Top 1%",
+          "en": "Top 1%"
+        }
+      },
+      {
+        "label": {
+          "vi": "Điểm",
+          "en": "Points"
+        },
+        "value": {
+          "vi": "2.394",
+          "en": "2,394"
+        }
+      },
+      {
+        "label": {
+          "vi": "Quốc gia",
+          "en": "Country"
+        },
+        "value": {
+          "vi": "Việt Nam (VN)",
+          "en": "Vietnam (VN)"
+        }
+      },
+      {
+        "label": {
+          "vi": "Hạng mục",
+          "en": "Categories covered"
+        },
+        "value": {
+          "vi": "PWN · WEB · OT/ICS · VULN-RESEARCH",
+          "en": "PWN · WEB · OT/ICS · VULN-RESEARCH"
+        }
+      }
+    ],
+    "verified_on": "2026-11-06",
+    "verification_label": {
+      "vi": "Xem bảng xếp hạng battleCTF",
+      "en": "View the battleCTF leaderboard"
+    },
+    "verification_url": "https://cert.ctf.bugpwn.com/",
+    "document": "/assets/certificates/battlectf-2026-qualifier-participation-ptittester.pdf",
+    "image": "/assets/certificates/battlectf-2026-qualifier-participation-ptittester.png"
+  },
+  {
     "id": "hi-cyber-con-2026-participation",
     "title": "HI Cyber Con 2026",
     "type": "participation",
