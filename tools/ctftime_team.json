@@ -1,10 +1,28 @@
 {
-  "fetched": "2026-11-09",
+  "fetched": "2026-11-10",
   "team": "R3:TURИ",
   "team_id": 449538,
   "url": "https://ctftime.org/team/449538",
   "years": {
+    "2025": [
+      {
+        "ctf_points": "28866.00",
+        "event": "CSCTF 2025",
+        "event_url": "https://ctftime.org/event/2980",
+        "place": "12",
+        "rating_pending": false,
+        "rating_points": "0.000"
+      }
+    ],
     "2026": [
+      {
+        "ctf_points": "28866.00",
+        "event": "CSCTF 2026",
+        "event_url": "https://ctftime.org/event/3333",
+        "place": "12",
+        "rating_pending": true,
+        "rating_points": "0.000"
+      },
       {
         "ctf_points": "8642.00",
         "event": "2026 Qiangwang Challenge on Cyber Mimic Defense Qualification",
