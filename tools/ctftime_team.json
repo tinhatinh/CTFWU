@@ -16,10 +16,26 @@
     ],
     "2026": [
       {
+        "ctf_points": "9484.00",
+        "event": "SpookyCTF 2026",
+        "event_url": "https://ctftime.org/event/3339",
+        "place": "10",
+        "rating_pending": true,
+        "rating_points": "0.000"
+      },
+      {
         "ctf_points": "28866.00",
         "event": "CSCTF 2026",
         "event_url": "https://ctftime.org/event/3333",
         "place": "12",
+        "rating_pending": true,
+        "rating_points": "0.000"
+      },
+      {
+        "ctf_points": "1635.00",
+        "event": "PINK+ CTF 2026",
+        "event_url": "https://ctftime.org/event/3331",
+        "place": "38",
         "rating_pending": true,
         "rating_points": "0.000"
       },
