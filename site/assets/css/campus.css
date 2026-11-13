@@ -1445,6 +1445,8 @@ select {
 #cert-poctf-2026-participant-solver .certificate-image { aspect-ratio:1188/918; background:#0e1318; }
 #cert-kbxac-ctf-2026-participation .certificate-image { aspect-ratio:4/3; background:#050505; }
 #cert-battlectf-2026-qualifier-participation .certificate-image { aspect-ratio:1600/1127; background:#0d1017; }
+#cert-csctf-2026-participation .certificate-image { background:#0f131a; }
+#cert-pink-ctf-2026-participation .certificate-image { background:#111111; }
 #cert-hi-cyber-con-2026-participation .certificate-image { background:#14191f; }
 #cert-byteme-ctf-26-participation .certificate-image { background:#182120; }
 #cert-css-ctf-2026-participation .certificate-image { aspect-ratio:1600/1132; background:#20292d; }

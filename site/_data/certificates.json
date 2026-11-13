@@ -1,5 +1,133 @@
 [
   {
+    "id": "csctf-2026-participation",
+    "title": "CSCTF 2026: Total Warfare",
+    "type": "participation",
+    "recipient": "tinhatinh",
+    "issuer": "Chronos Security",
+    "signatory": "Radu Marin · Founder, Chronos Security",
+    "date": "2026-11-13",
+    "date_kind": "issued",
+    "event_period": {
+      "vi": "06–08/11/2026",
+      "en": "6–8 November 2026"
+    },
+    "certificate_id": "csctf2026-615e0a506d214c7c",
+    "summary": {
+      "vi": "R3:TURИ · Bảng Fighters · 1.015 đội",
+      "en": "R3:TURИ · Fighters division · 1,015 teams"
+    },
+    "score_details": [
+      {
+        "label": {
+          "vi": "Đội",
+          "en": "Team"
+        },
+        "value": {
+          "vi": "R3:TURИ",
+          "en": "R3:TURИ"
+        }
+      },
+      {
+        "label": {
+          "vi": "Bảng",
+          "en": "Division"
+        },
+        "value": {
+          "vi": "Fighters",
+          "en": "Fighters"
+        }
+      },
+      {
+        "label": {
+          "vi": "Danh hiệu",
+          "en": "Designation"
+        },
+        "value": {
+          "vi": "Official Participant",
+          "en": "Official Participant"
+        }
+      },
+      {
+        "label": {
+          "vi": "Quy mô giải",
+          "en": "Event scale"
+        },
+        "value": {
+          "vi": "2.194 thí sinh · 1.015 đội",
+          "en": "2,194 participants · 1,015 teams"
+        }
+      }
+    ],
+    "verified_on": "2026-11-13",
+    "verification_label": {
+      "vi": "Xác minh chứng chỉ",
+      "en": "Verify certificate"
+    },
+    "verification_url": "https://certs.chronos-security.ro/verify/csctf2026-615e0a506d214c7c",
+    "document": "/assets/certificates/csctf-2026-participation-tinhatinh.pdf",
+    "image": "/assets/certificates/csctf-2026-participation-tinhatinh.png"
+  },
+  {
+    "id": "pink-ctf-2026-participation",
+    "title": "PINK+ CTF 2026",
+    "type": "participation",
+    "recipient": "tinhatinh",
+    "issuer": "PINK+ CTF",
+    "signatory": "QWERTZ · Founder & Event Director",
+    "date": "2026-11-10",
+    "date_kind": "issued",
+    "event_period": {
+      "vi": "06–09/11/2026",
+      "en": "6–9 November 2026"
+    },
+    "certificate_id": "PINK26-B4121BFF6A23",
+    "summary": {
+      "vi": "R3:TURИ · Hạng 38/589 · 1.635 điểm",
+      "en": "R3:TURИ · Rank 38/589 · 1,635 points"
+    },
+    "score_details": [
+      {
+        "label": {
+          "vi": "Đội",
+          "en": "Team"
+        },
+        "value": {
+          "vi": "R3:TURИ",
+          "en": "R3:TURИ"
+        }
+      },
+      {
+        "label": {
+          "vi": "Hạng chung cuộc",
+          "en": "Final rank"
+        },
+        "value": {
+          "vi": "38 / 589",
+          "en": "38 / 589"
+        }
+      },
+      {
+        "label": {
+          "vi": "Điểm CTF",
+          "en": "CTF points"
+        },
+        "value": {
+          "vi": "1.635",
+          "en": "1,635"
+        }
+      }
+    ],
+    "verified_on": "2026-11-13",
+    "verification_label": {
+      "vi": "Xem kết quả PINK+ CTF 2026",
+      "en": "View PINK+ CTF 2026 recap"
+    },
+    "verification_url": "https://pink.bayern/pinkplusctf26/",
+    "document": "/assets/certificates/pink-ctf-2026-participation-tinhatinh.pdf",
+    "image": "/assets/certificates/pink-ctf-2026-participation-tinhatinh.png"
+  },
+  {
     "id": "battlectf-2026-qualifier-participation",
     "title": "Africa battleCTF 2026 — Qualifier",
     "type": "participation",
