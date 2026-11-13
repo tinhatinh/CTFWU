@@ -1,5 +1,5 @@
 {
-  "fetched": "2026-11-13",
+  "fetched": "2026-11-14",
   "team": "R3:TURИ",
   "team_id": 449538,
   "url": "https://ctftime.org/team/449538",
@@ -40,6 +40,14 @@
         "rating_points": "0.000"
       },
       {
+        "ctf_points": "883.55",
+        "event": "HKCERT CTF 2026 (Qualifying Round)",
+        "event_url": "https://ctftime.org/event/3418",
+        "place": "244",
+        "rating_pending": false,
+        "rating_points": "1.034"
+      },
+      {
         "ctf_points": "8642.00",
         "event": "2026 Qiangwang Challenge on Cyber Mimic Defense Qualification",
         "event_url": "https://ctftime.org/event/3459",
@@ -78,6 +86,14 @@
         "place": "18",
         "rating_pending": false,
         "rating_points": "3.504"
+      },
+      {
+        "ctf_points": "1481.00",
+        "event": "HITCON CTF 2026",
+        "event_url": "https://ctftime.org/event/3340",
+        "place": "76",
+        "rating_pending": false,
+        "rating_points": "21.593"
       },
       {
         "ctf_points": "1950.00",
