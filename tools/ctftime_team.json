@@ -1,5 +1,5 @@
 {
-  "fetched": "2026-11-15",
+  "fetched": "2026-11-16",
   "team": "R3:TURИ",
   "team_id": 449538,
   "url": "https://ctftime.org/team/449538",
@@ -36,8 +36,8 @@
         "event": "CSCTF 2026",
         "event_url": "https://ctftime.org/event/3333",
         "place": "12",
-        "rating_pending": true,
-        "rating_points": "0.000"
+        "rating_pending": false,
+        "rating_points": "25.467"
       },
       {
         "ctf_points": "1635.00",
