@@ -1,5 +1,5 @@
 {
-  "fetched": "2026-11-16",
+  "fetched": "2026-11-17",
   "team": "R3:TURИ",
   "team_id": 449538,
   "url": "https://ctftime.org/team/449538",
@@ -15,6 +15,14 @@
       }
     ],
     "2026": [
+      {
+        "ctf_points": "5094.00",
+        "event": "h4ckc0n 2026",
+        "event_url": "https://ctftime.org/event/3464",
+        "place": "40",
+        "rating_pending": false,
+        "rating_points": "16.848"
+      },
       {
         "ctf_points": "11893.00",
         "event": "Platypwn 2026",
@@ -44,8 +52,8 @@
         "event": "PINK+ CTF 2026",
         "event_url": "https://ctftime.org/event/3331",
         "place": "38",
-        "rating_pending": true,
-        "rating_points": "0.000"
+        "rating_pending": false,
+        "rating_points": "19.542"
       },
       {
         "ctf_points": "883.55",
