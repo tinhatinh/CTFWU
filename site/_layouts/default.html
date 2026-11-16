@@ -1,12 +1,12 @@
 <!doctype html>
 {% assign hero_art = site.static_files | where: "path", "/assets/img/hero-desktop.jpg" | first %}
-<html lang="{{ site.lang }}" data-theme="terminal"{% if hero_art %} class="has-hero-art"{% endif %}>
+<html lang="{{ site.lang }}" data-theme="xian"{% if hero_art %} class="has-hero-art"{% endif %}>
 {% assign lang = site.lang | slice: 0, 2 %}{% assign ui = site.data.interface[lang] %}
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-rAt6crw3RPcg0NWgBNe6jt8sRReoXNBH7EUnv7OlUEU='; connect-src 'self' https://api.github.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https: data:; object-src 'none'; base-uri 'self'; form-action 'self'">
-  <meta name="theme-color" content="#050907">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-bxBTZjZIup0sdV52jJCvT8bbdBN4PWo0I1JZdzp8T9k='; connect-src 'self' https://api.github.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https: data:; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="theme-color" content="#060a10">
   {% seo %}
   {% feed_meta %}
   <link rel="icon" type="image/svg+xml" href="{{ '/assets/favicon.svg' | relative_url }}">
@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="{{ '/assets/css/themes.css' | relative_url }}?v={{ site.data.portfolio.assets.themes }}">
   <link rel="stylesheet" href="{{ '/assets/css/xian.css' | relative_url }}?v={{ site.data.portfolio.assets.xian }}">
   <link rel="stylesheet" href="{{ '/assets/css/motion.css' | relative_url }}?v={{ site.data.portfolio.assets.motion }}">
-  <script>try{var p=new URLSearchParams(location.search).get('theme');var ok=['terminal','paper','aurora','xian'];var s=null,pv=null;try{s=localStorage.getItem('ctf-theme-v2')}catch(e){}try{pv=localStorage.getItem('ctf-theme-preview')}catch(e){}if(p==='default'){pv=null;try{localStorage.removeItem('ctf-theme-preview')}catch(e){}}var t;if(ok.indexOf(p)>-1){t=p;try{localStorage.setItem('ctf-theme-preview',p)}catch(e){}}else if(pv&&ok.indexOf(pv)>-1){t=pv}else{t=(s==='light'||ok.indexOf(s)>-1)?s:'terminal'}document.documentElement.dataset.theme=t}catch(e){}</script>
+  <script>try{var p=new URLSearchParams(location.search).get('theme');var ok=['terminal','paper','aurora','xian'];var s=null,pv=null;try{s=localStorage.getItem('ctf-theme-v2')}catch(e){}try{pv=localStorage.getItem('ctf-theme-preview')}catch(e){}if(p==='default'){pv=null;try{localStorage.removeItem('ctf-theme-preview')}catch(e){}}var t;if(ok.indexOf(p)>-1){t=p;try{localStorage.setItem('ctf-theme-preview',p)}catch(e){}}else if(pv&&ok.indexOf(pv)>-1){t=pv}else{t=(s==='light'||ok.indexOf(s)>-1)?s:'xian'}document.documentElement.dataset.theme=t}catch(e){}</script>
   <script defer src="{{ '/assets/js/site.js' | relative_url }}?v={{ site.data.portfolio.assets.js }}"></script>
   <script defer src="{{ '/assets/js/motion.js' | relative_url }}?v={{ site.data.portfolio.assets.motion_js }}"></script>
   <noscript><style>.archive-controls,.results-bar label,#theme-toggle,.menu-toggle{display:none!important}@media(max-width:600px){.site-header{position:static}.header-inner{height:auto;flex-wrap:wrap;padding-block:16px}.main-nav{display:flex;position:static;order:3;flex-basis:100%;padding:0;gap:18px;flex-wrap:wrap;border:0}.main-nav>a{height:auto}}</style></noscript>

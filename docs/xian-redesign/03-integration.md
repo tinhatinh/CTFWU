@@ -41,7 +41,8 @@ Không file nào trong `<Event>/`, `tools/*.json` hay nguồn writeup bị sửa
 ## 3. Cách tích hợp
 
 **Theme.** `xian` là theme thứ tư, chỉ bật khi `?theme=xian` hoặc đã lưu trong
-`ctf-theme-v2`. Mặc định vẫn là `terminal`. Bootstrap inline trong `default.html` nhận
+`ctf-theme-v2`. **Mặc định là `xian`**; `terminal`, `paper`, `aurora` vẫn chọn được qua
+`?theme=` hoặc Theme Lab. Bootstrap inline trong `default.html` nhận
 `terminal|paper|aurora|xian|light`; CSP hash đã tính lại
 (`sha256-vmwmu7ivq/dOMYdhLnznJ5jzPAz/tYv7qqN6bywBkdY=`), không nới CSP.
 
@@ -124,8 +125,8 @@ Kiểm lại chuỗi thao tác:
 | → chip Pwn | `?q=pwn&category=Pwn&theme=xian`, 56 bài, theme xian |
 | → EN | `/CTFWU/en/archives/?q=pwn&category=Pwn&theme=xian`, 56 bài, theme **xian** |
 | → EN home không query, rồi reload | vẫn xian (`ctf-theme-preview`) |
-| → "Mặc định" | xoá preview, về terminal |
-| `?theme=default` trực tiếp | về terminal, preview bị xoá |
+| → "Mặc định" | xoá preview, về `xian` |
+| `?theme=default` trực tiếp | về `xian`, preview bị xoá |
 | Motion ON rồi lọc | 5 animation (đo được) |
 | Tắt giữa lúc lọc | 2 animation đang chạy → `idle` |
 | Motion OFF rồi lọc + đổi sort | **0** animation |
@@ -149,7 +150,8 @@ CSS/JS thêm vào: `xian.css` 6,2 KB gzip, `motion.css` 2,2 KB, `motion.js` 2,2 
   khi file tồn tại, nên bản sạch không phát sinh request 404.
 - **Archive 475 KB gzip** vẫn là vấn đề lớn nhất về hiệu năng, nằm ngoài phạm vi vòng này.
 - Chưa kiểm Safari/iOS và thiết bị thật; số FPS là đếm khung trên máy ảo.
-- Với JS tắt, `?theme=xian` không áp được (theme do JS đọc), trang rơi về `terminal`.
+- Với JS tắt, `?theme=` không áp được (theme do JS đọc); trang dùng mặc định `xian` khai báo
+  sẵn trong `<html>`.
 - Bảng thành tích trên mobile phải cuộn ngang; chưa có `tabindex` cho vùng cuộn đó.
 
 ## 8. Rollback

@@ -85,9 +85,9 @@
   const lastDark = () => {
     try {
       const saved = localStorage.getItem("ctf-theme-dark");
-      return previewThemes.has(saved) || saved === "dark" ? saved : "terminal";
+      return previewThemes.has(saved) || saved === "dark" ? saved : "xian";
     } catch (_) {
-      return "terminal";
+      return "xian";
     }
   };
   themeButton?.setAttribute("aria-pressed", String(
@@ -117,7 +117,7 @@
       { transform: "rotate(-70deg) scale(.85)" },
       { transform: "rotate(0) scale(1)" }
     ], { duration: 320, easing: "ease-out" });
-    if (themeMeta) themeMeta.content = themeColors[theme] || themeColors.terminal;
+    if (themeMeta) themeMeta.content = themeColors[theme] || themeColors.xian;
     try {
       localStorage.setItem("ctf-theme-v2", theme);
     } catch (_) {
