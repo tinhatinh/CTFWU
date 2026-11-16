@@ -282,15 +282,17 @@ html[data-theme="xian"] .hero-art {
   background-position: 62% 42%;
 }
 
+/* Tranh thật chỉ được tham chiếu khi file có mặt lúc build (html.has-hero-art).
+   Bản public không có tranh publisher nên không phát sinh request 404. */
 @media (min-width: 641px) {
-  html[data-theme="xian"] .hero-art {
+  html.has-hero-art[data-theme="xian"] .hero-art {
     background-image: url("../img/hero-desktop.jpg"), url("../img/hero-fallback.svg");
     background-position: 62% 42%, 62% 42%;
   }
 }
 
 @media (max-width: 640px) {
-  html[data-theme="xian"] .hero-art {
+  html.has-hero-art[data-theme="xian"] .hero-art {
     background-image: url("../img/hero-mobile.jpg"), url("../img/hero-fallback.svg");
     background-position: 50% 50%, 50% 40%;
   }

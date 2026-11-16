@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="{{ site.lang }}" data-theme="terminal">
+{% assign hero_art = site.static_files | where: "path", "/assets/img/hero-desktop.jpg" | first %}
+<html lang="{{ site.lang }}" data-theme="terminal"{% if hero_art %} class="has-hero-art"{% endif %}>
 {% assign lang = site.lang | slice: 0, 2 %}{% assign ui = site.data.interface[lang] %}
 <head>
   <meta charset="utf-8">
