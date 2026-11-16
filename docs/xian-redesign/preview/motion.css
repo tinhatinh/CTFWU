@@ -34,6 +34,14 @@ html.js-motion .reveal.is-in {
   translate: none;
 }
 
+/* Focus bàn phím phải thấy ngay, không chờ transition. */
+html.js-motion .reveal:focus-within,
+html.js-motion .reveal:focus-visible {
+  opacity: 1;
+  translate: none;
+  transition: none;
+}
+
 /* ---------- 3. hover / focus / press ---------- */
 
 a:focus-visible,
@@ -82,8 +90,9 @@ textarea:focus-visible {
 
 .reading-progress > div {
   height: 100%;
-  width: 0;
-  background: linear-gradient(90deg, rgba(201, 162, 77, 0.55), var(--gold));
+  width: 100%;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, #a8823a, var(--gold-soft));
   box-shadow: 0 0 6px rgba(201, 162, 77, 0.55);
   transform-origin: 0 50%;
 }

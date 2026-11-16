@@ -34,8 +34,14 @@ Mỗi phần tử chỉ nhận `is-in` một lần rồi `unobserve` — cuộn 
 - **Nút bật/tắt**: icon sóng trên header, `aria-pressed`, nhãn đổi theo trạng thái.
   Lưu ở `ctfwu-motion`, **riêng** với `ctf-theme-v2`. Storage bị chặn thì vẫn dùng được
   trong phiên, chỉ mất ghi nhớ.
-- **Reduced motion**: mặc định tắt khi `prefers-reduced-motion: reduce`. Đổi trong lúc mở trang
-  → hệ thống thắng, lựa chọn đã lưu bị bỏ. Người dùng vẫn có thể chủ động bật lại bằng nút.
+- **Thứ tự ưu tiên**: `override` (chỉ đặt khi bấm nút trong phiên) → `prefers-reduced-motion`
+  → lựa chọn đã lưu. Nghĩa là **reduce thắng khi tải, kể cả storage đã lưu `"on"`**; lựa chọn
+  đã lưu chỉ được dùng lại khi hệ thống không giảm chuyển động. Đổi reduce trong lúc mở trang
+  thì `override` bị xoá và hiệu ứng dừng ngay, nhưng storage vẫn giữ nguyên.
+- **Reveal an toàn**: khối hero **không** nằm trong reveal nên luôn hiện, không phụ thuộc JS.
+  Khối khác chỉ ẩn khi có `js-motion`; lỗi script bất kỳ → gỡ `js-motion` và hiện tất cả;
+  focus bàn phím vào khối chưa reveal → hiện ngay, không transition; có lưới an toàn 1,2 s
+  ép hiện những khối đang nằm trong màn hình.
 - **Pause**: `IntersectionObserver` trên `.hero` + `visibilitychange`. Hero ra khỏi màn hình
   hoặc tab ẩn → `motion-paused`. Quay lại → chạy tiếp.
 - **Hero mobile**: `<picture>` với `source (max-width: 640px)` trỏ `hero-mobile.jpg` (1080×1350).
@@ -49,8 +55,8 @@ Mỗi phần tử chỉ nhận `is-in` một lần rồi `unobserve` — cuộn 
 
 | Hạng mục | Thực tế | Ngân sách |
 |---|---|---|
-| `motion.css` | 5.118 B raw / **1.851 B gzip** | ≤5 KB gzip |
-| `motion.js` | 5.505 B raw / **2.058 B gzip** | ≤12 KB gzip |
+| `motion.css` | 5.333 B raw / **1.929 B gzip** | ≤5 KB gzip |
+| `motion.js` | 6.875 B raw / **2.505 B gzip** | ≤12 KB gzip |
 | Asset trang trí mới | **0 KB** (gradient + CSS, không tải ảnh) | ≤120 KB desktop / ≤60 KB mobile |
 | Ảnh hero | 126 KB / 121 KB (không đổi) | 600 / 300 KB |
 
@@ -63,12 +69,12 @@ Không thêm request nào. Không thư viện ngoài.
 | Hạng mục | Kết quả |
 |---|---|
 | Pause khi hero offscreen | `glow/mist/mote` → `paused`, có class `motion-paused` |
-| Pause khi tab ẩn (giả lập `document.hidden`) | `paused` |
+| Pause khi chuyển sang tab khác **thật** | tab 2 active → tab 1 `hidden:true`, `motion-paused`; đóng tab 2 → `visible`, chạy lại |
 | Quay lại | `running`, không nhân node (18 hạt trước/sau) |
 | Tắt bằng nút | `animation-name: none`, `.hero-stage` `display:none` |
 | Bật lại | animation trở lại, tổng node `.mote` + `.reveal` không đổi (28 → 28) |
 | Long task khi cuộn | **0** task >50 ms ở 1440/1024/768/390/360 |
-| Long task khi tải | **0** sau khi bỏ một lần đọc layout cưỡng bức (xem mục 5) |
+| Long task khi tải | **0** ở 5/5 lần chạy lại (xem mục 5) |
 | FPS (rAF đếm trong 3,2 s) | 60 desktop, 60 tablet, 60 mobile |
 | CLS | 0,0037 home desktop; 0 archive/post; 0 mobile |
 | Tràn ngang | 0 ở 360/390/768/1024/1440 và zoom 200% (layout 720) |
@@ -77,12 +83,26 @@ Không thêm request nào. Không thư viện ngoài.
 | Storage bị chặn | trang chạy, nút vẫn đổi trạng thái trong phiên |
 | Back/Forward | giữ `motion-on`, 18 hạt, không nhân bản |
 | Firefox | bật/tắt đúng; `ui.prefersReducedMotion=1` → tắt khi tải, bật lại được |
-| Post | thanh tiến độ `scaleX` 0 → 0,3455 → 0,9144; mục lục đổi theo heading |
+| Post — thanh tiến độ | đếm pixel vàng ở hàng 0: **0** (đầu) → **620** (giữa, `scaleX` 0,489) → **1271** (hết, `scaleX` 1) |
+| Post — mục lục | mục đang đọc đổi theo heading, có `aria-current` |
+| Focus vào khối chưa reveal | `is-in` + `opacity: 1` ngay, `transition: 0s` |
+| Lỗi script (`ErrorEvent`) | gỡ `js-motion`, 8 khối đang ẩn → 0 |
 
 Không có tác vụ JS trang trí >50 ms. Con số 60 fps là **đếm khung bằng rAF trên máy ảo**,
 không phải kết luận về máy thật.
 
 ## 5. Lỗi phát hiện và đã sửa
+
+4. **Thanh tiến độ không hiện.** `.reading-progress > div` đặt `width: 0` nên `scaleX()` nhân
+   với 0. Lần kiểm trước chỉ đọc `getComputedStyle().transform` nên vẫn "đạt" — sai cách kiểm.
+   Sửa `width: 100%` + `transform: scaleX(0)`, và từ giờ kiểm bằng **pixel** trên ảnh chụp.
+5. **`storage = "on"` vượt `prefers-reduced-motion` khi tải.** `enabled()` trả thẳng `pref`.
+   Sửa bằng mô hình `override`: reduce luôn thắng lúc tải, chỉ cú bấm trong phiên mới bật lại được.
+6. **Reveal có thể giấu nội dung.** Hero từng nằm trong reveal và được mở bằng rAF; nếu rAF bị
+   hoãn hoặc script lỗi thì chữ bị ẩn. Bỏ hero khỏi reveal, thêm `:focus-within` hiện tức thì,
+   `focusin` mở khối, `window.onerror` gỡ `js-motion`, và lưới an toàn 1,2 s.
+   Đo lại: long task lúc tải 63–68 ms biến mất 5/5 lần — thủ phạm là lớp compositor cho khối
+   chữ hero `opacity: 0` ở lần paint đầu.
 
 1. **Long task 60–71 ms lúc tải.** Nguyên nhân: `hero.getBoundingClientRect()` trong lúc khởi tạo
    buộc layout đồng bộ ngay sau khi parse. Bỏ lần đọc đó (observer tự báo ở frame sau) → 0 long task.
@@ -101,6 +121,9 @@ Trong `preview/shots/` (không commit vì chứa tranh có bản quyền):
 | `motion_desktop.mp4` | hero, cuộn xuống/lên, tắt rồi bật | 13,9 s, 432 khung |
 | `motion_mobile.mp4` | hero 390px, cuộn, về đầu trang | 11,6 s, 569 khung |
 | `motion_pause.mp4` | tắt → bật → tắt | 9,5 s, 180 khung |
+| `motion_reading.mp4` | cuộn trang bài, thanh tiến độ và mục lục chạy theo | 12,0 s, 148 khung |
+| `progress_top/mid/end.png` | thanh tiến độ ở 0 / 49% / 100% | — |
+| `reduced_stored_on.png` | storage `"on"` + reduce → giao diện tĩnh | — |
 | `p0_d_on.png` / `p0_d_off.png` | so bố cục bật/tắt desktop | — |
 | `p0_m_on.png` / `p0_m_off.png` | so bố cục bật/tắt mobile | — |
 | `hdr_m.png` | header mobile sau khi thêm nút | — |
@@ -114,6 +137,8 @@ Video quay bằng CDP screencast ở đúng viewport, không cắt ghép.
 - Chưa có điện thoại thật: không đo pin, không đo cảm giác cuộn trên máy thật.
 - Chưa kiểm Safari/iOS.
 - Số liệu là **phòng lab** (localhost, máy ảo, GPU phần mềm). Không phải LCP/INP thực địa.
+- Hero **không còn hiệu ứng vào trang**: đổi lấy việc nội dung trên màn hình đầu luôn hiện
+  và bỏ được 63–68 ms long task ở lần paint đầu. Sương/quầng/hạt vẫn tạo chuyển động ở hero.
 - Menu, đổi theme, VI/EN, ô tìm kiếm, select sắp xếp trong mock vẫn là placeholder.
 - Nút theme và nút chuyển động nằm cạnh nhau; khi mở menu thật cần kiểm lại z-index, focus trap
   và anchor offset (hiện mock chưa có menu mở).

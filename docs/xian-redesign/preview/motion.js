@@ -10,6 +10,8 @@
   const toggle = document.querySelector(".motion-toggle");
 
   let pref = read();
+  /* Chỉ đặt khi người dùng bấm nút trong phiên này. Không lưu, không lấn media query. */
+  let override = null;
   let revealer = null;
   let heroWatcher = null;
   let heroVisible = true;
@@ -34,7 +36,10 @@
   }
 
   function enabled() {
-    return pref === null ? !mq.matches : pref;
+    if (override !== null) return override;
+    /* reduced-motion thắng khi tải, kể cả storage đã lưu "on". */
+    if (mq.matches) return false;
+    return pref !== false;
   }
 
   function mark(on) {
@@ -97,39 +102,64 @@
     }
   }
 
+  function revealVisible() {
+    document.querySelectorAll(".reveal:not(.is-in)").forEach((node) => {
+      const rect = node.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) node.classList.add("is-in");
+    });
+  }
+
   function apply() {
     const on = enabled();
-    mark(on);
-    if (on) {
-      let ok = false;
-      try {
-        ok = startReveal();
-      } catch (_) {
-        ok = false;
+    try {
+      mark(on);
+      if (on) {
+        let ok = false;
+        try {
+          ok = startReveal();
+        } catch (_) {
+          ok = false;
+        }
+        root.classList.toggle("js-motion", ok);
+        if (!ok) revealAll();
+      } else {
+        root.classList.remove("js-motion");
+        revealAll();
       }
-      root.classList.toggle("js-motion", ok);
-      if (!ok) revealAll();
-    } else {
+      watchHero(on);
+    } catch (_) {
+      /* Bất kỳ lỗi nào cũng không được để nội dung bị giấu. */
       root.classList.remove("js-motion");
       revealAll();
     }
-    watchHero(on);
   }
 
   if (toggle) {
     toggle.addEventListener("click", () => {
-      pref = !enabled();
-      save(pref);
+      override = !enabled();
+      save(override);
       apply();
     });
   }
 
+  /* Bàn phím đi vào một khối chưa reveal: hiện ngay khối đó. */
+  document.addEventListener("focusin", (event) => {
+    const node = event.target.closest && event.target.closest(".reveal");
+    if (!node || node.classList.contains("is-in")) return;
+    node.classList.add("is-in");
+    if (revealer) revealer.unobserve(node);
+  });
+
+  /* Lỗi script bất kỳ: bỏ reveal, không để nội dung mất hút. */
+  window.addEventListener("error", () => {
+    root.classList.remove("js-motion");
+    revealAll();
+  });
+
   const onMedia = (event) => {
-    /* Đổi reduced-motion giữa chừng: hệ thống thắng, bỏ lựa chọn đã lưu. */
-    if (event.matches) {
-      pref = null;
-      save(null);
-    }
+    /* Hệ thống bật giảm chuyển động: cắt ngay, bỏ lựa chọn trong phiên.
+       Lựa chọn đã lưu vẫn giữ để dùng lại khi hệ thống tắt. */
+    if (event.matches) override = null;
     apply();
   };
   if (mq.addEventListener) mq.addEventListener("change", onMedia);
@@ -140,11 +170,10 @@
   apply();
   root.classList.add("motion-init");
 
-  /* Hero vào ngay khi tải, không chờ cuộn. */
-  const heroText = document.querySelector(".hero-inner");
-  if (heroText) {
-    requestAnimationFrame(() => heroText.classList.add("is-in"));
-  }
+  /* Khối hero không nằm trong reveal: luôn hiện ngay, không phụ thuộc JS. */
+
+  /* Lưới an toàn: sau khi ổn định, ép hiện những khối đang nằm trong màn hình. */
+  window.setTimeout(revealVisible, 1200);
 
   /* ---------- thanh tiến độ + mục lục đang đọc ---------- */
 
