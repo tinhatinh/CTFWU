@@ -21,8 +21,18 @@
       bar.querySelectorAll("[data-theme-choice]").forEach(link => {
         const url = new URL(location.href);
         const choice = link.dataset.themeChoice;
-        if (choice === "default") url.searchParams.delete("theme");
-        else url.searchParams.set("theme", choice);
+        if (choice === "default") {
+          url.searchParams.delete("theme");
+          link.addEventListener("click", () => {
+            try {
+              localStorage.removeItem("ctf-theme-preview");
+            } catch (_) {
+              /* Storage is optional. */
+            }
+          });
+        } else {
+          url.searchParams.set("theme", choice);
+        }
         link.href = url.pathname + url.search + url.hash;
         link.setAttribute("aria-current", choice === previewParam ? "true" : "false");
       });
@@ -37,8 +47,16 @@
   }
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const runningMotion = new Set();
+  /* motion.js gọi hook này khi người dùng tắt chuyển động. */
+  window.CTFWU = window.CTFWU || {};
+  window.CTFWU.cancelMotion = () => {
+    runningMotion.forEach(animation => animation.cancel());
+    runningMotion.clear();
+  };
   const animate = (element, frames, options) => {
-    if (reducedMotion.matches || !element.animate) return;
+    if (reducedMotion.matches ||
+        document.documentElement.classList.contains("motion-off") ||
+        !element.animate) return;
     const animation = element.animate(frames, options);
     runningMotion.add(animation);
     animation.finished.then(() => runningMotion.delete(animation), () => runningMotion.delete(animation));
@@ -229,6 +247,9 @@
       if (category) params.set("category", category);
       if (eventFilter.value) params.set("event", eventFilter.value);
       if (sort.value !== "newest") params.set("sort", sort.value);
+      /* Giữ theme đang xem thử qua lọc, sắp xếp và link đổi ngôn ngữ. */
+      const shownTheme = new URLSearchParams(location.search).get("theme");
+      if (previewThemes.has(shownTheme)) params.set("theme", shownTheme);
       const suffix = params.size ? "?" + params.toString() : "";
       if (persist) history.replaceState(null, "", location.pathname + suffix);
       document.querySelectorAll(".language-switch a").forEach((link) => {

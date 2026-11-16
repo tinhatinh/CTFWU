@@ -120,6 +120,7 @@
       } else {
         root.classList.remove("js-motion");
         revealAll();
+        if (window.CTFWU && window.CTFWU.cancelMotion) window.CTFWU.cancelMotion();
       }
       watchHero(on);
     } catch (_) {

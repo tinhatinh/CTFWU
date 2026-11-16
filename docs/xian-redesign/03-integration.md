@@ -101,6 +101,36 @@ Markup bài chỉ đổi ở phần trình bày; phần chữ, code, flag, bản
 | Console | không lỗi trên 6 trang đã kiểm |
 | Viewport | 360/390/768/1024/1440 không tràn ngang; bảng thành tích cuộn ngang ở 390 |
 
+## 5b. Sửa sau review
+
+1. **Mất theme xian khi điều hướng / đổi VI–EN.** `?theme=` chỉ nằm trong URL một trang, còn
+   `site.js` dựng lại query khi lọc nên làm rơi tham số. Sửa:
+   - Bootstrap ghi theme hợp lệ từ URL vào `ctf-theme-preview`; đọc lại khi trang sau không có query.
+   - `ctf-theme-v2` vẫn là lựa chọn mặc định của người dùng, không bị preview ghi đè.
+   - Bộ lọc và link đổi ngôn ngữ giữ `theme=` nếu đang có.
+   - Link "Mặc định" trong thanh preview và nút sáng/tối xoá `ctf-theme-preview`.
+2. **Nút tắt chuyển động không điều khiển `site.js`.** `animate()` chỉ kiểm reduced motion.
+   Sửa: `animate()` trả về sớm khi `<html>` có `motion-off`; `site.js` mở hook
+   `window.CTFWU.cancelMotion` để `motion.js` huỷ animation đang chạy lúc tắt.
+3. **Storage bị chặn làm `?theme=xian` mất tác dụng.** Cả khối bootstrap nằm trong một `try`,
+   nên `localStorage.getItem` ném lỗi là bỏ luôn phần đọc URL. Sửa: đọc storage trong `try`
+   riêng; theme hợp lệ từ URL vẫn áp. CSP hash tính lại (`sha256-rAt6crw3RPcg0NWgBNe6jt8sRReoXNBH7EUnv7OlUEU=`).
+
+Kiểm lại chuỗi thao tác:
+
+| Bước | Kết quả |
+|---|---|
+| `/archives/?theme=xian` → tìm `pwn` | URL `?q=pwn&theme=xian`, theme xian |
+| → chip Pwn | `?q=pwn&category=Pwn&theme=xian`, 56 bài, theme xian |
+| → EN | `/CTFWU/en/archives/?q=pwn&category=Pwn&theme=xian`, 56 bài, theme **xian** |
+| → EN home không query, rồi reload | vẫn xian (`ctf-theme-preview`) |
+| → "Mặc định" | xoá preview, về terminal |
+| `?theme=default` trực tiếp | về terminal, preview bị xoá |
+| Motion ON rồi lọc | 5 animation (đo được) |
+| Tắt giữa lúc lọc | 2 animation đang chạy → `idle` |
+| Motion OFF rồi lọc + đổi sort | **0** animation |
+| Storage bị chặn + `?theme=xian` | theme xian, hero 648 px |
+
 ## 6. Đo (lab, localhost, cache tắt)
 
 | Trang | HTML gzip | Tổng transfer | Request | FPS | Long task |
