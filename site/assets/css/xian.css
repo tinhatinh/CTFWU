@@ -1,0 +1,1604 @@
+/* CTFWU — theme "Mực & Kim" (xian).
+   Chỉ áp dụng khi <html data-theme="xian">. Load sau campus.css và themes.css.
+   Không đổi cấu trúc DOM; mọi thay đổi là trình bày. */
+
+:root[data-theme="xian"] {
+  color-scheme: dark;
+  --ink-0: #060a10;
+  --ink-1: #0a0f17;
+  --ink-2: #101823;
+  --gold: #c9a24d;
+  --gold-soft: #e2c88b;
+  --gold-dim: rgba(201, 162, 77, 0.28);
+  --gold-faint: rgba(201, 162, 77, 0.14);
+  --jade: #4aa896;
+  --seal: #a8382f;
+  --serif: "Noto Serif", "Songti SC", Georgia, "Times New Roman", "DejaVu Serif", serif;
+  --bg: #060a10;
+  --surface: #0a0f17;
+  --raised: #101823;
+  --text: #eee7d7;
+  --muted: #a7b2b0;
+  --faint: #7d8a89;
+  --border: rgba(201, 162, 77, 0.18);
+  --accent: #c9a24d;
+  --accent-bg: rgba(201, 162, 77, 0.12);
+  --code-bg: #04070b;
+  --header: rgba(6, 10, 16, 0.88);
+}
+
+html[data-theme="xian"] {
+  scroll-padding-top: 92px;
+}
+
+html[data-theme="xian"] body {
+  background-color: var(--ink-0);
+  background-image:
+    radial-gradient(1200px 620px at 78% -10%, rgba(201, 162, 77, 0.13), transparent 62%),
+    radial-gradient(900px 520px at 8% 6%, rgba(74, 168, 150, 0.08), transparent 60%);
+  background-repeat: no-repeat;
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+html[data-theme="xian"] .theme-backdrop {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 50% at 78% -8%, rgba(201, 162, 77, 0.10), transparent 66%),
+    radial-gradient(45% 40% at 6% 4%, rgba(74, 168, 150, 0.06), transparent 70%);
+}
+
+html[data-theme="xian"] main,
+html[data-theme="xian"] .site-footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- chữ ---------- */
+
+html[data-theme="xian"] h1,
+html[data-theme="xian"] h2,
+html[data-theme="xian"] h3,
+html[data-theme="xian"] .brand,
+html[data-theme="xian"] .footer-brand {
+  font-family: var(--serif);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+html[data-theme="xian"] .wrapper {
+  width: min(1180px, calc(100% - 64px));
+}
+
+html[data-theme="xian"] .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font: 11px var(--mono);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+html[data-theme="xian"] .eyebrow::before {
+  content: "";
+  width: 34px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  flex: none;
+}
+
+/* ---------- header ---------- */
+
+html[data-theme="xian"] .site-header {
+  height: 66px;
+  background: var(--header);
+  backdrop-filter: blur(14px) saturate(120%);
+  border-bottom: 1px solid var(--gold-faint);
+}
+
+html[data-theme="xian"] .site-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim) 18%, var(--gold) 50%, var(--gold-dim) 82%, transparent);
+  opacity: 0.55;
+}
+
+html[data-theme="xian"] .header-inner {
+  height: 66px;
+  width: min(1180px, calc(100% - 64px));
+}
+
+html[data-theme="xian"] .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 21px;
+  letter-spacing: 0.16em;
+  color: #f2ecdd;
+  text-transform: none;
+}
+
+html[data-theme="xian"] .brand-mark {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(160deg, #b8413a, #8d2b24);
+  color: #f6e7cf;
+  border-radius: 3px;
+  transform: rotate(-2.5deg);
+  box-shadow: 0 0 0 1px rgba(246, 231, 207, 0.35) inset, 0 6px 18px rgba(0, 0, 0, 0.5);
+  font-size: 0;
+  line-height: 1;
+  position: relative;
+}
+
+html[data-theme="xian"] .brand-mark b {
+  font: 700 19px var(--serif);
+}
+
+html[data-theme="xian"] .brand-mark::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border: 1px solid rgba(246, 231, 207, 0.45);
+  border-radius: 2px;
+}
+
+html[data-theme="xian"] .brand-light {
+  color: inherit;
+}
+
+html[data-theme="xian"] .brand-dot {
+  color: var(--gold);
+}
+
+html[data-theme="xian"] .main-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-inline: auto;
+}
+
+html[data-theme="xian"] .main-nav > a {
+  position: relative;
+  height: auto;
+  padding: 10px 16px;
+  font-size: 13.5px;
+  color: var(--muted);
+  letter-spacing: 0.01em;
+  border: 0;
+}
+
+html[data-theme="xian"] .main-nav > a:hover {
+  color: var(--gold-soft);
+}
+
+html[data-theme="xian"] .main-nav > a[aria-current="page"] {
+  color: #f2ecdd;
+}
+
+html[data-theme="xian"] .main-nav > a[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 2px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+html[data-theme="xian"] .nav-count {
+  font: 11px var(--mono);
+  color: var(--gold);
+  margin-left: 4px;
+  opacity: 0.85;
+}
+
+html[data-theme="xian"] .header-actions {
+  gap: 6px;
+}
+
+html[data-theme="xian"] .language-switch {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font: 11.5px var(--mono);
+  color: var(--faint);
+  margin-right: 6px;
+}
+
+html[data-theme="xian"] .language-switch a {
+  padding: 8px 4px;
+  color: var(--faint);
+}
+
+html[data-theme="xian"] .language-switch a[aria-current] {
+  color: var(--gold);
+}
+
+html[data-theme="xian"] .icon-button {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: none;
+  color: var(--muted);
+  transition: color 0.2s, border-color 0.2s;
+}
+
+html[data-theme="xian"] .icon-button:hover {
+  color: var(--gold);
+  border-color: var(--gold-dim);
+}
+
+html[data-theme="xian"] .header-github {
+  font: 11.5px var(--mono);
+  color: var(--muted);
+  border: 1px solid var(--gold-dim);
+  border-radius: 2px;
+  padding: 7px 12px;
+  margin-left: 6px;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+html[data-theme="xian"] .header-github:hover {
+  color: var(--ink-0);
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+/* ---------- hero ---------- */
+
+html[data-theme="xian"] .hero {
+  position: relative;
+  min-height: min(72vh, 660px);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border-bottom: 1px solid var(--gold-faint);
+}
+
+html[data-theme="xian"] .hero-art {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-color: #0a0f17;
+  background-image: url("../img/hero-fallback.svg");
+  background-size: cover;
+  background-position: 62% 42%;
+}
+
+@media (min-width: 641px) {
+  html[data-theme="xian"] .hero-art {
+    background-image: url("../img/hero-desktop.jpg"), url("../img/hero-fallback.svg");
+    background-position: 62% 42%, 62% 42%;
+  }
+}
+
+@media (max-width: 640px) {
+  html[data-theme="xian"] .hero-art {
+    background-image: url("../img/hero-mobile.jpg"), url("../img/hero-fallback.svg");
+    background-position: 50% 50%, 50% 40%;
+  }
+}
+
+html[data-theme="xian"] .hero-art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, #060a10 0%, rgba(6, 10, 16, 0.94) 30%, rgba(6, 10, 16, 0.62) 55%, rgba(6, 10, 16, 0.3) 74%, rgba(6, 10, 16, 0.62) 100%),
+    linear-gradient(180deg, rgba(6, 10, 16, 0.55) 0%, transparent 24%, transparent 62%, #060a10 100%);
+}
+
+html[data-theme="xian"] .hero-inner {
+  position: relative;
+  z-index: 2;
+  width: min(1180px, calc(100% - 64px));
+  margin-inline: auto;
+  padding-block: 84px 96px;
+  max-width: 700px;
+}
+
+html[data-theme="xian"] .hero h1 {
+  font-size: clamp(40px, 5.6vw, 72px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #f2ecdd;
+  margin-top: 22px;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.55);
+}
+
+html[data-theme="xian"] .hero h1 .dot {
+  color: var(--gold);
+}
+
+html[data-theme="xian"] .hero .lede,
+html[data-theme="xian"] .hero-inner > p:not(.eyebrow) {
+  margin-top: 18px;
+  max-width: 46ch;
+  font-size: 16.5px;
+  line-height: 1.7;
+  color: #cfd6d2;
+}
+
+html[data-theme="xian"] .hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 34px;
+  flex-wrap: wrap;
+}
+
+html[data-theme="xian"] .button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 0 24px;
+  border-radius: 2px;
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--gold-dim);
+  color: #f2ecdd;
+  background: rgba(10, 15, 23, 0.6);
+  transition: background 0.22s, color 0.22s, border-color 0.22s, box-shadow 0.22s;
+}
+
+html[data-theme="xian"] .button:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 1px rgba(201, 162, 77, 0.25), 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+html[data-theme="xian"] .button-primary {
+  background: linear-gradient(180deg, #d8b465, #b98f3c);
+  border-color: #e0c07a;
+  color: #1a1206;
+  font-weight: 600;
+}
+
+html[data-theme="xian"] .button-primary:hover {
+  background: linear-gradient(180deg, #e6c77d, #c99a44);
+  color: #140d03;
+}
+
+html[data-theme="xian"] .text-link {
+  font-size: 13.5px;
+  color: var(--gold-soft);
+  border-bottom: 1px solid var(--gold-dim);
+  padding-bottom: 2px;
+}
+
+html[data-theme="xian"] .text-link:hover {
+  border-color: var(--gold);
+  color: #f3dfae;
+}
+
+html[data-theme="xian"] .hero-ornament {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  writing-mode: vertical-rl;
+  font-family: var(--serif);
+  font-size: 13px;
+  letter-spacing: 0.5em;
+  color: rgba(226, 200, 139, 0.55);
+  z-index: 2;
+  user-select: none;
+}
+
+/* ---------- số liệu ---------- */
+
+html[data-theme="xian"] .stats-strip {
+  position: relative;
+  z-index: 3;
+  margin-top: -46px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  padding: 0;
+  border: 1px solid var(--gold-dim);
+  background: linear-gradient(180deg, rgba(16, 24, 35, 0.96), rgba(8, 13, 20, 0.98));
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+}
+
+html[data-theme="xian"] .stats-strip > div {
+  display: block;
+  padding: 26px 30px;
+  border-right: 1px solid var(--gold-faint);
+}
+
+html[data-theme="xian"] .stats-strip > div:last-of-type {
+  border-right: 0;
+}
+
+html[data-theme="xian"] .stats-strip strong {
+  display: block;
+  font: 600 34px var(--serif);
+  color: var(--gold-soft);
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+
+html[data-theme="xian"] .stats-strip span {
+  display: block;
+  margin-top: 6px;
+  font: 10.5px var(--mono);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+html[data-theme="xian"] .stats-strip .stat-slash {
+  display: inline;
+  font-size: 22px;
+  color: var(--gold-dim);
+  padding: 0 2px;
+}
+
+html[data-theme="xian"] .stats-strip > p {
+  display: none;
+}
+
+/* ---------- section ---------- */
+
+html[data-theme="xian"] .section-block {
+  padding: 78px 0;
+}
+
+html[data-theme="xian"] .section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 34px;
+}
+
+html[data-theme="xian"] .section-heading h2 {
+  font-size: clamp(26px, 3vw, 34px);
+  color: #f2ecdd;
+  margin-top: 12px;
+  padding: 0;
+  border: 0;
+}
+
+html[data-theme="xian"] .section-heading h2::before {
+  content: none;
+}
+
+html[data-theme="xian"] .section-heading p {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+html[data-theme="xian"] .page-heading {
+  padding: 64px 0 40px;
+}
+
+html[data-theme="xian"] .page-heading h1 {
+  font-size: clamp(34px, 4.4vw, 54px);
+  color: #f2ecdd;
+  margin-top: 16px;
+}
+
+html[data-theme="xian"] .page-heading > p {
+  margin-top: 14px;
+  max-width: 62ch;
+  color: var(--muted);
+}
+
+/* ---------- thẻ bài ---------- */
+
+html[data-theme="xian"] .featured-grid,
+html[data-theme="xian"] .latest-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+html[data-theme="xian"] .feature-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 232px;
+  padding: 0;
+  border: 1px solid rgba(201, 162, 77, 0.18);
+  background: linear-gradient(180deg, rgba(22, 32, 44, 0.72), rgba(9, 14, 21, 0.9));
+  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+}
+
+html[data-theme="xian"] .feature-card::before,
+html[data-theme="xian"] .feature-card::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--gold);
+  opacity: 0.55;
+  transition: opacity 0.25s;
+  pointer-events: none;
+}
+
+html[data-theme="xian"] .feature-card::before {
+  top: -1px;
+  left: -1px;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+html[data-theme="xian"] .feature-card::after {
+  bottom: -1px;
+  right: -1px;
+  border-left: 0;
+  border-top: 0;
+}
+
+html[data-theme="xian"] .feature-card:hover {
+  border-color: rgba(201, 162, 77, 0.5);
+  transform: translateY(-3px);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
+}
+
+html[data-theme="xian"] .feature-card:hover::before,
+html[data-theme="xian"] .feature-card:hover::after {
+  opacity: 1;
+}
+
+html[data-theme="xian"] .feature-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 26px 26px 22px;
+}
+
+html[data-theme="xian"] .card-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font: 11px var(--mono);
+  color: var(--faint);
+}
+
+html[data-theme="xian"] .category-pill {
+  font: 10px var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-soft);
+  border: 1px solid var(--gold-dim);
+  background: none;
+  padding: 3px 8px;
+  border-radius: 1px;
+}
+
+html[data-theme="xian"] .feature-card h3 {
+  font-size: 21px;
+  color: #f2ecdd;
+  margin-top: 16px;
+  line-height: 1.3;
+}
+
+html[data-theme="xian"] .feature-card p {
+  margin-top: 10px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+html[data-theme="xian"] .feature-footer {
+  margin-top: auto;
+  padding-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font: 11px var(--mono);
+  color: var(--faint);
+  border-top: 1px solid var(--gold-faint);
+}
+
+html[data-theme="xian"] .feature-footer span:last-child {
+  color: var(--gold);
+}
+
+/* ---------- archive ---------- */
+
+html[data-theme="xian"] .archive-controls {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  margin-bottom: 18px;
+}
+
+html[data-theme="xian"] .search-line {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid var(--gold-faint);
+  background: rgba(10, 15, 23, 0.7);
+  margin-bottom: 18px;
+}
+
+html[data-theme="xian"] .search-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  min-height: 44px;
+  border: 1px solid var(--gold-faint);
+  background: rgba(6, 10, 16, 0.6);
+}
+
+html[data-theme="xian"] .search-box input {
+  font-size: 14px;
+}
+
+html[data-theme="xian"] .search-box kbd {
+  font: 10.5px var(--mono);
+  color: var(--faint);
+  border: 1px solid var(--gold-faint);
+  padding: 1px 6px;
+  border-radius: 2px;
+}
+
+html[data-theme="xian"] .search-line select {
+  min-height: 44px;
+  border: 1px solid var(--gold-faint);
+  background-color: rgba(6, 10, 16, 0.6);
+  color: var(--text);
+  font-size: 13.5px;
+}
+
+html[data-theme="xian"] .category-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 26px;
+}
+
+html[data-theme="xian"] .filter-chip {
+  min-height: 34px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--gold-faint);
+  border-radius: 0;
+  background: none;
+  color: var(--muted);
+  font: 11px var(--mono);
+}
+
+html[data-theme="xian"] .filter-chip span {
+  color: var(--faint);
+}
+
+html[data-theme="xian"] .filter-chip:hover {
+  border-color: var(--gold-dim);
+  color: var(--gold-soft);
+}
+
+html[data-theme="xian"] .filter-chip[aria-pressed="true"] {
+  border-color: var(--gold);
+  color: #1a1206;
+  background: linear-gradient(180deg, #d8b465, #b98f3c);
+  font-weight: 500;
+}
+
+html[data-theme="xian"] .filter-chip[aria-pressed="true"] span {
+  color: rgba(26, 18, 6, 0.7);
+}
+
+html[data-theme="xian"] .results-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+  font: 11.5px var(--mono);
+  color: var(--faint);
+}
+
+html[data-theme="xian"] .results-bar strong {
+  color: var(--gold-soft);
+  font-weight: 500;
+}
+
+html[data-theme="xian"] .writeup-list {
+  border-top: 1px solid var(--gold-faint);
+}
+
+html[data-theme="xian"] .list-heading {
+  display: grid;
+  grid-template-columns: minmax(200px, 2.4fr) minmax(90px, 0.9fr) minmax(150px, 1.6fr) 93px 15px;
+  gap: 20px;
+  padding: 12px 15px;
+  border-bottom: 1px solid var(--gold-faint);
+  font: 9px var(--mono);
+  letter-spacing: 0.14em;
+  color: var(--faint);
+}
+
+html[data-theme="xian"] .writeup-row {
+  display: grid;
+  grid-template-columns: minmax(200px, 2.4fr) minmax(90px, 0.9fr) minmax(150px, 1.6fr) 93px 15px;
+  gap: 20px;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid rgba(201, 162, 77, 0.1);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+html[data-theme="xian"] .writeup-row:hover {
+  background: linear-gradient(90deg, rgba(201, 162, 77, 0.07), transparent 70%);
+  box-shadow: inset 2px 0 0 var(--gold);
+}
+
+html[data-theme="xian"] .row-name {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+html[data-theme="xian"] .row-number {
+  font: 11px var(--mono);
+  color: var(--gold);
+  opacity: 0.6;
+}
+
+html[data-theme="xian"] .row-name h3 {
+  font-size: 16.5px;
+  font-weight: 500;
+  color: #f2ecdd;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+html[data-theme="xian"] .row-difficulty {
+  font: 9.5px var(--mono);
+  color: var(--faint);
+  border: 1px solid var(--gold-faint);
+  padding: 1px 5px;
+}
+
+html[data-theme="xian"] .writeup-row > .category-pill {
+  justify-self: start;
+  align-self: center;
+  width: max-content;
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+html[data-theme="xian"] .row-event {
+  font-size: 12.5px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+html[data-theme="xian"] .writeup-row time {
+  font: 11.5px var(--mono);
+  color: var(--faint);
+}
+
+html[data-theme="xian"] .row-arrow {
+  color: var(--gold);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+html[data-theme="xian"] .writeup-row:hover .row-arrow {
+  opacity: 1;
+}
+
+html[data-theme="xian"] .empty-state {
+  border: 1px solid var(--gold-faint);
+  background: rgba(10, 15, 23, 0.6);
+  padding: 48px 24px;
+}
+
+html[data-theme="xian"] .empty-state h2 {
+  color: #f2ecdd;
+}
+
+html[data-theme="xian"] .clear-filters {
+  color: var(--gold-soft);
+  border: 1px solid var(--gold-dim);
+  background: none;
+  font: 11px var(--mono);
+  padding: 6px 10px;
+}
+
+/* ---------- bài viết ---------- */
+
+html[data-theme="xian"] .reading-progress {
+  background: rgba(201, 162, 77, 0.1);
+}
+
+html[data-theme="xian"] #reading-progress {
+  background: linear-gradient(90deg, #a8823a, var(--gold-soft));
+  box-shadow: 0 0 6px rgba(201, 162, 77, 0.55);
+}
+
+html[data-theme="xian"] .post-heading {
+  padding: 54px 0 34px;
+  border: 0;
+}
+
+html[data-theme="xian"] .post-heading h1 {
+  font-size: clamp(30px, 3.8vw, 46px);
+  color: #f2ecdd;
+  margin-top: 18px;
+  max-width: 26ch;
+}
+
+html[data-theme="xian"] .post-description {
+  margin-top: 14px;
+  max-width: 68ch;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+html[data-theme="xian"] .post-byline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 22px;
+  font: 11.5px var(--mono);
+  color: var(--faint);
+  flex-wrap: wrap;
+  border: 0;
+  padding: 0;
+}
+
+html[data-theme="xian"] .author-monogram {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--gold-dim);
+  color: var(--gold);
+  font-family: var(--serif);
+  font-size: 12px;
+  border-radius: 50%;
+  background: none;
+}
+
+html[data-theme="xian"] .byline-divider {
+  width: 1px;
+  height: 12px;
+  background: var(--gold-faint);
+}
+
+html[data-theme="xian"] .reading-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 800px) 230px;
+  justify-content: space-between;
+  gap: 56px;
+  padding-bottom: 90px;
+  align-items: start;
+}
+
+html[data-theme="xian"] .post-page > .prose,
+html[data-theme="xian"] .reading-layout > .prose {
+  position: relative;
+  padding: 46px 52px 56px;
+  background: linear-gradient(180deg, rgba(16, 24, 35, 0.9), rgba(8, 13, 20, 0.96));
+  border: 1px solid rgba(201, 162, 77, 0.16);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45);
+  font-size: 15.5px;
+  line-height: 1.85;
+  color: #d9ddd6;
+}
+
+html[data-theme="xian"] .reading-layout > .prose::before,
+html[data-theme="xian"] .reading-layout > .prose::after {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--gold);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+html[data-theme="xian"] .reading-layout > .prose::before {
+  top: 8px;
+  left: 8px;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+html[data-theme="xian"] .reading-layout > .prose::after {
+  bottom: 8px;
+  right: 8px;
+  border-left: 0;
+  border-top: 0;
+}
+
+html[data-theme="xian"] .prose h2 {
+  font-size: 24px;
+  color: #f2ecdd;
+  margin-top: 44px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--gold-faint);
+}
+
+html[data-theme="xian"] .prose h3 {
+  font-size: 18.5px;
+  color: #f2ecdd;
+  margin-top: 32px;
+}
+
+html[data-theme="xian"] .prose a {
+  color: var(--gold-soft);
+  border-bottom: 1px solid var(--gold-dim);
+}
+
+html[data-theme="xian"] .prose code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  background: rgba(201, 162, 77, 0.1);
+  color: #f0d9a6;
+  padding: 1px 5px;
+  border-radius: 2px;
+}
+
+html[data-theme="xian"] .prose pre,
+html[data-theme="xian"] .prose .highlight {
+  background: #04070b;
+  border: 1px solid rgba(201, 162, 77, 0.14);
+  border-left: 2px solid var(--gold-dim);
+  border-radius: 0;
+}
+
+html[data-theme="xian"] .prose pre code {
+  background: none;
+  color: #cdd6cf;
+  padding: 0;
+}
+
+html[data-theme="xian"] .prose blockquote {
+  border-left: 2px solid var(--gold-dim);
+  padding-left: 18px;
+  color: var(--muted);
+  font-style: italic;
+}
+
+html[data-theme="xian"] .prose table {
+  font-size: 13.5px;
+}
+
+html[data-theme="xian"] .prose th {
+  color: var(--gold-soft);
+  font: 500 11px var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--gold-faint);
+}
+
+html[data-theme="xian"] .prose td {
+  border-bottom: 1px solid var(--gold-faint);
+}
+
+html[data-theme="xian"] .article-sidebar {
+  position: sticky;
+  top: 92px;
+}
+
+html[data-theme="xian"] #toc {
+  border-left: 1px solid var(--gold-faint);
+  padding-left: 20px;
+}
+
+html[data-theme="xian"] #toc .eyebrow {
+  font: 10.5px var(--mono);
+  letter-spacing: 0.22em;
+  color: var(--gold);
+  margin-bottom: 14px;
+}
+
+html[data-theme="xian"] #toc .eyebrow::before {
+  display: none;
+}
+
+html[data-theme="xian"] #toc-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+html[data-theme="xian"] #toc-links li {
+  margin-bottom: 9px;
+}
+
+html[data-theme="xian"] #toc-links a {
+  display: block;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+  border-left: 1px solid transparent;
+  margin-left: -21px;
+  padding-left: 20px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+html[data-theme="xian"] #toc-links a:hover,
+html[data-theme="xian"] #toc-links a.active {
+  color: var(--gold-soft);
+  border-left-color: var(--gold);
+}
+
+html[data-theme="xian"] #toc-links .toc-sub {
+  padding-left: 14px;
+  font-size: 12.5px;
+}
+
+html[data-theme="xian"] .back-link {
+  font: 11.5px var(--mono);
+  color: var(--faint);
+  margin-bottom: 8px;
+  display: inline-block;
+}
+
+html[data-theme="xian"] .back-link:hover {
+  color: var(--gold);
+}
+
+html[data-theme="xian"] .related-section {
+  padding-bottom: 80px;
+}
+
+html[data-theme="xian"] .writeup-images figure {
+  border: 1px solid var(--gold-faint);
+  background: rgba(6, 10, 16, 0.6);
+  padding: 10px;
+}
+
+html[data-theme="xian"] .writeup-images figcaption {
+  color: var(--faint);
+  font: 11px var(--mono);
+}
+
+/* ---------- cuộc thi, chứng chỉ ---------- */
+
+html[data-theme="xian"] .competition-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+html[data-theme="xian"] .competition-card {
+  position: relative;
+  border: 1px solid rgba(201, 162, 77, 0.18);
+  background: linear-gradient(180deg, rgba(22, 32, 44, 0.72), rgba(9, 14, 21, 0.9));
+  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+}
+
+html[data-theme="xian"] .competition-card:hover {
+  border-color: rgba(201, 162, 77, 0.5);
+  transform: translateY(-3px);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
+}
+
+html[data-theme="xian"] .competition-image img {
+  filter: saturate(0.8) contrast(1.05);
+}
+
+html[data-theme="xian"] .competition-body {
+  padding: 22px;
+}
+
+html[data-theme="xian"] .competition-body h2 {
+  font-size: 20px;
+  color: #f2ecdd;
+}
+
+html[data-theme="xian"] .competition-categories span {
+  border: 1px solid var(--gold-faint);
+  color: var(--faint);
+  font: 9.5px var(--mono);
+}
+
+html[data-theme="xian"] .competition-foot {
+  border-top: 1px solid var(--gold-faint);
+  font: 11px var(--mono);
+  color: var(--faint);
+}
+
+html[data-theme="xian"] .competition-foot strong {
+  color: var(--gold-soft);
+  font-weight: 500;
+}
+
+html[data-theme="xian"] .team-profile {
+  border: 1px solid var(--gold-faint);
+  background: rgba(10, 15, 23, 0.7);
+}
+
+html[data-theme="xian"] .results-table th {
+  font: 500 10px var(--mono);
+  letter-spacing: 0.14em;
+  color: var(--gold);
+  border-bottom: 1px solid var(--gold-dim);
+}
+
+html[data-theme="xian"] .results-table td {
+  border-bottom: 1px solid var(--gold-faint);
+}
+
+html[data-theme="xian"] .results-table .rank {
+  color: var(--gold-soft);
+}
+
+html[data-theme="xian"] .certificate-card {
+  border: 1px solid rgba(201, 162, 77, 0.18);
+  background: linear-gradient(180deg, rgba(16, 24, 35, 0.86), rgba(8, 13, 20, 0.94));
+  transition: border-color 0.25s, transform 0.25s;
+}
+
+html[data-theme="xian"] .certificate-card:hover {
+  border-color: rgba(201, 162, 77, 0.45);
+  transform: translateY(-2px);
+}
+
+html[data-theme="xian"] .certificate-body h3 {
+  color: #f2ecdd;
+}
+
+html[data-theme="xian"] .certificate-meta dt {
+  color: var(--faint);
+  font: 9.5px var(--mono);
+  letter-spacing: 0.1em;
+}
+
+html[data-theme="xian"] .certificate-meta dd {
+  color: var(--text);
+}
+
+html[data-theme="xian"] .certificate-code code {
+  background: rgba(201, 162, 77, 0.1);
+  color: #f0d9a6;
+}
+
+html[data-theme="xian"] .copy-certificate {
+  border: 1px solid var(--gold-faint);
+  color: var(--gold-soft);
+  background: none;
+}
+
+/* ---------- giới thiệu, taxonomy, 404 ---------- */
+
+html[data-theme="xian"] .about-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 56px;
+  padding-bottom: 90px;
+}
+
+html[data-theme="xian"] .profile-facts {
+  border: 1px solid var(--gold-faint);
+  background: rgba(10, 15, 23, 0.7);
+  padding: 26px;
+}
+
+html[data-theme="xian"] .profile-facts dt {
+  color: var(--gold);
+  font: 10px var(--mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+html[data-theme="xian"] .profile-facts dd {
+  color: var(--text);
+  border-bottom: 1px solid var(--gold-faint);
+}
+
+html[data-theme="xian"] .taxonomy-grid a {
+  border: 1px solid var(--gold-faint);
+  background: rgba(10, 15, 23, 0.6);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+html[data-theme="xian"] .taxonomy-grid a:hover {
+  border-color: var(--gold-dim);
+  background: rgba(201, 162, 77, 0.06);
+}
+
+html[data-theme="xian"] .taxonomy-grid h2 {
+  color: #f2ecdd;
+}
+
+html[data-theme="xian"] .taxonomy-grid .mono,
+html[data-theme="xian"] .taxonomy-grid span {
+  color: var(--faint);
+}
+
+html[data-theme="xian"] .empty-state .mono {
+  color: var(--gold);
+}
+
+/* ---------- footer ---------- */
+
+html[data-theme="xian"] .site-footer {
+  border-top: 1px solid var(--gold-faint);
+  background: rgba(4, 7, 11, 0.7);
+  padding: 44px 0 40px;
+}
+
+html[data-theme="xian"] .footer-brand {
+  font-size: 21px;
+  letter-spacing: 0.16em;
+  color: #f2ecdd;
+}
+
+html[data-theme="xian"] .footer-brand span {
+  color: var(--gold);
+}
+
+html[data-theme="xian"] .footer-links {
+  display: flex;
+  gap: 26px;
+  font: 11.5px var(--mono);
+  color: var(--faint);
+}
+
+html[data-theme="xian"] .footer-links a:hover {
+  color: var(--gold);
+}
+
+html[data-theme="xian"] .footer-bottom {
+  font: 11px var(--mono);
+  color: var(--faint);
+}
+
+html[data-theme="xian"] .back-to-top {
+  border-color: var(--gold-dim);
+  color: var(--gold);
+  background: rgba(6, 10, 16, 0.8);
+}
+
+/* ---------- theme lab ---------- */
+
+html[data-theme="xian"] .theme-tabs label {
+  border: 1px solid var(--gold-faint);
+  color: var(--muted);
+  font: 11px var(--mono);
+}
+
+html[data-theme="xian"] .theme-stage {
+  border: 1px solid var(--gold-faint);
+  background: var(--ink-0);
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 1100px) {
+  html[data-theme="xian"] .featured-grid,
+  html[data-theme="xian"] .latest-grid,
+  html[data-theme="xian"] .competition-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  html[data-theme="xian"] .reading-layout,
+  html[data-theme="xian"] .about-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+
+  html[data-theme="xian"] .article-sidebar {
+    position: static;
+  }
+
+  html[data-theme="xian"] #toc {
+    border-left: 0;
+    padding-left: 0;
+    border-top: 1px solid var(--gold-faint);
+    padding-top: 20px;
+  }
+
+  html[data-theme="xian"] #toc-links a {
+    margin-left: 0;
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  html[data-theme="xian"] .writeup-row,
+  html[data-theme="xian"] .list-heading {
+    grid-template-columns: minmax(0, 1fr) 100px;
+  }
+
+  html[data-theme="xian"] .writeup-row > .category-pill,
+  html[data-theme="xian"] .writeup-row > .row-event,
+  html[data-theme="xian"] .writeup-row time,
+  html[data-theme="xian"] .row-arrow,
+  html[data-theme="xian"] .list-heading span:nth-child(2),
+  html[data-theme="xian"] .list-heading span:nth-child(3),
+  html[data-theme="xian"] .list-heading span:nth-child(4) {
+    display: none;
+  }
+
+  html[data-theme="xian"] .header-inner {
+    gap: 18px;
+  }
+
+  html[data-theme="xian"] .main-nav > a {
+    padding: 10px;
+  }
+
+  html[data-theme="xian"] .header-github {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  html[data-theme="xian"] {
+    scroll-padding-top: 84px;
+  }
+
+  html[data-theme="xian"] .wrapper,
+  html[data-theme="xian"] .header-inner,
+  html[data-theme="xian"] .hero-inner {
+    width: calc(100% - 36px);
+  }
+
+  html[data-theme="xian"] .site-header,
+  html[data-theme="xian"] .header-inner {
+    height: 58px;
+  }
+
+  html[data-theme="xian"] .main-nav {
+    display: none;
+  }
+
+  html[data-theme="xian"] .header-inner {
+    gap: 8px;
+  }
+
+  html[data-theme="xian"] .header-actions {
+    gap: 2px;
+  }
+
+  html[data-theme="xian"] .language-switch {
+    margin-right: 0;
+  }
+
+  html[data-theme="xian"] .icon-button {
+    width: 44px;
+    height: 44px;
+  }
+
+  html[data-theme="xian"] .brand {
+    font-size: 19px;
+    letter-spacing: 0.12em;
+  }
+
+  html[data-theme="xian"] .hero {
+    min-height: 78vh;
+    align-items: flex-end;
+  }
+
+  html[data-theme="xian"] .hero-art::after {
+    background:
+      linear-gradient(180deg, rgba(6, 10, 16, 0.62) 0%, rgba(6, 10, 16, 0.58) 18%, rgba(6, 10, 16, 0.9) 46%, rgba(6, 10, 16, 0.97) 72%, #060a10 100%);
+  }
+
+  html[data-theme="xian"] .hero-inner {
+    padding-block: 0 46px;
+  }
+
+  html[data-theme="xian"] .hero h1 {
+    font-size: 38px;
+  }
+
+  html[data-theme="xian"] .hero .lede,
+  html[data-theme="xian"] .hero-inner > p:not(.eyebrow) {
+    font-size: 14.5px;
+  }
+
+  html[data-theme="xian"] .hero-ornament {
+    display: none;
+  }
+
+  html[data-theme="xian"] .hero-actions {
+    margin-top: 24px;
+  }
+
+  html[data-theme="xian"] .button {
+    flex: 1 1 auto;
+    justify-content: center;
+    padding: 0 20px;
+  }
+
+  html[data-theme="xian"] .stats-strip {
+    grid-template-columns: 1fr 1fr;
+    margin-top: -28px;
+  }
+
+  html[data-theme="xian"] .stats-strip > div {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--gold-faint);
+  }
+
+  html[data-theme="xian"] .stats-strip > div:nth-child(2n) {
+    border-right: 0;
+  }
+
+  html[data-theme="xian"] .stats-strip strong {
+    font-size: 26px;
+  }
+
+  html[data-theme="xian"] .section-block {
+    padding: 52px 0;
+  }
+
+  html[data-theme="xian"] .section-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  html[data-theme="xian"] .featured-grid,
+  html[data-theme="xian"] .latest-grid,
+  html[data-theme="xian"] .competition-grid {
+    grid-template-columns: 1fr;
+  }
+
+  html[data-theme="xian"] .feature-card {
+    min-height: 0;
+  }
+
+  html[data-theme="xian"] .page-heading {
+    padding: 40px 0 26px;
+  }
+
+  html[data-theme="xian"] .search-line {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  html[data-theme="xian"] .search-line select {
+    width: 100%;
+  }
+
+  html[data-theme="xian"] .category-filters {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+  }
+
+  html[data-theme="xian"] .category-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  html[data-theme="xian"] .filter-chip {
+    flex: none;
+    min-height: 38px;
+  }
+
+  html[data-theme="xian"] .writeup-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 9px;
+    padding: 14px 6px;
+  }
+
+  html[data-theme="xian"] .row-name {
+    flex: 1 1 100%;
+    gap: 10px;
+  }
+
+  html[data-theme="xian"] .row-name h3 {
+    white-space: normal;
+    font-size: 15.5px;
+    line-height: 1.4;
+  }
+
+  html[data-theme="xian"] .list-heading {
+    display: none;
+  }
+
+  html[data-theme="xian"] .writeup-row > .category-pill {
+    display: inline-flex;
+    order: 3;
+    margin-left: 30px;
+    font-size: 9.5px;
+    padding: 2px 6px;
+  }
+
+  html[data-theme="xian"] .writeup-row > .row-event {
+    display: block;
+    order: 4;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 62%;
+    font-size: 11.5px;
+  }
+
+  html[data-theme="xian"] .writeup-row time {
+    display: block;
+    order: 5;
+    font-size: 10.5px;
+  }
+
+  html[data-theme="xian"] .table-scroll {
+    overflow-x: auto;
+  }
+
+  html[data-theme="xian"] .results-table {
+    min-width: 560px;
+  }
+
+  html[data-theme="xian"] .reading-layout > .prose {
+    padding: 26px 20px 34px;
+    font-size: 14.5px;
+    overflow-x: hidden;
+  }
+
+  html[data-theme="xian"] .reading-layout > .prose::before,
+  html[data-theme="xian"] .reading-layout > .prose::after {
+    width: 14px;
+    height: 14px;
+  }
+
+  html[data-theme="xian"] .prose pre,
+  html[data-theme="xian"] .prose .highlight {
+    max-width: 100%;
+  }
+
+  html[data-theme="xian"] .post-heading {
+    padding: 34px 0 24px;
+  }
+
+  html[data-theme="xian"] .about-layout {
+    padding-bottom: 60px;
+  }
+
+  html[data-theme="xian"] .footer-inner,
+  html[data-theme="xian"] .site-footer .wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  html[data-theme="xian"] .footer-links {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="xian"]:not(.motion-on) .feature-card,
+  html[data-theme="xian"]:not(.motion-on) .competition-card {
+    transition: none;
+  }
+}

@@ -7,23 +7,26 @@ permalink: /themes/
 <div class="wrapper theme-showcase">
   <header class="page-heading">
     <p class="eyebrow">CTFWU / THEME LAB</p>
-    <h1>{% if lang == 'vi' %}Ba hướng giao diện{% else %}Three interface directions{% endif %}</h1>
-    <p>{% if lang == 'vi' %}Terminal đang là giao diện mặc định; Paper và Aurora là hai hướng thay thế. Cả ba dùng chung nội dung và giữ nguyên phần cốt lõi — điều hướng, writeup, tìm kiếm, thành tích, chứng chỉ, chuyển ngôn ngữ.{% else %}Terminal is now the default; Paper and Aurora are alternative directions. All three share the same content and keep the core — navigation, writeups, search, results, certificates, language switch — intact.{% endif %}</p>
+    <h1>{% if lang == 'vi' %}Bốn hướng giao diện{% else %}Four interface directions{% endif %}</h1>
+    <p>{% if lang == 'vi' %}Terminal đang là giao diện mặc định; Paper, Aurora và Xian là ba hướng thay thế. Cả bốn dùng chung nội dung và giữ nguyên phần cốt lõi — điều hướng, writeup, tìm kiếm, thành tích, chứng chỉ, chuyển ngôn ngữ.{% else %}Terminal is now the default; Paper, Aurora and Xian are alternative directions. All four share the same content and keep the core — navigation, writeups, search, results, certificates, language switch — intact.{% endif %}</p>
   </header>
 
   <div class="theme-lab">
     <input type="radio" name="theme-pick" id="pick-terminal" checked>
     <input type="radio" name="theme-pick" id="pick-paper">
     <input type="radio" name="theme-pick" id="pick-aurora">
+    <input type="radio" name="theme-pick" id="pick-xian">
     <div class="theme-tabs" role="group" aria-label="{% if lang == 'vi' %}Chọn giao diện xem thử{% else %}Choose a theme preview{% endif %}">
       <label for="pick-terminal">01 / Terminal</label>
       <label for="pick-paper">02 / Paper</label>
       <label for="pick-aurora">03 / Aurora</label>
+      <label for="pick-xian">04 / Xian</label>
     </div>
     <div class="theme-stage">
       <iframe data-theme="terminal" src="{{ '/' | relative_url }}?theme=terminal" title="Terminal theme preview"></iframe>
       <iframe data-theme="paper" src="{{ '/' | relative_url }}?theme=paper" title="Paper theme preview"></iframe>
       <iframe data-theme="aurora" src="{{ '/' | relative_url }}?theme=aurora" title="Aurora theme preview"></iframe>
+      <iframe data-theme="xian" src="{{ '/' | relative_url }}?theme=xian" title="Xian theme preview"></iframe>
     </div>
   </div>
 
@@ -31,6 +34,7 @@ permalink: /themes/
     <a class="text-link" href="{{ '/' | relative_url }}?theme=terminal" target="_blank" rel="noopener">Terminal — {% if lang == 'vi' %}mở toàn trang{% else %}open full page{% endif %} ↗</a>
     <a class="text-link" href="{{ '/' | relative_url }}?theme=paper" target="_blank" rel="noopener">Paper — {% if lang == 'vi' %}mở toàn trang{% else %}open full page{% endif %} ↗</a>
     <a class="text-link" href="{{ '/' | relative_url }}?theme=aurora" target="_blank" rel="noopener">Aurora — {% if lang == 'vi' %}mở toàn trang{% else %}open full page{% endif %} ↗</a>
+    <a class="text-link" href="{{ '/' | relative_url }}?theme=xian" target="_blank" rel="noopener">Xian — {% if lang == 'vi' %}mở toàn trang{% else %}open full page{% endif %} ↗</a>
     <a class="text-link" href="{{ '/competitions/' | relative_url }}?theme=terminal" target="_blank" rel="noopener">{% if lang == 'vi' %}Xem trang Thành tích với Terminal{% else %}See Achievements in Terminal{% endif %} ↗</a>
   </div>
 </div>

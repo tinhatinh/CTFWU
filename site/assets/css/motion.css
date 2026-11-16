@@ -1,0 +1,228 @@
+/* CTFWU — gói chuyển động P0.
+   Trang trí chỉ chạy trong hero của theme xian; nút bật/tắt dùng chung mọi theme.
+   Không có vòng lặp rAF: sương/hạt là CSS animation, tạm dừng bằng animation-play-state. */
+
+/* ---------- nút bật/tắt ---------- */
+
+.motion-toggle {
+  display: none;
+}
+
+html.motion-init .motion-toggle {
+  display: grid;
+}
+
+.motion-toggle[aria-pressed="false"] {
+  color: var(--faint);
+  border-color: transparent;
+}
+
+.motion-toggle[aria-pressed="false"] svg {
+  opacity: 0.55;
+}
+
+.motion-toggle svg {
+  transition: opacity 0.2s;
+}
+
+/* ---------- reveal (chỉ theme xian; theme khác do site.js phụ trách) ---------- */
+
+html[data-theme="xian"] .reveal {
+  transition: opacity 0.42s cubic-bezier(0.2, 0.7, 0.2, 1),
+    translate 0.42s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+html[data-theme="xian"].js-motion .reveal:not(.is-in) {
+  opacity: 0;
+  translate: 0 12px;
+}
+
+html[data-theme="xian"].js-motion .reveal.is-in {
+  opacity: 1;
+  translate: none;
+}
+
+html[data-theme="xian"].js-motion .reveal:focus-within,
+html[data-theme="xian"].js-motion .reveal:focus-visible {
+  opacity: 1;
+  translate: none;
+  transition: none;
+}
+
+/* ---------- focus / press ---------- */
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--gold, #c9a24d);
+  outline-offset: 3px;
+}
+
+html[data-theme="xian"] .feature-card:active,
+html[data-theme="xian"] .competition-card:active,
+html[data-theme="xian"] .writeup-row:active {
+  transform: translateY(1px);
+}
+
+html[data-theme="xian"] .feature-card:active {
+  transform: translateY(-1px);
+}
+
+/* ---------- hero xian ---------- */
+
+html[data-theme="xian"] .hero {
+  --gate-x: 62%;
+  --gate-y: 42%;
+}
+
+html[data-theme="xian"] .hero-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+html[data-theme="xian"]:not(.motion-on) .hero-stage {
+  display: none;
+}
+
+html[data-theme="xian"] .hero-mist {
+  position: absolute;
+  inset: -14% -24%;
+  background:
+    radial-gradient(46% 24% at 24% 74%, rgba(213, 224, 219, 0.13), transparent 70%),
+    radial-gradient(50% 20% at 62% 80%, rgba(226, 232, 226, 0.11), transparent 72%),
+    radial-gradient(38% 16% at 84% 66%, rgba(201, 162, 77, 0.09), transparent 70%);
+  will-change: transform;
+}
+
+html[data-theme="xian"] .hero-mist::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(44% 20% at 72% 62%, rgba(232, 237, 231, 0.1), transparent 72%),
+    radial-gradient(56% 18% at 34% 88%, rgba(201, 162, 77, 0.07), transparent 74%);
+}
+
+html[data-theme="xian"] .hero-glow {
+  position: absolute;
+  left: var(--gate-x);
+  top: var(--gate-y);
+  width: min(52vmax, 700px);
+  height: min(52vmax, 700px);
+  transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, rgba(233, 205, 138, 0.16), rgba(233, 205, 138, 0.065) 46%, transparent 72%);
+  mix-blend-mode: screen;
+  will-change: opacity;
+}
+
+html[data-theme="xian"] .hero-particles {
+  position: absolute;
+  inset: 0;
+}
+
+html[data-theme="xian"] .mote {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--s, 2px);
+  height: var(--s, 2px);
+  border-radius: 50%;
+  background: #ecd79b;
+  box-shadow: 0 0 6px 1px rgba(236, 215, 155, 0.45);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+
+/* Vị trí hạt: cùng bộ với bản preview, không dùng inline style. */
+html[data-theme="xian"] .mote:nth-child(1) { --x: 25.5%; --y: 29.9%; --s: 2.2px; --dx: -15px; --dur: 24s; --delay: -17.1s; --o: 0.34; }
+html[data-theme="xian"] .mote:nth-child(2) { --x: 29.7%; --y: 40.2%; --s: 1.9px; --dx: -15px; --dur: 18s; --delay: -15.5s; --o: 0.65; }
+html[data-theme="xian"] .mote:nth-child(3) { --x: 32.3%; --y: 52.3%; --s: 2.2px; --dx: 16px; --dur: 25s; --delay: -16.3s; --o: 0.71; }
+html[data-theme="xian"] .mote:nth-child(4) { --x: 35.7%; --y: 67.2%; --s: 1.7px; --dx: -13px; --dur: 19s; --delay: -18.7s; --o: 0.65; }
+html[data-theme="xian"] .mote:nth-child(5) { --x: 39.8%; --y: 76.5%; --s: 2.2px; --dx: -5px; --dur: 24s; --delay: -25.3s; --o: 0.34; }
+html[data-theme="xian"] .mote:nth-child(6) { --x: 43.6%; --y: 36.1%; --s: 1.9px; --dx: -7px; --dur: 25s; --delay: -14.8s; --o: 0.44; }
+html[data-theme="xian"] .mote:nth-child(7) { --x: 49.1%; --y: 47.2%; --s: 1.7px; --dx: 3px; --dur: 24s; --delay: -3.4s; --o: 0.61; }
+html[data-theme="xian"] .mote:nth-child(8) { --x: 51.3%; --y: 59.9%; --s: 1.5px; --dx: -3px; --dur: 27s; --delay: -22.9s; --o: 0.52; }
+html[data-theme="xian"] .mote:nth-child(9) { --x: 54.2%; --y: 69.0%; --s: 2.3px; --dx: 3px; --dur: 28s; --delay: -18.5s; --o: 0.6; }
+html[data-theme="xian"] .mote:nth-child(10) { --x: 59.6%; --y: 79.5%; --s: 1.9px; --dx: 12px; --dur: 29s; --delay: -14.2s; --o: 0.59; }
+html[data-theme="xian"] .mote:nth-child(11) { --x: 61.7%; --y: 39.2%; --s: 2.2px; --dx: 18px; --dur: 28s; --delay: -19.3s; --o: 0.47; }
+html[data-theme="xian"] .mote:nth-child(12) { --x: 67.2%; --y: 46.1%; --s: 2.0px; --dx: -12px; --dur: 19s; --delay: -25.4s; --o: 0.63; }
+html[data-theme="xian"] .mote:nth-child(13) { --x: 69.3%; --y: 58.5%; --s: 1.9px; --dx: 13px; --dur: 18s; --delay: -14.9s; --o: 0.54; }
+html[data-theme="xian"] .mote:nth-child(14) { --x: 75.3%; --y: 72.9%; --s: 2.4px; --dx: -8px; --dur: 22s; --delay: -17.3s; --o: 0.67; }
+html[data-theme="xian"] .mote:nth-child(15) { --x: 79.2%; --y: 79.9%; --s: 1.6px; --dx: -10px; --dur: 20s; --delay: -13.9s; --o: 0.56; }
+html[data-theme="xian"] .mote:nth-child(16) { --x: 80.8%; --y: 38.0%; --s: 1.9px; --dx: -5px; --dur: 24s; --delay: -1.3s; --o: 0.6; }
+html[data-theme="xian"] .mote:nth-child(17) { --x: 85.2%; --y: 52.7%; --s: 2.2px; --dx: -16px; --dur: 29s; --delay: -5.9s; --o: 0.67; }
+html[data-theme="xian"] .mote:nth-child(18) { --x: 89.8%; --y: 62.4%; --s: 1.9px; --dx: -14px; --dur: 25s; --delay: -25.3s; --o: 0.35; }
+
+/* Animation chỉ tồn tại khi bật: tắt là animation-name về none. */
+html[data-theme="xian"].motion-on .hero-mist {
+  animation: mist-a 64s ease-in-out infinite alternate;
+}
+
+html[data-theme="xian"].motion-on .hero-mist::after {
+  animation: mist-b 88s ease-in-out infinite alternate;
+}
+
+html[data-theme="xian"].motion-on .hero-glow {
+  animation: glow-breathe 12s ease-in-out infinite;
+}
+
+html[data-theme="xian"].motion-on .mote {
+  animation: mote var(--dur, 20s) linear var(--delay, 0s) infinite;
+}
+
+@keyframes mist-a {
+  from { transform: translate3d(-3%, 1.5%, 0) scale(1.04); }
+  to { transform: translate3d(3%, -1.5%, 0) scale(1.08); }
+}
+
+@keyframes mist-b {
+  from { transform: translate3d(2%, -1%, 0) scale(1.06); }
+  to { transform: translate3d(-4%, 1%, 0) scale(1.02); }
+}
+
+@keyframes glow-breathe {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 0.92; }
+}
+
+@keyframes mote {
+  0% { transform: translate3d(0, 0, 0) scale(0.55); opacity: 0; }
+  14% { opacity: var(--o, 0.6); }
+  72% { opacity: calc(var(--o, 0.6) * 0.55); }
+  100% { transform: translate3d(var(--dx, 10px), -140px, 0) scale(1.05); opacity: 0; }
+}
+
+@media (max-width: 640px) {
+  html[data-theme="xian"] .hero {
+    --gate-x: 50%;
+    --gate-y: 40%;
+  }
+
+  html[data-theme="xian"] .hero-mist::after {
+    display: none;
+  }
+
+  html[data-theme="xian"] .hero-glow {
+    width: min(88vw, 420px);
+    height: min(88vw, 420px);
+  }
+
+  html[data-theme="xian"] .mote:nth-child(n + 7) {
+    display: none;
+  }
+}
+
+/* ---------- tạm dừng: đặt sau cùng để thắng shorthand animation ---------- */
+
+html[data-theme="xian"].motion-paused .hero-mist,
+html[data-theme="xian"].motion-paused .hero-mist::after,
+html[data-theme="xian"].motion-paused .hero-glow,
+html[data-theme="xian"].motion-paused .mote {
+  animation-play-state: paused;
+}

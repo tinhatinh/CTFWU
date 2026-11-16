@@ -2265,9 +2265,10 @@ html[data-theme="light"] .highlight .nb {
   html {
     scroll-behavior: auto;
   }
-  *,
-  *:before,
-  *:after {
+  /* Chỉ hạ hiệu ứng khi người dùng chưa chủ động bật lại trong trang. */
+  html:not(.motion-on) *,
+  html:not(.motion-on) *:before,
+  html:not(.motion-on) *:after {
     animation: none !important;
     transition: none !important;
   }

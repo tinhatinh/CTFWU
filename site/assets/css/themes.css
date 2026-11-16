@@ -113,14 +113,16 @@ body.is-theme-preview .back-to-top {
 }
 #pick-terminal:checked ~ .theme-tabs label[for="pick-terminal"],
 #pick-paper:checked ~ .theme-tabs label[for="pick-paper"],
-#pick-aurora:checked ~ .theme-tabs label[for="pick-aurora"] {
+#pick-aurora:checked ~ .theme-tabs label[for="pick-aurora"],
+#pick-xian:checked ~ .theme-tabs label[for="pick-xian"] {
   background: var(--accent);
   border-color: var(--accent);
   color: var(--bg);
 }
 #pick-terminal:focus-visible ~ .theme-tabs label[for="pick-terminal"],
 #pick-paper:focus-visible ~ .theme-tabs label[for="pick-paper"],
-#pick-aurora:focus-visible ~ .theme-tabs label[for="pick-aurora"] {
+#pick-aurora:focus-visible ~ .theme-tabs label[for="pick-aurora"],
+#pick-xian:focus-visible ~ .theme-tabs label[for="pick-xian"] {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
@@ -140,7 +142,8 @@ body.is-theme-preview .back-to-top {
 }
 #pick-terminal:checked ~ .theme-stage iframe[data-theme="terminal"],
 #pick-paper:checked ~ .theme-stage iframe[data-theme="paper"],
-#pick-aurora:checked ~ .theme-stage iframe[data-theme="aurora"] {
+#pick-aurora:checked ~ .theme-stage iframe[data-theme="aurora"],
+#pick-xian:checked ~ .theme-stage iframe[data-theme="xian"] {
   display: block;
 }
 .theme-links {
@@ -1166,5 +1169,47 @@ html[data-theme="aurora"] .back-to-top {
   html[data-theme="aurora"] .button {
     transition: none;
     animation: none;
+  }
+}
+
+/* -------------------------------------------------------------------------
+   Home hero ngoài theme xian
+   Theme xian thay khối này bằng cảnh đầy đủ; các theme còn lại giữ đúng
+   kích thước của .page-heading cũ để không đổi giao diện mặc định.
+   ------------------------------------------------------------------------- */
+html:not([data-theme="xian"]) .hero {
+  position: relative;
+}
+html:not([data-theme="xian"]) .hero-art,
+html:not([data-theme="xian"]) .hero-stage,
+html:not([data-theme="xian"]) .hero-ornament {
+  display: none;
+}
+html:not([data-theme="xian"]) .hero-inner {
+  width: min(1200px, calc(100% - 96px));
+  margin-inline: auto;
+  padding: 65px 0 40px;
+}
+html:not([data-theme="xian"]) .hero-inner > * {
+  max-width: 850px;
+}
+html:not([data-theme="xian"]) .hero h1 {
+  font-size: clamp(32px, 4.5vw, 54px);
+  margin: 16px 0 18px;
+  line-height: 1.2;
+}
+html:not([data-theme="xian"]) .hero .lede {
+  font-size: 14px;
+  max-width: 680px;
+  line-height: 1.9;
+  color: var(--muted);
+}
+html:not([data-theme="xian"]) .hero-actions {
+  margin-top: 26px;
+}
+@media (max-width: 600px) {
+  html:not([data-theme="xian"]) .hero-inner {
+    width: calc(100% - 36px);
+    padding: 36px 0 28px;
   }
 }

@@ -8,9 +8,10 @@
     light: "#f5f5ef",
     terminal: "#050907",
     paper: "#f2eadb",
-    aurora: "#050816"
+    aurora: "#050816",
+    xian: "#060a10"
   };
-  const previewThemes = new Set(["terminal", "paper", "aurora"]);
+  const previewThemes = new Set(["terminal", "paper", "aurora", "xian"]);
   const previewParam = new URLSearchParams(location.search).get("theme");
   if (previewThemes.has(previewParam)) {
     document.body.classList.add("is-theme-preview");
@@ -46,7 +47,9 @@
     if (reducedMotion.matches) runningMotion.forEach(animation => animation.cancel());
   });
   // Content stays visible even if motion or IntersectionObserver is unavailable.
-  if ("IntersectionObserver" in window && !reducedMotion.matches) {
+  // Theme xian dùng motion.js làm bộ điều khiển reveal duy nhất.
+  if ("IntersectionObserver" in window && !reducedMotion.matches &&
+      document.documentElement.dataset.theme !== "xian") {
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (!entry.isIntersecting) return;
@@ -60,15 +63,30 @@
     document.querySelectorAll(".page-heading, .stats-strip, .section-heading, .feature-card, .certificate-card").forEach(element => observer.observe(element));
   }
   const themeButton = document.querySelector("#theme-toggle");
+  const isDarkTheme = (name) => name !== "light";
+  const lastDark = () => {
+    try {
+      const saved = localStorage.getItem("ctf-theme-dark");
+      return previewThemes.has(saved) || saved === "dark" ? saved : "terminal";
+    } catch (_) {
+      return "terminal";
+    }
+  };
   themeButton?.setAttribute("aria-pressed", String(
-    document.documentElement.dataset.theme === "terminal" ||
-    document.documentElement.dataset.theme === "dark"
+    isDarkTheme(document.documentElement.dataset.theme)
   ));
   themeButton?.addEventListener("click", () => {
     const current = document.documentElement.dataset.theme;
-    const theme = current === "light" ? "terminal" : "light";
+    const theme = current === "light" ? lastDark() : "light";
+    if (current !== "light") {
+      try {
+        localStorage.setItem("ctf-theme-dark", current);
+      } catch (_) {
+        /* Storage is optional. */
+      }
+    }
     document.documentElement.dataset.theme = theme;
-    themeButton.setAttribute("aria-pressed", String(theme === "terminal" || theme === "dark"));
+    themeButton.setAttribute("aria-pressed", String(isDarkTheme(theme)));
     if (previewThemes.has(current)) {
       const url = new URL(location.href);
       url.searchParams.delete("theme");

@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-label="Núi mực và thiên môn">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#05080e"/>
+      <stop offset="0.45" stop-color="#0a121c"/>
+      <stop offset="0.72" stop-color="#0d1722"/>
+      <stop offset="1" stop-color="#060a10"/>
+    </linearGradient>
+    <radialGradient id="haze" cx="0.63" cy="0.42" r="0.42">
+      <stop offset="0" stop-color="#e2c88b" stop-opacity="0.22"/>
+      <stop offset="0.45" stop-color="#c9a24d" stop-opacity="0.09"/>
+      <stop offset="1" stop-color="#c9a24d" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="m1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#16232f"/>
+      <stop offset="1" stop-color="#0b131c"/>
+    </linearGradient>
+    <linearGradient id="m2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#111c27"/>
+      <stop offset="1" stop-color="#080e15"/>
+    </linearGradient>
+    <linearGradient id="m3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0c151e"/>
+      <stop offset="1" stop-color="#05090e"/>
+    </linearGradient>
+    <linearGradient id="mist" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#cfe0da" stop-opacity="0"/>
+      <stop offset="0.35" stop-color="#cfe0da" stop-opacity="0.07"/>
+      <stop offset="0.62" stop-color="#e2c88b" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#cfe0da" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#sky)"/>
+  <rect width="1600" height="900" fill="url(#haze)"/>
+
+  <!-- lớp núi xa -->
+  <path d="M0 470 L120 402 L210 448 L318 356 L420 430 L520 386 L640 452 L760 398 L880 462 L1010 404 L1130 466 L1240 410 L1360 470 L1470 424 L1600 486 L1600 900 L0 900 Z"
+        fill="url(#m1)" opacity="0.55"/>
+  <!-- sương giữa hai lớp -->
+  <rect x="0" y="470" width="1600" height="90" fill="url(#mist)"/>
+  <!-- lớp núi giữa -->
+  <path d="M0 600 L140 528 L250 576 L370 496 L470 566 L600 512 L720 584 L850 520 L980 592 L1100 534 L1220 600 L1340 546 L1460 606 L1600 556 L1600 900 L0 900 Z"
+        fill="url(#m2)" opacity="0.8"/>
+  <rect x="0" y="612" width="1600" height="70" fill="url(#mist)" opacity="0.8"/>
+
+  <!-- thiên môn: bậc đá và cổng -->
+  <g opacity="0.9">
+    <path d="M930 900 L1000 560 L1010 560 L1080 900 Z" fill="#070c12"/>
+    <path d="M905 560 L1105 560 L1105 576 L905 576 Z" fill="#0a1119"/>
+    <path d="M930 520 L1080 520 L1096 560 L914 560 Z" fill="#0b131c"/>
+    <path d="M948 470 L1062 470 L1076 520 L934 520 Z" fill="#0a1119"/>
+    <path d="M966 430 L1044 430 L1056 470 L954 470 Z" fill="#0b131c"/>
+    <path d="M1002 392 L1008 392 L1008 430 L1002 430 Z" fill="#0a1119"/>
+    <path d="M905 560 L1105 560" stroke="#c9a24d" stroke-opacity="0.35" stroke-width="1.5"/>
+    <path d="M948 470 L1062 470" stroke="#c9a24d" stroke-opacity="0.25" stroke-width="1"/>
+    <path d="M966 430 L1044 430" stroke="#c9a24d" stroke-opacity="0.2" stroke-width="1"/>
+  </g>
+
+  <!-- lớp núi gần -->
+  <path d="M0 742 L150 668 L280 726 L410 650 L540 730 L670 664 L800 744 L930 676 L1060 748 L1190 684 L1320 752 L1450 692 L1600 760 L1600 900 L0 900 Z"
+        fill="url(#m3)"/>
+  <rect x="0" y="756" width="1600" height="60" fill="url(#mist)" opacity="0.55"/>
+
+  <!-- hạt sáng thưa -->
+  <g fill="#e8cd8a">
+    <circle cx="1078" cy="352" r="1.6" opacity="0.55"/>
+    <circle cx="1132" cy="404" r="1.1" opacity="0.4"/>
+    <circle cx="1012" cy="318" r="1.2" opacity="0.45"/>
+    <circle cx="1180" cy="330" r="0.9" opacity="0.3"/>
+    <circle cx="960" cy="372" r="1.4" opacity="0.35"/>
+    <circle cx="1240" cy="420" r="1" opacity="0.28"/>
+  </g>
+
+  <!-- vignette -->
+  <rect width="1600" height="900" fill="#060a10" opacity="0.18"/>
+</svg>
