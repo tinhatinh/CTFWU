@@ -1,0 +1,4 @@
+# Tranh tham chiếu có bản quyền của nhà phát hành game: giữ cục bộ, không đưa vào git.
+assets/*.jpg
+assets/*.png
+shots/

