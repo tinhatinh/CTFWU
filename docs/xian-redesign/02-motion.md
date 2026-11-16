@@ -85,9 +85,9 @@ Không thêm request nào. Không thư viện ngoài.
 | Storage bị chặn | trang chạy, nút vẫn đổi trạng thái trong phiên |
 | Back/Forward | giữ `motion-on`, 18 hạt, không nhân bản |
 | Firefox | bật/tắt đúng; `ui.prefersReducedMotion=1` → tắt khi tải, bật lại được |
-| Đồng bộ lựa chọn (bật → tắt → reduce on/off) | off → off → **off** |
-| Đồng bộ lựa chọn (tắt → bật → reduce on/off) | on → off → **on** |
-| Reload sau mỗi lựa chọn | giữ đúng on/off mới nhất (Chromium + Firefox) |
+| Đồng bộ: bật → tắt → reduce on → reduce off (Chromium) | off → off → **off** |
+| Đồng bộ: tắt → bật → reduce on → reduce off (Chromium) | on → off → **on** |
+| Bật/tắt + reload (Chromium và Firefox) | giữ đúng on/off mới nhất |
 | Post — thanh tiến độ | đếm pixel vàng ở hàng 0: **0** (đầu) → **620** (giữa, `scaleX` 0,489) → **1271** (hết, `scaleX` 1) |
 | Post — mục lục | mục đang đọc đổi theo heading, có `aria-current` |
 | Focus vào khối chưa reveal | `is-in` + `opacity: 1` ngay, `transition: 0s` |
@@ -124,8 +124,10 @@ không phải kết luận về máy thật.
 7. **Lựa chọn mới không được ghi vào `pref`.** Handler nút chỉ đặt `override` và `save()`, nên
    sau khi `override` bị media change xoá, `enabled()` đọc lại `pref` cũ lúc tải. Chuỗi tái hiện:
    đang bật → tắt (storage `"off"`, `pref` vẫn `null`) → reduce bật → reduce tắt → hiệu ứng tự bật
-   lại. Sửa: `pref = override` trước `save()`. Kiểm cả hai chiều và cả reload, trên Chromium và
-   Firefox.
+   lại. Sửa: `pref = override` trước `save()`.
+   Phạm vi kiểm: **Chromium** kiểm đủ chuỗi reduce on/off trong cùng trang, cả hai chiều bật→tắt và
+   tắt→bật, cộng reload. **Firefox** chỉ kiểm bật/tắt và reload — `ui.prefersReducedMotion` đặt lúc
+   khởi động nên không đổi media trong phiên được; chuỗi reduce on/off **chưa** kiểm trên Firefox.
 
 ## 6. Bằng chứng
 
