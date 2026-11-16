@@ -1032,8 +1032,11 @@ select {
   .footer-links { flex-wrap: wrap; gap: 16px; }
 }
 
+/* Chỉ hạ hiệu ứng khi người dùng chưa chủ động bật lại trong trang. */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  html:not(.motion-on) *,
+  html:not(.motion-on) *::before,
+  html:not(.motion-on) *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;

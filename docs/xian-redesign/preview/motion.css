@@ -1,0 +1,98 @@
+/* CTFWU — gói chuyển động cho preview "Mực & Kim".
+   Toàn bộ animation chỉ tồn tại dưới html.motion-on.
+   Tắt = gỡ class, không còn animation nào chạy. */
+
+/* ---------- 1. nút bật/tắt ---------- */
+
+.motion-toggle { display: none; }
+
+html.motion-init .motion-toggle { display: grid; }
+
+.motion-toggle svg { transition: opacity 0.2s; }
+
+.motion-toggle[aria-pressed="false"] {
+  color: var(--faint);
+  border-color: transparent;
+}
+
+.motion-toggle[aria-pressed="false"] svg { opacity: 0.55; }
+
+/* ---------- 2. reveal ---------- */
+
+.reveal {
+  transition: opacity 0.42s cubic-bezier(0.2, 0.7, 0.2, 1),
+    translate 0.42s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+html.js-motion .reveal:not(.is-in) {
+  opacity: 0;
+  translate: 0 12px;
+}
+
+html.js-motion .reveal.is-in {
+  opacity: 1;
+  translate: none;
+}
+
+/* ---------- 3. hover / focus / press ---------- */
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.card:active,
+.row:active,
+.btn:active,
+.chip:active,
+.icon-btn:active {
+  transform: translateY(1px);
+}
+
+.card:active { transform: translateY(-1px); }
+
+.icon-btn {
+  transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.12s;
+}
+
+.btn,
+.chip,
+.gh,
+.text-link {
+  transition-property: color, background, border-color, box-shadow, transform;
+  transition-duration: 0.2s;
+  transition-timing-function: ease;
+}
+
+/* ---------- 4. thanh tiến độ đọc ---------- */
+
+.reading-progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 1px;
+  z-index: 60;
+  pointer-events: none;
+  background: rgba(201, 162, 77, 0.10);
+}
+
+.reading-progress > div {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, rgba(201, 162, 77, 0.55), var(--gold));
+  box-shadow: 0 0 6px rgba(201, 162, 77, 0.55);
+  transform-origin: 0 50%;
+}
+
+/* ---------- 5. tạm dừng khi hero ngoài màn hình / tab ẩn ---------- */
+
+html.motion-paused .hero-mist,
+html.motion-paused .hero-mist::after,
+html.motion-paused .hero-glow,
+html.motion-paused .mote {
+  animation-play-state: paused;
+}

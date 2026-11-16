@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>OT#007 — CTFWU</title>
 <link rel="stylesheet" href="xian.css">
+<link rel="stylesheet" href="motion.css">
 </head>
 <body>
 <header class="site-header">
@@ -13,6 +14,7 @@
     <nav class="main-nav"><a href="home.html">Tổng quan</a><a href="archive.html" aria-current="page">Writeups<span class="nav-count">283</span></a><a href="archive.html">Thành tích</a><a href="archive.html">Giới thiệu</a></nav>
     <div class="header-actions">
       <span class="lang"><a href="#" aria-current="true">VI</a><span>/</span><a href="#">EN</a></span>
+      <button class="icon-btn motion-toggle" type="button" aria-pressed="true" aria-label="Tắt chuyển động" title="Tắt chuyển động"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 14.6c2.6-3.7 5.2-3.7 7.8 0s5.2 3.7 7.8 0"/><path d="M3 18.6c2.6-3.7 5.2-3.7 7.8 0s5.2 3.7 7.8 0" opacity=".4"/><circle cx="15.4" cy="5.4" r="1.1" fill="currentColor" stroke="none"/><circle cx="19.2" cy="8.2" r=".8" fill="currentColor" stroke="none" opacity=".65"/></svg></button>
       <button class="icon-btn" aria-label="Đổi giao diện sáng / tối"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg></button>
       <a class="gh" href="https://github.com/tinhatinh/CTFWU">GitHub ↗</a>
       <button class="icon-btn menu-toggle" aria-label="Mở menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
@@ -21,6 +23,7 @@
 </header>
 
 <main>
+<div class="reading-progress" aria-hidden="true"><div id="reading-progress"></div></div>
 <div class="wrap post-head">
   <p class="eyebrow"><span class="rule"></span>AFRICA BATTLECTF 2026 QUALIFIER</p>
   <h1>OT#007</h1>
@@ -32,7 +35,7 @@
   </div>
 </div>
 <div class="wrap post-layout">
-  <article class="article prose">
+  <article class="article prose" id="article-content">
 
     
     <p><strong>Flag:</strong> CTF{713a514d4bb87d6343f976fc56db961d}<br />
@@ -296,7 +299,7 @@ FLAG: CTF{713a514d4bb87d6343f976fc56db961d}
   </article>
   <aside class="toc">
     <p>Mục lục</p>
-    <ol><li><a href="#s0">Đề bài</a></li><li><a href="#s1">Phân tích</a></li><li class="sub"><a href="#s2">Register map</a></li><li class="sub"><a href="#s3">Trip, latch và override</a></li><li class="sub"><a href="#s4">coil1 là maintenance override</a></li><li><a href="#s5">Lời giải</a></li><li><a href="#s6">Mã khai thác</a></li><li><a href="#s7">Kết quả</a></li><li><a href="#s8">Ghi chú</a></li><li><a href="#s9">Tham khảo</a></li></ol>
+    <ol id="toc-links"><li><a href="#s0">Đề bài</a></li><li><a href="#s1">Phân tích</a></li><li class="sub"><a href="#s2">Register map</a></li><li class="sub"><a href="#s3">Trip, latch và override</a></li><li class="sub"><a href="#s4">coil1 là maintenance override</a></li><li><a href="#s5">Lời giải</a></li><li><a href="#s6">Mã khai thác</a></li><li><a href="#s7">Kết quả</a></li><li><a href="#s8">Ghi chú</a></li><li><a href="#s9">Tham khảo</a></li></ol>
   </aside>
 </div>
 </main>
@@ -307,5 +310,6 @@ FLAG: CTF{713a514d4bb87d6343f976fc56db961d}
     <p class="copyright">© 2026 Phan Thành Danh</p>
   </div>
 </footer>
+<script defer src="motion.js"></script>
 </body>
 </html>
