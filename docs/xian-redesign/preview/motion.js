@@ -137,7 +137,9 @@
   if (toggle) {
     toggle.addEventListener("click", () => {
       override = !enabled();
-      save(override);
+      /* pref phải theo kịp lựa chọn mới, nếu không media change sẽ đọc lại giá trị lúc tải. */
+      pref = override;
+      save(pref);
       apply();
     });
   }

@@ -38,6 +38,8 @@ Mỗi phần tử chỉ nhận `is-in` một lần rồi `unobserve` — cuộn 
   → lựa chọn đã lưu. Nghĩa là **reduce thắng khi tải, kể cả storage đã lưu `"on"`**; lựa chọn
   đã lưu chỉ được dùng lại khi hệ thống không giảm chuyển động. Đổi reduce trong lúc mở trang
   thì `override` bị xoá và hiệu ứng dừng ngay, nhưng storage vẫn giữ nguyên.
+  `pref` trong bộ nhớ **luôn được cập nhật cùng lúc với storage** mỗi lần bấm nút; nếu không,
+  sau khi `override` bị xoá, `enabled()` sẽ đọc lại giá trị cũ lúc tải.
 - **Reveal an toàn**: khối hero **không** nằm trong reveal nên luôn hiện, không phụ thuộc JS.
   Khối khác chỉ ẩn khi có `js-motion`; lỗi script bất kỳ → gỡ `js-motion` và hiện tất cả;
   focus bàn phím vào khối chưa reveal → hiện ngay, không transition; có lưới an toàn 1,2 s
@@ -83,6 +85,9 @@ Không thêm request nào. Không thư viện ngoài.
 | Storage bị chặn | trang chạy, nút vẫn đổi trạng thái trong phiên |
 | Back/Forward | giữ `motion-on`, 18 hạt, không nhân bản |
 | Firefox | bật/tắt đúng; `ui.prefersReducedMotion=1` → tắt khi tải, bật lại được |
+| Đồng bộ lựa chọn (bật → tắt → reduce on/off) | off → off → **off** |
+| Đồng bộ lựa chọn (tắt → bật → reduce on/off) | on → off → **on** |
+| Reload sau mỗi lựa chọn | giữ đúng on/off mới nhất (Chromium + Firefox) |
 | Post — thanh tiến độ | đếm pixel vàng ở hàng 0: **0** (đầu) → **620** (giữa, `scaleX` 0,489) → **1271** (hết, `scaleX` 1) |
 | Post — mục lục | mục đang đọc đổi theo heading, có `aria-current` |
 | Focus vào khối chưa reveal | `is-in` + `opacity: 1` ngay, `transition: 0s` |
@@ -93,24 +98,34 @@ không phải kết luận về máy thật.
 
 ## 5. Lỗi phát hiện và đã sửa
 
+1. **Long task 60–71 ms lúc tải.** Nguyên nhân: `hero.getBoundingClientRect()` trong lúc khởi tạo
+   buộc layout đồng bộ ngay sau khi parse. Bỏ lần đọc đó (observer tự báo ở frame sau) → 0 long task.
+   Đã xác nhận bằng cách chặn `motion.js`/`motion.css`: có file thì có task, chặn thì hết.
+
+2. **Pause không có tác dụng.** Shorthand `animation` khai báo sau đã reset `animation-play-state`
+   về `running`. Chuyển khối pause xuống cuối file → pause thắng.
+
+3. **Tràn ngang 2 px ở 360/390 và 58 px ở 768.** Nút mới làm `.header-actions` vượt khung.
+   Sửa: gap header nhỏ lại, icon 44×44, ẩn `.gh` dưới 900 px, bảng prose cuộn ngang từ 900 px.
+
 4. **Thanh tiến độ không hiện.** `.reading-progress > div` đặt `width: 0` nên `scaleX()` nhân
    với 0. Lần kiểm trước chỉ đọc `getComputedStyle().transform` nên vẫn "đạt" — sai cách kiểm.
    Sửa `width: 100%` + `transform: scaleX(0)`, và từ giờ kiểm bằng **pixel** trên ảnh chụp.
+
 5. **`storage = "on"` vượt `prefers-reduced-motion` khi tải.** `enabled()` trả thẳng `pref`.
    Sửa bằng mô hình `override`: reduce luôn thắng lúc tải, chỉ cú bấm trong phiên mới bật lại được.
+
 6. **Reveal có thể giấu nội dung.** Hero từng nằm trong reveal và được mở bằng rAF; nếu rAF bị
    hoãn hoặc script lỗi thì chữ bị ẩn. Bỏ hero khỏi reveal, thêm `:focus-within` hiện tức thì,
    `focusin` mở khối, `window.onerror` gỡ `js-motion`, và lưới an toàn 1,2 s.
    Đo lại: long task lúc tải 63–68 ms biến mất 5/5 lần — thủ phạm là lớp compositor cho khối
    chữ hero `opacity: 0` ở lần paint đầu.
 
-1. **Long task 60–71 ms lúc tải.** Nguyên nhân: `hero.getBoundingClientRect()` trong lúc khởi tạo
-   buộc layout đồng bộ ngay sau khi parse. Bỏ lần đọc đó (observer tự báo ở frame sau) → 0 long task.
-   Đã xác nhận bằng cách chặn `motion.js`/`motion.css`: có file thì có task, chặn thì hết.
-2. **Pause không có tác dụng.** Shorthand `animation` khai báo sau đã reset `animation-play-state`
-   về `running`. Chuyển khối pause xuống cuối file → pause thắng.
-3. **Tràn ngang 2 px ở 360/390 và 58 px ở 768.** Nút mới làm `.header-actions` vượt khung.
-   Sửa: gap header nhỏ lại, icon 44×44, ẩn `.gh` dưới 900 px, bảng prose cuộn ngang từ 900 px.
+7. **Lựa chọn mới không được ghi vào `pref`.** Handler nút chỉ đặt `override` và `save()`, nên
+   sau khi `override` bị media change xoá, `enabled()` đọc lại `pref` cũ lúc tải. Chuỗi tái hiện:
+   đang bật → tắt (storage `"off"`, `pref` vẫn `null`) → reduce bật → reduce tắt → hiệu ứng tự bật
+   lại. Sửa: `pref = override` trước `save()`. Kiểm cả hai chiều và cả reload, trên Chromium và
+   Firefox.
 
 ## 6. Bằng chứng
 
