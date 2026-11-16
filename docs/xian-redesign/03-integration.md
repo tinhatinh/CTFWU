@@ -144,8 +144,9 @@ CSS/JS thêm vào: `xian.css` 6,2 KB gzip, `motion.css` 2,2 KB, `motion.js` 2,2 
 
 ## 7. Còn thiếu và giới hạn
 
-- **Tranh hero cuối chưa có.** Bản local dùng JPG của publisher (đã gitignore); bản public
-  sẽ dùng `hero-fallback.svg` cho tới khi có tranh có quyền.
+- **Tranh hero cuối chưa có.** Bản local dùng JPG của publisher (đã gitignore). Bản public
+  chỉ dùng `hero-fallback.svg`: layout kiểm `site.static_files` lúc build và chỉ thêm lớp JPG
+  khi file tồn tại, nên bản sạch không phát sinh request 404.
 - **Archive 475 KB gzip** vẫn là vấn đề lớn nhất về hiệu năng, nằm ngoài phạm vi vòng này.
 - Chưa kiểm Safari/iOS và thiết bị thật; số FPS là đếm khung trên máy ảo.
 - Với JS tắt, `?theme=xian` không áp được (theme do JS đọc), trang rơi về `terminal`.
@@ -156,16 +157,61 @@ CSS/JS thêm vào: `xian.css` 6,2 KB gzip, `motion.css` 2,2 KB, `motion.js` 2,2 
 Toàn bộ nằm trên `integrate-xian`. `git checkout main` là về nguyên trạng; hoặc revert
 commit tích hợp. Không có thay đổi dữ liệu, không có migration.
 
-## 9. Xem trước
+## 9. Xem trước (tái lập từ repo)
 
 ```bash
 cd /home/tinhatinh/CTFWU
-bash /tmp/rebuild.sh            # generator + jekyll + lắp _site
+git checkout integrate-xian
+
+# Gem: lần đầu cần cài (vendor/ bị gitignore)
+bundle config set --local path vendor/bundle
+bundle install
+
+# Sinh nguồn + kiểm dữ liệu editor
+python3 tools/build_site.py --require-solve-dates
+python3 tools/test_editor.py
+node tools/test_github_editor.cjs
+
+# Build hai cây
+bundle exec jekyll b -s _site_src    -d _build/vi/CTFWU
+bundle exec jekyll b -s _site_src_en -d _build/en/CTFWU/en
+
+# Lắp đúng cấu trúc Pages
+mkdir -p _site/CTFWU
+cp -r _build/vi/CTFWU/. _site/CTFWU/
+cp -r _build/en/CTFWU/en _site/CTFWU/
+
+# Kiểm liên kết + xem
+bundle exec htmlproofer _site --disable-external \
+  --ignore-urls "/^http:\/\/127.0.0.1/,/^http:\/\/0.0.0.0/,/^http:\/\/localhost/"
 python3 -m http.server 8800 --bind 127.0.0.1 --directory _site
-# mở http://127.0.0.1:8800/CTFWU/?theme=xian
 ```
+
+Mở `http://127.0.0.1:8800/CTFWU/?theme=xian`. Muốn xem với tranh thật, đặt
+`site/assets/img/hero-desktop.jpg` và `hero-mobile.jpg` (bị gitignore) rồi build lại.
 
 Bằng chứng trong `docs/xian-redesign/preview/shots/`:
 `motion_jx_home.mp4`, `motion_jx_archive.mp4`, `motion_jx_post.mp4`,
 `jx_home_d.png`, `m_top.png`, `jx_arch_filtered.png`, `jx_post_top.png`,
 `jx_comp_d.png`, `jx_fallback.png`, `jx_en_home.png`.
+
+## 10. Chốt
+
+| Mục | Kết quả |
+|---|---|
+| Commit mã | `d269af0` (nhánh `integrate-xian`) |
+| Clone sạch từ repo | build được, không cần file ngoài git |
+| Generator | 12 event, 283 bài × 2 |
+| Editor tests | 26 OK + GitHub editor pass |
+| Jekyll VI/EN | build xong |
+| htmlproofer | pass (2018 link, 1728 file) |
+| Nội dung | 566 trang bài, hash chữ **0 đổi** |
+| URL | 864 VI, 864 EN, không đổi |
+| CSP | `sha256-rAt6crw3RPcg0NWgBNe6jt8sRReoXNBH7EUnv7OlUEU=` khớp script inline ở cả VI/EN |
+| Hero bản public | chỉ `hero-fallback.svg`, **0 request JPG**, không 404 |
+| Theme xian qua lọc/VI–EN/reload | giữ nguyên; `ctf-theme-v2` không bị ghi đè |
+| Motion OFF | 0 animation khi lọc/sắp xếp; animation đang chạy bị huỷ |
+| Storage bị chặn + `?theme=xian` | theme xian áp dụng |
+
+Trạng thái: **sẵn sàng merge**, không có lỗi chặn. Giới hạn còn lại: thiếu tranh hero cuối,
+archive 475 KB gzip (ngoài phạm vi), chưa kiểm Safari/iOS và máy thật.
