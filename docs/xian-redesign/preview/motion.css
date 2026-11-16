@@ -96,3 +96,114 @@ html.motion-paused .hero-glow,
 html.motion-paused .mote {
   animation-play-state: paused;
 }
+
+/* ---------- 6. cảnh P0: sương, quầng, hạt ---------- */
+
+.hero {
+  --gate-x: 62%;
+  --gate-y: 42%;
+}
+
+.hero-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+html:not(.motion-on) .hero-stage { display: none; }
+
+.hero-mist {
+  position: absolute;
+  inset: -14% -24%;
+  background:
+    radial-gradient(46% 24% at 24% 74%, rgba(213, 224, 219, 0.13), transparent 70%),
+    radial-gradient(50% 20% at 62% 80%, rgba(226, 232, 226, 0.11), transparent 72%),
+    radial-gradient(38% 16% at 84% 66%, rgba(201, 162, 77, 0.09), transparent 70%);
+  animation: mist-a 64s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.hero-mist::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(44% 20% at 72% 62%, rgba(232, 237, 231, 0.10), transparent 72%),
+    radial-gradient(56% 18% at 34% 88%, rgba(201, 162, 77, 0.07), transparent 74%);
+  animation: mist-b 88s ease-in-out infinite alternate;
+}
+
+.hero-glow {
+  position: absolute;
+  left: var(--gate-x);
+  top: var(--gate-y);
+  width: min(52vmax, 700px);
+  height: min(52vmax, 700px);
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    closest-side,
+    rgba(233, 205, 138, 0.16),
+    rgba(233, 205, 138, 0.065) 46%,
+    transparent 72%
+  );
+  mix-blend-mode: screen;
+  animation: glow-breathe 12s ease-in-out infinite;
+  will-change: opacity;
+}
+
+.hero-particles {
+  position: absolute;
+  inset: 0;
+}
+
+.mote {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--s, 2px);
+  height: var(--s, 2px);
+  border-radius: 50%;
+  background: #ecd79b;
+  box-shadow: 0 0 6px 1px rgba(236, 215, 155, 0.45);
+  opacity: 0;
+  animation: mote var(--dur, 20s) linear var(--delay, 0s) infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes mist-a {
+  from { transform: translate3d(-3%, 1.5%, 0) scale(1.04); }
+  to { transform: translate3d(3%, -1.5%, 0) scale(1.08); }
+}
+
+@keyframes mist-b {
+  from { transform: translate3d(2%, -1%, 0) scale(1.06); }
+  to { transform: translate3d(-4%, 1%, 0) scale(1.02); }
+}
+
+@keyframes glow-breathe {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 0.92; }
+}
+
+@keyframes mote {
+  0% { transform: translate3d(0, 0, 0) scale(0.55); opacity: 0; }
+  14% { opacity: var(--o, 0.6); }
+  72% { opacity: calc(var(--o, 0.6) * 0.55); }
+  100% { transform: translate3d(var(--dx, 10px), -140px, 0) scale(1.05); opacity: 0; }
+}
+
+@media (max-width: 640px) {
+  .hero {
+    --gate-x: 50%;
+    --gate-y: 40%;
+  }
+
+  /* Mobile mặc định một lớp sương, ít hạt hơn. */
+  .hero-mist::after { display: none; }
+
+  .hero-glow { width: min(88vw, 420px); height: min(88vw, 420px); }
+
+  .mote:nth-child(n + 7) { display: none; }
+}
