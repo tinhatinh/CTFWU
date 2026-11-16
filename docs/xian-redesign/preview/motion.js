@@ -87,8 +87,8 @@
         { threshold: 0 }
       );
       heroWatcher.observe(hero);
-      heroVisible = hero.getBoundingClientRect().bottom > 0;
-      pause();
+      /* Không đọc layout ở đây: observer sẽ tự báo trạng thái ở frame kế tiếp. */
+      heroVisible = true;
     } else if (!on && heroWatcher) {
       heroWatcher.disconnect();
       heroWatcher = null;
@@ -164,7 +164,7 @@
     if (bar) bar.style.transform = "scaleX(" + ratio.toFixed(4) + ")";
 
     if (!tocLinks.length) return;
-    let active = -1;
+    let active = 0;
     for (let i = 0; i < headings.length; i += 1) {
       if (headings[i].getBoundingClientRect().top <= 170) active = i;
     }

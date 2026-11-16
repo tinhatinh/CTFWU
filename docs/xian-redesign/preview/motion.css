@@ -88,15 +88,6 @@ textarea:focus-visible {
   transform-origin: 0 50%;
 }
 
-/* ---------- 5. tạm dừng khi hero ngoài màn hình / tab ẩn ---------- */
-
-html.motion-paused .hero-mist,
-html.motion-paused .hero-mist::after,
-html.motion-paused .hero-glow,
-html.motion-paused .mote {
-  animation-play-state: paused;
-}
-
 /* ---------- 6. cảnh P0: sương, quầng, hạt ---------- */
 
 .hero {
@@ -121,7 +112,6 @@ html:not(.motion-on) .hero-stage { display: none; }
     radial-gradient(46% 24% at 24% 74%, rgba(213, 224, 219, 0.13), transparent 70%),
     radial-gradient(50% 20% at 62% 80%, rgba(226, 232, 226, 0.11), transparent 72%),
     radial-gradient(38% 16% at 84% 66%, rgba(201, 162, 77, 0.09), transparent 70%);
-  animation: mist-a 64s ease-in-out infinite alternate;
   will-change: transform;
 }
 
@@ -132,7 +122,6 @@ html:not(.motion-on) .hero-stage { display: none; }
   background:
     radial-gradient(44% 20% at 72% 62%, rgba(232, 237, 231, 0.10), transparent 72%),
     radial-gradient(56% 18% at 34% 88%, rgba(201, 162, 77, 0.07), transparent 74%);
-  animation: mist-b 88s ease-in-out infinite alternate;
 }
 
 .hero-glow {
@@ -149,7 +138,6 @@ html:not(.motion-on) .hero-stage { display: none; }
     transparent 72%
   );
   mix-blend-mode: screen;
-  animation: glow-breathe 12s ease-in-out infinite;
   will-change: opacity;
 }
 
@@ -168,8 +156,24 @@ html:not(.motion-on) .hero-stage { display: none; }
   background: #ecd79b;
   box-shadow: 0 0 6px 1px rgba(236, 215, 155, 0.45);
   opacity: 0;
-  animation: mote var(--dur, 20s) linear var(--delay, 0s) infinite;
   will-change: transform, opacity;
+}
+
+/* Animation chỉ tồn tại khi bật: tắt là animation-name về none. */
+html.motion-on .hero-mist {
+  animation: mist-a 64s ease-in-out infinite alternate;
+}
+
+html.motion-on .hero-mist::after {
+  animation: mist-b 88s ease-in-out infinite alternate;
+}
+
+html.motion-on .hero-glow {
+  animation: glow-breathe 12s ease-in-out infinite;
+}
+
+html.motion-on .mote {
+  animation: mote var(--dur, 20s) linear var(--delay, 0s) infinite;
 }
 
 @keyframes mist-a {
@@ -206,4 +210,13 @@ html:not(.motion-on) .hero-stage { display: none; }
   .hero-glow { width: min(88vw, 420px); height: min(88vw, 420px); }
 
   .mote:nth-child(n + 7) { display: none; }
+}
+
+/* ---------- 7. tạm dừng: đặt sau cùng để thắng shorthand animation ---------- */
+
+html.motion-paused .hero-mist,
+html.motion-paused .hero-mist::after,
+html.motion-paused .hero-glow,
+html.motion-paused .mote {
+  animation-play-state: paused;
 }

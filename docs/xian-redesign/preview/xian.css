@@ -937,6 +937,10 @@ select {
 
 @media (max-width: 900px) {
   .grid-3 { grid-template-columns: 1fr; }
+  .header-inner { gap: 18px; }
+  .main-nav a { padding: 10px 10px; }
+  .gh { display: none; }
+  .prose table { display: block; width: 100%; overflow-x: auto; }
   .post-layout { grid-template-columns: minmax(0, 1fr); }
   .toc { position: static; border-left: 0; padding-left: 0; border-top: 1px solid var(--gold-faint); padding-top: 20px; }
   .row { grid-template-columns: 34px minmax(0, 1fr) 100px; }
@@ -950,7 +954,11 @@ select {
 
   .main-nav { display: none; }
   .gh { display: none; }
-  .lang { margin-right: 2px; }
+  .header-inner { gap: 8px; }
+  .header-actions { gap: 2px; }
+  .lang { margin-right: 0; }
+  .icon-btn { width: 44px; height: 44px; }
+  .wordmark { font-size: 19px; letter-spacing: 0.12em; }
   .menu-toggle { display: grid; }
 
   .hero { min-height: 78vh; align-items: flex-end; }

@@ -123,7 +123,8 @@ Khung, bố cục, tỉ lệ đã tính theo ảnh 16:9 và 4:5, đổi ảnh kh
 - Chưa nối `?theme=xian` vào Jekyll; chưa sửa CSP hash, chưa thêm vào `themes.html`.
 - Chưa có theme sáng, chưa có nút đổi theme thật trong preview.
 - Chưa làm trang Thành tích, chứng chỉ, giới thiệu, categories/tags, 404, event.
-- Chưa có hiệu ứng vào trang, chưa tối ưu archive index.
+- Hiệu ứng P0 (sương, quầng, hạt, reveal, tiến độ đọc) đã có trong `preview/motion.css` +
+  `motion.js` — xem `02-motion.md`. Chưa tối ưu archive index.
 - Chưa chạy Lighthouse; số ở trên là đo phòng lab bằng script.
 
 ## 8. Cần duyệt
