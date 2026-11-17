@@ -1,77 +1,53 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-label="Núi mực và thiên môn">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-label="Thiên Môn và Vân Hải">
   <defs>
     <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#05080e"/>
-      <stop offset="0.45" stop-color="#0a121c"/>
-      <stop offset="0.72" stop-color="#0d1722"/>
+      <stop offset="0" stop-color="#05080f"/>
+      <stop offset="0.38" stop-color="#0e1926"/>
+      <stop offset="0.72" stop-color="#172432"/>
       <stop offset="1" stop-color="#060a10"/>
     </linearGradient>
-    <radialGradient id="haze" cx="0.63" cy="0.42" r="0.42">
-      <stop offset="0" stop-color="#e2c88b" stop-opacity="0.22"/>
-      <stop offset="0.45" stop-color="#c9a24d" stop-opacity="0.09"/>
+    <radialGradient id="sun" cx="0.64" cy="0.38" r="0.46">
+      <stop offset="0" stop-color="#fff0bc" stop-opacity="0.58"/>
+      <stop offset="0.28" stop-color="#e3be6d" stop-opacity="0.28"/>
+      <stop offset="0.62" stop-color="#c9a24d" stop-opacity="0.09"/>
       <stop offset="1" stop-color="#c9a24d" stop-opacity="0"/>
     </radialGradient>
-    <linearGradient id="m1" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#16232f"/>
-      <stop offset="1" stop-color="#0b131c"/>
+    <linearGradient id="goldGate" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f2dc9c" stop-opacity="0.7"/>
+      <stop offset="0.5" stop-color="#c9a24d" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#0d1621" stop-opacity="0.9"/>
     </linearGradient>
-    <linearGradient id="m2" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#111c27"/>
-      <stop offset="1" stop-color="#080e15"/>
+    <linearGradient id="cloudA" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f3e2b8" stop-opacity="0.36"/>
+      <stop offset="0.45" stop-color="#9fb4b2" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#060a10" stop-opacity="0.95"/>
     </linearGradient>
-    <linearGradient id="m3" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#0c151e"/>
-      <stop offset="1" stop-color="#05090e"/>
-    </linearGradient>
-    <linearGradient id="mist" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#cfe0da" stop-opacity="0"/>
-      <stop offset="0.35" stop-color="#cfe0da" stop-opacity="0.07"/>
-      <stop offset="0.62" stop-color="#e2c88b" stop-opacity="0.06"/>
-      <stop offset="1" stop-color="#cfe0da" stop-opacity="0"/>
+    <linearGradient id="cloudB" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#060a10" stop-opacity="0"/>
+      <stop offset="0.35" stop-color="#e5cd92" stop-opacity="0.22"/>
+      <stop offset="0.7" stop-color="#cfe0dc" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#060a10" stop-opacity="0"/>
     </linearGradient>
   </defs>
-
   <rect width="1600" height="900" fill="url(#sky)"/>
-  <rect width="1600" height="900" fill="url(#haze)"/>
-
-  <!-- lớp núi xa -->
-  <path d="M0 470 L120 402 L210 448 L318 356 L420 430 L520 386 L640 452 L760 398 L880 462 L1010 404 L1130 466 L1240 410 L1360 470 L1470 424 L1600 486 L1600 900 L0 900 Z"
-        fill="url(#m1)" opacity="0.55"/>
-  <!-- sương giữa hai lớp -->
-  <rect x="0" y="470" width="1600" height="90" fill="url(#mist)"/>
-  <!-- lớp núi giữa -->
-  <path d="M0 600 L140 528 L250 576 L370 496 L470 566 L600 512 L720 584 L850 520 L980 592 L1100 534 L1220 600 L1340 546 L1460 606 L1600 556 L1600 900 L0 900 Z"
-        fill="url(#m2)" opacity="0.8"/>
-  <rect x="0" y="612" width="1600" height="70" fill="url(#mist)" opacity="0.8"/>
-
-  <!-- thiên môn: bậc đá và cổng -->
-  <g opacity="0.9">
-    <path d="M930 900 L1000 560 L1010 560 L1080 900 Z" fill="#070c12"/>
-    <path d="M905 560 L1105 560 L1105 576 L905 576 Z" fill="#0a1119"/>
-    <path d="M930 520 L1080 520 L1096 560 L914 560 Z" fill="#0b131c"/>
-    <path d="M948 470 L1062 470 L1076 520 L934 520 Z" fill="#0a1119"/>
-    <path d="M966 430 L1044 430 L1056 470 L954 470 Z" fill="#0b131c"/>
-    <path d="M1002 392 L1008 392 L1008 430 L1002 430 Z" fill="#0a1119"/>
-    <path d="M905 560 L1105 560" stroke="#c9a24d" stroke-opacity="0.35" stroke-width="1.5"/>
-    <path d="M948 470 L1062 470" stroke="#c9a24d" stroke-opacity="0.25" stroke-width="1"/>
-    <path d="M966 430 L1044 430" stroke="#c9a24d" stroke-opacity="0.2" stroke-width="1"/>
+  <rect width="1600" height="900" fill="url(#sun)"/>
+  <!-- Thiên Môn silhouette -->
+  <g opacity="0.88">
+    <path d="M880 610 L965 360 L1085 360 L1170 610 Z" fill="url(#goldGate)" opacity="0.35"/>
+    <path d="M845 368 Q1025 322 1205 368 L1178 386 Q1025 348 872 386 Z" fill="#e5c67b" opacity="0.55"/>
+    <path d="M895 318 Q1025 280 1155 318 L1134 334 Q1025 302 916 334 Z" fill="#f0d999" opacity="0.62"/>
+    <rect x="928" y="382" width="16" height="190" fill="#d4ad5a" opacity="0.42"/>
+    <rect x="1106" y="382" width="16" height="190" fill="#d4ad5a" opacity="0.42"/>
+    <rect x="984" y="368" width="12" height="204" fill="#ecd292" opacity="0.38"/>
+    <rect x="1054" y="368" width="12" height="204" fill="#ecd292" opacity="0.38"/>
+    <circle cx="1025" cy="264" r="8" fill="#fff3c4" opacity="0.85"/>
   </g>
-
-  <!-- lớp núi gần -->
-  <path d="M0 742 L150 668 L280 726 L410 650 L540 730 L670 664 L800 744 L930 676 L1060 748 L1190 684 L1320 752 L1450 692 L1600 760 L1600 900 L0 900 Z"
-        fill="url(#m3)"/>
-  <rect x="0" y="756" width="1600" height="60" fill="url(#mist)" opacity="0.55"/>
-
-  <!-- hạt sáng thưa -->
-  <g fill="#e8cd8a">
-    <circle cx="1078" cy="352" r="1.6" opacity="0.55"/>
-    <circle cx="1132" cy="404" r="1.1" opacity="0.4"/>
-    <circle cx="1012" cy="318" r="1.2" opacity="0.45"/>
-    <circle cx="1180" cy="330" r="0.9" opacity="0.3"/>
-    <circle cx="960" cy="372" r="1.4" opacity="0.35"/>
-    <circle cx="1240" cy="420" r="1" opacity="0.28"/>
-  </g>
-
-  <!-- vignette -->
-  <rect width="1600" height="900" fill="#060a10" opacity="0.18"/>
+  <!-- Distant ink mountains -->
+  <path d="M0 540 Q140 455 290 520 T590 485 T910 530 T1240 470 T1600 525 L1600 900 L0 900 Z" fill="#0d1723" opacity="0.72"/>
+  <!-- Flowing cloud bands -->
+  <path d="M0 590 C180 535, 340 625, 540 572 C740 518, 920 610, 1140 556 C1320 512, 1460 580, 1600 548 L1600 900 L0 900 Z" fill="url(#cloudA)"/>
+  <path d="M0 675 C220 620, 420 710, 660 658 C880 610, 1120 702, 1360 648 C1480 622, 1545 655, 1600 640 L1600 900 L0 900 Z" fill="url(#cloudB)"/>
+  <path d="M0 748 C260 700, 520 785, 800 735 C1080 685, 1340 775, 1600 728 L1600 900 L0 900 Z" fill="#060a10"/>
+  <!-- Golden crane silhouette -->
+  <path d="M1245 278 Q1285 248 1332 256 Q1295 272 1276 292 Q1315 290 1352 306 Q1302 304 1266 300 L1225 316 Q1246 296 1245 278 Z" fill="#f7e4b0" opacity="0.72"/>
 </svg>

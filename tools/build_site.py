@@ -752,7 +752,7 @@ def write_portfolio(stage, events, lang):
     path = os.path.join(stage, "_data", "portfolio.json")
     with open(path, "w", encoding="utf-8", newline="\n") as out:
         assets = {}
-        for key, relative in [("css", "assets/css/campus.css"), ("themes", "assets/css/themes.css"), ("xian", "assets/css/xian.css"), ("motion", "assets/css/motion.css"), ("js", "assets/js/site.js"), ("motion_js", "assets/js/motion.js"), ("editor", "assets/js/editor.js"), ("github_editor", "assets/js/github-editor.js")]:
+        for key, relative in [("css", "assets/css/campus.css"), ("xian", "assets/css/xian.css"), ("motion", "assets/css/motion.css"), ("js", "assets/js/site.js"), ("motion_js", "assets/js/motion.js"), ("editor", "assets/js/editor.js"), ("github_editor", "assets/js/github-editor.js")]:
             path = os.path.join(stage, relative)
             if not os.path.isfile(path):
                 assets[key] = ""

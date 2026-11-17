@@ -16,20 +16,6 @@
   --sans: "Be Vietnam Pro", "Segoe UI", sans-serif;
   --header: rgba(17, 20, 17, 0.95);
 }
-:root[data-theme="light"] {
-  color-scheme: light;
-  --bg: #f5f5ef;
-  --surface: #fff;
-  --raised: #eeefe7;
-  --text: #19221a;
-  --muted: #55604f;
-  --faint: #697364;
-  --border: #d7dccf;
-  --accent: #3f681d;
-  --accent-bg: #e5efd9;
-  --code-bg: #edf0e7;
-  --header: rgba(245, 245, 239, 0.96);
-}
 * {
   box-sizing: border-box;
 }

@@ -1,6 +1,7 @@
-/* CTFWU — gói chuyển động P0.
-   Trang trí chỉ chạy trong hero của theme xian; nút bật/tắt dùng chung mọi theme.
-   Không có vòng lặp rAF: sương/hạt là CSS animation, tạm dừng bằng animation-play-state. */
+/* CTFWU — hệ thống chuyển động Vân Hải & Linh Khí (xian v2).
+   Toàn bộ mây trôi, sương mù, hạt linh khí, ngọc bội đung đưa, linh hoàn xoay
+   chạy bằng GPU compositor (transform / opacity).
+   Khi tắt chuyển động (.motion-off), mọi animation dừng hoàn toàn và ẩn lớp hạt động. */
 
 /* ---------- nút bật/tắt ---------- */
 
@@ -18,23 +19,24 @@ html.motion-init .motion-toggle {
 }
 
 .motion-toggle[aria-pressed="false"] svg {
-  opacity: 0.55;
+  opacity: 0.52;
 }
 
 .motion-toggle svg {
   transition: opacity 0.2s;
 }
 
-/* ---------- reveal (chỉ theme xian; theme khác do site.js phụ trách) ---------- */
+/* ---------- reveal khi cuộn (chỉ theme xian) ---------- */
 
 html[data-theme="xian"] .reveal {
-  transition: opacity 0.42s cubic-bezier(0.2, 0.7, 0.2, 1),
-    translate 0.42s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition:
+    opacity 0.52s cubic-bezier(0.2, 0.72, 0.2, 1),
+    translate 0.52s cubic-bezier(0.2, 0.72, 0.2, 1);
 }
 
 html[data-theme="xian"].js-motion .reveal:not(.is-in) {
   opacity: 0;
-  translate: 0 12px;
+  translate: 0 16px;
 }
 
 html[data-theme="xian"].js-motion .reveal.is-in {
@@ -56,7 +58,7 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid var(--gold, #c9a24d);
+  outline: 2px solid var(--gold, #d2ab56);
   outline-offset: 3px;
 }
 
@@ -66,146 +68,215 @@ html[data-theme="xian"] .writeup-row:active {
   transform: translateY(1px);
 }
 
-html[data-theme="xian"] .feature-card:active {
-  transform: translateY(-1px);
-}
-
-/* ---------- hero xian ---------- */
+/* ---------- hào quang, sương & hạt linh khí ở Hero + Toàn trang ---------- */
 
 html[data-theme="xian"] .hero {
-  --gate-x: 62%;
-  --gate-y: 42%;
+  --gate-x: 63%;
+  --gate-y: 38%;
 }
 
-html[data-theme="xian"] .hero-stage {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-html[data-theme="xian"]:not(.motion-on) .hero-stage {
+html[data-theme="xian"]:not(.motion-on) .hero-particles,
+html[data-theme="xian"]:not(.motion-on) .xian-ambient-motes,
+html[data-theme="xian"]:not(.motion-on) .xian-bg-video {
   display: none;
 }
 
 html[data-theme="xian"] .hero-mist {
   position: absolute;
-  inset: -14% -24%;
+  inset: -12% -20%;
   background:
-    radial-gradient(46% 24% at 24% 74%, rgba(213, 224, 219, 0.13), transparent 70%),
-    radial-gradient(50% 20% at 62% 80%, rgba(226, 232, 226, 0.11), transparent 72%),
-    radial-gradient(38% 16% at 84% 66%, rgba(201, 162, 77, 0.09), transparent 70%);
+    radial-gradient(46% 24% at 24% 74%, rgba(220, 232, 228, 0.15), transparent 70%),
+    radial-gradient(52% 22% at 62% 80%, rgba(235, 224, 192, 0.14), transparent 72%),
+    radial-gradient(38% 18% at 84% 64%, rgba(210, 171, 86, 0.12), transparent 70%);
   will-change: transform;
-}
-
-html[data-theme="xian"] .hero-mist::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(44% 20% at 72% 62%, rgba(232, 237, 231, 0.1), transparent 72%),
-    radial-gradient(56% 18% at 34% 88%, rgba(201, 162, 77, 0.07), transparent 74%);
 }
 
 html[data-theme="xian"] .hero-glow {
   position: absolute;
   left: var(--gate-x);
   top: var(--gate-y);
-  width: min(52vmax, 700px);
-  height: min(52vmax, 700px);
+  width: min(54vmax, 720px);
+  height: min(54vmax, 720px);
   transform: translate(-50%, -50%);
-  background: radial-gradient(closest-side, rgba(233, 205, 138, 0.16), rgba(233, 205, 138, 0.065) 46%, transparent 72%);
+  background: radial-gradient(closest-side, rgba(248, 224, 158, 0.22), rgba(218, 180, 94, 0.08) 48%, transparent 74%);
   mix-blend-mode: screen;
-  will-change: opacity;
+  will-change: opacity, transform;
 }
 
-html[data-theme="xian"] .hero-particles {
+html[data-theme="xian"] .hero-particles,
+html[data-theme="xian"] .xian-ambient-motes {
   position: absolute;
   inset: 0;
+  z-index: 3;
+  pointer-events: none;
 }
 
-html[data-theme="xian"] .mote {
+html[data-theme="xian"] .mote,
+html[data-theme="xian"] .amote {
   position: absolute;
   left: var(--x);
   top: var(--y);
-  width: var(--s, 2px);
-  height: var(--s, 2px);
+  width: var(--s, 2.2px);
+  height: var(--s, 2.2px);
   border-radius: 50%;
-  background: #ecd79b;
-  box-shadow: 0 0 6px 1px rgba(236, 215, 155, 0.45);
+  background: #f5df9e;
+  box-shadow: 0 0 8px 1.5px rgba(245, 223, 158, 0.55);
   opacity: 0;
   will-change: transform, opacity;
 }
 
+/* 24 hạt kim trần tại Thiên Môn */
+html[data-theme="xian"] .mote:nth-child(1)  { --x: 14.5%; --y: 68.0%; --s: 2.2px; --dx: 18px;  --dur: 21s; --delay: -4.1s;  --o: 0.55; }
+html[data-theme="xian"] .mote:nth-child(2)  { --x: 21.7%; --y: 54.2%; --s: 1.8px; --dx: -14px; --dur: 18s; --delay: -15.5s; --o: 0.62; }
+html[data-theme="xian"] .mote:nth-child(3)  { --x: 28.3%; --y: 74.3%; --s: 2.5px; --dx: 22px;  --dur: 24s; --delay: -11.3s; --o: 0.72; }
+html[data-theme="xian"] .mote:nth-child(4)  { --x: 33.7%; --y: 62.2%; --s: 1.7px; --dx: -12px; --dur: 19s; --delay: -18.7s; --o: 0.65; }
+html[data-theme="xian"] .mote:nth-child(5)  { --x: 38.8%; --y: 80.5%; --s: 2.4px; --dx: 14px;  --dur: 23s; --delay: -7.3s;  --o: 0.58; }
+html[data-theme="xian"] .mote:nth-child(6)  { --x: 43.6%; --y: 44.1%; --s: 2.0px; --dx: -9px;  --dur: 25s; --delay: -14.8s; --o: 0.54; }
+html[data-theme="xian"] .mote:nth-child(7)  { --x: 48.1%; --y: 66.2%; --s: 2.8px; --dx: 16px;  --dur: 20s; --delay: -3.4s;  --o: 0.78; }
+html[data-theme="xian"] .mote:nth-child(8)  { --x: 52.3%; --y: 59.9%; --s: 1.6px; --dx: -8px;  --dur: 27s; --delay: -22.9s; --o: 0.56; }
+html[data-theme="xian"] .mote:nth-child(9)  { --x: 56.2%; --y: 75.0%; --s: 2.6px; --dx: 19px;  --dur: 22s; --delay: -18.5s; --o: 0.74; }
+html[data-theme="xian"] .mote:nth-child(10) { --x: 60.6%; --y: 82.5%; --s: 2.1px; --dx: 12px;  --dur: 26s; --delay: -14.2s; --o: 0.68; }
+html[data-theme="xian"] .mote:nth-child(11) { --x: 63.7%; --y: 42.2%; --s: 2.4px; --dx: 18px;  --dur: 24s; --delay: -19.3s; --o: 0.64; }
+html[data-theme="xian"] .mote:nth-child(12) { --x: 67.2%; --y: 56.1%; --s: 2.2px; --dx: -15px; --dur: 19s; --delay: -9.4s;  --o: 0.72; }
+html[data-theme="xian"] .mote:nth-child(13) { --x: 70.8%; --y: 68.5%; --s: 3.0px; --dx: 20px;  --dur: 18s; --delay: -14.9s; --o: 0.82; }
+html[data-theme="xian"] .mote:nth-child(14) { --x: 74.3%; --y: 76.9%; --s: 2.4px; --dx: -10px; --dur: 22s; --delay: -17.3s; --o: 0.7;  }
+html[data-theme="xian"] .mote:nth-child(15) { --x: 78.2%; --y: 81.9%; --s: 1.8px; --dx: -12px; --dur: 20s; --delay: -13.9s; --o: 0.6;  }
+html[data-theme="xian"] .mote:nth-child(16) { --x: 81.8%; --y: 46.0%; --s: 2.1px; --dx: 11px;  --dur: 24s; --delay: -1.3s;  --o: 0.66; }
+html[data-theme="xian"] .mote:nth-child(17) { --x: 85.2%; --y: 60.7%; --s: 2.6px; --dx: -16px; --dur: 26s; --delay: -5.9s;  --o: 0.74; }
+html[data-theme="xian"] .mote:nth-child(18) { --x: 89.8%; --y: 70.4%; --s: 2.0px; --dx: -14px; --dur: 23s; --delay: -21.3s; --o: 0.52; }
+html[data-theme="xian"] .mote:nth-child(19) { --x: 18.4%; --y: 84.0%; --s: 2.5px; --dx: 24px;  --dur: 22s; --delay: -8.2s;  --o: 0.62; }
+html[data-theme="xian"] .mote:nth-child(20) { --x: 46.0%; --y: 86.2%; --s: 2.3px; --dx: -18px; --dur: 21s; --delay: -12.6s; --o: 0.68; }
+html[data-theme="xian"] .mote:nth-child(21) { --x: 58.8%; --y: 50.4%; --s: 1.9px; --dx: 14px;  --dur: 17s; --delay: -6.4s;  --o: 0.64; }
+html[data-theme="xian"] .mote:nth-child(22) { --x: 72.5%; --y: 48.8%; --s: 2.7px; --dx: -20px; --dur: 23s; --delay: -16.1s; --o: 0.76; }
+html[data-theme="xian"] .mote:nth-child(23) { --x: 86.6%; --y: 79.2%; --s: 2.2px; --dx: 15px;  --dur: 19s; --delay: -2.8s;  --o: 0.66; }
+html[data-theme="xian"] .mote:nth-child(24) { --x: 93.2%; --y: 58.0%; --s: 1.8px; --dx: -12px; --dur: 25s; --delay: -10.5s; --o: 0.5;  }
 
-/* Vị trí hạt: cùng bộ với bản preview, không dùng inline style. */
-html[data-theme="xian"] .mote:nth-child(1) { --x: 25.5%; --y: 29.9%; --s: 2.2px; --dx: -15px; --dur: 24s; --delay: -17.1s; --o: 0.34; }
-html[data-theme="xian"] .mote:nth-child(2) { --x: 29.7%; --y: 40.2%; --s: 1.9px; --dx: -15px; --dur: 18s; --delay: -15.5s; --o: 0.65; }
-html[data-theme="xian"] .mote:nth-child(3) { --x: 32.3%; --y: 52.3%; --s: 2.2px; --dx: 16px; --dur: 25s; --delay: -16.3s; --o: 0.71; }
-html[data-theme="xian"] .mote:nth-child(4) { --x: 35.7%; --y: 67.2%; --s: 1.7px; --dx: -13px; --dur: 19s; --delay: -18.7s; --o: 0.65; }
-html[data-theme="xian"] .mote:nth-child(5) { --x: 39.8%; --y: 76.5%; --s: 2.2px; --dx: -5px; --dur: 24s; --delay: -25.3s; --o: 0.34; }
-html[data-theme="xian"] .mote:nth-child(6) { --x: 43.6%; --y: 36.1%; --s: 1.9px; --dx: -7px; --dur: 25s; --delay: -14.8s; --o: 0.44; }
-html[data-theme="xian"] .mote:nth-child(7) { --x: 49.1%; --y: 47.2%; --s: 1.7px; --dx: 3px; --dur: 24s; --delay: -3.4s; --o: 0.61; }
-html[data-theme="xian"] .mote:nth-child(8) { --x: 51.3%; --y: 59.9%; --s: 1.5px; --dx: -3px; --dur: 27s; --delay: -22.9s; --o: 0.52; }
-html[data-theme="xian"] .mote:nth-child(9) { --x: 54.2%; --y: 69.0%; --s: 2.3px; --dx: 3px; --dur: 28s; --delay: -18.5s; --o: 0.6; }
-html[data-theme="xian"] .mote:nth-child(10) { --x: 59.6%; --y: 79.5%; --s: 1.9px; --dx: 12px; --dur: 29s; --delay: -14.2s; --o: 0.59; }
-html[data-theme="xian"] .mote:nth-child(11) { --x: 61.7%; --y: 39.2%; --s: 2.2px; --dx: 18px; --dur: 28s; --delay: -19.3s; --o: 0.47; }
-html[data-theme="xian"] .mote:nth-child(12) { --x: 67.2%; --y: 46.1%; --s: 2.0px; --dx: -12px; --dur: 19s; --delay: -25.4s; --o: 0.63; }
-html[data-theme="xian"] .mote:nth-child(13) { --x: 69.3%; --y: 58.5%; --s: 1.9px; --dx: 13px; --dur: 18s; --delay: -14.9s; --o: 0.54; }
-html[data-theme="xian"] .mote:nth-child(14) { --x: 75.3%; --y: 72.9%; --s: 2.4px; --dx: -8px; --dur: 22s; --delay: -17.3s; --o: 0.67; }
-html[data-theme="xian"] .mote:nth-child(15) { --x: 79.2%; --y: 79.9%; --s: 1.6px; --dx: -10px; --dur: 20s; --delay: -13.9s; --o: 0.56; }
-html[data-theme="xian"] .mote:nth-child(16) { --x: 80.8%; --y: 38.0%; --s: 1.9px; --dx: -5px; --dur: 24s; --delay: -1.3s; --o: 0.6; }
-html[data-theme="xian"] .mote:nth-child(17) { --x: 85.2%; --y: 52.7%; --s: 2.2px; --dx: -16px; --dur: 29s; --delay: -5.9s; --o: 0.67; }
-html[data-theme="xian"] .mote:nth-child(18) { --x: 89.8%; --y: 62.4%; --s: 1.9px; --dx: -14px; --dur: 25s; --delay: -25.3s; --o: 0.35; }
+/* 12 hạt linh khí nhẹ trôi dọc trang */
+html[data-theme="xian"] .amote:nth-child(1)  { --x: 7%;  --y: 82%; --s: 2.0px; --dx: 16px;  --dur: 28s; --delay: -5s;  --o: 0.36; }
+html[data-theme="xian"] .amote:nth-child(2)  { --x: 16%; --y: 48%; --s: 1.6px; --dx: -12px; --dur: 32s; --delay: -19s; --o: 0.28; }
+html[data-theme="xian"] .amote:nth-child(3)  { --x: 26%; --y: 88%; --s: 2.2px; --dx: 20px;  --dur: 26s; --delay: -11s; --o: 0.34; }
+html[data-theme="xian"] .amote:nth-child(4)  { --x: 37%; --y: 64%; --s: 1.8px; --dx: -15px; --dur: 30s; --delay: -24s; --o: 0.26; }
+html[data-theme="xian"] .amote:nth-child(5)  { --x: 49%; --y: 92%; --s: 2.1px; --dx: 12px;  --dur: 27s; --delay: -8s;  --o: 0.32; }
+html[data-theme="xian"] .amote:nth-child(6)  { --x: 61%; --y: 56%; --s: 1.7px; --dx: 18px;  --dur: 34s; --delay: -15s; --o: 0.28; }
+html[data-theme="xian"] .amote:nth-child(7)  { --x: 72%; --y: 86%; --s: 2.4px; --dx: -18px; --dur: 25s; --delay: -3s;  --o: 0.38; }
+html[data-theme="xian"] .amote:nth-child(8)  { --x: 83%; --y: 72%; --s: 1.9px; --dx: 14px;  --dur: 29s; --delay: -21s; --o: 0.34; }
+html[data-theme="xian"] .amote:nth-child(9)  { --x: 92%; --y: 90%; --s: 2.2px; --dx: -16px; --dur: 26s; --delay: -13s; --o: 0.36; }
+html[data-theme="xian"] .amote:nth-child(10) { --x: 12%; --y: 28%; --s: 1.8px; --dx: 12px;  --dur: 31s; --delay: -17s; --o: 0.26; }
+html[data-theme="xian"] .amote:nth-child(11) { --x: 78%; --y: 34%; --s: 2.0px; --dx: -14px; --dur: 28s; --delay: -9s;  --o: 0.32; }
+html[data-theme="xian"] .amote:nth-child(12) { --x: 95%; --y: 44%; --s: 1.7px; --dx: -10px; --dur: 33s; --delay: -26s; --o: 0.28; }
 
-/* Animation chỉ tồn tại khi bật: tắt là animation-name về none. */
-html[data-theme="xian"].motion-on .hero-mist {
-  animation: mist-a 64s ease-in-out infinite alternate;
+/* ---------- KÍCH HOẠT CHUYỂN ĐỘNG KHI .motion-on ---------- */
+
+/* Mây trôi đa tầng liên tục không vết nối (seamless 50% loop) */
+html[data-theme="xian"].motion-on .cloud-layer-front {
+  animation: cloud-drift-left 48s linear infinite;
 }
 
-html[data-theme="xian"].motion-on .hero-mist::after {
-  animation: mist-b 88s ease-in-out infinite alternate;
+html[data-theme="xian"].motion-on .cloud-layer-mid {
+  animation: cloud-drift-left 82s linear infinite;
+}
+
+html[data-theme="xian"].motion-on .cloud-layer-gold {
+  animation: cloud-drift-right 64s linear infinite;
+}
+
+/* Sương & hào quang Thiên Môn */
+html[data-theme="xian"].motion-on .hero-mist {
+  animation: mist-sway 54s ease-in-out infinite alternate;
 }
 
 html[data-theme="xian"].motion-on .hero-glow {
-  animation: glow-breathe 12s ease-in-out infinite;
+  animation: glow-breathe 9s ease-in-out infinite;
 }
 
-html[data-theme="xian"].motion-on .mote {
-  animation: mote var(--dur, 20s) linear var(--delay, 0s) infinite;
+/* Linh hoàn xoay & phù ấn chỉ hướng (từ xian.leiting.com playmove & slip) */
+html[data-theme="xian"].motion-on .hero-emblem .emblem-spin {
+  animation: ring-spin 22s linear infinite;
 }
 
-@keyframes mist-a {
-  from { transform: translate3d(-3%, 1.5%, 0) scale(1.04); }
-  to { transform: translate3d(3%, -1.5%, 0) scale(1.08); }
+html[data-theme="xian"].motion-on .scroll-cue-icon {
+  animation: talisman-slip 2.2s ease-in-out infinite;
 }
 
-@keyframes mist-b {
-  from { transform: translate3d(2%, -1%, 0) scale(1.06); }
-  to { transform: translate3d(-4%, 1%, 0) scale(1.02); }
+/* Ngọc bội âm dương đung đưa (từ xian.leiting.com tailSwing) */
+html[data-theme="xian"].motion-on .xian-pendant,
+html[data-theme="xian"].motion-on .profile-facts::after {
+  animation: tail-swing 3.8s ease-in-out infinite;
+}
+
+/* Chư thiên linh châu trôi nhẹ */
+html[data-theme="xian"].motion-on .xian-orb-jade {
+  animation: orb-drift-a 19s ease-in-out infinite alternate;
+}
+
+html[data-theme="xian"].motion-on .xian-orb-gold {
+  animation: orb-drift-b 23s ease-in-out infinite alternate;
+}
+
+/* Hạt kim trần bay lên */
+html[data-theme="xian"].motion-on .mote,
+html[data-theme="xian"].motion-on .amote {
+  animation: mote-rise var(--dur, 22s) linear var(--delay, 0s) infinite;
+}
+
+/* ---------- KEYFRAMES ---------- */
+
+@keyframes cloud-drift-left {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+@keyframes cloud-drift-right {
+  from { transform: translate3d(-50%, 0, 0); }
+  to   { transform: translate3d(0, 0, 0); }
+}
+
+@keyframes mist-sway {
+  from { transform: translate3d(-3.5%, 1.2%, 0) scale(1.04); }
+  to   { transform: translate3d(3.5%, -1.2%, 0) scale(1.09); }
 }
 
 @keyframes glow-breathe {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 0.92; }
+  0%, 100% { opacity: 0.62; transform: translate(-50%, -50%) scale(0.97); }
+  50%      { opacity: 0.96; transform: translate(-50%, -50%) scale(1.04); }
 }
 
-@keyframes mote {
-  0% { transform: translate3d(0, 0, 0) scale(0.55); opacity: 0; }
-  14% { opacity: var(--o, 0.6); }
-  72% { opacity: calc(var(--o, 0.6) * 0.55); }
-  100% { transform: translate3d(var(--dx, 10px), -140px, 0) scale(1.05); opacity: 0; }
+@keyframes ring-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes talisman-slip {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50%      { transform: translate3d(0, -9px, 0); }
+}
+
+@keyframes tail-swing {
+  0%, 100% { transform: rotate(-9deg); }
+  50%      { transform: rotate(8deg); }
+}
+
+@keyframes orb-drift-a {
+  from { transform: translate3d(0, -14px, 0) rotate(-3deg); }
+  to   { transform: translate3d(16px, 18px, 0) rotate(4deg); }
+}
+
+@keyframes orb-drift-b {
+  from { transform: translate3d(0, 16px, 0) rotate(3deg); }
+  to   { transform: translate3d(-18px, -16px, 0) rotate(-4deg); }
+}
+
+@keyframes mote-rise {
+  0%   { transform: translate3d(0, 0, 0) scale(0.55); opacity: 0; }
+  16%  { opacity: var(--o, 0.65); }
+  74%  { opacity: calc(var(--o, 0.65) * 0.58); }
+  100% { transform: translate3d(var(--dx, 14px), -165px, 0) scale(1.08); opacity: 0; }
 }
 
 @media (max-width: 640px) {
   html[data-theme="xian"] .hero {
     --gate-x: 50%;
-    --gate-y: 40%;
-  }
-
-  html[data-theme="xian"] .hero-mist::after {
-    display: none;
+    --gate-y: 38%;
   }
 
   html[data-theme="xian"] .hero-glow {
@@ -213,16 +284,33 @@ html[data-theme="xian"].motion-on .mote {
     height: min(88vw, 420px);
   }
 
-  html[data-theme="xian"] .mote:nth-child(n + 7) {
+  html[data-theme="xian"] .mote:nth-child(n + 11),
+  html[data-theme="xian"] .amote:nth-child(n + 6) {
     display: none;
   }
 }
 
-/* ---------- tạm dừng: đặt sau cùng để thắng shorthand animation ---------- */
+/* ---------- TẠM DỪNG KHI TAB ẨN (.motion-paused) ---------- */
 
+html[data-theme="xian"].motion-paused .cloud-track,
 html[data-theme="xian"].motion-paused .hero-mist,
-html[data-theme="xian"].motion-paused .hero-mist::after,
 html[data-theme="xian"].motion-paused .hero-glow,
-html[data-theme="xian"].motion-paused .mote {
+html[data-theme="xian"].motion-paused .emblem-spin,
+html[data-theme="xian"].motion-paused .scroll-cue-icon,
+html[data-theme="xian"].motion-paused .xian-pendant,
+html[data-theme="xian"].motion-paused .profile-facts::after,
+html[data-theme="xian"].motion-paused .xian-orb,
+html[data-theme="xian"].motion-paused .mote,
+html[data-theme="xian"].motion-paused .amote {
+  animation-play-state: paused;
+}
+
+/* Tắt riêng phần tử bên trong Hero khi cuộn qua khỏi Hero để tiết kiệm GPU */
+html[data-theme="xian"].hero-offscreen .hero .cloud-track,
+html[data-theme="xian"].hero-offscreen .hero-mist,
+html[data-theme="xian"].hero-offscreen .hero-glow,
+html[data-theme="xian"].hero-offscreen .hero .emblem-spin,
+html[data-theme="xian"].hero-offscreen .hero .scroll-cue-icon,
+html[data-theme="xian"].hero-offscreen .hero .mote {
   animation-play-state: paused;
 }

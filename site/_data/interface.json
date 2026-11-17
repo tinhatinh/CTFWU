@@ -5,11 +5,8 @@
     "competitions": "Thành tích",
     "about": "Giới thiệu",
     "language": "Ngôn ngữ",
-    "theme": "Đổi giao diện sáng / tối",
     "motion_off": "Tắt chuyển động",
     "motion_on": "Bật chuyển động",
-    "theme_preview": "Xem thử giao diện",
-    "theme_default": "Mặc định",
     "menu": "Mở menu",
     "skip": "Đến nội dung chính",
     "contact": "Liên hệ",
@@ -95,7 +92,14 @@
     "copy_certificate_id": "Sao chép mã chứng nhận",
     "verify_certificate": "Kiểm tra chứng nhận",
     "certificate_document": "Xem tài liệu",
-    "no_certificates": "Không có chứng nhận phù hợp."
+    "no_certificates": "Không có chứng nhận phù hợp.",
+    "hero_couplet": "TÌM · HIỂU · GHI LẠI",
+    "scroll_down": "Cuộn xuống kho bài giải",
+    "side_nav": "Mục lục trang chủ",
+    "ch_gate": "Thiên Môn",
+    "ch_latest": "Tàng Kinh",
+    "ch_method": "Đạo Pháp",
+    "ch_record": "Bảng Vàng"
   },
   "en": {
     "home": "Overview",
@@ -103,11 +107,8 @@
     "competitions": "Achievements",
     "about": "About",
     "language": "Language",
-    "theme": "Toggle light / dark theme",
     "motion_off": "Turn motion off",
     "motion_on": "Turn motion on",
-    "theme_preview": "Theme preview",
-    "theme_default": "Default",
     "menu": "Open menu",
     "skip": "Skip to content",
     "contact": "Contact",
@@ -193,6 +194,13 @@
     "copy_certificate_id": "Copy certificate ID",
     "verify_certificate": "Verify certificate",
     "certificate_document": "View document",
-    "no_certificates": "No matching certificates."
+    "no_certificates": "No matching certificates.",
+    "hero_couplet": "ANALYZE · VALIDATE · REPRODUCE",
+    "scroll_down": "Scroll to latest writeups",
+    "side_nav": "Home chapter navigation",
+    "ch_gate": "Gate",
+    "ch_latest": "Scrolls",
+    "ch_method": "Method",
+    "ch_record": "Record"
   }
 }

@@ -64,8 +64,3 @@ site/assets/vendor/*
 !site/assets/vendor/katex/
 Gemfile.lock
 node_modules
-
-# Hero placeholder lấy từ trang tham chiếu: chỉ dùng local để review,
-# bản public dùng site/assets/img/hero-fallback.svg cho tới khi có tranh có quyền.
-site/assets/img/hero-desktop.jpg
-site/assets/img/hero-mobile.jpg

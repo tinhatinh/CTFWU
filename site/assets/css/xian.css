@@ -1,30 +1,35 @@
-/* CTFWU — theme "Mực & Kim" (xian).
-   Chỉ áp dụng khi <html data-theme="xian">. Load sau campus.css và themes.css.
-   Không đổi cấu trúc DOM; mọi thay đổi là trình bày. */
+/* CTFWU — theme "Mực & Kim · Vân Hải Tiên Cảnh" (xian v2).
+   Lấy cảm hứng từ bố cục, mây trôi, tinh hà và khung thư quyển của xian.leiting.com.
+   Chỉ áp dụng khi <html data-theme="xian">. Load sau campus.css và themes.css. */
+
+@import url("https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap");
 
 :root[data-theme="xian"] {
   color-scheme: dark;
   --ink-0: #060a10;
-  --ink-1: #0a0f17;
-  --ink-2: #101823;
-  --gold: #c9a24d;
-  --gold-soft: #e2c88b;
-  --gold-dim: rgba(201, 162, 77, 0.28);
-  --gold-faint: rgba(201, 162, 77, 0.14);
-  --jade: #4aa896;
-  --seal: #a8382f;
-  --serif: "Noto Serif", "Songti SC", Georgia, "Times New Roman", "DejaVu Serif", serif;
+  --ink-1: #0a1019;
+  --ink-2: #101926;
+  --ink-3: #162233;
+  --gold: #d2ab56;
+  --gold-bright: #f5e2b0;
+  --gold-soft: #e6cb8c;
+  --gold-dim: rgba(210, 171, 86, 0.34);
+  --gold-faint: rgba(210, 171, 86, 0.16);
+  --jade: #55b8a4;
+  --jade-dim: rgba(85, 184, 164, 0.22);
+  --seal: #b4392f;
+  --serif: "Noto Serif", "Songti SC", Georgia, "Times New Roman", serif;
   --bg: #060a10;
-  --surface: #0a0f17;
-  --raised: #101823;
-  --text: #eee7d7;
-  --muted: #a7b2b0;
-  --faint: #7d8a89;
-  --border: rgba(201, 162, 77, 0.18);
-  --accent: #c9a24d;
-  --accent-bg: rgba(201, 162, 77, 0.12);
-  --code-bg: #04070b;
-  --header: rgba(6, 10, 16, 0.88);
+  --surface: #0a1019;
+  --raised: #101926;
+  --text: #f1ebe0;
+  --muted: #b0bdbc;
+  --faint: #849392;
+  --border: rgba(210, 171, 86, 0.22);
+  --accent: #d2ab56;
+  --accent-bg: rgba(210, 171, 86, 0.14);
+  --code-bg: #04070c;
+  --header: rgba(6, 10, 16, 0.84);
 }
 
 html[data-theme="xian"] {
@@ -32,14 +37,17 @@ html[data-theme="xian"] {
 }
 
 html[data-theme="xian"] body {
+  position: relative;
+  overflow-x: clip;
   background-color: var(--ink-0);
   background-image:
-    radial-gradient(1200px 620px at 78% -10%, rgba(201, 162, 77, 0.13), transparent 62%),
-    radial-gradient(900px 520px at 8% 6%, rgba(74, 168, 150, 0.08), transparent 60%);
+    radial-gradient(1280px 680px at 76% -8%, rgba(218, 180, 94, 0.15), transparent 64%),
+    radial-gradient(960px 560px at 8% 8%, rgba(85, 184, 164, 0.08), transparent 62%),
+    radial-gradient(1100px 700px at 50% 52%, rgba(18, 30, 46, 0.55), transparent 72%);
   background-repeat: no-repeat;
   color: var(--text);
   font-size: 15px;
-  line-height: 1.75;
+  line-height: 1.76;
 }
 
 html[data-theme="xian"] .theme-backdrop {
@@ -50,8 +58,54 @@ html[data-theme="xian"] .theme-backdrop {
   overflow: hidden;
   pointer-events: none;
   background:
-    radial-gradient(60% 50% at 78% -8%, rgba(201, 162, 77, 0.10), transparent 66%),
-    radial-gradient(45% 40% at 6% 4%, rgba(74, 168, 150, 0.06), transparent 70%);
+    radial-gradient(58% 48% at 80% -6%, rgba(218, 180, 94, 0.09), transparent 68%),
+    radial-gradient(44% 40% at 6% 12%, rgba(85, 184, 164, 0.055), transparent 70%);
+}
+
+/* ---------- không gian linh khí toàn cục (.xian-ambient) ---------- */
+
+html[data-theme="xian"] .xian-ambient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+html[data-theme="xian"] .xian-ambient-stardust {
+  position: absolute;
+  top: 6%;
+  right: -40px;
+  width: min(38vw, 520px);
+  height: 88vh;
+  background: url("../img/xian/stardust-vertical.webp") right top / contain no-repeat;
+  opacity: 0.34;
+  mix-blend-mode: screen;
+}
+
+html[data-theme="xian"] .xian-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.36;
+  filter: drop-shadow(0 0 28px rgba(210, 171, 86, 0.14));
+}
+
+html[data-theme="xian"] .xian-orb-jade {
+  left: -48px;
+  top: 34%;
+  width: 196px;
+  height: 196px;
+  background: url("../img/xian/orb-jade.png") center / contain no-repeat;
+}
+
+html[data-theme="xian"] .xian-orb-gold {
+  right: -36px;
+  top: 64%;
+  width: 168px;
+  height: 168px;
+  background: url("../img/xian/orb-gold.png") center / contain no-repeat;
+  opacity: 0.3;
 }
 
 html[data-theme="xian"] main,
@@ -60,7 +114,7 @@ html[data-theme="xian"] .site-footer {
   z-index: 1;
 }
 
-/* ---------- chữ ---------- */
+/* ---------- chữ & nhãn cổ phong ---------- */
 
 html[data-theme="xian"] h1,
 html[data-theme="xian"] h2,
@@ -73,34 +127,45 @@ html[data-theme="xian"] .footer-brand {
 }
 
 html[data-theme="xian"] .wrapper {
+  position: relative;
+  z-index: 2;
   width: min(1180px, calc(100% - 64px));
 }
 
 html[data-theme="xian"] .eyebrow {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 12px;
-  font: 11px var(--mono);
+  font: 500 11px var(--mono);
   letter-spacing: 0.26em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-soft);
 }
 
 html[data-theme="xian"] .eyebrow::before {
   content: "";
-  width: 34px;
+  width: 32px;
   height: 1px;
-  background: linear-gradient(90deg, var(--gold), transparent);
+  background: linear-gradient(90deg, transparent, var(--gold));
   flex: none;
+}
+
+html[data-theme="xian"] .eyebrow::after {
+  content: "◇";
+  font-size: 9px;
+  letter-spacing: 0;
+  color: var(--gold);
+  opacity: 0.85;
 }
 
 /* ---------- header ---------- */
 
 html[data-theme="xian"] .site-header {
-  height: 66px;
-  background: var(--header);
-  backdrop-filter: blur(14px) saturate(120%);
+  height: 68px;
+  background: linear-gradient(180deg, rgba(5, 8, 14, 0.94), rgba(8, 13, 21, 0.82));
+  backdrop-filter: blur(16px) saturate(130%);
   border-bottom: 1px solid var(--gold-faint);
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.42);
 }
 
 html[data-theme="xian"] .site-header::after {
@@ -110,12 +175,12 @@ html[data-theme="xian"] .site-header::after {
   right: 0;
   bottom: -1px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold-dim) 18%, var(--gold) 50%, var(--gold-dim) 82%, transparent);
-  opacity: 0.55;
+  background: linear-gradient(90deg, transparent 4%, var(--gold-dim) 22%, var(--gold-bright) 50%, var(--gold-dim) 78%, transparent 96%);
+  opacity: 0.68;
 }
 
 html[data-theme="xian"] .header-inner {
-  height: 66px;
+  height: 68px;
   width: min(1180px, calc(100% - 64px));
 }
 
@@ -125,23 +190,38 @@ html[data-theme="xian"] .brand {
   gap: 12px;
   font-size: 21px;
   letter-spacing: 0.16em;
-  color: #f2ecdd;
+  color: #f6efe0;
   text-transform: none;
 }
 
+html[data-theme="xian"] .brand:hover {
+  color: var(--gold-bright);
+}
+
 html[data-theme="xian"] .brand-mark {
-  width: 34px;
-  height: 34px;
+  width: 35px;
+  height: 35px;
   display: grid;
   place-items: center;
-  background: linear-gradient(160deg, #b8413a, #8d2b24);
-  color: #f6e7cf;
+  background: linear-gradient(155deg, #c6433a, #89251e);
+  color: #faecd5;
   border-radius: 3px;
   transform: rotate(-2.5deg);
-  box-shadow: 0 0 0 1px rgba(246, 231, 207, 0.35) inset, 0 6px 18px rgba(0, 0, 0, 0.5);
+  box-shadow:
+    0 0 0 1px rgba(250, 236, 213, 0.36) inset,
+    0 6px 20px rgba(180, 57, 47, 0.32),
+    0 4px 12px rgba(0, 0, 0, 0.55);
   font-size: 0;
   line-height: 1;
   position: relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+html[data-theme="xian"] .brand:hover .brand-mark {
+  transform: rotate(0deg) scale(1.04);
+  box-shadow:
+    0 0 0 1px rgba(250, 236, 213, 0.52) inset,
+    0 8px 24px rgba(210, 171, 86, 0.35);
 }
 
 html[data-theme="xian"] .brand-mark b {
@@ -152,7 +232,7 @@ html[data-theme="xian"] .brand-mark::after {
   content: "";
   position: absolute;
   inset: 3px;
-  border: 1px solid rgba(246, 231, 207, 0.45);
+  border: 1px solid rgba(250, 236, 213, 0.48);
   border-radius: 2px;
 }
 
@@ -167,7 +247,7 @@ html[data-theme="xian"] .brand-dot {
 html[data-theme="xian"] .main-nav {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   margin-inline: auto;
 }
 
@@ -177,33 +257,50 @@ html[data-theme="xian"] .main-nav > a {
   padding: 10px 16px;
   font-size: 13.5px;
   color: var(--muted);
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
   border: 0;
+  transition: color 0.22s ease;
 }
 
 html[data-theme="xian"] .main-nav > a:hover {
-  color: var(--gold-soft);
+  color: var(--gold-bright);
 }
 
 html[data-theme="xian"] .main-nav > a[aria-current="page"] {
-  color: #f2ecdd;
+  color: #f7f0e0;
+  text-shadow: 0 0 18px rgba(210, 171, 86, 0.38);
 }
 
 html[data-theme="xian"] .main-nav > a[aria-current="page"]::after {
   content: "";
   position: absolute;
-  left: 16px;
-  right: 16px;
+  left: 14px;
+  right: 14px;
   bottom: 2px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  background: linear-gradient(90deg, transparent, var(--gold-bright), transparent);
+}
+
+html[data-theme="xian"] .main-nav > a[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -3px;
+  width: 11px;
+  height: 11px;
+  transform: translateX(-50%);
+  background: url("../img/xian/diamond-active.png") center / contain no-repeat;
+  pointer-events: none;
 }
 
 html[data-theme="xian"] .nav-count {
-  font: 11px var(--mono);
-  color: var(--gold);
-  margin-left: 4px;
-  opacity: 0.85;
+  font: 10.5px var(--mono);
+  color: var(--gold-soft);
+  margin-left: 5px;
+  padding: 1px 6px;
+  border: 1px solid var(--gold-faint);
+  background: rgba(210, 171, 86, 0.08);
+  border-radius: 2px;
 }
 
 html[data-theme="xian"] .header-actions {
@@ -225,7 +322,8 @@ html[data-theme="xian"] .language-switch a {
 }
 
 html[data-theme="xian"] .language-switch a[aria-current] {
-  color: var(--gold);
+  color: var(--gold-bright);
+  font-weight: 600;
 }
 
 html[data-theme="xian"] .icon-button {
@@ -233,68 +331,196 @@ html[data-theme="xian"] .icon-button {
   height: 38px;
   display: grid;
   place-items: center;
-  border: 1px solid transparent;
+  border: 1px solid rgba(210, 171, 86, 0.14);
   border-radius: 50%;
-  background: none;
+  background: rgba(10, 16, 25, 0.48);
   color: var(--muted);
-  transition: color 0.2s, border-color 0.2s;
+  transition: color 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s;
 }
 
 html[data-theme="xian"] .icon-button:hover {
-  color: var(--gold);
-  border-color: var(--gold-dim);
+  color: var(--gold-bright);
+  border-color: var(--gold);
+  background: rgba(210, 171, 86, 0.1);
+  box-shadow: 0 0 16px rgba(210, 171, 86, 0.2);
+}
+
+html[data-theme="xian"] .menu-toggle {
+  display: none;
+}
+
+html[data-theme="xian"]:not(.motion-init) .motion-toggle {
+  display: none;
 }
 
 html[data-theme="xian"] .header-github {
   font: 11.5px var(--mono);
-  color: var(--muted);
+  color: var(--gold-soft);
   border: 1px solid var(--gold-dim);
   border-radius: 2px;
-  padding: 7px 12px;
+  padding: 7px 13px;
   margin-left: 6px;
-  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  background: rgba(16, 25, 38, 0.55);
+  transition: color 0.22s, border-color 0.22s, background 0.22s, box-shadow 0.22s;
 }
 
 html[data-theme="xian"] .header-github:hover {
-  color: var(--ink-0);
-  background: var(--gold);
-  border-color: var(--gold);
+  color: #171004;
+  background: linear-gradient(180deg, #ebd08d, #c79a42);
+  border-color: #f3dca2;
+  box-shadow: 0 6px 22px rgba(210, 171, 86, 0.32);
 }
 
-/* ---------- hero ---------- */
+/* ---------- thanh chương mục dọc bên trái (.xian-side-nav, giống xian.leiting.com) ---------- */
+
+html[data-theme="xian"] .xian-side-nav {
+  display: none;
+}
+
+@media (min-width: 1380px) {
+  html[data-theme="xian"] .xian-side-nav {
+    position: fixed;
+    left: max(10px, calc((100vw - 1520px) / 2));
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 24;
+    display: flex;
+    align-items: stretch;
+    gap: 6px;
+    padding: 8px 4px;
+    user-select: none;
+  }
+
+  html[data-theme="xian"] .xian-side-track {
+    position: relative;
+    width: 12px;
+    background: url("../img/xian/nav-line.png") center / 2px 100% no-repeat;
+  }
+
+  html[data-theme="xian"] .xian-side-pointer {
+    position: absolute;
+    left: 1px;
+    top: calc(var(--chapter-idx, 0) * 40px + 4px);
+    width: 14px;
+    height: 36px;
+    background: url("../img/xian/nav-pointer.png") left center / contain no-repeat;
+    filter: drop-shadow(0 0 8px rgba(245, 226, 176, 0.65));
+    transition: top 0.36s cubic-bezier(0.22, 0.8, 0.24, 1);
+  }
+
+  html[data-theme="xian"] .xian-side-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  html[data-theme="xian"] .xian-side-list a {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 34px;
+    padding: 0 4px 0 2px;
+    color: rgba(176, 189, 188, 0.64);
+    font-size: 11.5px;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    transition: color 0.24s, transform 0.24s, text-shadow 0.24s;
+  }
+
+  html[data-theme="xian"] .xian-side-list .ch-num {
+    display: none;
+    font: 500 10px var(--mono);
+    color: rgba(210, 171, 86, 0.52);
+  }
+
+  html[data-theme="xian"] .xian-side-list .ch-label {
+    font-family: var(--serif);
+    font-weight: 500;
+  }
+
+  html[data-theme="xian"] .xian-side-list a:hover,
+  html[data-theme="xian"] .xian-side-list a.is-active {
+    color: var(--gold-bright);
+    transform: translateX(2px);
+    text-shadow: 0 0 16px rgba(210, 171, 86, 0.48);
+  }
+
+  html[data-theme="xian"] .xian-side-list a.is-active .ch-num {
+    color: var(--gold);
+  }
+}
+
+@media (min-width: 1580px) {
+  html[data-theme="xian"] .xian-side-nav {
+    left: max(20px, calc((100vw - 1540px) / 2));
+    gap: 10px;
+  }
+
+  html[data-theme="xian"] .xian-side-list .ch-num {
+    display: inline;
+  }
+}
+
+/* ---------- các lớp mây dùng chung (.cloud-track) ---------- */
+
+html[data-theme="xian"] .cloud-track {
+  position: absolute;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background-repeat: repeat-x;
+  background-size: 50% 100%;
+  pointer-events: none;
+}
+
+html[data-theme="xian"] .cloud-layer-mid {
+  background-image: url("../img/xian/cloud-mid.webp");
+  opacity: 0.72;
+}
+
+html[data-theme="xian"] .cloud-layer-gold {
+  background-image: url("../img/xian/cloud-gold.webp");
+  opacity: 0.78;
+  mix-blend-mode: screen;
+}
+
+html[data-theme="xian"] .cloud-layer-front {
+  background-image: url("../img/xian/cloud-front.webp");
+  opacity: 0.92;
+}
+
+/* ---------- CHAPTER 1: HERO — THIÊN MÔN VÂN HẢI ---------- */
 
 html[data-theme="xian"] .hero {
   position: relative;
-  min-height: min(72vh, 660px);
+  min-height: min(82vh, 740px);
   display: flex;
   align-items: center;
   overflow: hidden;
-  border-bottom: 1px solid var(--gold-faint);
+  border-bottom: 1px solid rgba(210, 171, 86, 0.22);
+  --px: 0;
+  --py: 0;
 }
 
 html[data-theme="xian"] .hero-art {
   position: absolute;
-  inset: 0;
+  inset: -3%;
   z-index: 0;
-  background-color: #0a0f17;
-  background-image: url("../img/hero-fallback.svg");
+  background-color: #0a1019;
+  background-image: url("../img/xian/hero-gate-desktop.jpg"), url("../img/hero-fallback.svg");
   background-size: cover;
-  background-position: 62% 42%;
-}
-
-/* Tranh thật chỉ được tham chiếu khi file có mặt lúc build (html.has-hero-art).
-   Bản public không có tranh publisher nên không phát sinh request 404. */
-@media (min-width: 641px) {
-  html.has-hero-art[data-theme="xian"] .hero-art {
-    background-image: url("../img/hero-desktop.jpg"), url("../img/hero-fallback.svg");
-    background-position: 62% 42%, 62% 42%;
-  }
+  background-position: 63% 38%;
+  transform: translate3d(calc(var(--px, 0) * -12px), calc(var(--py, 0) * -9px), 0) scale(1.03);
+  will-change: transform;
 }
 
 @media (max-width: 640px) {
-  html.has-hero-art[data-theme="xian"] .hero-art {
-    background-image: url("../img/hero-mobile.jpg"), url("../img/hero-fallback.svg");
-    background-position: 50% 50%, 50% 40%;
+  html[data-theme="xian"] .hero-art {
+    background-image: url("../img/xian/hero-gate-mobile.jpg"), url("../img/hero-fallback.svg");
+    background-position: 50% 44%;
   }
 }
 
@@ -303,80 +529,167 @@ html[data-theme="xian"] .hero-art::after {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, #060a10 0%, rgba(6, 10, 16, 0.94) 30%, rgba(6, 10, 16, 0.62) 55%, rgba(6, 10, 16, 0.3) 74%, rgba(6, 10, 16, 0.62) 100%),
-    linear-gradient(180deg, rgba(6, 10, 16, 0.55) 0%, transparent 24%, transparent 62%, #060a10 100%);
+    linear-gradient(90deg, #060a10 0%, rgba(6, 10, 16, 0.92) 28%, rgba(6, 10, 16, 0.56) 54%, rgba(6, 10, 16, 0.18) 76%, rgba(6, 10, 16, 0.58) 100%),
+    linear-gradient(180deg, rgba(6, 10, 16, 0.52) 0%, transparent 22%, rgba(6, 10, 16, 0.18) 64%, #060a10 100%);
+}
+
+html[data-theme="xian"] .hero-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+html[data-theme="xian"] .hero-palace {
+  position: absolute;
+  right: 4%;
+  top: 4%;
+  width: min(38vw, 520px);
+  height: min(28vw, 360px);
+  background: url("../img/xian/celestial-palace.webp") center / contain no-repeat;
+  opacity: 0.62;
+  mix-blend-mode: screen;
+  transform: translate3d(calc(var(--px, 0) * -18px), calc(var(--py, 0) * -12px), 0);
+}
+
+html[data-theme="xian"] .hero-pine {
+  position: absolute;
+  right: -2%;
+  bottom: 12%;
+  width: min(44vw, 600px);
+  height: min(30vw, 390px);
+  background: url("../img/xian/pine-shrine.webp") right bottom / contain no-repeat;
+  opacity: 0.78;
+  transform: translate3d(calc(var(--px, 0) * 14px), calc(var(--py, 0) * 8px), 0);
+}
+
+html[data-theme="xian"] .hero-emblem {
+  position: absolute;
+  left: 63%;
+  top: 36%;
+  width: 96px;
+  height: 96px;
+  transform: translate(-50%, -50%) translate3d(calc(var(--px, 0) * 8px), calc(var(--py, 0) * 6px), 0);
+  opacity: 0.72;
+}
+
+html[data-theme="xian"] .hero-emblem .emblem-core {
+  position: absolute;
+  inset: 14px;
+  background: url("../img/xian/ring-core.png") center / contain no-repeat;
+}
+
+html[data-theme="xian"] .hero-emblem .emblem-spin {
+  position: absolute;
+  inset: 0;
+  background: url("../img/xian/ring-spin.png") center / contain no-repeat;
+}
+
+html[data-theme="xian"] .hero-clouds {
+  position: absolute;
+  left: -4%;
+  right: -4%;
+  bottom: -18px;
+  height: clamp(200px, 31vh, 300px);
+  z-index: 2;
+  transform: translate3d(calc(var(--px, 0) * 20px), 0, 0);
+}
+
+html[data-theme="xian"] .hero-clouds::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 48%, rgba(6, 10, 16, 0.72) 84%, #060a10 100%);
 }
 
 html[data-theme="xian"] .hero-inner {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   width: min(1180px, calc(100% - 64px));
   margin-inline: auto;
-  padding-block: 84px 96px;
-  max-width: 700px;
+  padding-block: 92px 118px;
+  max-width: 720px;
 }
 
 html[data-theme="xian"] .hero h1 {
-  font-size: clamp(40px, 5.6vw, 72px);
+  font-size: clamp(42px, 5.8vw, 76px);
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: #f2ecdd;
+  line-height: 1.08;
   margin-top: 22px;
-  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.55);
+  color: #f8f1e1;
+  background: linear-gradient(180deg, #fffaf0 18%, #ebd59d 92%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 6px 28px rgba(0, 0, 0, 0.65));
 }
 
 html[data-theme="xian"] .hero h1 .dot {
   color: var(--gold);
+  -webkit-text-fill-color: var(--gold);
 }
 
 html[data-theme="xian"] .hero .lede,
 html[data-theme="xian"] .hero-inner > p:not(.eyebrow) {
-  margin-top: 18px;
-  max-width: 46ch;
+  margin-top: 20px;
+  max-width: 48ch;
   font-size: 16.5px;
-  line-height: 1.7;
-  color: #cfd6d2;
+  line-height: 1.75;
+  color: #d9e0dd;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.75);
 }
 
 html[data-theme="xian"] .hero-actions {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-top: 34px;
+  gap: 18px;
+  margin-top: 36px;
   flex-wrap: wrap;
 }
 
 html[data-theme="xian"] .button {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 10px;
   min-height: 46px;
-  padding: 0 24px;
+  padding: 0 26px;
   border-radius: 2px;
   font-size: 13.5px;
   font-weight: 500;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
   border: 1px solid var(--gold-dim);
-  color: #f2ecdd;
-  background: rgba(10, 15, 23, 0.6);
-  transition: background 0.22s, color 0.22s, border-color 0.22s, box-shadow 0.22s;
+  color: #f5ede0;
+  background: linear-gradient(180deg, rgba(18, 27, 40, 0.82), rgba(9, 14, 22, 0.92));
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.38);
+  transition: background 0.22s, color 0.22s, border-color 0.22s, box-shadow 0.22s, transform 0.22s;
 }
 
 html[data-theme="xian"] .button:hover {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 1px rgba(201, 162, 77, 0.25), 0 10px 30px rgba(0, 0, 0, 0.45);
+  border-color: var(--gold-bright);
+  color: var(--gold-bright);
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 1px rgba(245, 226, 176, 0.26), 0 12px 32px rgba(0, 0, 0, 0.52);
 }
 
 html[data-theme="xian"] .button-primary {
-  background: linear-gradient(180deg, #d8b465, #b98f3c);
-  border-color: #e0c07a;
-  color: #1a1206;
+  background: linear-gradient(180deg, #ebd08c 0%, #c89b42 100%);
+  border-color: #f3dda2;
+  color: #191104;
   font-weight: 600;
+  box-shadow:
+    0 1px 0 rgba(255, 250, 232, 0.45) inset,
+    0 10px 28px rgba(200, 155, 66, 0.28);
 }
 
 html[data-theme="xian"] .button-primary:hover {
-  background: linear-gradient(180deg, #e6c77d, #c99a44);
-  color: #140d03;
+  background: linear-gradient(180deg, #f5df9f 0%, #d6a94e 100%);
+  color: #120b02;
+  box-shadow:
+    0 1px 0 rgba(255, 252, 240, 0.6) inset,
+    0 14px 36px rgba(214, 169, 78, 0.42);
 }
 
 html[data-theme="xian"] .text-link {
@@ -384,46 +697,131 @@ html[data-theme="xian"] .text-link {
   color: var(--gold-soft);
   border-bottom: 1px solid var(--gold-dim);
   padding-bottom: 2px;
+  transition: color 0.2s, border-color 0.2s;
 }
 
 html[data-theme="xian"] .text-link:hover {
-  border-color: var(--gold);
-  color: #f3dfae;
+  border-color: var(--gold-bright);
+  color: var(--gold-bright);
 }
 
 html[data-theme="xian"] .hero-ornament {
   position: absolute;
-  right: 40px;
-  top: 50%;
+  right: 36px;
+  top: 47%;
   transform: translateY(-50%);
   writing-mode: vertical-rl;
   font-family: var(--serif);
-  font-size: 13px;
-  letter-spacing: 0.5em;
-  color: rgba(226, 200, 139, 0.55);
-  z-index: 2;
+  font-size: 12.5px;
+  letter-spacing: 0.48em;
+  color: rgba(245, 226, 176, 0.72);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.8);
+  z-index: 3;
   user-select: none;
+  padding-top: 26px;
 }
 
-/* ---------- số liệu ---------- */
+html[data-theme="xian"] .hero-ornament::before {
+  content: "印";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  writing-mode: horizontal-tb;
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  letter-spacing: 0;
+  background: var(--seal);
+  color: #faebd4;
+  border-radius: 2px;
+  box-shadow: 0 2px 10px rgba(180, 57, 47, 0.48);
+}
+
+html[data-theme="xian"] .hero-scroll-cue {
+  position: absolute;
+  left: 50%;
+  bottom: 58px;
+  transform: translateX(-50%);
+  z-index: 4;
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  opacity: 0.88;
+  transition: opacity 0.22s, filter 0.22s;
+}
+
+html[data-theme="xian"] .hero-scroll-cue:hover {
+  opacity: 1;
+  filter: drop-shadow(0 0 14px rgba(245, 226, 176, 0.65));
+}
+
+html[data-theme="xian"] .scroll-cue-icon {
+  width: 52px;
+  height: 52px;
+  background: url("../img/xian/arrow-down.png") center / contain no-repeat;
+}
+
+/* ---------- HOÀNH TRỤC THỐNG KÊ (.stats-strip) + NGỌC BỘI ĐUNG ĐƯA ---------- */
+
+html[data-theme="xian"] .stats-wrapper {
+  z-index: 5;
+}
 
 html[data-theme="xian"] .stats-strip {
   position: relative;
-  z-index: 3;
-  margin-top: -46px;
+  z-index: 5;
+  margin-top: -50px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0;
   padding: 0;
-  border: 1px solid var(--gold-dim);
-  background: linear-gradient(180deg, rgba(16, 24, 35, 0.96), rgba(8, 13, 20, 0.98));
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(210, 171, 86, 0.42);
+  background:
+    linear-gradient(90deg, rgba(10, 16, 25, 0.86), rgba(14, 22, 34, 0.72) 50%, rgba(10, 16, 25, 0.88)),
+    url("../img/xian/scroll-banner.webp") left center / cover no-repeat,
+    linear-gradient(180deg, rgba(18, 28, 40, 0.96), rgba(8, 13, 21, 0.98));
+  box-shadow:
+    0 0 0 1px rgba(245, 226, 176, 0.08) inset,
+    0 26px 64px rgba(0, 0, 0, 0.65);
+}
+
+html[data-theme="xian"] .stats-strip::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border: 6px solid transparent;
+  border-image: url("../img/xian/frame-gold.webp") 28 stretch;
+  pointer-events: none;
+  opacity: 0.78;
+}
+
+html[data-theme="xian"] .xian-pendant {
+  position: absolute;
+  right: 18px;
+  top: -14px;
+  width: 44px;
+  height: 64px;
+  background: url("../img/xian/pendant-yinyang.png") center top / contain no-repeat;
+  transform-origin: 32% 4%;
+  pointer-events: none;
+  z-index: 6;
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.6));
 }
 
 html[data-theme="xian"] .stats-strip > div {
+  position: relative;
   display: block;
-  padding: 26px 30px;
-  border-right: 1px solid var(--gold-faint);
+  padding: 28px 32px;
+  border-right: 1px solid rgba(210, 171, 86, 0.18);
+  transition: background 0.25s ease;
+}
+
+html[data-theme="xian"] .stats-strip > div:hover {
+  background: radial-gradient(circle at 30% 40%, rgba(210, 171, 86, 0.1), transparent 72%);
 }
 
 html[data-theme="xian"] .stats-strip > div:last-of-type {
@@ -432,36 +830,124 @@ html[data-theme="xian"] .stats-strip > div:last-of-type {
 
 html[data-theme="xian"] .stats-strip strong {
   display: block;
-  font: 600 34px var(--serif);
-  color: var(--gold-soft);
-  line-height: 1.1;
+  font: 700 36px var(--serif);
+  color: var(--gold-bright);
+  line-height: 1.08;
   letter-spacing: 0;
+  text-shadow: 0 2px 18px rgba(210, 171, 86, 0.25);
 }
 
 html[data-theme="xian"] .stats-strip span {
   display: block;
-  margin-top: 6px;
-  font: 10.5px var(--mono);
-  letter-spacing: 0.2em;
+  margin-top: 7px;
+  font: 500 10.5px var(--mono);
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--faint);
+  color: #9eacab;
 }
 
 html[data-theme="xian"] .stats-strip .stat-slash {
   display: inline;
   font-size: 22px;
   color: var(--gold-dim);
-  padding: 0 2px;
+  padding: 0 3px;
 }
 
 html[data-theme="xian"] .stats-strip > p {
   display: none;
 }
 
-/* ---------- section ---------- */
+/* ---------- DẢI VÂN MÂY VÀNG NỐI CHƯƠNG (.xian-ribbon-divider) ---------- */
+
+html[data-theme="xian"] .xian-ribbon-divider {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: clamp(72px, 8.5vw, 132px);
+  margin-top: -18px;
+  margin-bottom: -28px;
+  background: url("../img/xian/cloud-ribbon.webp") center top / 100% 100% no-repeat;
+  opacity: 0.76;
+  pointer-events: none;
+}
+
+/* ---------- CẢNH NỀN ĐẦU TRANG PHỤ (.subpage-sky) ---------- */
+
+html[data-theme="xian"] .subpage-sky {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 410px;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+html[data-theme="xian"] .subpage-palace {
+  position: absolute;
+  right: 4%;
+  top: -10px;
+  width: min(36vw, 460px);
+  height: 300px;
+  background: url("../img/xian/celestial-palace.webp") right top / contain no-repeat;
+  opacity: 0.44;
+  mix-blend-mode: screen;
+}
+
+html[data-theme="xian"] .subpage-peaks {
+  position: absolute;
+  inset: 0;
+  background:
+    url("../img/xian/peak-left.png") 4% 72% / 92px auto no-repeat,
+    url("../img/xian/peak-right.png") 94% 66% / 116px auto no-repeat;
+  opacity: 0.56;
+}
+
+html[data-theme="xian"] .subpage-stardust {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 32px;
+  height: 170px;
+  background: url("../img/xian/stardust-band.webp") center / contain no-repeat;
+  opacity: 0.45;
+  mix-blend-mode: screen;
+}
+
+html[data-theme="xian"] .subpage-clouds {
+  position: absolute;
+  left: -4%;
+  right: -4%;
+  bottom: 0;
+  height: 220px;
+}
+
+html[data-theme="xian"] .subpage-clouds .cloud-layer-front {
+  opacity: 0.42;
+}
+
+html[data-theme="xian"] .subpage-clouds .cloud-layer-mid {
+  opacity: 0.36;
+}
+
+html[data-theme="xian"] .subpage-clouds .cloud-layer-gold {
+  opacity: 0.44;
+}
+
+html[data-theme="xian"] .subpage-clouds::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(6, 10, 16, 0.15) 0%, rgba(6, 10, 16, 0.76) 76%, #060a10 100%);
+}
+
+/* ---------- SECTION & PAGE HEADING ---------- */
 
 html[data-theme="xian"] .section-block {
-  padding: 78px 0;
+  position: relative;
+  z-index: 2;
+  padding: 80px 0;
 }
 
 html[data-theme="xian"] .section-heading {
@@ -469,13 +955,26 @@ html[data-theme="xian"] .section-heading {
   align-items: flex-end;
   justify-content: space-between;
   gap: 24px;
-  margin-bottom: 34px;
+  margin-bottom: 36px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(210, 171, 86, 0.14);
+  position: relative;
+}
+
+html[data-theme="xian"] .section-heading::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 140px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold-bright), transparent);
 }
 
 html[data-theme="xian"] .section-heading h2 {
-  font-size: clamp(26px, 3vw, 34px);
-  color: #f2ecdd;
-  margin-top: 12px;
+  font-size: clamp(27px, 3.1vw, 36px);
+  color: #f6efe0;
+  margin-top: 10px;
   padding: 0;
   border: 0;
 }
@@ -484,83 +983,95 @@ html[data-theme="xian"] .section-heading h2::before {
   content: none;
 }
 
-html[data-theme="xian"] .section-heading p {
+html[data-theme="xian"] .section-heading p:not(.eyebrow) {
   color: var(--muted);
   font-size: 14px;
   margin-top: 8px;
 }
 
 html[data-theme="xian"] .page-heading {
-  padding: 64px 0 40px;
+  position: relative;
+  z-index: 2;
+  padding: 68px 0 42px;
 }
 
 html[data-theme="xian"] .page-heading h1 {
-  font-size: clamp(34px, 4.4vw, 54px);
-  color: #f2ecdd;
+  font-size: clamp(34px, 4.4vw, 56px);
+  color: #f7f0e1;
   margin-top: 16px;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
 }
 
-html[data-theme="xian"] .page-heading > p {
+html[data-theme="xian"] .page-heading > p:not(.eyebrow) {
   margin-top: 14px;
   max-width: 62ch;
-  color: var(--muted);
+  color: #c2cdcb;
 }
 
-/* ---------- thẻ bài ---------- */
+/* ---------- THẺ BÀI QUẢI TRỤC / NGỌC GIẢN (.feature-card) ---------- */
 
 html[data-theme="xian"] .featured-grid,
 html[data-theme="xian"] .latest-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: 22px;
 }
 
 html[data-theme="xian"] .feature-card {
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: 232px;
+  min-height: 244px;
   padding: 0;
-  border: 1px solid rgba(201, 162, 77, 0.18);
-  background: linear-gradient(180deg, rgba(22, 32, 44, 0.72), rgba(9, 14, 21, 0.9));
-  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+  border: 1px solid rgba(210, 171, 86, 0.24);
+  border-top: 2px solid rgba(230, 203, 140, 0.56);
+  background:
+    radial-gradient(380px circle at var(--mx, 50%) var(--my, 0%), rgba(218, 180, 94, 0.13), transparent 68%),
+    linear-gradient(180deg, rgba(20, 30, 44, 0.84) 0%, rgba(9, 14, 22, 0.94) 100%);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.42);
+  transition: border-color 0.26s, transform 0.26s, box-shadow 0.26s;
+  overflow: hidden;
 }
 
 html[data-theme="xian"] .feature-card::before,
 html[data-theme="xian"] .feature-card::after {
   content: "";
   position: absolute;
-  width: 14px;
-  height: 14px;
-  border: 1px solid var(--gold);
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--gold-bright);
   opacity: 0.55;
-  transition: opacity 0.25s;
+  transition: opacity 0.26s, width 0.26s, height 0.26s;
   pointer-events: none;
 }
 
 html[data-theme="xian"] .feature-card::before {
-  top: -1px;
-  left: -1px;
+  top: 6px;
+  left: 6px;
   border-right: 0;
   border-bottom: 0;
 }
 
 html[data-theme="xian"] .feature-card::after {
-  bottom: -1px;
-  right: -1px;
+  bottom: 6px;
+  right: 6px;
   border-left: 0;
   border-top: 0;
 }
 
 html[data-theme="xian"] .feature-card:hover {
-  border-color: rgba(201, 162, 77, 0.5);
-  transform: translateY(-3px);
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
+  border-color: rgba(245, 226, 176, 0.62);
+  transform: translateY(-4px);
+  box-shadow:
+    0 0 0 1px rgba(210, 171, 86, 0.2) inset,
+    0 22px 50px rgba(0, 0, 0, 0.6);
 }
 
 html[data-theme="xian"] .feature-card:hover::before,
 html[data-theme="xian"] .feature-card:hover::after {
   opacity: 1;
+  width: 22px;
+  height: 22px;
 }
 
 html[data-theme="xian"] .feature-body {
@@ -579,27 +1090,32 @@ html[data-theme="xian"] .card-meta {
 }
 
 html[data-theme="xian"] .category-pill {
-  font: 10px var(--mono);
+  font: 500 10px var(--mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--gold-soft);
+  color: var(--gold-bright);
   border: 1px solid var(--gold-dim);
-  background: none;
-  padding: 3px 8px;
+  background: linear-gradient(90deg, rgba(210, 171, 86, 0.16), rgba(210, 171, 86, 0.04));
+  padding: 3px 9px;
   border-radius: 1px;
 }
 
 html[data-theme="xian"] .feature-card h3 {
   font-size: 21px;
-  color: #f2ecdd;
+  color: #f6efe0;
   margin-top: 16px;
-  line-height: 1.3;
+  line-height: 1.32;
+  transition: color 0.22s;
+}
+
+html[data-theme="xian"] .feature-card:hover h3 {
+  color: var(--gold-bright);
 }
 
 html[data-theme="xian"] .feature-card p {
   margin-top: 10px;
   font-size: 13.5px;
-  line-height: 1.65;
+  line-height: 1.68;
   color: var(--muted);
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -609,37 +1125,201 @@ html[data-theme="xian"] .feature-card p {
 
 html[data-theme="xian"] .feature-footer {
   margin-top: auto;
-  padding-top: 20px;
+  padding-top: 18px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font: 11px var(--mono);
   color: var(--faint);
-  border-top: 1px solid var(--gold-faint);
+  border-top: 1px solid rgba(210, 171, 86, 0.14);
 }
 
 html[data-theme="xian"] .feature-footer span:last-child {
-  color: var(--gold);
+  color: var(--gold-bright);
+  transition: transform 0.22s;
 }
 
-/* ---------- archive ---------- */
+html[data-theme="xian"] .feature-card:hover .feature-footer span:last-child {
+  transform: translate(2px, -2px);
+}
+
+/* ---------- CHAPTER 3: TAM GIỚI TINH HÀ (.xian-realms-section) ---------- */
+
+html[data-theme="xian"] .xian-realms-section {
+  position: relative;
+  z-index: 2;
+  padding: 110px 0 116px;
+  overflow: hidden;
+  border-block: 1px solid rgba(210, 171, 86, 0.2);
+}
+
+html[data-theme="xian"] .realms-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: #08111b url("../img/xian/realms-poster.jpg") center 46% / cover no-repeat;
+}
+
+html[data-theme="xian"] .realms-stage .xian-bg-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 48%;
+  opacity: 0.94;
+}
+
+html[data-theme="xian"] .realms-scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, #060a10 0%, rgba(6, 10, 16, 0.34) 18%, rgba(6, 10, 16, 0.24) 54%, rgba(6, 10, 16, 0.58) 84%, #060a10 100%),
+    radial-gradient(65% 55% at 50% 48%, rgba(6, 10, 16, 0.18), rgba(6, 10, 16, 0.54));
+}
+
+html[data-theme="xian"] .realms-clouds {
+  position: absolute;
+  left: -4%;
+  right: -4%;
+  bottom: -14px;
+  height: 210px;
+}
+
+html[data-theme="xian"] .realms-clouds .cloud-layer-front {
+  opacity: 0.56;
+}
+
+html[data-theme="xian"] .realms-clouds .cloud-layer-mid {
+  opacity: 0.45;
+}
+
+html[data-theme="xian"] .realms-clouds::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 42%, #060a10 100%);
+}
+
+html[data-theme="xian"] .realms-inner {
+  position: relative;
+  z-index: 2;
+}
+
+html[data-theme="xian"] .realms-header {
+  text-align: center;
+  max-width: 660px;
+  margin: 0 auto 48px;
+}
+
+html[data-theme="xian"] .realms-header h2 {
+  font-size: clamp(30px, 3.8vw, 46px);
+  color: #fff6e4;
+  margin-top: 14px;
+  text-shadow: 0 4px 28px rgba(0, 0, 0, 0.78);
+}
+
+html[data-theme="xian"] .realms-header p:not(.eyebrow) {
+  margin-top: 14px;
+  font-size: 15.5px;
+  color: #dce3df;
+  text-shadow: 0 2px 16px rgba(0, 0, 10, 0.82);
+}
+
+html[data-theme="xian"] .method-talisman-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+html[data-theme="xian"] .method-talisman {
+  position: relative;
+  padding: 30px 28px 28px;
+  background: linear-gradient(180deg, rgba(9, 15, 24, 0.76), rgba(6, 10, 16, 0.88));
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(230, 203, 140, 0.38);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+  transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+}
+
+html[data-theme="xian"] .method-talisman::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border: 5px solid transparent;
+  border-image: url("../img/xian/frame-gold.webp") 28 stretch;
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+html[data-theme="xian"] .method-talisman:hover {
+  transform: translateY(-4px);
+  border-color: var(--gold-bright);
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.68), 0 0 26px rgba(210, 171, 86, 0.16);
+}
+
+html[data-theme="xian"] .talisman-index {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 500 11px var(--mono);
+  letter-spacing: 0.2em;
+  color: var(--gold-bright);
+  padding: 3px 10px;
+  background: url("../img/xian/plaque-main.webp") left center / cover no-repeat;
+  border-left: 2px solid var(--gold);
+}
+
+html[data-theme="xian"] .method-talisman h3 {
+  font-size: 23px;
+  color: #f8f0df;
+  margin-top: 16px;
+}
+
+html[data-theme="xian"] .method-talisman p {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #c6d0ce;
+}
+
+html[data-theme="xian"] .realms-cta {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
+/* ---------- ARCHIVE (TÀNG KINH CÁC) ---------- */
 
 html[data-theme="xian"] .archive-controls {
   display: block;
   padding: 0;
   border: 0;
   background: none;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 html[data-theme="xian"] .search-line {
+  position: relative;
   display: flex;
   gap: 12px;
   align-items: center;
-  padding: 14px;
-  border: 1px solid var(--gold-faint);
-  background: rgba(10, 15, 23, 0.7);
-  margin-bottom: 18px;
+  padding: 16px;
+  border: 1px solid rgba(210, 171, 86, 0.28);
+  background: linear-gradient(180deg, rgba(16, 25, 38, 0.88), rgba(9, 14, 22, 0.94));
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.44);
+  margin-bottom: 20px;
+}
+
+html[data-theme="xian"] .search-line::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border: 5px solid transparent;
+  border-image: url("../img/xian/frame-gold.webp") 28 stretch;
+  opacity: 0.58;
+  pointer-events: none;
 }
 
 html[data-theme="xian"] .search-box {
@@ -650,7 +1330,13 @@ html[data-theme="xian"] .search-box {
   padding: 0 14px;
   min-height: 44px;
   border: 1px solid var(--gold-faint);
-  background: rgba(6, 10, 16, 0.6);
+  background: rgba(5, 9, 15, 0.72);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+html[data-theme="xian"] .search-box:focus-within {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 1px rgba(210, 171, 86, 0.25);
 }
 
 html[data-theme="xian"] .search-box input {
@@ -659,38 +1345,46 @@ html[data-theme="xian"] .search-box input {
 
 html[data-theme="xian"] .search-box kbd {
   font: 10.5px var(--mono);
-  color: var(--faint);
-  border: 1px solid var(--gold-faint);
+  color: var(--gold-soft);
+  border: 1px solid var(--gold-dim);
   padding: 1px 6px;
   border-radius: 2px;
 }
 
-html[data-theme="xian"] .search-line select {
+html[data-theme="xian"] .search-line select,
+html[data-theme="xian"] .results-bar select,
+html[data-theme="xian"] .certificate-controls select {
   min-height: 44px;
-  border: 1px solid var(--gold-faint);
-  background-color: rgba(6, 10, 16, 0.6);
+  border: 1px solid var(--gold-dim);
+  background-color: rgba(6, 10, 16, 0.82);
   color: var(--text);
   font-size: 13.5px;
+  padding-inline: 12px 32px;
+}
+
+html[data-theme="xian"] .results-bar select {
+  min-height: 36px;
 }
 
 html[data-theme="xian"] .category-filters {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  margin-bottom: 26px;
+  margin-bottom: 28px;
 }
 
 html[data-theme="xian"] .filter-chip {
-  min-height: 34px;
-  padding: 0 12px;
+  min-height: 35px;
+  padding: 0 13px;
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  border: 1px solid var(--gold-faint);
-  border-radius: 0;
-  background: none;
+  border: 1px solid rgba(210, 171, 86, 0.2);
+  border-radius: 1px;
+  background: rgba(12, 19, 29, 0.68);
   color: var(--muted);
   font: 11px var(--mono);
+  transition: border-color 0.2s, color 0.2s, background 0.2s, box-shadow 0.2s;
 }
 
 html[data-theme="xian"] .filter-chip span {
@@ -698,19 +1392,21 @@ html[data-theme="xian"] .filter-chip span {
 }
 
 html[data-theme="xian"] .filter-chip:hover {
-  border-color: var(--gold-dim);
-  color: var(--gold-soft);
+  border-color: var(--gold);
+  color: var(--gold-bright);
+  background: rgba(210, 171, 86, 0.1);
 }
 
 html[data-theme="xian"] .filter-chip[aria-pressed="true"] {
-  border-color: var(--gold);
-  color: #1a1206;
-  background: linear-gradient(180deg, #d8b465, #b98f3c);
-  font-weight: 500;
+  border-color: #f3dda2;
+  color: #191104;
+  background: linear-gradient(180deg, #ebd08c, #c5973e);
+  font-weight: 600;
+  box-shadow: 0 6px 18px rgba(200, 155, 66, 0.28);
 }
 
 html[data-theme="xian"] .filter-chip[aria-pressed="true"] span {
-  color: rgba(26, 18, 6, 0.7);
+  color: rgba(25, 17, 4, 0.72);
 }
 
 html[data-theme="xian"] .results-bar {
@@ -724,23 +1420,26 @@ html[data-theme="xian"] .results-bar {
 }
 
 html[data-theme="xian"] .results-bar strong {
-  color: var(--gold-soft);
-  font-weight: 500;
+  color: var(--gold-bright);
+  font-weight: 600;
 }
 
 html[data-theme="xian"] .writeup-list {
-  border-top: 1px solid var(--gold-faint);
+  border-top: 1px solid var(--gold-dim);
+  background: linear-gradient(180deg, rgba(12, 19, 29, 0.56), rgba(7, 11, 18, 0.36));
 }
 
 html[data-theme="xian"] .list-heading {
   display: grid;
   grid-template-columns: minmax(200px, 2.4fr) minmax(90px, 0.9fr) minmax(150px, 1.6fr) 93px 15px;
   gap: 20px;
-  padding: 12px 15px;
+  padding: 13px 18px;
   border-bottom: 1px solid var(--gold-faint);
-  font: 9px var(--mono);
-  letter-spacing: 0.14em;
-  color: var(--faint);
+  font: 500 9.5px var(--mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold-soft);
+  background: rgba(210, 171, 86, 0.05);
 }
 
 html[data-theme="xian"] .writeup-row {
@@ -748,14 +1447,14 @@ html[data-theme="xian"] .writeup-row {
   grid-template-columns: minmax(200px, 2.4fr) minmax(90px, 0.9fr) minmax(150px, 1.6fr) 93px 15px;
   gap: 20px;
   align-items: center;
-  padding: 15px;
-  border-bottom: 1px solid rgba(201, 162, 77, 0.1);
-  transition: background 0.2s, box-shadow 0.2s;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(210, 171, 86, 0.11);
+  transition: background 0.22s, box-shadow 0.22s;
 }
 
 html[data-theme="xian"] .writeup-row:hover {
-  background: linear-gradient(90deg, rgba(201, 162, 77, 0.07), transparent 70%);
-  box-shadow: inset 2px 0 0 var(--gold);
+  background: linear-gradient(90deg, rgba(210, 171, 86, 0.12), rgba(85, 184, 164, 0.04) 56%, transparent 88%);
+  box-shadow: inset 3px 0 0 var(--gold-bright);
 }
 
 html[data-theme="xian"] .row-name {
@@ -766,18 +1465,23 @@ html[data-theme="xian"] .row-name {
 }
 
 html[data-theme="xian"] .row-number {
-  font: 11px var(--mono);
+  font: 500 11px var(--mono);
   color: var(--gold);
-  opacity: 0.6;
+  opacity: 0.78;
 }
 
 html[data-theme="xian"] .row-name h3 {
   font-size: 16.5px;
   font-weight: 500;
-  color: #f2ecdd;
+  color: #f4ede0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: color 0.2s;
+}
+
+html[data-theme="xian"] .writeup-row:hover .row-name h3 {
+  color: var(--gold-bright);
 }
 
 html[data-theme="xian"] .row-difficulty {
@@ -809,61 +1513,73 @@ html[data-theme="xian"] .writeup-row time {
 }
 
 html[data-theme="xian"] .row-arrow {
-  color: var(--gold);
-  opacity: 0;
-  transition: opacity 0.2s;
+  color: var(--gold-bright);
+  opacity: 0.25;
+  transition: opacity 0.2s, transform 0.2s;
 }
 
 html[data-theme="xian"] .writeup-row:hover .row-arrow {
   opacity: 1;
+  transform: translate(2px, -2px);
 }
 
 html[data-theme="xian"] .empty-state {
-  border: 1px solid var(--gold-faint);
-  background: rgba(10, 15, 23, 0.6);
-  padding: 48px 24px;
+  position: relative;
+  z-index: 2;
+  border: 1px solid var(--gold-dim);
+  background: linear-gradient(180deg, rgba(16, 25, 38, 0.82), rgba(8, 13, 21, 0.92));
+  padding: 54px 28px;
 }
 
+html[data-theme="xian"] .empty-state h1,
 html[data-theme="xian"] .empty-state h2 {
-  color: #f2ecdd;
+  color: #f6efe0;
 }
 
 html[data-theme="xian"] .clear-filters {
-  color: var(--gold-soft);
+  color: var(--gold-bright);
   border: 1px solid var(--gold-dim);
-  background: none;
+  background: rgba(210, 171, 86, 0.08);
   font: 11px var(--mono);
-  padding: 6px 10px;
+  padding: 6px 11px;
 }
 
-/* ---------- bài viết ---------- */
+/* ---------- BÀI VIẾT THƯ QUYỂN (.post-page, .prose, #toc, #writeup-editor) ---------- */
 
 html[data-theme="xian"] .reading-progress {
-  background: rgba(201, 162, 77, 0.1);
+  background: rgba(210, 171, 86, 0.1);
+  height: 3px;
 }
 
 html[data-theme="xian"] #reading-progress {
-  background: linear-gradient(90deg, #a8823a, var(--gold-soft));
-  box-shadow: 0 0 6px rgba(201, 162, 77, 0.55);
+  background: linear-gradient(90deg, #9f7830, #e6cb8c 70%, #fff3ca);
+  box-shadow: 0 0 12px rgba(245, 226, 176, 0.7);
+}
+
+html[data-theme="xian"] .post-page {
+  padding-top: 22px;
 }
 
 html[data-theme="xian"] .post-heading {
-  padding: 54px 0 34px;
+  position: relative;
+  z-index: 2;
+  padding: 36px 0 36px;
   border: 0;
 }
 
 html[data-theme="xian"] .post-heading h1 {
-  font-size: clamp(30px, 3.8vw, 46px);
-  color: #f2ecdd;
+  font-size: clamp(30px, 3.9vw, 48px);
+  color: #f8f1e2;
   margin-top: 18px;
   max-width: 26ch;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.65);
 }
 
 html[data-theme="xian"] .post-description {
   margin-top: 14px;
   max-width: 68ch;
-  color: var(--muted);
-  font-size: 15px;
+  color: #c2cdcb;
+  font-size: 15.5px;
 }
 
 html[data-theme="xian"] .post-byline {
@@ -875,7 +1591,11 @@ html[data-theme="xian"] .post-byline {
   color: var(--faint);
   flex-wrap: wrap;
   border: 0;
-  padding: 0;
+  padding: 10px 16px;
+  width: fit-content;
+  max-width: 100%;
+  background: url("../img/xian/plaque-main.webp") left center / cover no-repeat;
+  border-left: 2px solid var(--gold);
 }
 
 html[data-theme="xian"] .author-monogram {
@@ -884,59 +1604,70 @@ html[data-theme="xian"] .author-monogram {
   display: grid;
   place-items: center;
   border: 1px solid var(--gold-dim);
-  color: var(--gold);
+  color: var(--gold-bright);
   font-family: var(--serif);
   font-size: 12px;
-  border-radius: 50%;
-  background: none;
+  border-radius: 2px;
+  background: rgba(180, 57, 47, 0.32);
 }
 
 html[data-theme="xian"] .byline-divider {
   width: 1px;
   height: 12px;
-  background: var(--gold-faint);
+  background: var(--gold-dim);
 }
 
 html[data-theme="xian"] .reading-layout {
+  position: relative;
+  z-index: 2;
   display: grid;
-  grid-template-columns: minmax(0, 800px) 230px;
+  grid-template-columns: minmax(0, 800px) 236px;
   justify-content: space-between;
-  gap: 56px;
+  gap: 52px;
   padding-bottom: 90px;
   align-items: start;
 }
 
 html[data-theme="xian"] .post-page > .prose,
-html[data-theme="xian"] .reading-layout > .prose {
+html[data-theme="xian"] .reading-layout > .prose,
+html[data-theme="xian"] .about-layout > .prose,
+html[data-theme="xian"] .generic-page > .prose {
   position: relative;
   padding: 46px 52px 56px;
-  background: linear-gradient(180deg, rgba(16, 24, 35, 0.9), rgba(8, 13, 20, 0.96));
-  border: 1px solid rgba(201, 162, 77, 0.16);
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45);
+  background:
+    radial-gradient(600px 260px at 50% 0%, rgba(210, 171, 86, 0.06), transparent 72%),
+    linear-gradient(180deg, rgba(16, 25, 38, 0.92), rgba(8, 13, 21, 0.97));
+  border: 1px solid rgba(210, 171, 86, 0.24);
+  border-top: 2px solid rgba(230, 203, 140, 0.52);
+  box-shadow: 0 30px 72px rgba(0, 0, 0, 0.54);
   font-size: 15.5px;
   line-height: 1.85;
-  color: #d9ddd6;
+  color: #dfe4de;
 }
 
 html[data-theme="xian"] .reading-layout > .prose::before,
-html[data-theme="xian"] .reading-layout > .prose::after {
+html[data-theme="xian"] .reading-layout > .prose::after,
+html[data-theme="xian"] .about-layout > .prose::before,
+html[data-theme="xian"] .about-layout > .prose::after {
   content: "";
   position: absolute;
-  width: 22px;
-  height: 22px;
-  border: 1px solid var(--gold);
-  opacity: 0.6;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--gold-bright);
+  opacity: 0.65;
   pointer-events: none;
 }
 
-html[data-theme="xian"] .reading-layout > .prose::before {
+html[data-theme="xian"] .reading-layout > .prose::before,
+html[data-theme="xian"] .about-layout > .prose::before {
   top: 8px;
   left: 8px;
   border-right: 0;
   border-bottom: 0;
 }
 
-html[data-theme="xian"] .reading-layout > .prose::after {
+html[data-theme="xian"] .reading-layout > .prose::after,
+html[data-theme="xian"] .about-layout > .prose::after {
   bottom: 8px;
   right: 8px;
   border-left: 0;
@@ -944,16 +1675,31 @@ html[data-theme="xian"] .reading-layout > .prose::after {
 }
 
 html[data-theme="xian"] .prose h2 {
+  position: relative;
   font-size: 24px;
-  color: #f2ecdd;
+  color: #f7efe0;
   margin-top: 44px;
-  padding-bottom: 10px;
+  padding-bottom: 11px;
+  padding-left: 22px;
   border-bottom: 1px solid var(--gold-faint);
+}
+
+html[data-theme="xian"] .prose h2::before {
+  content: "❖";
+  position: absolute;
+  left: 0;
+  top: 2px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--gold);
+  background: none;
+  width: auto;
+  height: auto;
 }
 
 html[data-theme="xian"] .prose h3 {
   font-size: 18.5px;
-  color: #f2ecdd;
+  color: var(--gold-soft);
   margin-top: 32px;
 }
 
@@ -962,33 +1708,53 @@ html[data-theme="xian"] .prose a {
   border-bottom: 1px solid var(--gold-dim);
 }
 
+html[data-theme="xian"] .prose a:hover {
+  color: var(--gold-bright);
+  border-bottom-color: var(--gold-bright);
+}
+
 html[data-theme="xian"] .prose code {
   font-family: var(--mono);
   font-size: 0.88em;
-  background: rgba(201, 162, 77, 0.1);
-  color: #f0d9a6;
-  padding: 1px 5px;
+  background: rgba(210, 171, 86, 0.11);
+  color: #f4dead;
+  padding: 1px 6px;
   border-radius: 2px;
 }
 
 html[data-theme="xian"] .prose pre,
 html[data-theme="xian"] .prose .highlight {
-  background: #04070b;
-  border: 1px solid rgba(201, 162, 77, 0.14);
-  border-left: 2px solid var(--gold-dim);
+  position: relative;
+  background: #04070c;
+  border: 1px solid rgba(210, 171, 86, 0.18);
+  border-left: 2px solid var(--gold);
   border-radius: 0;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
 }
 
 html[data-theme="xian"] .prose pre code {
   background: none;
-  color: #cdd6cf;
+  color: #d4ddd7;
   padding: 0;
 }
 
+html[data-theme="xian"] .copy-code {
+  border: 1px solid var(--gold-dim);
+  background: rgba(14, 22, 34, 0.9);
+  color: var(--gold-soft);
+  border-radius: 2px;
+}
+
+html[data-theme="xian"] .copy-code:hover {
+  border-color: var(--gold-bright);
+  color: var(--gold-bright);
+}
+
 html[data-theme="xian"] .prose blockquote {
-  border-left: 2px solid var(--gold-dim);
-  padding-left: 18px;
-  color: var(--muted);
+  border-left: 2px solid var(--gold);
+  background: rgba(210, 171, 86, 0.05);
+  padding: 12px 18px;
+  color: #c2ccca;
   font-style: italic;
 }
 
@@ -997,11 +1763,11 @@ html[data-theme="xian"] .prose table {
 }
 
 html[data-theme="xian"] .prose th {
-  color: var(--gold-soft);
+  color: var(--gold-bright);
   font: 500 11px var(--mono);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  border-bottom: 1px solid var(--gold-faint);
+  border-bottom: 1px solid var(--gold-dim);
 }
 
 html[data-theme="xian"] .prose td {
@@ -1010,18 +1776,20 @@ html[data-theme="xian"] .prose td {
 
 html[data-theme="xian"] .article-sidebar {
   position: sticky;
-  top: 92px;
+  top: 94px;
 }
 
 html[data-theme="xian"] #toc {
-  border-left: 1px solid var(--gold-faint);
-  padding-left: 20px;
+  position: relative;
+  border-left: 1px solid rgba(210, 171, 86, 0.22);
+  padding: 16px 14px 16px 22px;
+  background: linear-gradient(180deg, rgba(12, 19, 29, 0.62), rgba(7, 11, 18, 0.4));
 }
 
 html[data-theme="xian"] #toc .eyebrow {
-  font: 10.5px var(--mono);
+  font: 500 10.5px var(--mono);
   letter-spacing: 0.22em;
-  color: var(--gold);
+  color: var(--gold-bright);
   margin-bottom: 14px;
 }
 
@@ -1040,20 +1808,21 @@ html[data-theme="xian"] #toc-links li {
 }
 
 html[data-theme="xian"] #toc-links a {
+  position: relative;
   display: block;
   font-size: 13px;
   line-height: 1.45;
   color: var(--muted);
-  border-left: 1px solid transparent;
-  margin-left: -21px;
-  padding-left: 20px;
+  border-left: 2px solid transparent;
+  margin-left: -23px;
+  padding-left: 21px;
   transition: color 0.2s, border-color 0.2s;
 }
 
 html[data-theme="xian"] #toc-links a:hover,
 html[data-theme="xian"] #toc-links a.active {
-  color: var(--gold-soft);
-  border-left-color: var(--gold);
+  color: var(--gold-bright);
+  border-left-color: var(--gold-bright);
 }
 
 html[data-theme="xian"] #toc-links .toc-sub {
@@ -1062,24 +1831,28 @@ html[data-theme="xian"] #toc-links .toc-sub {
 }
 
 html[data-theme="xian"] .back-link {
+  position: relative;
+  z-index: 2;
   font: 11.5px var(--mono);
-  color: var(--faint);
+  color: var(--gold-soft);
   margin-bottom: 8px;
   display: inline-block;
 }
 
 html[data-theme="xian"] .back-link:hover {
-  color: var(--gold);
+  color: var(--gold-bright);
 }
 
 html[data-theme="xian"] .related-section {
-  padding-bottom: 80px;
+  position: relative;
+  z-index: 2;
+  padding-bottom: 84px;
 }
 
 html[data-theme="xian"] .writeup-images figure {
-  border: 1px solid var(--gold-faint);
-  background: rgba(6, 10, 16, 0.6);
-  padding: 10px;
+  border: 1px solid var(--gold-dim);
+  background: rgba(6, 10, 16, 0.72);
+  padding: 12px;
 }
 
 html[data-theme="xian"] .writeup-images figcaption {
@@ -1087,43 +1860,84 @@ html[data-theme="xian"] .writeup-images figcaption {
   font: 11px var(--mono);
 }
 
-/* ---------- cuộc thi, chứng chỉ ---------- */
+/* Hộp thoại chỉnh sửa bài (#writeup-editor) với họa tiết núi vàng pop_bg */
+html[data-theme="xian"] .writeup-editor {
+  border: 1px solid var(--gold-dim);
+  background:
+    url("../img/xian/modal-mountain.webp") right top / 340px auto no-repeat,
+    linear-gradient(180deg, #101926, #070c14);
+  color: var(--text);
+  box-shadow: 0 32px 90px rgba(0, 0, 0, 0.8);
+}
+
+html[data-theme="xian"] #editor-close {
+  background: url("../img/xian/modal-close.png") center / 34px 34px no-repeat;
+  color: transparent;
+  border: 0;
+}
+
+/* ---------- CUỘC THI, BẢNG VÀNG & CHỨNG NHẬN ---------- */
 
 html[data-theme="xian"] .competition-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: 22px;
 }
 
 html[data-theme="xian"] .competition-card {
   position: relative;
-  border: 1px solid rgba(201, 162, 77, 0.18);
-  background: linear-gradient(180deg, rgba(22, 32, 44, 0.72), rgba(9, 14, 21, 0.9));
-  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+  border-radius: 2px;
+  border: 1px solid rgba(210, 171, 86, 0.24);
+  border-top: 2px solid rgba(230, 203, 140, 0.56);
+  background:
+    radial-gradient(360px circle at var(--mx, 50%) var(--my, 0%), rgba(218, 180, 94, 0.12), transparent 68%),
+    linear-gradient(180deg, rgba(20, 30, 44, 0.84), rgba(9, 14, 21, 0.94));
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.42);
+  transition: border-color 0.26s, transform 0.26s, box-shadow 0.26s;
+  overflow: hidden;
 }
 
 html[data-theme="xian"] .competition-card:hover {
-  border-color: rgba(201, 162, 77, 0.5);
-  transform: translateY(-3px);
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
+  border-color: rgba(245, 226, 176, 0.62);
+  transform: translateY(-4px);
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.6);
+}
+
+html[data-theme="xian"] .competition-image {
+  position: relative;
+  border-bottom: 1px solid var(--gold-faint);
+}
+
+html[data-theme="xian"] .competition-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 48%, rgba(9, 14, 21, 0.82) 100%);
+  pointer-events: none;
 }
 
 html[data-theme="xian"] .competition-image img {
-  filter: saturate(0.8) contrast(1.05);
+  filter: saturate(0.84) contrast(1.06);
+  transition: transform 0.35s ease;
+}
+
+html[data-theme="xian"] .competition-card:hover .competition-image img {
+  transform: scale(1.04);
 }
 
 html[data-theme="xian"] .competition-body {
-  padding: 22px;
+  padding: 22px 24px;
 }
 
 html[data-theme="xian"] .competition-body h2 {
   font-size: 20px;
-  color: #f2ecdd;
+  color: #f6efe0;
 }
 
 html[data-theme="xian"] .competition-categories span {
   border: 1px solid var(--gold-faint);
-  color: var(--faint);
+  background: rgba(210, 171, 86, 0.06);
+  color: #a9b6b5;
   font: 9.5px var(--mono);
 }
 
@@ -1134,43 +1948,70 @@ html[data-theme="xian"] .competition-foot {
 }
 
 html[data-theme="xian"] .competition-foot strong {
-  color: var(--gold-soft);
-  font-weight: 500;
+  color: var(--gold-bright);
+  font-weight: 600;
 }
 
 html[data-theme="xian"] .team-profile {
-  border: 1px solid var(--gold-faint);
-  background: rgba(10, 15, 23, 0.7);
+  position: relative;
+  border: 1px solid rgba(210, 171, 86, 0.3);
+  background:
+    url("../img/xian/stardust-band.webp") right center / 420px auto no-repeat,
+    linear-gradient(90deg, rgba(16, 25, 38, 0.92), rgba(10, 15, 24, 0.86));
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.42);
+}
+
+html[data-theme="xian"] .team-profile-logo img {
+  border: 1px solid var(--gold-dim);
+  box-shadow: 0 0 20px rgba(210, 171, 86, 0.22);
+}
+
+html[data-theme="xian"] .results-table {
+  background: linear-gradient(180deg, rgba(12, 19, 29, 0.62), rgba(7, 11, 18, 0.42));
 }
 
 html[data-theme="xian"] .results-table th {
   font: 500 10px var(--mono);
-  letter-spacing: 0.14em;
-  color: var(--gold);
+  letter-spacing: 0.16em;
+  color: var(--gold-bright);
   border-bottom: 1px solid var(--gold-dim);
+  background: rgba(210, 171, 86, 0.06);
 }
 
 html[data-theme="xian"] .results-table td {
-  border-bottom: 1px solid var(--gold-faint);
+  border-bottom: 1px solid rgba(210, 171, 86, 0.11);
+}
+
+html[data-theme="xian"] .results-table tbody tr:hover {
+  background: linear-gradient(90deg, rgba(210, 171, 86, 0.09), transparent 78%);
 }
 
 html[data-theme="xian"] .results-table .rank {
-  color: var(--gold-soft);
+  font-family: var(--serif);
+  font-size: 16px;
+  color: var(--gold-bright);
 }
 
 html[data-theme="xian"] .certificate-card {
-  border: 1px solid rgba(201, 162, 77, 0.18);
-  background: linear-gradient(180deg, rgba(16, 24, 35, 0.86), rgba(8, 13, 20, 0.94));
-  transition: border-color 0.25s, transform 0.25s;
+  position: relative;
+  border-radius: 2px;
+  border: 1px solid rgba(210, 171, 86, 0.24);
+  border-top: 2px solid rgba(230, 203, 140, 0.52);
+  background:
+    radial-gradient(360px circle at var(--mx, 50%) var(--my, 0%), rgba(218, 180, 94, 0.11), transparent 68%),
+    linear-gradient(180deg, rgba(16, 25, 38, 0.9), rgba(8, 13, 20, 0.96));
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.44);
+  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
 }
 
 html[data-theme="xian"] .certificate-card:hover {
-  border-color: rgba(201, 162, 77, 0.45);
-  transform: translateY(-2px);
+  border-color: rgba(245, 226, 176, 0.58);
+  transform: translateY(-3px);
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.58);
 }
 
 html[data-theme="xian"] .certificate-body h3 {
-  color: #f2ecdd;
+  color: #f6efe0;
 }
 
 html[data-theme="xian"] .certificate-meta dt {
@@ -1184,34 +2025,61 @@ html[data-theme="xian"] .certificate-meta dd {
 }
 
 html[data-theme="xian"] .certificate-code code {
-  background: rgba(201, 162, 77, 0.1);
-  color: #f0d9a6;
+  background: rgba(210, 171, 86, 0.11);
+  color: #f4dead;
 }
 
 html[data-theme="xian"] .copy-certificate {
-  border: 1px solid var(--gold-faint);
-  color: var(--gold-soft);
-  background: none;
+  border: 1px solid var(--gold-dim);
+  color: var(--gold-bright);
+  background: rgba(210, 171, 86, 0.06);
 }
 
-/* ---------- giới thiệu, taxonomy, 404 ---------- */
+/* ---------- GIỚI THIỆU, TAXONOMY & 404 ---------- */
 
 html[data-theme="xian"] .about-layout {
+  position: relative;
+  z-index: 2;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
-  gap: 56px;
+  grid-template-columns: minmax(0, 1fr) 310px;
+  gap: 52px;
   padding-bottom: 90px;
+  align-items: start;
 }
 
 html[data-theme="xian"] .profile-facts {
-  border: 1px solid var(--gold-faint);
-  background: rgba(10, 15, 23, 0.7);
-  padding: 26px;
+  position: relative;
+  border: 1px solid rgba(210, 171, 86, 0.3);
+  background: linear-gradient(180deg, rgba(16, 25, 38, 0.9), rgba(8, 13, 21, 0.96));
+  padding: 28px;
+  box-shadow: 0 22px 52px rgba(0, 0, 0, 0.48);
+}
+
+html[data-theme="xian"] .profile-facts::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border: 5px solid transparent;
+  border-image: url("../img/xian/frame-gold.webp") 28 stretch;
+  opacity: 0.68;
+  pointer-events: none;
+}
+
+html[data-theme="xian"] .profile-facts::after {
+  content: "";
+  position: absolute;
+  right: 16px;
+  top: -12px;
+  width: 40px;
+  height: 58px;
+  background: url("../img/xian/pendant-yinyang.png") center top / contain no-repeat;
+  transform-origin: 32% 4%;
+  pointer-events: none;
 }
 
 html[data-theme="xian"] .profile-facts dt {
-  color: var(--gold);
-  font: 10px var(--mono);
+  color: var(--gold-bright);
+  font: 500 10px var(--mono);
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
@@ -1221,33 +2089,82 @@ html[data-theme="xian"] .profile-facts dd {
   border-bottom: 1px solid var(--gold-faint);
 }
 
+html[data-theme="xian"] .taxonomy-grid {
+  position: relative;
+  z-index: 2;
+}
+
 html[data-theme="xian"] .taxonomy-grid a {
-  border: 1px solid var(--gold-faint);
-  background: rgba(10, 15, 23, 0.6);
-  transition: border-color 0.2s, background 0.2s;
+  border: 1px solid rgba(210, 171, 86, 0.2);
+  background: linear-gradient(180deg, rgba(16, 25, 38, 0.76), rgba(9, 14, 21, 0.88));
+  transition: border-color 0.22s, background 0.22s, transform 0.22s;
 }
 
 html[data-theme="xian"] .taxonomy-grid a:hover {
-  border-color: var(--gold-dim);
-  background: rgba(201, 162, 77, 0.06);
+  border-color: var(--gold);
+  background: rgba(210, 171, 86, 0.1);
+  transform: translateY(-2px);
 }
 
 html[data-theme="xian"] .taxonomy-grid h2 {
-  color: #f2ecdd;
+  color: #f6efe0;
 }
 
 html[data-theme="xian"] .taxonomy-grid .mono,
 html[data-theme="xian"] .taxonomy-grid span {
-  color: var(--faint);
+  color: var(--gold-soft);
 }
 
 html[data-theme="xian"] .empty-state .mono {
-  color: var(--gold);
+  color: var(--gold-bright);
 }
 
-/* ---------- footer ---------- */
+/* ---------- CHÂN TRANG VÂN HẢI & FOOTER (.xian-closing, .site-footer) ---------- */
+
+html[data-theme="xian"] .xian-closing {
+  position: relative;
+  z-index: 1;
+  height: 210px;
+  margin-top: 24px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+html[data-theme="xian"] .xian-closing-art {
+  position: absolute;
+  inset: 0;
+  background: url("../img/xian/closing-hand.jpg") center 28% / cover no-repeat;
+  opacity: 0.32;
+  mask-image: linear-gradient(180deg, transparent 0%, #000 45%, rgba(0, 0, 0, 0.5) 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 45%, rgba(0, 0, 0, 0.5) 100%);
+}
+
+html[data-theme="xian"] .xian-closing-stardust {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 24px;
+  height: 140px;
+  background: url("../img/xian/stardust-band.webp") center / contain no-repeat;
+  opacity: 0.5;
+  mix-blend-mode: screen;
+}
+
+html[data-theme="xian"] .xian-closing-clouds {
+  position: absolute;
+  left: -4%;
+  right: -4%;
+  bottom: -20px;
+  height: 180px;
+}
+
+html[data-theme="xian"] .xian-closing-clouds .cloud-layer-mid {
+  opacity: 0.34;
+}
 
 html[data-theme="xian"] .site-footer {
+  position: relative;
+  z-index: 2;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
@@ -1256,9 +2173,20 @@ html[data-theme="xian"] .site-footer {
   width: 100%;
   max-width: none;
   margin-inline: 0;
-  padding: 38px max(32px, calc((100% - 1180px) / 2)) 34px;
-  border-top: 1px solid var(--gold-faint);
-  background: none;
+  padding: 38px max(32px, calc((100% - 1180px) / 2)) 36px;
+  border-top: 1px solid var(--gold-dim);
+  background: linear-gradient(180deg, rgba(6, 10, 16, 0.86), #04070c);
+}
+
+html[data-theme="xian"] .site-footer::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-bright) 50%, transparent);
+  opacity: 0.65;
 }
 
 html[data-theme="xian"] .site-footer > div:first-child {
@@ -1270,7 +2198,14 @@ html[data-theme="xian"] .footer-links {
   grid-column: 2;
   grid-row: 1;
   justify-self: end;
-  gap: 22px;
+  display: flex;
+  gap: 24px;
+  font: 11.5px var(--mono);
+  color: var(--muted);
+}
+
+html[data-theme="xian"] .footer-links a:hover {
+  color: var(--gold-bright);
 }
 
 html[data-theme="xian"] .footer-bottom {
@@ -1280,61 +2215,40 @@ html[data-theme="xian"] .footer-bottom {
   border-top: 0;
   padding: 0;
   justify-content: flex-start;
-  font-size: 10.5px;
+  font: 11px var(--mono);
   letter-spacing: 0.02em;
+  color: var(--faint);
 }
 
 html[data-theme="xian"] .footer-brand {
   font-size: 21px;
   letter-spacing: 0.16em;
-  color: #f2ecdd;
+  color: #f6efe0;
 }
 
 html[data-theme="xian"] .footer-brand span {
   color: var(--gold);
 }
 
-html[data-theme="xian"] .footer-links {
-  display: flex;
-  gap: 26px;
-  font: 11.5px var(--mono);
-  color: var(--faint);
-}
-
-html[data-theme="xian"] .footer-links a:hover {
-  color: var(--gold);
-}
-
-html[data-theme="xian"] .footer-bottom {
-  font: 11px var(--mono);
-  color: var(--faint);
-}
-
 html[data-theme="xian"] .back-to-top {
   border-color: var(--gold-dim);
-  color: var(--gold);
-  background: rgba(6, 10, 16, 0.8);
+  color: var(--gold-bright);
+  background: rgba(8, 13, 21, 0.88);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
 }
 
-/* ---------- theme lab ---------- */
-
-html[data-theme="xian"] .theme-tabs label {
-  border: 1px solid var(--gold-faint);
-  color: var(--muted);
-  font: 11px var(--mono);
+html[data-theme="xian"] .back-to-top:hover {
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 18px rgba(210, 171, 86, 0.32);
 }
 
-html[data-theme="xian"] .theme-stage {
-  border: 1px solid var(--gold-faint);
-  background: var(--ink-0);
-}
-
-/* ---------- responsive ---------- */
+/* ---------- RESPONSIVE ---------- */
 
 @media (max-width: 1100px) {
   html[data-theme="xian"] .featured-grid,
   html[data-theme="xian"] .latest-grid,
-  html[data-theme="xian"] .competition-grid {
+  html[data-theme="xian"] .competition-grid,
+  html[data-theme="xian"] .method-talisman-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -1352,8 +2266,8 @@ html[data-theme="xian"] .theme-stage {
 
   html[data-theme="xian"] #toc {
     border-left: 0;
-    padding-left: 0;
-    border-top: 1px solid var(--gold-faint);
+    padding-left: 16px;
+    border-top: 1px solid var(--gold-dim);
     padding-top: 20px;
   }
 
@@ -1379,7 +2293,7 @@ html[data-theme="xian"] .theme-stage {
   }
 
   html[data-theme="xian"] .header-inner {
-    gap: 18px;
+    gap: 16px;
   }
 
   html[data-theme="xian"] .main-nav > a {
@@ -1388,6 +2302,11 @@ html[data-theme="xian"] .theme-stage {
 
   html[data-theme="xian"] .header-github {
     display: none;
+  }
+
+  html[data-theme="xian"] .hero-pine {
+    width: 340px;
+    opacity: 0.52;
   }
 }
 
@@ -1407,7 +2326,46 @@ html[data-theme="xian"] .theme-stage {
     height: 58px;
   }
 
-  html[data-theme="xian"] .main-nav {
+  html[data-theme="xian"] .menu-toggle {
+    display: grid;
+  }
+
+  html[data-theme="xian"] #main-nav {
+    display: none;
+  }
+
+  html[data-theme="xian"] #main-nav.is-open {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    position: absolute;
+    top: 58px;
+    left: 0;
+    right: 0;
+    height: auto;
+    margin: 0;
+    padding: 14px 22px 20px;
+    gap: 4px;
+    background: linear-gradient(180deg, #070c14 0%, #0b1320 100%);
+    border-bottom: 1px solid var(--gold);
+    box-shadow: 0 28px 64px rgba(0, 0, 0, 0.94);
+    z-index: 60;
+  }
+
+  html[data-theme="xian"] #main-nav.is-open > a {
+    height: auto;
+    padding: 13px 8px;
+    font-size: 14.5px;
+    color: #f3ede0;
+    border-bottom: 1px solid rgba(210, 171, 86, 0.14);
+  }
+
+  html[data-theme="xian"] #main-nav.is-open > a[aria-current="page"] {
+    color: var(--gold-bright);
+  }
+
+  html[data-theme="xian"] #main-nav.is-open > a::before,
+  html[data-theme="xian"] #main-nav.is-open > a::after {
     display: none;
   }
 
@@ -1424,27 +2382,47 @@ html[data-theme="xian"] .theme-stage {
   }
 
   html[data-theme="xian"] .icon-button {
-    width: 44px;
-    height: 44px;
+    width: 42px;
+    height: 42px;
   }
 
   html[data-theme="xian"] .brand {
-    font-size: 19px;
-    letter-spacing: 0.12em;
+    font-size: 18.5px;
+    letter-spacing: 0.11em;
+    gap: 9px;
   }
 
   html[data-theme="xian"] .hero {
-    min-height: 78vh;
+    min-height: 80vh;
     align-items: flex-end;
   }
 
   html[data-theme="xian"] .hero-art::after {
     background:
-      linear-gradient(180deg, rgba(6, 10, 16, 0.62) 0%, rgba(6, 10, 16, 0.58) 18%, rgba(6, 10, 16, 0.9) 46%, rgba(6, 10, 16, 0.97) 72%, #060a10 100%);
+      linear-gradient(180deg, rgba(6, 10, 16, 0.56) 0%, rgba(6, 10, 16, 0.44) 22%, rgba(6, 10, 16, 0.86) 52%, rgba(6, 10, 16, 0.97) 78%, #060a10 100%);
+  }
+
+  html[data-theme="xian"] .hero-pine,
+  html[data-theme="xian"] .hero-ornament,
+  html[data-theme="xian"] .hero-scroll-cue,
+  html[data-theme="xian"] .xian-orb {
+    display: none;
+  }
+
+  html[data-theme="xian"] .hero-emblem {
+    left: 50%;
+    top: 24%;
+    width: 72px;
+    height: 72px;
+    opacity: 0.55;
+  }
+
+  html[data-theme="xian"] .hero-clouds {
+    height: 170px;
   }
 
   html[data-theme="xian"] .hero-inner {
-    padding-block: 0 46px;
+    padding-block: 0 54px;
   }
 
   html[data-theme="xian"] .hero h1 {
@@ -1454,10 +2432,6 @@ html[data-theme="xian"] .theme-stage {
   html[data-theme="xian"] .hero .lede,
   html[data-theme="xian"] .hero-inner > p:not(.eyebrow) {
     font-size: 14.5px;
-  }
-
-  html[data-theme="xian"] .hero-ornament {
-    display: none;
   }
 
   html[data-theme="xian"] .hero-actions {
@@ -1475,9 +2449,16 @@ html[data-theme="xian"] .theme-stage {
     margin-top: -28px;
   }
 
+  html[data-theme="xian"] .xian-pendant {
+    width: 34px;
+    height: 50px;
+    right: 10px;
+    top: -10px;
+  }
+
   html[data-theme="xian"] .stats-strip > div {
     padding: 18px 20px;
-    border-bottom: 1px solid var(--gold-faint);
+    border-bottom: 1px solid rgba(210, 171, 86, 0.15);
   }
 
   html[data-theme="xian"] .stats-strip > div:nth-child(2n) {
@@ -1488,8 +2469,18 @@ html[data-theme="xian"] .theme-stage {
     font-size: 26px;
   }
 
+  html[data-theme="xian"] .xian-ribbon-divider {
+    height: 54px;
+    margin-top: -10px;
+    margin-bottom: -14px;
+  }
+
   html[data-theme="xian"] .section-block {
-    padding: 52px 0;
+    padding: 54px 0;
+  }
+
+  html[data-theme="xian"] .xian-realms-section {
+    padding: 72px 0 80px;
   }
 
   html[data-theme="xian"] .section-heading {
@@ -1500,7 +2491,8 @@ html[data-theme="xian"] .theme-stage {
 
   html[data-theme="xian"] .featured-grid,
   html[data-theme="xian"] .latest-grid,
-  html[data-theme="xian"] .competition-grid {
+  html[data-theme="xian"] .competition-grid,
+  html[data-theme="xian"] .method-talisman-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1509,7 +2501,7 @@ html[data-theme="xian"] .theme-stage {
   }
 
   html[data-theme="xian"] .page-heading {
-    padding: 40px 0 26px;
+    padding: 42px 0 28px;
   }
 
   html[data-theme="xian"] .search-line {
@@ -1542,7 +2534,7 @@ html[data-theme="xian"] .theme-stage {
     flex-wrap: wrap;
     align-items: center;
     gap: 4px 9px;
-    padding: 14px 6px;
+    padding: 14px 10px;
   }
 
   html[data-theme="xian"] .row-name {
@@ -1563,7 +2555,7 @@ html[data-theme="xian"] .theme-stage {
   html[data-theme="xian"] .writeup-row > .category-pill {
     display: inline-flex;
     order: 3;
-    margin-left: 30px;
+    margin-left: 28px;
     font-size: 9.5px;
     padding: 2px 6px;
   }
@@ -1573,7 +2565,7 @@ html[data-theme="xian"] .theme-stage {
     order: 4;
     flex: 1 1 auto;
     min-width: 0;
-    max-width: 62%;
+    max-width: 60%;
     font-size: 11.5px;
   }
 
@@ -1591,36 +2583,26 @@ html[data-theme="xian"] .theme-stage {
     min-width: 560px;
   }
 
-  html[data-theme="xian"] .reading-layout > .prose {
+  html[data-theme="xian"] .reading-layout > .prose,
+  html[data-theme="xian"] .about-layout > .prose,
+  html[data-theme="xian"] .generic-page > .prose {
     padding: 26px 20px 34px;
     font-size: 14.5px;
     overflow-x: hidden;
   }
 
   html[data-theme="xian"] .reading-layout > .prose::before,
-  html[data-theme="xian"] .reading-layout > .prose::after {
-    width: 14px;
-    height: 14px;
-  }
-
-  html[data-theme="xian"] .prose pre,
-  html[data-theme="xian"] .prose .highlight {
-    max-width: 100%;
-  }
-
-  html[data-theme="xian"] .post-heading {
-    padding: 34px 0 24px;
-  }
-
-  html[data-theme="xian"] .about-layout {
-    padding-bottom: 60px;
+  html[data-theme="xian"] .reading-layout > .prose::after,
+  html[data-theme="xian"] .about-layout > .prose::before,
+  html[data-theme="xian"] .about-layout > .prose::after {
+    width: 16px;
+    height: 16px;
   }
 
   html[data-theme="xian"] .site-footer {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: 1fr;
+    padding: 32px 20px 28px;
     row-gap: 14px;
-    width: 100%;
-    padding: 30px 18px 28px;
   }
 
   html[data-theme="xian"] .footer-links {
@@ -1628,17 +2610,10 @@ html[data-theme="xian"] .theme-stage {
     grid-row: 2;
     justify-self: start;
     flex-wrap: wrap;
-    gap: 14px 18px;
+    gap: 14px 20px;
   }
 
   html[data-theme="xian"] .footer-bottom {
     grid-row: 3;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html[data-theme="xian"]:not(.motion-on) .feature-card,
-  html[data-theme="xian"]:not(.motion-on) .competition-card {
-    transition: none;
   }
 }

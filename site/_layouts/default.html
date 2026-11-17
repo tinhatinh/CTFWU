@@ -1,26 +1,33 @@
 <!doctype html>
-{% assign hero_art = site.static_files | where: "path", "/assets/img/hero-desktop.jpg" | first %}
-<html lang="{{ site.lang }}" data-theme="xian"{% if hero_art %} class="has-hero-art"{% endif %}>
+<html lang="{{ site.lang }}" data-theme="xian">
 {% assign lang = site.lang | slice: 0, 2 %}{% assign ui = site.data.interface[lang] %}
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-bxBTZjZIup0sdV52jJCvT8bbdBN4PWo0I1JZdzp8T9k='; connect-src 'self' https://api.github.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https: data:; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.github.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https: data:; object-src 'none'; base-uri 'self'; form-action 'self'">
   <meta name="theme-color" content="#060a10">
   {% seo %}
   {% feed_meta %}
   <link rel="icon" type="image/svg+xml" href="{{ '/assets/favicon.svg' | relative_url }}">
   <link rel="stylesheet" href="{{ '/assets/css/campus.css' | relative_url }}?v={{ site.data.portfolio.assets.css }}">
-  <link rel="stylesheet" href="{{ '/assets/css/themes.css' | relative_url }}?v={{ site.data.portfolio.assets.themes }}">
   <link rel="stylesheet" href="{{ '/assets/css/xian.css' | relative_url }}?v={{ site.data.portfolio.assets.xian }}">
   <link rel="stylesheet" href="{{ '/assets/css/motion.css' | relative_url }}?v={{ site.data.portfolio.assets.motion }}">
-  <script>try{var p=new URLSearchParams(location.search).get('theme');var ok=['terminal','paper','aurora','xian'];var s=null,pv=null;try{s=localStorage.getItem('ctf-theme-v2')}catch(e){}try{pv=localStorage.getItem('ctf-theme-preview')}catch(e){}if(p==='default'){pv=null;try{localStorage.removeItem('ctf-theme-preview')}catch(e){}}var t;if(ok.indexOf(p)>-1){t=p;try{localStorage.setItem('ctf-theme-preview',p)}catch(e){}}else if(pv&&ok.indexOf(pv)>-1){t=pv}else{t=(s==='light'||ok.indexOf(s)>-1)?s:'xian'}document.documentElement.dataset.theme=t}catch(e){}</script>
   <script defer src="{{ '/assets/js/site.js' | relative_url }}?v={{ site.data.portfolio.assets.js }}"></script>
   <script defer src="{{ '/assets/js/motion.js' | relative_url }}?v={{ site.data.portfolio.assets.motion_js }}"></script>
-  <noscript><style>.archive-controls,.results-bar label,#theme-toggle,.menu-toggle{display:none!important}@media(max-width:600px){.site-header{position:static}.header-inner{height:auto;flex-wrap:wrap;padding-block:16px}.main-nav{display:flex;position:static;order:3;flex-basis:100%;padding:0;gap:18px;flex-wrap:wrap;border:0}.main-nav>a{height:auto}}</style></noscript>
+  <noscript><style>.archive-controls,.results-bar label,.menu-toggle{display:none!important}@media(max-width:600px){.site-header{position:static}.header-inner{height:auto;flex-wrap:wrap;padding-block:16px}.main-nav{display:flex;position:static;order:3;flex-basis:100%;padding:0;gap:18px;flex-wrap:wrap;border:0}.main-nav>a{height:auto}}</style></noscript>
 </head>
 <body data-language="{{ lang }}">
   <div class="theme-backdrop" aria-hidden="true"></div>
+  <div class="xian-ambient" aria-hidden="true">
+    <div class="xian-ambient-stardust"></div>
+    <div class="xian-orb xian-orb-jade"></div>
+    <div class="xian-orb xian-orb-gold"></div>
+    <div class="xian-ambient-motes">
+      <span class="amote"></span><span class="amote"></span><span class="amote"></span><span class="amote"></span>
+      <span class="amote"></span><span class="amote"></span><span class="amote"></span><span class="amote"></span>
+      <span class="amote"></span><span class="amote"></span><span class="amote"></span><span class="amote"></span>
+    </div>
+  </div>
   <a class="skip-link" href="#main">{{ ui.skip }}</a>
   <header class="site-header">
     <div class="header-inner">
@@ -36,13 +43,19 @@
           <a href="/CTFWU{{ page.url }}" lang="vi" hreflang="vi" {% if lang == 'vi' %}aria-current="true"{% endif %}>VI</a><span>/</span><a href="/CTFWU/en{{ page.url }}" lang="en" hreflang="en" {% if lang == 'en' %}aria-current="true"{% endif %}>EN</a>
         </div>
         <button class="icon-button motion-toggle" type="button" aria-pressed="true" aria-label="{{ ui.motion_off }}" title="{{ ui.motion_off }}" data-label-active="{{ ui.motion_off }}" data-label-inactive="{{ ui.motion_on }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 14.6c2.6-3.7 5.2-3.7 7.8 0s5.2 3.7 7.8 0"/><path d="M3 18.6c2.6-3.7 5.2-3.7 7.8 0s5.2 3.7 7.8 0" opacity=".4"/><circle cx="15.4" cy="5.4" r="1.1" fill="currentColor" stroke="none"/><circle cx="19.2" cy="8.2" r=".8" fill="currentColor" stroke="none" opacity=".65"/></svg></button>
-        <button class="icon-button" id="theme-toggle" type="button" aria-label="{{ ui.theme }}" title="{{ ui.theme }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg></button>
         <a class="header-github" href="https://github.com/tinhatinh/CTFWU">GitHub <span aria-hidden="true">↗</span></a>
         <button class="icon-button menu-toggle" type="button" aria-controls="main-nav" aria-expanded="false" aria-label="{{ ui.menu }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
       </div>
     </div>
   </header>
-  <main id="main" tabindex="-1">{{ content }}</main>
+  <main id="main" tabindex="-1">{% unless page.layout == 'home' %}<div class="subpage-sky" aria-hidden="true"><div class="subpage-palace"></div><div class="subpage-peaks"></div><div class="subpage-stardust"></div><div class="subpage-clouds"><div class="cloud-track cloud-layer-mid"></div><div class="cloud-track cloud-layer-gold"></div><div class="cloud-track cloud-layer-front"></div></div></div>{% endunless %}{{ content }}</main>
+  <div class="xian-closing" aria-hidden="true">
+    <div class="xian-closing-art"></div>
+    <div class="xian-closing-stardust"></div>
+    <div class="xian-closing-clouds">
+      <div class="cloud-track cloud-layer-mid"></div>
+    </div>
+  </div>
   <footer class="site-footer wrapper">
     <div><a class="footer-brand" href="{{ '/' | relative_url }}">CTFWU<span>.</span></a></div>
     <div class="footer-links"><a href="https://github.com/tinhatinh">GitHub ↗</a><a href="https://ctftime.org/team/449538">CTFTime ↗</a><a href="mailto:ptdanh007@gmail.com">{{ ui.contact }} ↗</a><a href="{{ '/feed.xml' | relative_url }}">RSS ↗</a></div>
@@ -51,13 +64,5 @@
   <a class="back-to-top" id="back-to-top" href="#main" aria-label="{{ ui.top }}" title="{{ ui.top }}">
     <svg viewBox="0 0 48 48" aria-hidden="true"><circle class="top-track" cx="24" cy="24" r="20"/><circle class="top-progress" id="top-progress" cx="24" cy="24" r="20" pathLength="100"/><path class="top-arrow" d="M24 32V16m-7 7 7-7 7 7"/></svg>
   </a>
-  <div class="theme-preview-bar" id="theme-preview-bar" hidden>
-    <span>{{ ui.theme_preview }}</span>
-    <a href="?theme=terminal" data-theme-choice="terminal">Terminal</a>
-    <a href="?theme=paper" data-theme-choice="paper">Paper</a>
-    <a href="?theme=aurora" data-theme-choice="aurora">Aurora</a>
-    <a href="?theme=xian" data-theme-choice="xian">Xian</a>
-    <a href="?theme=default" data-theme-choice="default">{{ ui.theme_default }}</a>
-  </div>
 </body>
 </html>

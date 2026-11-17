@@ -2,49 +2,6 @@
 (() => {
   "use strict";
   const vi = document.body.dataset.language === "vi";
-  const themeMeta = document.querySelector('meta[name="theme-color"]');
-  const themeColors = {
-    dark: "#111411",
-    light: "#f5f5ef",
-    terminal: "#050907",
-    paper: "#f2eadb",
-    aurora: "#050816",
-    xian: "#060a10"
-  };
-  const previewThemes = new Set(["terminal", "paper", "aurora", "xian"]);
-  const previewParam = new URLSearchParams(location.search).get("theme");
-  if (previewThemes.has(previewParam)) {
-    document.body.classList.add("is-theme-preview");
-    const bar = document.querySelector("#theme-preview-bar");
-    if (bar) {
-      bar.hidden = false;
-      bar.querySelectorAll("[data-theme-choice]").forEach(link => {
-        const url = new URL(location.href);
-        const choice = link.dataset.themeChoice;
-        if (choice === "default") {
-          url.searchParams.delete("theme");
-          link.addEventListener("click", () => {
-            try {
-              localStorage.removeItem("ctf-theme-preview");
-            } catch (_) {
-              /* Storage is optional. */
-            }
-          });
-        } else {
-          url.searchParams.set("theme", choice);
-        }
-        link.href = url.pathname + url.search + url.hash;
-        link.setAttribute("aria-current", choice === previewParam ? "true" : "false");
-      });
-    }
-  }
-  if (window.self !== window.top) {
-    const bar = document.querySelector("#theme-preview-bar");
-    if (bar) bar.hidden = true;
-  }
-  if (themeMeta) {
-    themeMeta.content = themeColors[document.documentElement.dataset.theme] || themeColors.terminal;
-  }
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const runningMotion = new Set();
   /* motion.js gọi hook này khi người dùng tắt chuyển động. */
@@ -63,66 +20,6 @@
   };
   reducedMotion.addEventListener("change", () => {
     if (reducedMotion.matches) runningMotion.forEach(animation => animation.cancel());
-  });
-  // Content stays visible even if motion or IntersectionObserver is unavailable.
-  // Theme xian dùng motion.js làm bộ điều khiển reveal duy nhất.
-  if ("IntersectionObserver" in window && !reducedMotion.matches &&
-      document.documentElement.dataset.theme !== "xian") {
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        observer.unobserve(entry.target);
-        animate(entry.target, [
-          { opacity: 0.45, transform: "translateY(14px)" },
-          { opacity: 1, transform: "translateY(0)" }
-        ], { duration: 440, easing: "cubic-bezier(.2,.7,.2,1)" });
-      });
-    }, { threshold: 0.08 });
-    document.querySelectorAll(".page-heading, .stats-strip, .section-heading, .feature-card, .certificate-card").forEach(element => observer.observe(element));
-  }
-  const themeButton = document.querySelector("#theme-toggle");
-  const isDarkTheme = (name) => name !== "light";
-  const lastDark = () => {
-    try {
-      const saved = localStorage.getItem("ctf-theme-dark");
-      return previewThemes.has(saved) || saved === "dark" ? saved : "xian";
-    } catch (_) {
-      return "xian";
-    }
-  };
-  themeButton?.setAttribute("aria-pressed", String(
-    isDarkTheme(document.documentElement.dataset.theme)
-  ));
-  themeButton?.addEventListener("click", () => {
-    const current = document.documentElement.dataset.theme;
-    const theme = current === "light" ? lastDark() : "light";
-    if (current !== "light") {
-      try {
-        localStorage.setItem("ctf-theme-dark", current);
-      } catch (_) {
-        /* Storage is optional. */
-      }
-    }
-    document.documentElement.dataset.theme = theme;
-    themeButton.setAttribute("aria-pressed", String(isDarkTheme(theme)));
-    if (previewThemes.has(current)) {
-      const url = new URL(location.href);
-      url.searchParams.delete("theme");
-      history.replaceState(null, "", url.pathname + url.search + url.hash);
-      document.body.classList.remove("is-theme-preview");
-      const bar = document.querySelector("#theme-preview-bar");
-      if (bar) bar.hidden = true;
-    }
-    animate(themeButton.querySelector("svg"), [
-      { transform: "rotate(-70deg) scale(.85)" },
-      { transform: "rotate(0) scale(1)" }
-    ], { duration: 320, easing: "ease-out" });
-    if (themeMeta) themeMeta.content = themeColors[theme] || themeColors.xian;
-    try {
-      localStorage.setItem("ctf-theme-v2", theme);
-    } catch (_) {
-      /* Storage is optional. */
-    }
   });
 
   const menu = document.querySelector(".menu-toggle");
@@ -247,9 +144,6 @@
       if (category) params.set("category", category);
       if (eventFilter.value) params.set("event", eventFilter.value);
       if (sort.value !== "newest") params.set("sort", sort.value);
-      /* Giữ theme đang xem thử qua lọc, sắp xếp và link đổi ngôn ngữ. */
-      const shownTheme = new URLSearchParams(location.search).get("theme");
-      if (previewThemes.has(shownTheme)) params.set("theme", shownTheme);
       const suffix = params.size ? "?" + params.toString() : "";
       if (persist) history.replaceState(null, "", location.pathname + suffix);
       document.querySelectorAll(".language-switch a").forEach((link) => {
