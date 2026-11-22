@@ -16,6 +16,14 @@
     ],
     "2026": [
       {
+        "ctf_points": "3920.00",
+        "event": "Crate-CTF 2026",
+        "event_url": "https://ctftime.org/event/3336",
+        "place": "20",
+        "rating_pending": false,
+        "rating_points": "38.850"
+      },
+      {
         "ctf_points": "5094.00",
         "event": "h4ckc0n 2026",
         "event_url": "https://ctftime.org/event/3464",
