@@ -24,6 +24,14 @@
         "rating_points": "38.850"
       },
       {
+        "ctf_points": "2950.00",
+        "event": "WolvCTF 2026",
+        "event_url": "https://ctftime.org/event/3049",
+        "place": "5",
+        "rating_pending": true,
+        "rating_points": "0.000"
+      },
+      {
         "ctf_points": "5094.00",
         "event": "h4ckc0n 2026",
         "event_url": "https://ctftime.org/event/3464",
